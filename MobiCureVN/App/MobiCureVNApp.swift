@@ -12,7 +12,7 @@ struct MobiCureVNApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ChatView(llmService: AppConfig.llmService)
+            HomeView()
         }
     }
 }
