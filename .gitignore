@@ -1,0 +1,34 @@
+# Swift Package Manager
+.build/
+.swiftpm/
+# You may want to commit Package.resolved, but if you want to ignore it, uncomment below:
+# Package.resolved
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# macOS
+.DS_Store
+*.swp
+
+# Python / MLX Environments
+venv/
+env/
+.env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database (SQLite Memory Store)
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+
+# IDEs & Editors
+.vscode/
+.idea/
