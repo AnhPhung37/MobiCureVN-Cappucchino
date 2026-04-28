@@ -1,18 +1,17 @@
-# Swift Package Manager
-.build/
-.swiftpm/
-# You may want to commit Package.resolved, but if you want to ignore it, uncomment below:
-# Package.resolved
-
-# Xcode
-*.xcodeproj/
-*.xcworkspace/
-xcuserdata/
-DerivedData/
-
 # macOS
 .DS_Store
 *.swp
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
 
 # Python / MLX Environments
 venv/
