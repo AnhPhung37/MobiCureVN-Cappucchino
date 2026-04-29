@@ -17,7 +17,6 @@ These old locations and duplicate structures were removed or consolidated:
 Use these names for new backend code:
 
 - `Configs/` for app-wide configuration and dependency injection
-- `Services/` for business logic and service implementations
 - `Services/LLMService/` for the main LLM service implementation
 - `Services/LLM/` for model management and LLM infrastructure helpers
 - `Store/` for local in-memory or persistence-oriented state
