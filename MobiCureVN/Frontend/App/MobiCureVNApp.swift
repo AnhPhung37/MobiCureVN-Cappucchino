@@ -10,22 +10,23 @@ import SwiftUI
 @main
 struct MobiCureVNApp: App {
 
+    private static let modelRepoIDKey = "ModelRepoID"
+
     init() {
         // Enable real-model flow at startup.
         AppConfig.useRealLLM = true
 
-
+        let defaults = UserDefaults.standard
+        let repoID = defaults.string(forKey: Self.modelRepoIDKey) ?? "mlx-community/Qwen2.5-3B-Instruct-4bit"
 
         print("MobiCureVNApp: starting model initialization task")
 
         Task(priority: .utility) {
             await AppConfig.initializeLLMService(
-                modelName: "qwen-2.5-7b-instruct",
+                modelName: repoID,
                 progress: { progress in
                     let percent = Int(progress * 100)
-                    Task { @MainActor in
-                        print("Model download progress: \(percent)%")
-                    }
+                    print("Model download progress: \(percent)%")
                 },
             )
         }

@@ -25,7 +25,11 @@ struct AppConfig {
                                      archiveURL: URL? = nil,
                                      checksum: String? = nil,
                                      progress: ((Double) -> Void)? = nil,
-                                     authToken: String? = nil) async {
+                                     authToken: String? = nil,
+                                     repoID: String? = nil) async {
+        print("AppConfig: initializeLLMService called")
+        progress?(0.0)
+
         guard useRealLLM else {
             print("AppConfig: useRealLLM is false — keeping MockLLMService")
             return
@@ -36,7 +40,8 @@ struct AppConfig {
                                                                           archiveURL: archiveURL,
                                                                           expectedSHA256: checksum,
                                                                           progress: progress,
-                                                                          authToken: authToken)
+                                                                          authToken: authToken,
+                                                                          repoID: repoID)
             // Replace the service with a real LLMService initialized with the local model path
             let service = LLMService(modelPath: modelURL.path, useMock: false)
             llmService = service
