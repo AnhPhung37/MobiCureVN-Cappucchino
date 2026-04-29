@@ -33,3 +33,27 @@ Use these names for new backend code:
 
 If a file is part of runtime code, keep it under `MobiCureVN/Backend/`.
 If a file is documentation, keep it under `Docs/`.
+
+
+## Current mock flow
+
+The app is currently wired to the mock backend end-to-end for local testing:
+
+1. `HomeView` creates `ChatView(llmService: AppConfig.llmService)`.
+2. `AppConfig.llmService` returns `MockLLMService()`.
+3. `ChatView` passes that service into `ChatViewModel`.
+4. `ChatViewModel` calls `stream(request:)` on the injected service.
+5. `MockLLMService` reads `request.userMessage` and picks a canned response based on simple keyword matching.
+6. The mock response is streamed back word-by-word with a small delay, so the UI still looks like a live model.
+
+Important details:
+
+- The preview in `ChatView.swift` also uses `MockLLMService()`, but that only affects SwiftUI previews.
+- The actual phone app flow comes from `HomeView -> AppConfig.llmService`.
+- There is no MLX/model download path active right now in the runtime backend.
+
+Example behavior:
+
+- If the message contains `infection`, `nhiễm trùng`, or `mủ`, the mock returns the infection-care response.
+- If it contains `pain`, `đau`, or `đớn`, the mock returns the pain-care response.
+- Otherwise, it returns the general post-op guidance response.
