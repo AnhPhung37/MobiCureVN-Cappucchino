@@ -10,7 +10,6 @@ These old locations and duplicate structures were removed or consolidated:
 - `MobiCureVN/Backend/Data/`
 - `MobiCureVN/Backend/Domain/Entities/`
 - `MobiCureVN/Backend/Services/LLM/Adapters/`
-- Nested backend README files that were scattered across the source tree
 
 ## Current naming conventions
 
