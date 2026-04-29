@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A84800EA2FA28D5E00938AF4 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A84800E92FA28D5E00938AF4 /* ZIPFoundation */; };
 		EC2D779E2FA2277500720421 /* BenchmarkHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D779D2FA2277500720421 /* BenchmarkHelpers */; };
 		EC2D77A02FA2277500720421 /* IntegrationTestHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D779F2FA2277500720421 /* IntegrationTestHelpers */; };
 		EC2D77A22FA2277500720421 /* MLXEmbedders in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77A12FA2277500720421 /* MLXEmbedders */; };
@@ -52,6 +53,7 @@
 				EC2D77B02FA228EF00720421 /* MLXOptimizers in Frameworks */,
 				EC2D77A82FA2277500720421 /* MLXLMCommon in Frameworks */,
 				EC2D77A42FA2277500720421 /* MLXHuggingFace in Frameworks */,
+				A84800EA2FA28D5E00938AF4 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +117,7 @@
 				EC2D77B42FA22AF800720421 /* Tokenizers */,
 				EC2D77B62FA22AF800720421 /* Transformers */,
 				EC2D77B92FA22C4500720421 /* HuggingFace */,
+				A84800E92FA28D5E00938AF4 /* ZIPFoundation */,
 			);
 			productName = MobiCureVN;
 			productReference = EC5467762F9BC6C800B07544 /* MobiCureVN.app */;
@@ -149,6 +152,7 @@
 				EC2D77AB2FA2287600720421 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 				EC2D77B12FA22AF800720421 /* XCRemoteSwiftPackageReference "swift-transformers" */,
 				EC2D77B82FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-huggingface" */,
+				A84800E82FA28D5E00938AF4 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EC5467772F9BC6C800B07544 /* Products */;
@@ -388,6 +392,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A84800E82FA28D5E00938AF4 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.20;
+			};
+		};
 		EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm";
@@ -423,6 +435,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A84800E92FA28D5E00938AF4 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A84800E82FA28D5E00938AF4 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
 		EC2D779D2FA2277500720421 /* BenchmarkHelpers */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;

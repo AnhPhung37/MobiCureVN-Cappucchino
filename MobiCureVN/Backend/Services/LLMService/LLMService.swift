@@ -1,12 +1,44 @@
 import Foundation
 
+#if canImport(MLXLLM)
+import MLXLLM
+import MLXLMCommon
+import MLXRandom
+#endif
+
 final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let modelPath: String
     private let useMock: Bool
+    private let isModelAvailable: Bool
+    private var mlxInitialized: Bool = false
+
+    /// Initialize a service with a known local model path. Call `initializeModel()` to attempt MLX init.
 
     init(modelPath: String = "qwen-2.5-7b-instruct", useMock: Bool = false) {
         self.modelPath = modelPath
         self.useMock = useMock
+        self.isModelAvailable = FileManager.default.fileExists(atPath: modelPath)
+    }
+
+    /// Attempt to initialize MLX model runtime. Safe to call repeatedly.
+    func initializeModel() async {
+        if useMock || !isModelAvailable { return }
+#if canImport(MLXLLM)
+        do {
+            // Example MLX initialization pseudocode. Replace with real MLX API calls.
+            // let model = try MLXModel(path: modelPath)
+            // let session = try MLXLLM.Session(model: model)
+            // store session for use during `stream`.
+            print("LLMService: MLX modules are available — initialize model at \(modelPath)")
+            // TODO: implement actual MLX init and set `mlxInitialized = true` on success
+            mlxInitialized = true
+        } catch {
+            print("LLMService: MLX initialization failed: \(error)")
+            mlxInitialized = false
+        }
+#else
+        print("LLMService: MLX not available in this build — cannot initialize runtime")
+#endif
     }
 
     // MARK: - LLMServiceProtocol
@@ -29,8 +61,13 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                 }
 
                 // For now, all modes return test response
-                // TODO: Re-enable MLX model loading when ready for production inference
-                let reply = "Test response: This is a local test mode. Model loading disabled. Ready to integrate MLX when needed."
+                // If a local model exists and the service was requested to be real, note it.
+                let reply: String
+                if !self.useMock && self.isModelAvailable {
+                    reply = "Model found at \(self.modelPath). MLX integration disabled in this build; returning placeholder response."
+                } else {
+                    reply = "Test response: This is a local test mode. Model loading disabled. Ready to integrate MLX when needed."
+                }
                 for chunk in Self.chunk(reply, size: 48) { continuation.yield(chunk) }
                 continuation.finish()
             }
