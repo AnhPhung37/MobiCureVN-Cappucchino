@@ -53,19 +53,10 @@ struct ChatView: View {
                     }
 
                     // Messages
-                    ForEach(viewModel.messages) { message in
+                    ForEach(Array(viewModel.messages.enumerated()), id: \.offset) { _, message in
                         VStack(alignment: .leading, spacing: 8) {
                             MessageBubble(message: message)
-
-                            // Citations below assistant messages
-                            if message.role == .assistant,
-                               !message.citations.isEmpty,
-                               !message.isStreaming {
-                                CitationsView(sources: message.citations)
-                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-                            }
                         }
-                        .id(message.id)
                         .padding(.vertical, 4)
                     }
 
@@ -87,7 +78,7 @@ struct ChatView: View {
                 .animation(.spring(response: 0.35, dampingFraction: 0.85), value: viewModel.messages.count)
             }
             .scrollDismissesKeyboard(.interactively)
-            .onChange(of: viewModel.messages.last?.content) { _ in
+            .onChange(of: viewModel.messages.last?.content) { _, _ in
                 withAnimation(.easeOut(duration: 0.2)) {
                     proxy.scrollTo("bottom", anchor: .bottom)
                 }

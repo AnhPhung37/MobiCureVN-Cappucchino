@@ -11,7 +11,7 @@ struct MessageBubble: View {
 
     let message: ChatMessage
 
-    private var isUser: Bool { message.role == .user }
+    private var isUser: Bool { message.role.lowercased() == "user" }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
@@ -19,7 +19,7 @@ struct MessageBubble: View {
 
             VStack(alignment: isUser ? .trailing : .leading, spacing: 6) {
                 // Bubble
-                Text(message.content.isEmpty && message.isStreaming ? " " : message.content)
+                Text(message.content)
                     .font(.system(size: 16, weight: .regular, design: .rounded))
                     .foregroundColor(isUser ? .white : Color(.label))
                     .padding(.horizontal, 14)
@@ -28,7 +28,7 @@ struct MessageBubble: View {
                     .overlay(streamingCursor)
 
                 // Timestamp
-                Text(message.timestamp.formatted(.dateTime.hour().minute()))
+                Text("")
                     .font(.system(size: 11))
                     .foregroundColor(Color(.secondaryLabel))
                     .padding(.horizontal, 4)
@@ -54,17 +54,7 @@ struct MessageBubble: View {
 
     @ViewBuilder
     private var streamingCursor: some View {
-        if message.isStreaming {
-            HStack {
-                Spacer()
-                VStack {
-                    Spacer()
-                    BlinkingCursor()
-                        .padding(.trailing, 14)
-                        .padding(.bottom, 10)
-                }
-            }
-        }
+        EmptyView()
     }
 }
 
@@ -89,13 +79,12 @@ private struct BlinkingCursor: View {
 #Preview {
     VStack(spacing: 12) {
         MessageBubble(message: ChatMessage(
-            role: .user,
+            role: "user",
             content: "Vết mổ của tôi có bị nhiễm trùng không?"
         ))
         MessageBubble(message: ChatMessage(
-            role: .assistant,
-            content: "Dựa trên tài liệu y tế, các dấu hiệu nhiễm trùng vết mổ bao gồm: đỏ, sưng, nóng...",
-            isStreaming: true
+            role: "assistant",
+            content: "Dựa trên tài liệu y tế, các dấu hiệu nhiễm trùng vết mổ bao gồm: đỏ, sưng, nóng..."
         ))
     }
     .padding(.vertical)

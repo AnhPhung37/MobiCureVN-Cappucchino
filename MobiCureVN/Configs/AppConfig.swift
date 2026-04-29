@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if canImport(ChatEngineCore)
+import ChatEngineCore
+#endif
 
 struct AppConfig {
 
@@ -15,13 +18,14 @@ struct AppConfig {
     static var llmService: LLMServiceProtocol {
         #if PROTOTYPE
         return MockLLMService()
-        #elseif DEBUG
-        // Swap to MacStudioMLXService() when Hanh's backend is ready
-        return MockLLMService()
         #else
-        // Production: on-device MLX on iPad Neural Engine
-        // return OnDeviceMLXService()
-        return MockLLMService() // placeholder until prod service is built
+        // Use the in-app backend via the adapter. Configure modelPath/useMock as needed.
+        #if canImport(ChatEngineCore)
+        let backend = ChatEngineCore.LLMService(modelPath: "mlx-community/Qwen2.5-7B-Instruct-4bit", useMock: false)
+        #else
+        let backend = LLMService(modelPath: "mlx-community/Qwen2.5-7B-Instruct-4bit", useMock: false)
+        #endif
+        return InAppBackendLLMServiceAdapter(backend: backend)
         #endif
     }
 }
