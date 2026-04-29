@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+*.swp
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Python / MLX Environments
+venv/
+env/
+.env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database (SQLite Memory Store)
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+
+# IDEs & Editors
+.vscode/
+.idea/
