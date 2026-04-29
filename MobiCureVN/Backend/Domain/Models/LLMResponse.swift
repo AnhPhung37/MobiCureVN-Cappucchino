@@ -7,6 +7,7 @@
 
 import Foundation
 
+// TODO: Implement response tracking and citation support when building UI response handlers
 struct LLMResponse {
     let text: String
     let citations: [MedicalSource]
