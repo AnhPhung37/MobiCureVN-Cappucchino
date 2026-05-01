@@ -206,7 +206,9 @@ struct ChatView: View {
             Text(viewModel.isLoading ? "Đang trả lời..." : "Sẵn sàng")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(Color(.secondaryLabel))
+                .lineLimit(1)
         }
+        .fixedSize() // ← move fixedSize here, to the HStack level
     }
 
     // MARK: - Suggestion Chips Data
