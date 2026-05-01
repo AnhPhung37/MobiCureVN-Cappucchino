@@ -31,3 +31,4 @@ __pycache__/
 # IDEs & Editors
 .vscode/
 .idea/
+.history/
