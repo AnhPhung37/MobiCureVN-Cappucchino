@@ -31,16 +31,38 @@ class ChatViewModel: ObservableObject {
     @Published var inputText: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var backendStatus: LLMBackendStatus = .mock
 
     // MARK: - Dependencies
 
-    private let llmService: LLMServiceProtocol
+    private var llmService: LLMServiceProtocol
     private var streamingTask: Task<Void, Never>?
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Init
 
     init(llmService: LLMServiceProtocol) {
         self.llmService = llmService
+        backendStatus = AppConfig.llmStatus
+        bindLLMStatusUpdates()
+    }
+
+    private func bindLLMStatusUpdates() {
+        NotificationCenter.default.publisher(for: AppConfig.llmStatusDidChange)
+            .compactMap { $0.userInfo?[AppConfig.llmStatusUserInfoKey] as? LLMBackendStatus }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] status in
+                self?.backendStatus = status
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: AppConfig.llmServiceDidChange)
+            .compactMap { $0.userInfo?[AppConfig.llmServiceUserInfoKey] as? LLMServiceProtocol }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] service in
+                self?.llmService = service
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Actions

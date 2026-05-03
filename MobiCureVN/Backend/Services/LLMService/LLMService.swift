@@ -3,6 +3,7 @@ import Foundation
 #if canImport(MLXLLM)
 import MLXLLM
 import MLXLMCommon
+import MLXLMTokenizers
 import MLXRandom
 #endif
 
@@ -11,6 +12,9 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let useMock: Bool
     private let isModelAvailable: Bool
     private var mlxInitialized: Bool = false
+#if canImport(MLXLLM)
+    private var modelContainer: ModelContainer?
+#endif
 
     /// Initialize a service with a known local model path. Call `initializeModel()` to attempt MLX init.
 
@@ -25,13 +29,14 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
         if useMock || !isModelAvailable { return }
 #if canImport(MLXLLM)
         do {
-            // Example MLX initialization pseudocode. Replace with real MLX API calls.
-            // let model = try MLXModel(path: modelPath)
-            // let session = try MLXLLM.Session(model: model)
-            // store session for use during `stream`.
-            print("LLMService: MLX modules are available — initialize model at \(modelPath)")
-            // TODO: implement actual MLX init and set `mlxInitialized = true` on success
+            let modelURL = URL(fileURLWithPath: modelPath, isDirectory: true)
+            let container = try await LLMModelFactory.shared.loadContainer(
+                from: modelURL,
+                using: TokenizersLoader()
+            )
+            modelContainer = container
             mlxInitialized = true
+            print("LLMService: MLX initialized at \(modelPath)")
         } catch {
             print("LLMService: MLX initialization failed: \(error)")
             mlxInitialized = false
@@ -59,12 +64,29 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                     continuation.finish()
                     return
                 }
+#if canImport(MLXLLM)
+                if !self.useMock, self.isModelAvailable, self.mlxInitialized, let container = self.modelContainer {
+                    do {
+                        let input = UserInput(prompt: prompt)
+                        let prepared = try await container.prepare(input: input)
+                        let params = GenerateParameters(maxTokens: 512, temperature: 0.7, topP: 0.9)
+                        let stream = try await container.generate(input: prepared, parameters: params)
+                        for await event in stream {
+                            if case let .chunk(text) = event {
+                                continuation.yield(text)
+                            }
+                        }
+                    } catch {
+                        continuation.yield("[MLX error: \(error.localizedDescription)]")
+                    }
+                    continuation.finish()
+                    return
+                }
+#endif
 
-                // For now, all modes return test response
-                // If a local model exists and the service was requested to be real, note it.
                 let reply: String
                 if !self.useMock && self.isModelAvailable {
-                    reply = "Model found at \(self.modelPath). MLX integration disabled in this build; returning placeholder response."
+                    reply = "Model found at \(self.modelPath). MLX integration unavailable for this build; returning placeholder response."
                 } else {
                     reply = "Test response: This is a local test mode. Model loading disabled. Ready to integrate MLX when needed."
                 }
