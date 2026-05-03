@@ -216,6 +216,8 @@ struct ChatView: View {
         switch status {
         case .mock:
             return "Mock service"
+        case .mockWithDownloadedModel:
+            return "Mock + model downloaded"
         case .loading:
             return "Đang tải model..."
         case .localModelReady:
@@ -229,6 +231,8 @@ struct ChatView: View {
         switch status {
         case .mock:
             return .blue
+        case .mockWithDownloadedModel:
+            return .cyan
         case .loading:
             return .orange
         case .localModelReady:

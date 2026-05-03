@@ -50,6 +50,53 @@ public final class ModelManager {
         throw ModelManagerError.applicationSupportUnavailable
     }
 
+    private func localModelDirectory(modelName: String, repoID: String?) throws -> URL {
+        let support = try applicationSupportDirectory()
+        let modelsRoot = support.appendingPathComponent("models", isDirectory: true)
+        let resolvedRepoID = defaultCommunityRepoID(for: repoID ?? modelName)
+        return modelsRoot.appendingPathComponent(resolvedRepoID.replacingOccurrences(of: "/", with: "_"), isDirectory: true)
+    }
+
+    private func containsFile(in directory: URL, named fileName: String) -> Bool {
+        guard let enumerator = fileManager.enumerator(at: directory,
+                                                      includingPropertiesForKeys: nil,
+                                                      options: [.skipsHiddenFiles]) else {
+            return false
+        }
+
+        for case let fileURL as URL in enumerator {
+            if fileURL.lastPathComponent.lowercased() == fileName.lowercased() {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func containsAnyFile(withExtensions extensions: Set<String>, in directory: URL) -> Bool {
+        guard let enumerator = fileManager.enumerator(at: directory,
+                                                      includingPropertiesForKeys: nil,
+                                                      options: [.skipsHiddenFiles]) else {
+            return false
+        }
+
+        for case let fileURL as URL in enumerator {
+            if extensions.contains(fileURL.pathExtension.lowercased()) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func isValidLocalModelDirectory(_ directory: URL) -> Bool {
+        guard fileManager.fileExists(atPath: directory.path) else { return false }
+
+        let hasConfig = containsFile(in: directory, named: "config.json")
+        let hasTokenizer = containsFile(in: directory, named: "tokenizer.json") || containsFile(in: directory, named: "tokenizer.model")
+        let hasWeights = containsAnyFile(withExtensions: ["safetensors", "bin", "gguf"], in: directory)
+
+        return hasConfig && hasTokenizer && hasWeights
+    }
+
     /// Ensure the model is downloaded, verified and extracted. Returns local folder URL containing model files.
     /// - Parameters:
     ///   - modelName: logical model name
@@ -81,11 +128,16 @@ public final class ModelManager {
         try fileManager.createDirectory(at: modelsRoot, withIntermediateDirectories: true, attributes: nil)
 
         let resolvedRepoID = defaultCommunityRepoID(for: repoID ?? modelName)
-        let modelDir = modelsRoot.appendingPathComponent(resolvedRepoID.replacingOccurrences(of: "/", with: "_"), isDirectory: true)
+        let modelDir = try localModelDirectory(modelName: modelName, repoID: repoID)
         if fileManager.fileExists(atPath: modelDir.path) {
-            print("ModelManager: model already present at \(modelDir.path)")
-            progress?(1.0)
-            return modelDir
+            if isValidLocalModelDirectory(modelDir) {
+                print("ModelManager: model already present at \(modelDir.path)")
+                progress?(1.0)
+                return modelDir
+            }
+
+            print("ModelManager: existing model at \(modelDir.path) is incomplete or invalid, removing it")
+            try? fileManager.removeItem(at: modelDir)
         }
 
         // prepare tmp working dir under Application Support so moves stay on same volume
@@ -368,5 +420,26 @@ public final class ModelManager {
         throw ModelManagerError.validationFailed(
             "Downloaded content is not a zip archive for URL: \(source.absoluteString). First bytes preview: \(preview)"
         )
+    }
+
+    /// Check if a model exists locally without downloading.
+    /// Returns the model directory URL if it exists, nil otherwise.
+    public func getLocalModelPath(modelName: String, repoID: String? = nil) -> URL? {
+        do {
+            let modelDir = try localModelDirectory(modelName: modelName, repoID: repoID)
+
+            if isValidLocalModelDirectory(modelDir) {
+                print("ModelManager: found local model at \(modelDir.path)")
+                return modelDir
+            }
+
+            if fileManager.fileExists(atPath: modelDir.path) {
+                print("ModelManager: local model directory exists but is not valid at \(modelDir.path)")
+            }
+            return nil
+        } catch {
+            print("ModelManager: error checking for local model: \(error)")
+            return nil
+        }
     }
 }

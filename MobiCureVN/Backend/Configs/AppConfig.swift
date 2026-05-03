@@ -43,14 +43,15 @@ struct AppConfig {
         llmStatus = status
     }
 
-    /// Attempt to ensure a model is available and switch to a real `LLMService`.
+    /// Attempt to use local model if available, otherwise use mock while downloading in background.
     /// Call this from app startup (e.g., `@main` or AppDelegate`) inside a Task.
     static func initializeLLMService(modelName: String = "qwen-2.5-7b-instruct",
                                      archiveURL: URL? = nil,
                                      checksum: String? = nil,
                                      progress: ((Double) -> Void)? = nil,
                                      authToken: String? = nil,
-                                     repoID: String? = nil) async {
+                                     repoID: String? = nil,
+                                     initializeRuntime: Bool = true) async {
         print("AppConfig: initializeLLMService called")
         progress?(0.0)
 
@@ -60,28 +61,61 @@ struct AppConfig {
             return
         }
 
-        updateStatus(.loading)
+        // Check if model exists locally. If it does, keep that path attached to chat and do not redownload.
+        if let localModelPath = ModelManager.shared.getLocalModelPath(modelName: modelName, repoID: repoID) {
+            print("AppConfig: found local model at \(localModelPath.path)")
 
-        do {
-            let modelURL = try await ModelManager.shared.ensureModelReady(modelName: modelName,
-                                                                          archiveURL: archiveURL,
-                                                                          expectedSHA256: checksum,
-                                                                          progress: progress,
-                                                                          authToken: authToken,
-                                                                          repoID: repoID)
-            // Replace the service with a real LLMService initialized with the local model path
-            let service = LLMService(modelPath: modelURL.path, useMock: false)
+            let service = LLMService(modelPath: localModelPath.path, useMock: false)
             llmService = service
-            updateStatus(.localModelReady)
-            print("AppConfig: switched to real LLMService at \(modelURL.path)")
-            // attempt MLX runtime init (non-blocking)
-            Task.detached {
-                await service.initializeModel()
+
+            if initializeRuntime, await service.initializeModel() {
+                updateStatus(.localModelReady)
+                print("AppConfig: switched to real LLMService at \(localModelPath.path)")
+                progress?(1.0)
+            } else {
+                updateStatus(.mockWithDownloadedModel)
+                print("AppConfig: local model is attached, but MLX is not ready for \(localModelPath.path)")
             }
-        } catch {
-            updateStatus(.unavailable)
-            // Keep mock service and surface a log — callers can retry later.
-            print("Model initialization failed: \(error). Continuing with MockLLMService.")
+            return
+        }
+
+        // Model not found locally, use mock and download in background.
+        updateStatus(.mock)
+        print("AppConfig: local model not found, using MockLLMService and starting download")
+
+        // Download model in background
+        Task(priority: .utility) {
+            do {
+                let modelURL = try await ModelManager.shared.ensureModelReady(
+                    modelName: modelName,
+                    archiveURL: archiveURL,
+                    expectedSHA256: checksum,
+                    progress: progress,
+                    authToken: authToken,
+                    repoID: repoID
+                )
+                
+                print("AppConfig: model download completed at \(modelURL.path)")
+
+                if initializeRuntime {
+                    // Now try to initialize the real service
+                    let service = LLMService(modelPath: modelURL.path, useMock: false)
+                    if await service.initializeModel() {
+                        llmService = service
+                        updateStatus(.localModelReady)
+                        print("AppConfig: switched to real LLMService after download")
+                    } else {
+                        updateStatus(.mockWithDownloadedModel)
+                        print("AppConfig: model downloaded but MLX could not initialize it")
+                    }
+                } else {
+                    updateStatus(.mockWithDownloadedModel)
+                    print("AppConfig: model downloaded, keeping MockLLMService for this run")
+                }
+            } catch {
+                updateStatus(.unavailable)
+                print("AppConfig: model download failed: \(error). Continuing with MockLLMService.")
+            }
         }
     }
 }

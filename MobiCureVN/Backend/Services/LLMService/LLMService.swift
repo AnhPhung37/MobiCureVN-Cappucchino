@@ -4,7 +4,6 @@ import Foundation
 import MLXLLM
 import MLXLMCommon
 import MLXLMTokenizers
-import MLXRandom
 #endif
 
 final class LLMService: @unchecked Sendable, LLMServiceProtocol {
@@ -25,8 +24,9 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     }
 
     /// Attempt to initialize MLX model runtime. Safe to call repeatedly.
-    func initializeModel() async {
-        if useMock || !isModelAvailable { return }
+    func initializeModel() async -> Bool {
+        if useMock || !isModelAvailable { return false }
+        if mlxInitialized { return true }
 #if canImport(MLXLLM)
         do {
             let modelURL = URL(fileURLWithPath: modelPath, isDirectory: true)
@@ -37,12 +37,15 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
             modelContainer = container
             mlxInitialized = true
             print("LLMService: MLX initialized at \(modelPath)")
+            return true
         } catch {
             print("LLMService: MLX initialization failed: \(error)")
             mlxInitialized = false
+            return false
         }
 #else
         print("LLMService: MLX not available in this build — cannot initialize runtime")
+        return false
 #endif
     }
 
@@ -65,28 +68,30 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                     return
                 }
 #if canImport(MLXLLM)
-                if !self.useMock, self.isModelAvailable, self.mlxInitialized, let container = self.modelContainer {
-                    do {
-                        let input = UserInput(prompt: prompt)
-                        let prepared = try await container.prepare(input: input)
-                        let params = GenerateParameters(maxTokens: 512, temperature: 0.7, topP: 0.9)
-                        let stream = try await container.generate(input: prepared, parameters: params)
-                        for await event in stream {
-                            if case let .chunk(text) = event {
-                                continuation.yield(text)
+                if !self.useMock, self.isModelAvailable {
+                    if await self.initializeModel(), let container = self.modelContainer {
+                        do {
+                            let input = UserInput(prompt: prompt)
+                            let prepared = try await container.prepare(input: input)
+                            let params = GenerateParameters(maxTokens: 512, temperature: 0.7, topP: 0.9)
+                            let stream = try await container.generate(input: prepared, parameters: params)
+                            for await event in stream {
+                                if case let .chunk(text) = event {
+                                    continuation.yield(text)
+                                }
                             }
+                        } catch {
+                            continuation.yield("[MLX error: \(error.localizedDescription)]")
                         }
-                    } catch {
-                        continuation.yield("[MLX error: \(error.localizedDescription)]")
+                        continuation.finish()
+                        return
                     }
-                    continuation.finish()
-                    return
                 }
 #endif
 
                 let reply: String
                 if !self.useMock && self.isModelAvailable {
-                    reply = "Model found at \(self.modelPath). MLX integration unavailable for this build; returning placeholder response."
+                    reply = "Model found at \(self.modelPath), but MLX could not initialize it in this build."
                 } else {
                     reply = "Test response: This is a local test mode. Model loading disabled. Ready to integrate MLX when needed."
                 }

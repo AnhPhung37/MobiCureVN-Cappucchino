@@ -9,6 +9,7 @@ import Foundation
 
 enum LLMBackendStatus: String {
     case mock
+    case mockWithDownloadedModel
     case loading
     case localModelReady
     case unavailable

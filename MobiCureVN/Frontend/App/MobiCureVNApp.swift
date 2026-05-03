@@ -13,11 +13,11 @@ struct MobiCureVNApp: App {
     private static let modelRepoIDKey = "ModelRepoID"
 
     init() {
-        // Enable real-model flow at startup.
         AppConfig.useRealLLM = true
 
         let defaults = UserDefaults.standard
         let repoID = defaults.string(forKey: Self.modelRepoIDKey) ?? "mlx-community/Qwen2.5-3B-Instruct-4bit"
+        let initializeRuntime = !ProcessInfo.processInfo.isiOSAppOnMac && !ProcessInfo.processInfo.isMacCatalystApp
 
         print("MobiCureVNApp: starting model initialization task")
 
@@ -28,6 +28,7 @@ struct MobiCureVNApp: App {
                     let percent = Int(progress * 100)
                     print("Model download progress: \(percent)%")
                 },
+                initializeRuntime: initializeRuntime
             )
         }
     }

@@ -9,18 +9,7 @@
 /* Begin PBXBuildFile section */
 		9C6A5BA52FA75F8800BA7446 /* MLXLLM in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77A52FA2277500720421 /* MLXLLM */; };
 		A84800EA2FA28D5E00938AF4 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A84800E92FA28D5E00938AF4 /* ZIPFoundation */; };
-		EC2D779E2FA2277500720421 /* BenchmarkHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D779D2FA2277500720421 /* BenchmarkHelpers */; };
-		EC2D77A02FA2277500720421 /* IntegrationTestHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D779F2FA2277500720421 /* IntegrationTestHelpers */; };
-		EC2D77A22FA2277500720421 /* MLXEmbedders in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77A12FA2277500720421 /* MLXEmbedders */; };
-		EC2D77A42FA2277500720421 /* MLXHuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77A32FA2277500720421 /* MLXHuggingFace */; };
 		EC2D77A82FA2277500720421 /* MLXLMCommon in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77A72FA2277500720421 /* MLXLMCommon */; };
-		EC2D77AA2FA2277500720421 /* MLXVLM in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77A92FA2277500720421 /* MLXVLM */; };
-		EC2D77AD2FA2287600720421 /* MLXRandom in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77AC2FA2287600720421 /* MLXRandom */; };
-		EC2D77B02FA228EF00720421 /* MLXOptimizers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77AF2FA228EF00720421 /* MLXOptimizers */; };
-		EC2D77B32FA22AF800720421 /* Hub in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77B22FA22AF800720421 /* Hub */; };
-		EC2D77B52FA22AF800720421 /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77B42FA22AF800720421 /* Tokenizers */; };
-		EC2D77B72FA22AF800720421 /* Transformers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77B62FA22AF800720421 /* Transformers */; };
-		EC2D77BA2FA22C4500720421 /* HuggingFace in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77B92FA22C4500720421 /* HuggingFace */; };
 		EC2D77BB2FA22C4500720421 /* MLXLMTokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = EC2D77BC2FA22C4500720421 /* MLXLMTokenizers */; };
 /* End PBXBuildFile section */
 
@@ -42,19 +31,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C6A5BA52FA75F8800BA7446 /* MLXLLM in Frameworks */,
-				EC2D779E2FA2277500720421 /* BenchmarkHelpers in Frameworks */,
-				EC2D77A02FA2277500720421 /* IntegrationTestHelpers in Frameworks */,
 				EC2D77BB2FA22C4500720421 /* MLXLMTokenizers in Frameworks */,
-				EC2D77AD2FA2287600720421 /* MLXRandom in Frameworks */,
-				EC2D77AA2FA2277500720421 /* MLXVLM in Frameworks */,
-				EC2D77A22FA2277500720421 /* MLXEmbedders in Frameworks */,
-				EC2D77B72FA22AF800720421 /* Transformers in Frameworks */,
-				EC2D77B32FA22AF800720421 /* Hub in Frameworks */,
-				EC2D77B52FA22AF800720421 /* Tokenizers in Frameworks */,
-				EC2D77BA2FA22C4500720421 /* HuggingFace in Frameworks */,
-				EC2D77B02FA228EF00720421 /* MLXOptimizers in Frameworks */,
 				EC2D77A82FA2277500720421 /* MLXLMCommon in Frameworks */,
-				EC2D77A42FA2277500720421 /* MLXHuggingFace in Frameworks */,
 				A84800EA2FA28D5E00938AF4 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -106,17 +84,9 @@
 			);
 			name = MobiCureVN;
 			packageProductDependencies = (
-				EC2D779D2FA2277500720421 /* BenchmarkHelpers */,
-				EC2D779F2FA2277500720421 /* IntegrationTestHelpers */,
-				EC2D77A12FA2277500720421 /* MLXEmbedders */,
-				EC2D77A32FA2277500720421 /* MLXHuggingFace */,
 				EC2D77A52FA2277500720421 /* MLXLLM */,
 				EC2D77A72FA2277500720421 /* MLXLMCommon */,
 				EC2D77BC2FA22C4500720421 /* MLXLMTokenizers */,
-				EC2D77A92FA2277500720421 /* MLXVLM */,
-				EC2D77AC2FA2287600720421 /* MLXRandom */,
-				EC2D77AF2FA228EF00720421 /* MLXOptimizers */,
-				EC2D77B92FA22C4500720421 /* HuggingFace */,
 				A84800E92FA28D5E00938AF4 /* ZIPFoundation */,
 			);
 			productName = MobiCureVN;
@@ -149,8 +119,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */,
-				EC2D77AB2FA2287600720421 /* XCRemoteSwiftPackageReference "mlx-swift" */,
-				EC2D77B82FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-huggingface" */,
 				EC2D77BD2FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-tokenizers-mlx" */,
 				A84800E82FA28D5E00938AF4 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
@@ -311,7 +279,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2T9YX684FR;
+				DEVELOPMENT_TEAM = B499V2ZXB6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -325,7 +293,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cappuccino.MobiCureVN.hanh;
+				PRODUCT_BUNDLE_IDENTIFIER = quantest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -344,7 +312,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2T9YX684FR;
+				DEVELOPMENT_TEAM = B499V2ZXB6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -358,7 +326,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cappuccino.MobiCureVN.hanh;
+				PRODUCT_BUNDLE_IDENTIFIER = quantest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
