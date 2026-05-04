@@ -1,4 +1,54 @@
 # **Facts about** **bowel cancer**
+
+
+##### **What is in this booklet**
+
+
+
+**Page**
+#### **2**
+
+
+**Page**
+#### **4**
+
+
+**Page**
+#### **5**
+
+
+**Page**
+#### **9**
+
+
+**Page**
+#### **11**
+
+
+**Page**
+#### **15**
+
+
+
+**About the bowel**
+
+
+**The facts about bowel cancer**
+
+
+**Symptoms of bowel cancer**
+
+
+**Bowel cancer screening**
+
+
+**Risk factors**
+
+
+**More information**
+
+
+
 1
 
 

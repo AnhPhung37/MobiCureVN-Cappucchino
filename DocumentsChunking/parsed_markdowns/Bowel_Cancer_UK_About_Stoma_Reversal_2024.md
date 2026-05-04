@@ -47,6 +47,16 @@ and rectum) onto the surface of the
 stomach area.
 
 
+
+
+
+
+
+
+
+**1**
+
+
 ## **About stoma reversal**
 
 ### **Who can have a stoma reversal?**
@@ -137,6 +147,10 @@ back together
 your bottom into your bowel – the
 liquid shows up on X-ray so the doctor
 can see any leaks around the join
+
+
+
+**2**
 
 
 ## **About stoma reversal**
@@ -230,6 +244,10 @@ may need another operation
 Contact your healthcare team if you feel
 unwell or have any symptoms after your
 surgery.
+
+
+
+**3**
 
 
 ## **About stoma reversal**
@@ -327,6 +345,10 @@ exercises in our booklet, ‘Regaining
 bowel control’.
 
 
+
+**4**
+
+
 ## **About stoma reversal**
 
 ### **Your feelings and emotions**
@@ -398,6 +420,10 @@ down. It might take a bit of trial and error
 to find foods that work for you. You can
 read more about diet in our ‘Eating well’
 booklet.
+
+
+
+**5**
 
 
 ## **More support**
@@ -490,5 +516,16 @@ information for people
 with cancer, including
 information on diet and
 recipes.
+
+
+### To donate or find out more visit  /bowelcanceruk @bowelcanceruk **bowelcanceruk.org.uk**
+
+Please contact us if you have any comments about the information in this factsheet:
+feedback@bowelcanceruk.org.uk
+
+
+Registered Charity Number 1071038 (England and Wales) and SC040914 (Scotland)
+**6**
+Version 2.1. Information correct at time of publication: April 2024. To be reviewed: April 2027
 
 

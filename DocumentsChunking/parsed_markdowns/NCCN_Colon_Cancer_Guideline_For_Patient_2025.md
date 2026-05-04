@@ -1,3 +1,27 @@
+®
+
+
+
+Available online at
+[NCCN.org/patientguidelines](https://www.NCCN.org/patientguidelines)
+
+
+
+NATIONAL COMPREHENSIVE CANCER NETWORK
+
+
+
+Presented with support from
+FOUNDATION
+
+
+
+Guiding Treatment. Changing Lives.
+
+
+#### **Ü**
+
+
 Colon Cancer
 
 
@@ -107,6 +131,60 @@ To make a gift or learn more, visit online or email
 
 NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 2
+
+
+Colon Cancer
+
+
+Contents
+
+
+4 About colon cancer
+
+
+8 Testing for colon cancer
+
+
+17 Treatment for non-metastatic cancer
+
+
+26 Treatment for metastatic cancer
+
+
+38 Survivorship
+
+
+43 Other resources
+
+
+47 Words to know
+
+
+49 NCCN Contributors
+
+
+50 NCCN Cancer Centers
+
+
+52 Index
+
+
+
+**© 2025 National Comprehensive Cancer Network, Inc** . **All rights reserved.** NCCN
+Guidelines for Patients and illustrations herein may not be reproduced in any form for
+any purpose without the express written permission of NCCN. No one, including doctors
+or patients, may use the NCCN Guidelines for Patients for any commercial purpose
+and may not claim, represent, or imply that the NCCN Guidelines for Patients that have
+been modified in any manner are derived from, based on, related to, or arise out of the
+NCCN Guidelines for Patients. The NCCN Guidelines are a work in progress that may be
+redefined as often as new significant data become available. NCCN makes no warranties
+of any kind whatsoever regarding its content, use, or application and disclaims any
+responsibility for its application or use in any way.
+
+
+NCCN Guidelines for Patients [®]
+Colon Cancer, 2025 3
+
 
 
 NCCN Foundation seeks to support the millions of patients and their families affected

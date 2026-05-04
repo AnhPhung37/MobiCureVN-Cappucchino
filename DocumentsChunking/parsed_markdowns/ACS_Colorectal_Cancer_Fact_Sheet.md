@@ -135,8 +135,21 @@ and immunotherapy drugs, either in combination or alone,
 [might be used. Visit cancer.org/colorectalcancer to learn more](http://cancer.org/colorectalcancer)
 about treatment options for colorectal cancer.
 
-### Colorectal Cancer in the US:
-2026 estimates
+
+**References**
+
+1. American Cancer Society. _Cancer Facts & Figures 2026_ . Atlanta: American Cancer
+[Society; 2026. Available at https://www.cancer.org/research/cancer-facts-statistics/all-](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)
+[cancer-facts-figures/2026-cancer-facts-figures.html on January 13, 2026.](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)
+
+
+2. American Cancer Society. _Colorectal Cancer Facts & Figures 2023-2025_ . Atlanta:
+
+[American Cancer Society; 2023. Accessed at https://www.cancer.org/content/dam/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
+[cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
+[colorectal-cancer-facts-and-figures-2023.pdf on January 13, 2026.](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
+
+
 
 New cases:
 
@@ -180,20 +193,6 @@ journey, it’s very important for clinicians to share information
 and coordinate care to ensure ongoing surveillance.
 
 
-
-**References**
-
-1. American Cancer Society. _Cancer Facts & Figures 2026_ . Atlanta: American Cancer
-[Society; 2026. Available at https://www.cancer.org/research/cancer-facts-statistics/all-](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)
-[cancer-facts-figures/2026-cancer-facts-figures.html on January 13, 2026.](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)
-
-
-2. American Cancer Society. _Colorectal Cancer Facts & Figures 2023-2025_ . Atlanta:
-
-[American Cancer Society; 2023. Accessed at https://www.cancer.org/content/dam/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
-[cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
-[colorectal-cancer-facts-and-figures-2023.pdf on January 13, 2026.](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
-
 3. American Cancer Society. Colorectal Cancer. Cancer.org. Updated January 29, 2024.
 
 [Accessed at https://www.cancer.org/cancer/colon-rectal-cancer.html on January 13, 2026.](https://www.cancer.org/cancer/colon-rectal-cancer.html)
@@ -204,6 +203,21 @@ and coordinate care to ensure ongoing surveillance.
 on January 13, 2026.
 
 
-5. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology[(NCCN Guidelines®), Rectal Cancer, Version 4.2025. Accessed at https://www.nccn.org](https://www.nccn.org)
+5. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology
+
+[(NCCN Guidelines®), Rectal Cancer, Version 4.2025. Accessed at https://www.nccn.org](https://www.nccn.org)
 on January 13, 2026.
+
+
+©2026, American Cancer Society, Inc.
+
+No.300203 Rev. 1/26
+Models used for illustrative purposes only.
+
+
+
+**Colorectal Cancer in the US:**
+
+**2026 estimates** **[ 1]**
+
 

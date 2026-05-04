@@ -17,9 +17,18 @@ organisations are listed at the end
 of the booklet.
 
 
+
+
+
+
+
+
 # **Work**
 
 ## **As soon as you’re diagnosed with cancer, you’re protected** **from discrimination at work by the Equality Act 2010.** **In Northern Ireland, you’re protected by the Disability** **Discrimination Act 1995.**
+
+
+
 
 
 This means employers must not
@@ -768,5 +777,20 @@ Order or download our free publications at
 
 If you have any questions about bowel cancer,
 contact our nurses at **bowelcanceruk.org.uk/nurse**
+
+
+# **Notes**
+
+
+
+**18** Practical tips Practical tips **19**
+
+
+Please contact us if you have any comments about the
+information in this booklet: feedback@bowelcanceruk.org.uk
+
+
+Registered Charity Number 1071038 (England and Wales) and SC040914 (Scotland) Version 1.0.
+Information correct at time of publication: June 2025. To be reviewed June 2028
 
 
