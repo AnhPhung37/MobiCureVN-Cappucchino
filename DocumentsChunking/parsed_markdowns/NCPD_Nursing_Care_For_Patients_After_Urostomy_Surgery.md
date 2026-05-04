@@ -1,0 +1,387 @@
+##### **HOURS**
+### **2.5**
+
+**Nursing Continuing Professional Development**
+
+## **Nursing Care for Patients** **After Urostomy Surgery**
+
+#### What nurses need to know about urostomy management
+
+
+**ABSTRACT**
+When an ostomy care nurse is not available, bedside nurses must assume responsibility for providing necessary care and educating patients who undergo a urinary diversion. However, staff nurses often lack the
+­necessary knowledge and experience to provide the best care, rehabilitation, and patient education. This
+article details pre- and postoperative interventions for nurses who encounter patients undergoing urostomy
+surgery in order to help eliminate gaps in care, increase nurses’ and patients’ competence and confidence,
+and optimize patient outcomes and quality of life. It also includes a tear sheet that nurses can use to provide
+patients with the basic information and skills they need for effective self-care.
+
+
+**Keywords:** ileal conduit, ostomy care, patient education, urinary diversion, urostomy
+
+
+
+rinary diversion is a surgical procedure to
+reroute the flow of urine from its normal
+elimination pathway from the body. (For
+# U
+a description of the normal urinary system, see
+_Normal Urinary System Anatomy and Function_ . [1-4] )
+Diversions are performed to address both malignant conditions (those affecting the urothelial lining of the bladder, for example) and nonmalignant ones. [5] For example, for select high-grade non-­
+muscle-invasive or muscle-invasive bladder cancer,
+the gold standard treatment is radical cystectomy.
+In men, this involves removal of the bladder, prostate, and pelvic lymph nodes; in women, this entails
+removal of the bladder, uterus, fallopian tubes, ovaries, and anterior vagina. [5] As a result, there needs
+to be a new pathway for urine to exit the body.
+Nonmalignant indications for a urinary diversion
+include neurogenic bladder (a neurologic condition
+that impedes bladder control), radiation cystitis,
+interstitial cystitis, birth defects, and severe pelvic
+trauma that injures either the urethra or the urinary
+sphincter resulting in intractable urinary incontinence. [5] While these conditions may not necessitate
+removal of the bladder, a urinary diversion will be
+required for urine to pass from the body.
+The most common type of diversion, and a focus
+of this article, is an ileal conduit or urostomy. This
+procedure is accomplished through a surgically
+resected intestinal segment that creates a passageway
+for elimination of urine from the ureters to an exte
+
+**28** _**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6
+
+
+
+rior stoma (opening) on the abdomen. An external
+pouch or ostomy bag is used to collect the urine. In
+the case of an ileal conduit, the patient does not control the flow of urine into the pouch; hence, it is considered an _incontinent_ urinary diversion. By contrast,
+_continent_ urinary diversions, such as an Indiana pouch
+or orthotopic neobladder, involve the creation of an
+artificial bladder inside the body and will not be discussed here.
+When a certified wound, ostomy, and continence
+(WOC) nurse is not available, bedside nurses must
+assume responsibility for providing necessary care
+and educating patients who undergo ostomy surgery.
+However, staff nurses often lack the knowledge and
+experience to provide the best care, rehabilitation,
+and patient teaching. Patients frequently express frustration that nurses do not know how to care for their
+ostomy. Bedside nurses often experience frustration
+when they encounter complications such as persistent leakage. A recent survey found that many nurses
+believe they did not receive adequate education on
+skin and wound care. [6] Moreover, about 25%
+reported not feeling confident in their ability to apply
+ostomy barriers and pouches in patients with a urinary diversion. [6]
+This article details pre- and postoperative interventions for nurses who encounter patients undergoing
+a urostomy in order to eliminate gaps in care, increase
+nurses’ and patients’ competence and confidence, and
+optimize outcomes and quality of life. It is a follow
+
+By Heidi H. Cross, MSN, RN, FNP-BC, CWON, and
+Bethany A. Schempp, MS, RN, CWOCN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+up to a previous article in _AJN_ by one of us (HHC)
+on nursing care for patients undergoing ostomy surgery of the bowel. [7]
+
+
+**PREOPERATIVE CONSIDERATIONS**
+Ideally, patients with planned urostomy surgery
+should meet with a WOC nurse for preoperative
+ostomy site marking and teaching. When a WOC
+nurse is not available, then bedside nurses, if given
+the opportunity, should be prepared to meet with
+the patient and family to address their concerns and
+to provide basic information about the rationale for
+site marking; the type of surgery they will undergo;
+and what to expect during the initial postoperative
+period in terms of diet, activity, and pain management. Nurses should discuss the basics of ostomy
+care, demonstrating a urostomy pouching system,
+and provide reassurance to an undoubtedly anxious
+patient.
+**Site marking.** Preoperative site marking is important for optimal placement of the stoma to reduce skin
+problems, avoid postoperative complications including leakage of the pouching system, and improve
+patient self-care and quality of life. Siting is optimally
+done by a surgeon or trained ostomy nurse during the
+preoperative period, when surgery is planned. [8] Discussion of this step is beyond the scope of this article, but
+
+
+
+a description is included in the Wound, Ostomy, and
+Continence Nurses (WOCN) Society, American Urological Association, and American Society of Colon
+and Rectal Surgeons position statement on preoperative stoma site marking for patients undergoing ostomy
+surgery. [8] Nurses can discuss this step with the surgeon
+if there is opportunity to do so and explain to patients
+why site marking is important.
+**Incontinent urinary diversion/ileal conduit**
+**­surgery.** Minimally invasive methods are preferred.
+With newer robotic cystectomy procedures, there is less
+blood loss and a quicker recovery than with open surgery. However, based on intraoperative findings, an
+open resection may be required. Diseased or cancerous
+bladders are removed, but on rare occasions, the bladder may be left intact and simply bypassed, depending
+on the reason for the surgery. The most common
+approach is to use a segment of the ileum. A 12-to18-cm section of the ileum is excised, [9] avoiding the distal ileum so as not to interfere with absorption of bile
+salts and vitamin B12, which may lead to fat malabsorption, steatorrhea, and loss of fat-soluble vitamins, [10]
+and used as a conduit (meaning “channel”) for urine.
+The remaining small intestine is anastomosed to reestablish continuity of the bowel (see Figure 2).
+The ureters are disconnected from the bladder and
+implanted into a proximal portion of the conduit,
+
+
+_**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6 **29**
+
+
+**Figure 3.** Stents. Photos courtesy of the authors,
+except where noted.
+
+
+**30** _**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6
+
+
+
+mal. The ideal stoma has the os (opening) in the center and above skin level. The size of the stoma will
+shrink over time, reaching its permanent size at
+around six weeks. If the stoma appears dark red to
+purple or if dark nonvascular tissue is present, there
+may be a blood flow problem that could result in further tissue deterioration and necrosis. [16] The surgical
+team should be consulted immediately.
+**Intake and output.** It is important to document
+urinary output following cystectomy surgery to confirm adequate urine excretion, assess kidney func
+
+|Col1|Col2|
+|---|---|
+|~~Downloaded from http://journals.lww.com/ajnonline by N4s51mGkopXcxaX8ZiR5CEpqBbZ/BYeECr51a/EikuEF/d9~~<br>+BADG7uy6fK+w2D3jdk/Wlgia+9x/kiGzMt1fr/k7JCzb45kvsaWr/evA+LKKumuaYLZOknoGaMwVGHEnpXJz/wnRbcw= on 06/<br>05/2024|**Urostomy Care for Patients: A Step-by-Step Guide**<br>**General Urostomy Tips**<br>•• Empty your pouch into the toilet regularly, and do not let it get more than about one-third full.<br>•• Change your entire ostomy system every three to seven days. If you cannot keep a good seal for at<br>least three days, you may need a different system or a different changing technique.<br>•• For the first six to eight weeks after surgery, measure your stoma with each pouch change to ensure<br>you are correctly cutting/shaping the opening of the stoma hole of the skin barrier. After that time,<br>periodically measure your stoma to make sure the size remains correct.<br>•• The best time to change your pouch system is usually first thing in the morning, when you have had<br>the least to eat and drink, and urinary flow is less.<br>•• Keep your equipment well organized in one spot and have everything ready before removing the<br>old skin barrier (also known as a wafer) and pouch.<br>•• Always keep a bag or kit of supplies with you in case you need to change your system away from home.<br>•• Prescriptions are necessary for insurance to cover your supplies. Some pharmacies stock or can order<br>supplies, or you can order supplies online from mail-order companies.<br>•• It’s fine to get in the shower with the pouching system on, and gently towel it dry afterward. It is also<br>fine to shower without the pouch on, especially on days you will be changing the system anyway.<br>Have everything ready when you get out of the shower.<br>•• At nighttime, you may want to connect to a nighttime drainage system, using a connector piece that<br>is in your box of pouches. The nighttime drainage system should be rinsed after use and cleaned<br>every other day or so with one part white vinegar to three parts water.<br>•• When traveling, keep a small travel kit stocked with ostomy supplies, and take at least twice the sup-<br>plies you normally need. When flying, be sure to stow the kit in carry-on luggage.<br>**Diet.**<br>•• Usually there are no ostomy-related dietary restrictions, and foods can be enjoyed as before. It is<br>important, however, that you drink fluids to prevent urinary tract infections and dehydration.<br>**Swimming and water activities.**<br>•• Swimming with a secure pouch is fine, but before swimming empty the pouch and perhaps secure it<br>in place with waterproof tape to create a “picture frame.” Women may find that tankinis work best as<br>they make it easier to empty the pouch.<br>**Intimacy and sexuality. **<br>•• Ostomy surgery should not negatively affect a close and loving relationship. It is normal to feel self-<br>conscious and sensitive about your body image. Share your concerns with your partner and discuss<br>them with your doctor. The United Ostomy Associations of America (www.ostomy.org) is a good<br>source of information on sexuality and intimacy. A few tips include having a clean, secure, and empty<br>pouching system for sexual activity. However, research shows that many people with urostomies expe-<br>rience sexual dysfunction. Men can develop erectile dysfunction, retrograde ejaculation, and loss of<br>libido, while women can experience loss of desire, pain during intercourse, and vaginal dryness. Please<br>acknowledge your feelings, including depression, and seek psychological or medical help as needed.<br>**Changing the Ostomy System**<br>**Step 1: Old pouch and skin barrier removal.**<br>•• Empty the ostomy pouch before removal. Wash your hands.<br>•• Place a towel on your abdomen underneath the pouch.<br>•• To prevent tearing the skin, use a warm washcloth or an adhesive-remover wipe. Gently pull on the<br>skin barrier with one hand, working it loose from top to bottom as you push against and support the<br>skin with the other hand.<br>|
+
+
+_**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6 **31**
+
+
+**32** _**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6
+
+
+|Col1|Col2|
+|---|---|
+|Downloaded from http://journals.lww.com/ajnonline by N4s51mGkopXcxaX8ZiR5CEpqBbZ/BYeECr51a/EikuEF/d9<br>+BADG7uy6fK+w2D3jdk/Wlgia+9x/kiGzMt1fr/k7JCzb45kvsaWr/evA+LKKumuaYLZOknoGaMwVGHEnpXJz/wnRbcw= on 06/<br>05/2024|tion, and detect anastomotic leaks. Normal urinary<br>output is defined as 800 to 1200 mL per day.17 For<br>optimal monitoring, the ostomy pouch is usually<br>connected to a bedside drainage bag during hospi-<br>talization. Patients should be taught to disconnect<br>from and reconnect to this bag, because they will<br>likely be using a drainage unit during the night after<br>discharge.<br>**Education.**Ostomy teaching should be initiated as<br>soon as possible and involve not only the patient but<br>also the family or caretaker, if present. Nurses should<br>begin by encouraging patients to empty their own<br>pouch, and then progress to teaching them how to<br>change the pouch.<br>**POSTOPERATIVE COMPLICATIONS**<br>Nurses should be aware of the following possible early<br>complications, which should be reported to the sur-<br>gical team as soon as possible.<br>**Mucocutaneous separation,** which is detachment<br>of the stoma from the peristomal skin, can be partial<br>or complete (that is, circumferential around the<br>stoma). Separation may be the result of excessive<br>bowel tension during surgery.18 It may also be caused<br>by poor healing, which is more common in patients<br>with malnutrition or a history of steroid use. Treat-<br>ment will depend on the degree of severity, but in<br>minor cases, the separation can be filled with a stoma<br>powder, hydrofiber, or a calcium alginate, and cov-<br>ered with a hydrocolloid-type dressing.18 <br>**Stomal necrosis,** which occurs when there is a loss<br>of blood flow to the stoma, initially presents as a dark<br>red to purple discoloration of the stoma, potentially<br>progressing to entire loss of the stoma.16 The surgical<br>team must be notified immediately.<br>**Stoma retraction** is the “disappearance” of stoma<br>tissue protrusion in line with or below skin level.18 <br>There are many causes for retraction, including obe-<br>sity, as large abdominal adipose layers may make it<br>difficult to mobilize the bowel during surgery. Treat-<br>ment is usually conservative and may involve the<br>application of a convex ostomy system to raise the<br>stoma above skin level. Severe retraction cases may<br>need surgical revision.<br>**Excessive bleeding.** Patients should receive reas-<br>surance that small amounts of bleeding from the sur-<br> <br>urostomy surgery go on to lead active and healthy<br>lives. When cleared by their health care providers,<br>patients can resume their normal preoperative rou-<br>tines, including work, aerobic activities like dancing<br>and swimming, and travel. They can attend places<br>of worship, enjoy family relationships, and continue<br>sexual intimacy.19 <br>In a small 2014 study of patients with urothelial can-<br>cer managed by radical cystectomy, 95% of patients<br>ranked overall quality of life as “good.”20 The authors<br>concluded that urostomy remains a viable treatment<br>option for bladder cancer and allows an acceptable<br>health-related quality of life. A systematic review pub-<br>lished in 2023 concluded that nurse-led interventions<br>for patients with urostomy, such as those detailed in this<br>article, can improve self-efficacy and health-related qual-<br>ity of life.21 <br>However, another recent systematic review con-<br>cluded that depressive symptoms are present in<br>nearly half of patients who underwent stoma sur-<br>gery, which is higher than in the general popula-<br>tion.22 This occurred mostly at a level of clinical<br>severity below major depressive disorder. The<br>authors noted that “stoma patient outcomes and<br>postoperative psychosocial adjustment may be<br>enhanced by increased psychological evaluation and<br>care in the perioperative period.”22 These findings<br>underscore the crucial importance of perioperative<br>nursing care and support, and of monitoring patients<br>for signs of depression.<br>**SUPPLIES**<br>Hospitals should have ostomy supplies on hand and<br>available for patients. These include a variety of<br>ostomy systems and accessory items.<br>**Pouching systems.** There are several types of<br>­pouching systems, among them one- and two-piece<br>ostomy systems.<br>Facilities should<br>stock a few dif-<br>ferent kinds to<br>accommodate<br>patient preference<br>and need.23 Both<br>systems include<br>a pouch and a<br> <br>|
+
+
+mal. However, frank red blood from inside the stoma
+should be reported. [12]
+**Other postoperative concerns** include uncontrolled pain, nausea, abdominal distention, and developing signs of depression.
+
+
+**LIFESTYLE CONSIDERATIONS AND QUALITY OF LIFE**
+Ostomy surgery can exact a physical, emotional, and
+mental toll on patients. Patients may fear ostomyrelated events that cause embarrassment. Nurses can
+reassure patients that the vast majority of people with
+
+
+
+known as a wafer)
+that adheres to the
+skin around the
+stoma, protecting the skin from
+urine. One-piece
+systems (see Figure 4) combine the
+pouch and skin
+barrier, show less **Figure 4.** One-piece pouching
+under clothing, system.
+
+
+_**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6 **33**
+
+
+around the stoma by leveling out uneven contours
+while providing an additional solid skin barrier. [24]
+They are often necessary when a stoma has minimal
+height, if the stoma opening is not ideally centered
+or is at skin level, or if there are creases or folds in
+the peristomal field. Barrier rings can be applied
+directly to the skin around the stoma or to the back
+of the skin barrier at the edge next to the stoma (see
+Figure 6). Stoma powder is an absorbent powder to
+be used when there is denuded peristomal skin. It
+should be lightly dusted onto the irritated skin and
+
+
+**34** _**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6
+
+
+
+nies will even
+contact the
+patient’s physician to obtain
+the necessary
+prescriptions.
+Patients should
+be prepared to
+provide all the
+n e c e s s a r y
+information **Figure 6.** Barrier ring.
+
+
+|Organizations|Services|Website/Contact|
+|---|---|---|
+|United Ostomy<br>Associations of America<br>Wound, Ostomy, and<br>Continence Nurses Society<br>American Cancer Society<br>Nurses Specialized in<br>Wound, Ostomy and<br>Continence Canada|A nonprofit organization providing free teaching<br>materials and a listing of support groups<br>A professional society of specially trained ostomy<br>care nurses. Click on Patient Resources for free access<br>to publications, services, websites, and ostomy care<br>nurse referrals.<br>Information, research, support groups<br>Patient information|www.ostomy.org<br>(800) 826-0826<br>www.wocn.org<br>(888) 224-9626<br>www.cancer.org<br>(800) 227-2345<br>www.nswoc.ca<br>(877) 614-1262 (Wound,<br>Ostomy and Continence<br>Institute Administrative<br>Office)|
+
+
+
+
+|Manufacturer|Website|Contact|
+|---|---|---|
+|Convatec<br>Hollister, Inc.<br>Coloplast<br>Nu-Hope Laboratories, Inc.<br>Cymed|www.convatec.com/ostomya<br>www.hollister.comb<br>www.coloplast.us<br>www.nu-hope.com<br>www.cymedostomy.com|(800) 422-8811<br>(888) 808-7456<br>(888) 726-7872, ostomy, bladder, bowel<br>(800) 899-5017<br>(800) 582-0707|
+
+
+
+|Col1|Col2|
+|---|---|
+|Downloaded from http://journals.lww.com/ajnonline by N4s51mGkopXcxaX8ZiR5CEpqBbZ/BYeECr51a/EikuEF/d9<br>+BADG7uy6fK+w2D3jdk/Wlgia+9x/kiGzMt1fr/k7JCzb45kvsaWr/evA+LKKumuaYLZOknoGaMwVGHEnpXJz/wnRbcw= on 06/<br>05/2024|Downloaded from http://journals.lww.com/ajnonline by N4s51mGkopXcxaX8ZiR5CEpqBbZ/BYeECr51a/EikuEF/d9<br>+BADG7uy6fK+w2D3jdk/Wlgia+9x/kiGzMt1fr/k7JCzb45kvsaWr/evA+LKKumuaYLZOknoGaMwVGHEnpXJz/wnRbcw= on 06/<br>05/2024|
+
+
+Patients should be encouraged to contact an
+ostomy support group if one is available. The UOAA
+has local listings. Participation in such a group has
+been shown to decrease hospital readmissions and
+ED visits [26] and positively impacts a person’s ability to
+independently adjust to and manage stoma care. [27, 28]
+With appropriate support, encouragement, and
+education, patients undergoing urostomy can successfully transition to their new life with an ostomy
+with minimal trauma and disruption and be able to
+continue most, if not all, of the activities they pur
+
+
+_Heidi H. Cross is an NP at Central New York Surgical Physicians_
+_in Syracuse and Strong Memorial Hospital, University of Roches-_
+_ter Medical Center, in Rochester, NY. Bethany A. Schempp is an_
+_ostomy nurse at Strong Memorial Hospital, University of Rochester_
+_[Medical Center. Contact author: Heidi H. Cross, hcross914@gmail.](mailto:hcross914@gmail.com)_
+_[com. The authors and planners have disclosed no potential conflicts](mailto:hcross914@gmail.com)_
+_of interest, financial or otherwise._
+
+
+**REFERENCES**
+
+1. Ermer-Seltun JM. Anatomy and physiology of the urinary
+system. In: Carmel J, et al., editors. _Wound, Ostomy, and_
+_Continence Nurses Society core curriculum: ostomy management_ .
+
+
+_**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6 **35**
+
+
+2nd ed. Philadelphia: Wolters Kluwer/Lippincott Williams and
+Wilkins; 2021. p. 30-43.
+2. National Kidney Foundation. _News—Top 5 tips for reduc-_
+_ing risk of kidney disease_ [. n.d. https://www.kidney.org/news/](https://www.kidney.org/news/monthly/Top5_rrkd_tips)
+[monthly/Top5_rrkd_tips.](https://www.kidney.org/news/monthly/Top5_rrkd_tips)
+3. Carter GT. Bladder dysfunction. _Medscape_ [2023. https://](https://emedicine.medscape.com/article/321273-overview#a3)
+[emedicine.medscape.com/article/321273-overview#a3.](https://emedicine.medscape.com/article/321273-overview#a3)
+4. Purves D, et al. Autonomic regulation of the bladder. In:
+Purves D, et al., editors. _Neuroscience_ . 2nd ed. Sunderland,
+[MA: Sinauer Associates; 2001. https://www.ncbi.nlm.nih.](https://www.ncbi.nlm.nih.gov/books/NBK10886)
+[gov/books/NBK10886.](https://www.ncbi.nlm.nih.gov/books/NBK10886)
+5. Packiam VT, et al. Urinary diversions. In: Carmel J, et al.,
+editors. _Wound, Ostomy, and Continence Nurses Society core_
+_­curriculum: ostomy management_ . 2nd ed. Philadelphia: Wolters
+Kluwer/Lippincott Williams and Wilkins; 2021. p. 118-30.
+6. Ayello EA, et al. Skin and wound care survey: 2019 results.
+_Nursing_ 2023;53(8):30-7.
+7. Cross HH. CE: Nursing care for patients after ostomy surgery. _Am J Nurs_ 2023;123(8):34-41.
+8. Wound, Ostomy, and Continence Nurses Society; American
+Urological Association; American Society of Colon and
+Rectal Surgeons. _WOCN Society, AUA, and ASCRS position_
+_statement on preoperative stoma site marking for patients_
+_undergoing ostomy surgery_ [. Mount Laurel, NJ; 2021. https://](https://cdn.ymaws.com/member.wocn.org/resource/resmgr/WOCN_Stoma_Positioning_State.pdf)
+[cdn.ymaws.com/member.wocn.org/resource/resmgr/WOCN_](https://cdn.ymaws.com/member.wocn.org/resource/resmgr/WOCN_Stoma_Positioning_State.pdf)
+[Stoma_Positioning_State.pdf.](https://cdn.ymaws.com/member.wocn.org/resource/resmgr/WOCN_Stoma_Positioning_State.pdf)
+9. Stricker LJ, et al. Fecal and urinary stoma construction. In:
+Carmel J, et al., editors. _Wound, Ostomy, and Continence_
+_Nurses Society core curriculum: ostomy management_ . 2nd
+ed. Philadelphia: Wolters Kluwer/Lippincott Williams and
+Wilkins; 2021. p. 132-42.
+10. Cagir B. Short-bowel syndrome. _Medscape_ [2023. https://](https://emedicine.medscape.com/article/193391)
+[emedicine.medscape.com/article/193391.](https://emedicine.medscape.com/article/193391)
+11. Cerantola Y, et al. Guidelines for perioperative care after
+radical cystectomy for bladder cancer: Enhanced Recovery
+After Surgery (ERAS) society recommendations. _Clin Nutr_
+2013;32(6):879-87.
+12. Carmel J, Goldberg MT. Postoperative education of the
+patient with a fecal or urinary diversion. In: Carmel J, et
+al., editors. _Wound, Ostomy, and Continence Nurses Society_
+_core curriculum: ostomy management_ . 2nd ed. Philadelphia:
+Wolters Kluwer/Lippincott Williams and Wilkins; 2021. p.
+190-200.
+13. Corona L, Adams K. _Living with a urostomy_ . Biddeford, ME:
+United Ostomy Associations of America (UOAA); 2023 Jun.
+[Guide; https://www.ostomy.org/wp-content/uploads/2023/06/](https://www.ostomy.org/wp-content/uploads/2023/06/UOAA_Living_with_a_Urostomy_Guide_2023-01b.pdf)
+[UOAA_Living_with_a_Urostomy_Guide_2023-01b.pdf.](https://www.ostomy.org/wp-content/uploads/2023/06/UOAA_Living_with_a_Urostomy_Guide_2023-01b.pdf)
+14. Ricciardi R, et al. Enhanced recovery after colorectal surgery. _UpToDate_ [2023. https://www.uptodate.com/contents/](https://www.uptodate.com/contents/enhanced-recovery-after-colorectal-surgery)
+[enhanced-recovery-after-colorectal-surgery.](https://www.uptodate.com/contents/enhanced-recovery-after-colorectal-surgery)
+
+
+
+15. Tan WS, et al. Complications of radical cystectomy and
+orthotopic reconstruction. _Adv Urol_ 2015;2015:323157.
+16. Colwell JC, Hudson K. Postoperative nursing assessment
+and management. In: Carmel J, et al., editors. _Wound,_
+_Ostomy, and Continence Nurses Society core curricu-_
+_lum: ostomy management_ . 2nd ed. Philadelphia: Wolters
+Kluwer/Lippincott Williams and Wilkins; 2021. p. 16371.
+17. Icahn School of Medicine at Mount Sinai, Health Library.
+_Urine 24-hour volume_ [. 2023. https://www.mountsinai.org/](https://www.mountsinai.org/health-library/tests/urine-24-hour-volume)
+[health-library/tests/urine-24-hour-volume.](https://www.mountsinai.org/health-library/tests/urine-24-hour-volume)
+18. Pittman J. Stoma complications. In: Carmel J, et al., editors. _Wound, Ostomy, and Continence Nurses Society core_
+_curriculum: ostomy management_ . 2nd ed. Philadelphia:
+Wolters Kluwer/Lippincott Williams and Wilkins; 2021. p.
+271-82.
+19. Ory C, et al. _Intimacy after ostomy surgery_ . Biddeford, ME:
+United Ostomy Associations of America; 2018 Mar. Guide;
+[https://www.ostomy.org/wp-content/uploads/2018/03/](https://www.ostomy.org/wp-content/uploads/2018/03/Intimacy-After-Ostomy-Surgery-Guide.pdf)
+[Intimacy-After-Ostomy-Surgery-Guide.pdf.](https://www.ostomy.org/wp-content/uploads/2018/03/Intimacy-After-Ostomy-Surgery-Guide.pdf)
+20. Gomez A, et al. Health-related quality of life in patients
+with urostomies. _J Wound Ostomy Continence Nurs_
+2014;41(3):254-6.
+21. Zhang T, Qi X. Enhanced nursing care for improving the
+self-efficacy and health-related quality of life in patients with
+a urostomy. _J Multidiscip Healthc_ 2023;16:297-308.
+22. Kovoor JG, et al. Depression after stoma surgery: a
+systematic review and meta-analysis. _BMC Psychiatry_
+2023;23(1):352.
+23. Colwell JC, Hudson K. Selection of pouching system. In:
+Carmel J, et al., editors. _Wound, Ostomy, and Continence_
+_Nurses Society core curriculum: ostomy management_ . 2nd
+ed. Philadelphia: Wolters Kluwer/Lippincott Williams and
+Wilkins; 2021. p. 173-88.
+24. Wound, Ostomy and Continence Nurses Society. _Clinical_
+_guideline: management of the adult patient with a fecal or uri-_
+_nary ostomy_ . Mt. Laurel, NJ: Author; 2017.
+25. Colwell JC, et al. North America Wound, Ostomy, and
+Continence and Enterostomal Therapy Nurses current
+ostomy care practice related to peristomal skin issues. _J_
+_Wound Ostomy Continence Nurs_ 2017;44(3):257-61.
+26. Rojanasarot S. The impact of early involvement in a postdischarge support program for ostomy surgery patients on preventable healthcare utilization. _J Wound Ostomy Continence_
+_Nurs_ 2018;45(1):43-9.
+27. Cross HH, Hottenstein P. Starting and maintaining a hospitalbased ostomy support group. _J Wound Ostomy Continence_
+_Nurs_ 2010;37(4):393-6.
+28. Perrin A. Exploring individuals’ perceptions of living with a
+stoma. _Br J Nurs_ 2019;28(16):S18-S22.
+
+
+
+
+
+
+
+**36** _**A**_ **JN** [▼] June 2024 [▼] Vol. 124, No. 6
+
+

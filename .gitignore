@@ -31,3 +31,9 @@ __pycache__/
 # IDEs & Editors
 .vscode/
 .idea/
+
+# Jupyter Notebook checkpoint
+.ipynb_checkpoints/
+
+# Python venv
+venv/
