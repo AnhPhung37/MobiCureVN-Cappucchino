@@ -1,11 +1,10 @@
-## 1
-### About colon cancer
+## 1 About colon cancer
 
 Colon Cancer, 2025 4
 
 Colon cancer is common and treatable. Many cancers that start in the colon can be cured, especially when found early.
 
-###### What is the colon?
+### What is the colon?
 
 The colon makes up most of the large intestine, also called the large bowel. In the colon water is absorbed from eaten food, turning the food into feces or stool.
 
@@ -26,7 +25,7 @@ For information on rectal cancer treatment, see the _NCCN Guidelines for Patient
 _Cancer_ at [NCCN.org/patientguidelines and on](https://www.nccn.org/patientguidelines)
 [the NCCN Patient Guides for Cancer](https://www.nccn.org/guidelines/nccn-mobile-app) app.
 
-###### What are polyps?
+#### What are polyps?
 
 Polyps are non-cancerous growths that form on the inner lining of the colon and rectum.
 The most common type is called an adenoma.
@@ -53,7 +52,7 @@ Treatment for polyps with cancer and all stages of colon cancer
 
 Survivorship
 
-###### What can you do to get the best care?
+##### What can you do to get the best care?
 
 Advocate for yourself. You’re more likely to get the care you want by asking questions and making shared decisions with your care team.
 
@@ -74,8 +73,7 @@ They clearly explain current care recommendations made by respected experts in t
 Cancer care is not the same for everyone. By following expert recommendations for your situation, you are more likely to improve your care and have better outcomes as a result.
 Use this book as your guide to find the information you need to make important decisions.
 
-## 2
-### Testing for colon cancer
+## 2 Testing for colon cancer
 
 Colon Cancer, 2025 8
 
@@ -87,7 +85,7 @@ A colonoscopy is a procedure that allows your doctor to see and remove any abnor
 
 Colon Cancer, 2025 9
 
-###### Colonoscopy
+### Colonoscopy
 
 Most colon cancers are found during colonoscopy. This procedure allows a health care provider, usually a gastroenterologist, to examine the entire large bowel.
 
@@ -102,7 +100,7 @@ _Colorectal Cancer_ _Screening_ at [NCCN.org/](https://www.nccn.org/patientguide
 [patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines)
 [Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
-###### Mismatch repair testing
+#### Mismatch repair testing
 
 Mismatch repair (MMR) or microsatellite instability (MSI) testing is recommended for everyone diagnosed with colon cancer .
 About 1 in 6 colon cancers have one of these biomarkers. Biomarkers are features of a cancer that can help guide your treatment.
@@ -113,7 +111,7 @@ Tumors that don’t have either of these changes are called mismatch repair prof
 
 Colon Cancer, 2025 10
 
-###### Family health history
+##### Family health history
 
 Your provider will ask about the health history of your biological (related by blood) family members. Those with a first-degree relative with colorectal cancer are more likely to have this cancer compared to those without a family history of colorectal cancer.
 
@@ -320,14 +318,13 @@ Colon Cancer, 2025 16
 
 - Is it worth it to go through treatment?
 
-## 3
-### Treatment for non-metastatic cancer
+## 3 Treatment for non-metastatic cancer
 
 Colon Cancer, 2025 17
 
 Colon cancer often forms in polyps on the lining of the colon, but can also form as flat areas of abnormal cells (a lesion). This chapter explains treatment for cancer that hasn't spread to areas far from the colon.
 
-###### Polyps with cancer
+### Polyps with cancer
 
 There are 2 main shapes of polyps.
 Pedunculated polyps are shaped like mushrooms and stick out from the colon wall.
@@ -350,7 +347,7 @@ Most polyps can be removed during a colonoscopy, using a minor endoscopic proced
 
 Before deciding whether resection is needed after a polypectomy, your provider will review the results of testing with you and discuss your options.
 
-###### Invasive cancer
+#### Invasive cancer
 
 For cancers not found early enough to be removed by polypectomy, colectomy (colon surgery) is often needed. Surgery is only an option if the colon tumor can be completely removed. If you can’t have surgery first, see page 22.
 
@@ -398,7 +395,7 @@ Your care team will give you information on:
 
 ¬ Organs pushing through tissues or muscles weakened by surgery (hernia)
 
-###### Staging
+##### Staging
 
 The stage describes the extent of cancer in the body. The American Joint Committee on
 Cancer (AJCC) tumor, node, metastasis (TNM) system is used to stage colon cancer.
@@ -550,14 +547,13 @@ NCCN Guidelines for Patients better for everyone!
 
 [NCCN.org/patients/comments](https://www.nccn.org/patients/comments)
 
-## 4
-### Treatment for metastatic cancer
+## 4 Treatment for metastatic cancer
 
 Colon Cancer, 2025 26
 
 Colon cancer spreads most often to the liver, sometimes to the lungs, and less often to the abdomen or other areas. Cancer that has metastasized by the time it is diagnosed is stage 4.
 
-###### Biomarker testing
+### Biomarker testing
 
 Biomarkers are targetable features of a cancer. They are often mutations (changes) in particular genes. When possible, biomarker testing is performed on a piece of tumor tissue removed during a biopsy or surgery. If this isn't possible, a sample of your blood can be tested instead.
 
@@ -577,7 +573,7 @@ _NTRK_ fusions.
 
 Colon Cancer, 2025 27
 
-###### Local therapies
+#### Local therapies
 
 Your treatment options may include local therapies. These are treatments that target liver and lung tumors directly.
 
@@ -637,11 +633,11 @@ typically takes 5 or fewer sessions.
 Colon Cancer, 2025 29
 
 I am a stage III colon cancer survivor. I would recommend
-# “taking it one day at a time, 1 hour
+## “taking it one day at a time, 1 hour
 if necessary. Get a second opinion to feel confident in your treatment plan. Lastly, connect with others who have been where you are.
 Peer support (whether patient or caregiver) as you navigate your cancer journey is invaluable.”
 
-###### Stage 4 cancer in the liver or lungs
+### Stage 4 cancer in the liver or lungs
 
 When possible, surgery and systemic therapy is the recommended treatment approach for these cancers. The choice of systemic therapy (chemotherapy or immunotherapy) depends on the mismatch repair (MMR) status of the cancer.
 
@@ -720,7 +716,7 @@ In this case, the bowel needs to be unblocked before starting systemic therapy. 
 
 Colon Cancer, 2025 33
 
-###### Supportive care
+#### Supportive care
 
 Supportive care helps improve your quality of life during and after cancer treatment. The goal is to prevent or manage side effects and symptoms, like pain and cancer-related fatigue. It also addresses the mental, social, and spiritual concerns faced by those with cancer.
 
@@ -761,13 +757,13 @@ _Survivorship_ .
 
 As the care partner for my stage
 IV husband, I would share that you must advocate for them. However,
-# “
+## “
 be respectful of their feelings and ensure you’re communicating your research/questions with them. I always reviewed my list of questions and concerns with my husband on the way to our appointments in case
 I had something on my list that he might not want asked or answered.”
 
 Colon Cancer, 2025 34
 
-###### Distant recurrence
+### Distant recurrence
 
 After treatment for non-metastatic colon cancer, the cancer may return and spread to the liver, lungs, or other areas. This is called a distant recurrence. Treatment with surgery and local therapies is recommended if all of the tumors can be totally removed. But, this is uncommon, and most distant recurrences are treated with systemic therapy.
 
@@ -834,7 +830,7 @@ If you have received checkpoint inhibitor immunotherapy, one recommended option 
 A second option is 2 to 3 months of chemotherapy first, followed by resection.
 More chemotherapy may follow.
 
-###### Key points
+##### Key points
 
 - If not already done, all metastatic cancers should be tested for biomarkers (features) including dMMR/MSI-H, _RAS_ and _BRAF_ mutations, and HER2 amplification.
 
@@ -864,8 +860,7 @@ Colon Cancer, 2025 37
 
 - Which systemic therapy regimen do you recommend for me? Why?
 
-## 5
-### Survivorship
+## 5 Survivorship
 
 Colon Cancer, 2025 38
 
@@ -887,7 +882,7 @@ Ask your oncologist for a written survivorship care plan. Ideally, the plan will
 
 - General health and wellness recommendations
 
-###### Help with side effects
+### Help with side effects
 
 Colon cancer survivors may experience both short- and long-term health effects of cancer and its treatment. The effects depend in part on the specific treatment(s) you received.
 
@@ -947,7 +942,7 @@ plant-based foods, such as vegetables, fruits, and whole grains.
 
 Colon Cancer, 2025 41
 
-###### Healthy habits
+#### Healthy habits
 
 It's important to keep up with other aspects of your health after cancer treatment. In addition to the recommendations on the previous page, ask your provider about the following.
 
@@ -959,7 +954,7 @@ Aspirin
 
 Talk to your provider about the possible risks and benefits of long-term aspirin therapy to help prevent the return of colorectal cancers.
 
-###### Paying for care
+##### Paying for care
 
 Cancer survivors face a unique financial burden. Paying for doctor visits, tests, and treatments can become unmanageable, especially for those with little or no health insurance. You may also have costs not directly related to treatment, such as travel expenses and the cost of childcare.
 
@@ -992,8 +987,7 @@ Colon Cancer, 2025 42
 
 Words to know
 
-#### Words to know
-ablation
+#### Words to know ablation
 A type of local therapy used to destroy tumors in the liver or lungs. Also called image-guided thermal ablation.
 adenocarcinoma
 The most common type of colon cancer. Starts in cells that line the bowel and make fluids or hormones.

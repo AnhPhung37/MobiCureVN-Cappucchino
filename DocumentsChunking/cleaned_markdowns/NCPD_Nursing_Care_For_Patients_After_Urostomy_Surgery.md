@@ -1,9 +1,6 @@
-##### HOURS
-### 2.5
+##### HOURS 2.5
 
 Nursing Continuing Professional Development
-
-## Nursing Care for Patients After Urostomy Surgery
 
 #### What nurses need to know about urostomy management
 
@@ -11,7 +8,7 @@ ABSTRACT
 When an ostomy care nurse is not available, bedside nurses must assume responsibility for providing necessary care and educating patients who undergo a urinary diversion. However, staff nurses often lack the necessary knowledge and experience to provide the best care, rehabilitation, and patient education. This article details pre- and postoperative interventions for nurses who encounter patients undergoing urostomy surgery in order to help eliminate gaps in care, increase nurses’ and patients’ competence and confidence, and optimize patient outcomes and quality of life. It also includes a tear sheet that nurses can use to provide patients with the basic information and skills they need for effective self-care.
 
 Keywords: ileal conduit, ostomy care, patient education, urinary diversion, urostomy rinary diversion is a surgical procedure to reroute the flow of urine from its normal elimination pathway from the body. (For
-# U
+## U
 a description of the normal urinary system, see
 _Normal Urinary System Anatomy and Function_ . [1-4] )
 Diversions are performed to address both malignant conditions (those affecting the urothelial lining of the bladder, for example) and nonmalignant ones. [5] For example, for select high-grade nonmuscle-invasive or muscle-invasive bladder cancer, the gold standard treatment is radical cystectomy.

@@ -110,7 +110,7 @@ Contact your specialist nurse straight away if you have any of the following sym
 
 - You become constipated, feel sick, or your tummy becomes uncomfortable or bloated with spasms or gurgling
 
-# Will there be any changes to my bowel habits?
+## Will there be any changes to my bowel habits?
 
 It is likely that your bowel habits will be different after you have a stent fitted. The changes vary from person to person, and range from small changes to bigger problems that could have more of an effect on your life.
 
@@ -129,13 +129,13 @@ You might be given laxatives to keep your bowel moving and poos soft or slightly
 
 Contact your specialist nurse or GP if you’re having problems that don’t improve. There are medications to help with diarrhoea and exercises that can help to improve your bowel control.
 
-# Managing your diet
+## Managing your diet
 
 You may need to eat softer foods for a few days after your stent is fitted. Start with just liquids, then introduce some soft foods such as porridge, smoothies, well-cooked casseroles and soups. You may find it helpful to avoid eating anything hard like raw vegetables, nuts and seeds.
 
 Your specialist nurse will explain more before you go home. You can read more about diet and bowel cancer at bowelcanceruk.org.uk.
 
-# Are there other treatment options?
+## Are there other treatment options?
 
 Depending on the locations of the tumour a stent is not always possible. If your bowel is blocked, you might be offered surgery to remove the tumour or blocked section of bowel straight away without having a stent fitted.
 

@@ -1,6 +1,5 @@
-# Work
 
-## As soon as you’re diagnosed with cancer, you’re protected from discrimination at work by the Equality Act 2010. In Northern Ireland, you’re protected by the Disability Discrimination Act 1995.
+As soon as you’re diagnosed with cancer, you’re protected from discrimination at work by the Equality Act 2010. In Northern Ireland, you’re protected by the Disability Discrimination Act 1995.
 
 This means employers must not treat you less favorably for any reasons relating to your cancer. This includes recruitment, promotion, training, pay and benefits.
 
@@ -36,9 +35,7 @@ If you think you’ve been treated unfairly at work, you should speak to your em
 ACAS (the Advisory, Conciliation and Arbitration Service), Citizens
 Advice or your union, if you have one.
 
-# Money
-
-## You may be worried about money, for example, if you’re unable to work or you have extra costs, like prescriptions or travel to hospital. You can get help with some costs and you might be able to get some benefits or grants.
+You may be worried about money, for example, if you’re unable to work or you have extra costs, like prescriptions or travel to hospital. You can get help with some costs and you might be able to get some benefits or grants.
 
 Support with managing money
 Some people find it hard to get information about what help they can get with money and have had problems claiming benefits. If you need some help, call Macmillan Cancer Support on
@@ -122,9 +119,7 @@ The badge is registered to you, so you can use it if you’re driving, or if you
 
 If you have specific medical conditions or get certain benefits, you may already qualify for a blue badge. You can apply for a blue badge at gov.uk A blue badge lasts
 
-# Travel
-
-## Speak to your healthcare team if you’re planning to travel during your treatment. They can tell you how your treatment might affect your plans.
+Speak to your healthcare team if you’re planning to travel during your treatment. They can tell you how your treatment might affect your plans.
 
 They can also give you a letter to take with you, listing the medicines you’re taking and what they’re for. This can be helpful if you’re travelling abroad.
 

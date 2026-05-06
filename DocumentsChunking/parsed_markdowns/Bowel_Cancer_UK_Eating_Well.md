@@ -191,8 +191,6 @@ nutrients you need
 
 
 
-
-
 # **After treatment**
 
 **The following pages suggest how you can include the important food**
@@ -640,10 +638,6 @@ on their behalf.
 
 
 
-
-
-
-
 Eating well with and beyond bowel cancer **17**
 
 
@@ -1072,8 +1066,6 @@ constipation on pages 28 and 32.
 Your healthcare team can offer
 support and treatment for bowel
 problems after stoma reversal surgery.
-
-
 
 
 

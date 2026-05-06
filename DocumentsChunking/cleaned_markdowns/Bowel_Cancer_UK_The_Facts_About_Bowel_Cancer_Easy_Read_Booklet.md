@@ -65,7 +65,7 @@ If you live in Northern Ireland you will get a test in the post when you turn 60
 
 You will get a test in the post every 2 years.
 
-#### Risk factors
+### Risk factors
 
 Risk factors are things that increase your risk of getting bowel cancer.
 

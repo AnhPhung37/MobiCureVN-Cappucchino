@@ -154,7 +154,7 @@ Patient Education
 
 - Educate patients regarding appropriate urine specimen collection methods from their urinary ostomy as they may need to advise health care providers on appropriate collection methods.
 
-# Glossary
+## Glossary
 
 Urostomy: an opening into the urinary system that can be constructed from the small or large intestine. The term urostomy describes that there is an opening that drains urine and the type of stoma will be an ileal or colon conduit, or an ureterostomy. An ileal or colon conduit uses the ileum or colon to make a passage for the urine to exit the body.
 
@@ -166,7 +166,7 @@ Stent: small tube inserted from the stoma into the kidney during surgery to allo
 
 Bacteriuria: presence of bacteria in the urine (Carmel, Colwell, & Goldberg, 2015).
 
-# Urostomy Urine Sample Collection Instruction Card
+## Urostomy Urine Sample Collection Instruction Card
 
 Urostomy
 A urostomy (also known as ileoconduit or colon conduit) is a surgically created opening on the abdomen that drains urine. An ostomy pouch is used to collect the urine. During waking hours, the pouch is drained into the toilet. At nighttime, the pouch is connected to a larger collection system to allow for uninterrupted sleep and to prevent reflux into kidneys.

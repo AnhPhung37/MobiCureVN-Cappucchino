@@ -1,6 +1,5 @@
-# About stoma reversal
 
-### This factsheet is about having surgery to reverse your stoma. It explains what a stoma reversal is, possible complications and what to expect after the operation. What is a stoma?
+This factsheet is about having surgery to reverse your stoma. It explains what a stoma reversal is, possible complications and what to expect after the operation. What is a stoma?
 
 A stoma is where a section of bowel is brought out through an opening on your stomach area (abdomen). Your bowel movements (poo) are collected in a pouch or bag attached to the skin around your stoma. A stoma can be temporary or permanent.
 
@@ -19,8 +18,6 @@ An ileostomy is a stoma formed by bringing the end or a loop of the small bowel 
 ### Colostomy
 
 A colostomy is a stoma formed by bringing part of the large bowel (colon and rectum) onto the surface of the stomach area.
-
-## About stoma reversal
 
 ### Who can have a stoma reversal?
 
@@ -53,8 +50,6 @@ Before your operation, the surgeon will check that your bowel has healed. They m
 - using a gloved finger to check your rectum – they may also use a camera to see where the bowel has been joined back together
 
 - giving you a liquid (enema) through your bottom into your bowel – the liquid shows up on X-ray so the doctor can see any leaks around the join
-
-## About stoma reversal
 
 ### Your stoma reversal surgery
 
@@ -90,8 +85,6 @@ Your surgeon will explain the possible risks, which may include:
 - bowel obstruction - sometimes, the bowel can become blocked. If this happens, you may need to rest the bowel by not eating or drinking, or you may need another operation
 
 Contact your healthcare team if you feel unwell or have any symptoms after your surgery.
-
-## About stoma reversal
 
 ### Recovery at home
 
@@ -134,8 +127,6 @@ Symptoms can include:
 Contact your GP or specialist nurse if you have any of these symptoms. They can give you medicine or refer you for further investigation and treatment.
 
 Pelvic floor exercises may also help to improve symptoms. These strengthen the muscles around your rectum and anus. We have more information about muscle training and pelvic floor exercises in our booklet, ‘Regaining bowel control’.
-
-## About stoma reversal
 
 ### Your feelings and emotions
 

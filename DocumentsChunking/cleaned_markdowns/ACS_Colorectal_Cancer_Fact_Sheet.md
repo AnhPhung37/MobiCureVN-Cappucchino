@@ -1,5 +1,3 @@
-# Colorectal Cancer Fact Sheet
-## for Health Care Professionals
 
 ### Colorectal Cancer in the US [ 1, 2]
 

@@ -332,6 +332,8 @@ or microsatellite stable (MSS).
 
 
 
+
+
 NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 10
 
@@ -1207,8 +1209,6 @@ _Guidelines for Patients: Immunotherapy Side_
 _Effects: Immune Checkpoint Inhibitors_ at
 [NCCN.org/patientguidelines and on the](https://www.nccn.org/patientguidelines) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app)
 [Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
-
-
 
 
 
