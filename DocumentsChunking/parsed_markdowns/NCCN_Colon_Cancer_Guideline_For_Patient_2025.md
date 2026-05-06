@@ -1,207 +1,5 @@
-®
-
-
-
-Available online at
-[NCCN.org/patientguidelines](https://www.NCCN.org/patientguidelines)
-
-
-
-NATIONAL COMPREHENSIVE CANCER NETWORK
-
-
-
-Presented with support from
-FOUNDATION
-
-
-
-Guiding Treatment. Changing Lives.
-
-
-#### **Ü**
-
-
-Colon Cancer
-
-
-About the NCCN Guidelines for Patients [®]
-
-
-Did you know that top cancer centers across the United
-
-States work together to improve cancer care? This
-
-alliance of leading cancer centers is called the National
-
-Comprehensive Cancer Network [®] (NCCN [®] ).
-
-
-Cancer care is always changing. NCCN develops
-
-evidence-based cancer care recommendations used by health care providers
-
-worldwide. These frequently updated recommendations are the NCCN Clinical
-
-Practice Guidelines in Oncology (NCCN Guidelines [®] ). The NCCN Guidelines for
-
-Patients plainly explain these expert recommendations for people with cancer
-
-and caregivers.
-
-
-**These NCCN Guidelines for Patients are based on the NCCN**
-**Clinical Practice Guidelines in Oncology (NCCN Guidelines** **[®]** **)**
-**for Colon Cancer,**
-**Version 4.2025 — June 27, 2025.**
-
-
-
-View the NCCN Guidelines
-
-for Patients free online
-
-[NCCN.org/patientguidelines](https://www.NCCN.org/patientguidelines)
-
-
-Connect with us
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 1
-
-
-
-Find an NCCN Cancer
-
-Center near you
-
-[NCCN.org/cancercenters](https://www.NCCN.org/cancercenters)
-
-
-Colon Cancer
-
-
-Supporters
-
-
-
-NATIONAL COMPREHENSIVE CANCER NETWORK®
-
-FOUNDATION
-
-Guiding Treatment. Changing Lives.
-
-
-
-NCCN Guidelines for Patients are supported by funding from the
-
-NCCN Foundation [®]
-
-
-**NCCN Foundation gratefully acknowledges the following**
-**corporate supporters for helping to make available these NCCN**
-**Guidelines for Patients: Taiho Oncology, Inc.**
-
-
-NCCN independently adapts, updates, and hosts the NCCN
-Guidelines for Patients. Our corporate supporters do not participate
-in the development of the NCCN Guidelines for Patients and are not
-responsible for the content and recommendations contained therein.
-
-
-Additional support has been provided by
-
-
-Fight Colorectal Cancer (Fight CRC) is a leading patient-empowerment and
-advocacy organization providing balanced and objective information on colon
-and rectal cancer research, treatment, and policy. We are relentless champions
-of hope, focused on funding promising, high-impact research endeavors while
-equipping advocates to influence legislation and policy for the collective good. Get
-fast answers from ChatCRC, the first and only AI chatbot for colorectal cancer by
-[texting (318) 242-8272 or visiting chatbot.fghtcrc.org. For ways to join the fight,](https://www.chatbot.fightcrc.org)
-visit [FightCRC.org.](https://www.FightCRC.org)
-
-
-To make a gift or learn more, visit online or email
-
-
-[NCCNFoundation.org/donate](http://NCCNFoundation.org/donate) [PatientGuidelines@ NCCN.org](mailto:patientguidelines%40nccn.org?subject=)
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 2
-
-
-Colon Cancer
-
-
-Contents
-
-
-4 About colon cancer
-
-
-8 Testing for colon cancer
-
-
-17 Treatment for non-metastatic cancer
-
-
-26 Treatment for metastatic cancer
-
-
-38 Survivorship
-
-
-43 Other resources
-
-
-47 Words to know
-
-
-49 NCCN Contributors
-
-
-50 NCCN Cancer Centers
-
-
-52 Index
-
-
-
-**© 2025 National Comprehensive Cancer Network, Inc** . **All rights reserved.** NCCN
-Guidelines for Patients and illustrations herein may not be reproduced in any form for
-any purpose without the express written permission of NCCN. No one, including doctors
-or patients, may use the NCCN Guidelines for Patients for any commercial purpose
-and may not claim, represent, or imply that the NCCN Guidelines for Patients that have
-been modified in any manner are derived from, based on, related to, or arise out of the
-NCCN Guidelines for Patients. The NCCN Guidelines are a work in progress that may be
-redefined as often as new significant data become available. NCCN makes no warranties
-of any kind whatsoever regarding its content, use, or application and disclaims any
-responsibility for its application or use in any way.
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 3
-
-
-
-NCCN Foundation seeks to support the millions of patients and their families affected
-by a cancer diagnosis by funding and distributing NCCN Guidelines for Patients. NCCN
-Foundation is also committed to advancing cancer treatment by funding the nation’s
-promising doctors at the center of innovation in cancer research. For more details and the
-[full library of patient and caregiver resources, visit NCCN.org/patients.](https://www.NCCN.org/patients)
-
-
-National Comprehensive Cancer Network (NCCN) and NCCN Foundation
-3025 Chemical Road, Suite 100, Plymouth Meeting, PA 19462 USA
-
-
-###### **1**
-
-About colon cancer
-
+## **1**
+### About colon cancer
 
 5 What is the colon?
 
@@ -227,8 +25,7 @@ Colon Cancer, 2025 4
 
 **especially when found early.**
 
-
-What is the colon?
+###### What is the colon?
 
 
 The colon makes up most of the large
@@ -271,13 +68,12 @@ cancer.
 For information on rectal cancer treatment,
 see the _NCCN Guidelines for Patients: Rectal_
 _Cancer_ at [NCCN.org/patientguidelines and on](https://www.nccn.org/patientguidelines)
-the [NCCN Patient Guides for Cancer](https://www.nccn.org/guidelines/nccn-mobile-app) app.
+[the NCCN Patient Guides for Cancer](https://www.nccn.org/guidelines/nccn-mobile-app) app.
 
 
 1 About colon cancer » What are polyps?
 
-
-What are polyps?
+###### What are polyps?
 
 
 Polyps are non-cancerous growths that form
@@ -339,10 +135,7 @@ Survivorship
 1 About colon cancer » What can you do to get the best care?
 
 
-
-What can you do to get the
-best care?
-
+###### What can you do to get the best care?
 
 Advocate for yourself. You’re more likely to get
 the care you want by asking questions and
@@ -398,10 +191,8 @@ information you need to make important
 decisions.
 
 
-###### **2**
-
-Testing for colon cancer
-
+## **2**
+### Testing for colon cancer
 
 9 Colonoscopy
 
@@ -474,9 +265,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 9
 
 
-
-Colonoscopy
-
+###### Colonoscopy
 
 Most colon cancers are found during
 colonoscopy. This procedure allows a health
@@ -516,9 +305,7 @@ _Colorectal Cancer_ _Screening_ at [NCCN.org/](https://www.nccn.org/patientguide
 [Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 
-
-Mismatch repair testing
-
+###### Mismatch repair testing
 
 Mismatch repair (MMR) or microsatellite
 instability (MSI) testing is recommended for
@@ -552,9 +339,7 @@ Colon Cancer, 2025 10
 2 Testing for colon cancer » Family health history » _PIK3CA_ testing » _DPYD_ testing
 
 
-
-Family health history
-
+###### Family health history
 
 Your provider will ask about the health history
 of your biological (related by blood) family
@@ -613,8 +398,7 @@ syndromes. It's important to meet with a
 genetic counselor before having any genetic
 testing.
 
-
-_PIK3CA_ testing
+###### PIK3CA testing
 
 
 _PIK3CA_ is a gene involved in normal cell
@@ -636,8 +420,7 @@ aspirin after treatment. Aspirin may work better
 at preventing recurrence (the return of cancer)
 in cancers with this biomarker.
 
-
-_DPYD_ testing
+###### DPYD testing
 
 
 Capecitabine and fluorouracil (5-FU)
@@ -686,8 +469,7 @@ your risk, you may choose to have genetic
 testing to learn if you have the gene variant
 that causes DPD deficiency.
 
-
-Blood tests
+###### Blood tests
 
 
 CEA blood test
@@ -752,8 +534,7 @@ organs are working.
 
 2 Testing for colon cancer » Imaging
 
-
-Imaging
+###### Imaging
 
 
 Imaging tests can show areas of cancer inside
@@ -825,8 +606,7 @@ planned, ask your care team what to expect.
 
 2 Testing for colon cancer » Fertility and family planning » Clinical trials
 
-
-Fertility and family planning
+###### Fertility and family planning
 
 
 
@@ -881,8 +661,7 @@ _**Adult Cancer**_ **at** **[NCCN.org/](https://www.nccn.org/patientresources/pa
 **[patientguidelines and on the](https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients)** **[NCCN](https://www.nccn.org/guidelines/nccn-mobile-app)**
 **[Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)**
 
-
-Clinical trials
+###### Clinical trials
 
 
 A clinical trial is a type of medical research
@@ -1026,8 +805,7 @@ the trial, you will continue to receive standard
 cancer care. This care is often covered by
 insurance.
 
-
-Key points
+###### Key points
 
 
  - All colon tumors should be tested in a lab
@@ -1069,8 +847,7 @@ your fertility.
 investigational treatments that may, in
 time, be approved by the FDA.
 
-
-Questions to ask
+###### Questions to ask
 
 
  - How bad is my cancer?
@@ -1088,11 +865,8 @@ report and other test results?
  - Is it worth it to go through treatment?
 
 
-###### **3**
-
-Treatment for non-metastatic
-cancer
-
+## **3**
+### Treatment for non-metastatic cancer
 
 18 Polyps with cancer
 
@@ -1137,8 +911,7 @@ Colon Cancer, 2025 17
 
 **far from the colon.**
 
-
-Polyps with cancer
+###### Polyps with cancer
 
 
 There are 2 main shapes of polyps.
@@ -1193,9 +966,7 @@ options.
 3 Treatment for non-metastatic cancer » Invasive cancer
 
 
-
-Invasive cancer
-
+###### Invasive cancer
 
 For cancers not found early enough to be
 removed by polypectomy, colectomy (colon
@@ -1322,9 +1093,7 @@ or muscles weakened by surgery
 3 Treatment for non-metastatic cancer » Staging
 
 
-
-Staging
-
+###### Staging
 
 The stage describes the extent of cancer in
 the body. The American Joint Committee on
@@ -1452,9 +1221,7 @@ Colon Cancer, 2025 22
 3 Treatment for non-metastatic cancer » Chemotherapy after surgery
 
 
-
-Chemotherapy after surgery
-
+###### Chemotherapy after surgery
 
 Depending on the cancer stage, you may have
 chemotherapy after surgery to kill any cancer
@@ -1538,9 +1305,7 @@ stage 3 cancers.
 3 Treatment for non-metastatic cancer » Surveillance
 
 
-
-Surveillance
-
+###### Surveillance
 
 Follow-up testing is started when there are no
 signs of cancer after treatment. It can help find
@@ -1599,8 +1364,7 @@ Colon Cancer, 2025 24
 3 Treatment for non-metastatic cancer » Key points » Questions to ask
 
 
-
-Key points
+###### Key points
 
 
  - No further treatment is needed for a
@@ -1649,8 +1413,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 **25**
 
 
-
-Questions to ask
+###### Questions to ask
 
 
  - Am I a candidate for surgery (colectomy)?
@@ -1665,8 +1428,7 @@ me? Will I lose my hair?
  - How likely is the cancer to return after
 treatment with surgery?
 
-
-[share with us.](https://www.surveymonkey.com/r/PTGLcomments)
+##### share with us.
 
 
 **Take our survey,**
@@ -1677,11 +1439,8 @@ treatment with surgery?
 **[NCCN.org/patients/comments](https://www.nccn.org/patients/comments)**
 
 
-###### **4**
-
-Treatment for metastatic
-cancer
-
+## **4**
+### Treatment for metastatic cancer
 
 27 Biomarker testing
 
@@ -1730,8 +1489,7 @@ Colon Cancer, 2025 26
 
 **it is diagnosed is stage 4.**
 
-
-Biomarker testing
+###### Biomarker testing
 
 
 Biomarkers are targetable features of a
@@ -1770,9 +1528,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 **27**
 
 
-
-Local therapies
-
+###### Local therapies
 
 Your treatment options may include local
 therapies. These are treatments that target
@@ -1966,10 +1722,7 @@ Colon Cancer, 2025 29
 4 Treatment for metastatic cancer » Stage 4 cancer in the liver or lungs
 
 
-
-Stage 4 cancer in the liver
-or lungs
-
+###### Stage 4 cancer in the liver or lungs
 
 When possible, surgery and systemic therapy
 is the recommended treatment approach for
@@ -2197,9 +1950,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 **33**
 
 
-
-Supportive care
-
+###### Supportive care
 
 Supportive care helps improve your quality
 of life during and after cancer treatment. The
@@ -2242,9 +1993,7 @@ treat the cancer with an intent to cure you.
 4 Treatment for metastatic cancer » Surveillance
 
 
-
-Surveillance
-
+###### Surveillance
 
 Surveillance after treatment for stage 4 colon
 cancer includes:
@@ -2305,9 +2054,7 @@ Colon Cancer, 2025 34
 4 Treatment for metastatic cancer » Distant recurrence
 
 
-
-Distant recurrence
-
+###### Distant recurrence
 
 After treatment for non-metastatic colon
 cancer, the cancer may return and spread to
@@ -2465,8 +2212,7 @@ More chemotherapy may follow.
 4 Treatment for metastatic cancer » Key points » Questions to ask
 
 
-
-Key points
+###### Key points
 
 
  - If not already done, all metastatic cancers
@@ -2517,8 +2263,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 **37**
 
 
-
-Questions to ask
+###### Questions to ask
 
 
  - Am I a candidate for a clinical trial? Do
@@ -2539,10 +2284,8 @@ candidate for local therapies?
 recommend for me? Why?
 
 
-###### **5**
-
-Survivorship
-
+## **5**
+### Survivorship
 
 39 Help with side effects
 
@@ -2602,8 +2345,7 @@ providers
  - General health and wellness
 recommendations
 
-
-Help with side effects
+###### Help with side effects
 
 
 Colon cancer survivors may experience both
@@ -2738,9 +2480,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 41
 
 
-
-Healthy habits
-
+###### Healthy habits
 
 It's important to keep up with other aspects of
 your health after cancer treatment. In addition
@@ -2766,9 +2506,7 @@ help prevent the return of colorectal cancers.
 5 Survivorship » Paying for care » More Information » Key points
 
 
-
-Paying for care
-
+###### Paying for care
 
 Cancer survivors face a unique financial
 burden. Paying for doctor visits, tests, and
@@ -2792,8 +2530,7 @@ with a patient navigator, your treatment team’s
 social worker, and your hospital’s financial
 services department.
 
-
-More information
+###### More information
 
 
 For more information on cancer survivorship,
@@ -2812,8 +2549,7 @@ NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 **42**
 
 
-
-Key points
+###### Key points
 
 
  - Survivorship focuses on the physical,
@@ -2835,199 +2571,9 @@ helping to prevent other diseases and
 second cancers.
 
 
-###### **6**
-
-Other resources
-
-
-44 What else to know
-
-
-44 What else to do
-
-
-44 Where to get help
-
-
-45 Questions to ask
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 43
-
-
-6 Other resources » What else to know » What else to do » Where to get help
-
-
-
-**Want to learn more? Here’s how**
-
-**you can get additional help.**
-
-
-What else to know
-
-
-This book can help you improve your
-cancer care. It plainly explains expert
-recommendations and suggests questions
-to ask your care team. But it’s not the only
-resource that you have.
-
-
-You’re welcome to receive as much
-information and help as you need. Many
-people are interested in learning more about:
-
-
- - The details of their health and treatment
-
- - Being a part of a care team
-
- - Getting financial help
-
- - Finding a care provider who is an expert
-in their field
-
- - Coping with health problems
-
-
-What else to do
-
-
-Your health care center can help you with next
-steps. They often have on-site resources to
-help meet your needs and find answers to your
-questions. Health care centers can also inform
-you of resources in your community.
-
-
-In addition to help from your providers, the
-resources listed in the next section provide
-support for many people like yourself. Look
-through the list and visit the provided websites
-to learn more about these organizations.
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 **44**
-
-
-
-Where to get help
-
-
-**Anal Cancer Foundation**
-[analcancerfoundation.org](https://www.analcancerfoundation.org)
-
-
-**Bone Marrow and Cancer Foundation**
-[bonemarrow.org](https://www.bonemarrow.org)
-
-
-**CancerCare**
-[Cancercare.org](https://www.Cancercare.org)
-
-
-**Cancer Hope Network**
-[cancerhopenetwork.org](https://www.cancerhopenetwork.org)
-
-
-**Cancer Survivor Care**
-[Cancersurvivorcare.org](https://Cancersurvivorcare.org)
-
-
-**Colorectal Cancer Alliance**
-[ccalliance.org](https://www.ccalliance.org)
-
-
-**Fight Colorectal Cancer**
-[fghtcolorectalcancer.org](https://www.fightcolorectalcancer.org)
-
-
-**FORCE: Facing Our Risk of Cancer**
-**Empowered**
-[facingourrisk.org](https://www.facingourrisk.org)
-
-
-**Global Colon Cancer Association**
-[globalcca.org](https://globalcca.org)
-
-
-**GRACE**
-[Cancergrace.org](https://Cancergrace.org)
-
-
-**Imerman Angels**
-[Imermanangels.org](https://www.Imermanangels.org)
-
-
-6 Other resources » Questions to ask
-
-
-**Love Your Buns**
-[loveyourbuns.org](https://www.loveyourbuns.org)
-
-
-**My Faulty Gene**
-[Myfaultygene.org](https://Myfaultygene.org)
-
-
-**National Coalition for Cancer Survivorship**
-[canceradvocacy.org](https://www.canceradvocacy.org)
-
-
-**Paltown Development Foundation**
-[paltown.org](https://www.paltown.org)
-
-
-**PAN Foundation**
-[panfoundation.org](http://panfoundation.org)
-
-
-**Triage Cancer**
-[Triagecancer.org](https://www.Triagecancer.org)
-
-
-Questions to ask
-
-
- - Who can I talk to about help with housing,
-food, and other basic needs?
-
- - What help is available for transportation,
-childcare, and home care?
-
- - Are there other services available to me
-and my caregivers?
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 45
-
-
-
-Let us know what
-[you think!](https://www.surveymonkey.com/r/PTGLfeedback)
-
-**Please take a moment to**
-**complete an online survey**
-**about the**
-**NCCN Guidelines for Patients.**
-
-**[NCCN.org/patients/response](https://www.nccn.org/patients/response)**
-
-
-##### Ü
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 46
-
-
 Words to know
 
-
-Words to know
+#### Words to know
 
 
 **ablation**
@@ -3204,484 +2750,5 @@ improve quality of life.
 **unresectable**
 Cancer that cannot be removed safely using
 surgery.
-
-
-NCCN Contributors
-
-
-NCCN Contributors
-
-
-This patient guide is based on the NCCN Clinical Practice Guidelines in Oncology (NCCN Guidelines [®] ) for Colon Cancer,
-Version 4.2025 — June 27, 2025. It was adapted, reviewed, and published with help from the following people:
-
-
-
-Dorothy A. Shead, MS
-_Senior Director_
-_Patient Information Operations_
-
-
-
-Erin Vidic, MA Lisa Diehl
-_Senior Medical Writer, Patient Information_ _Production Layout Artist_
-
-
-
-The NCCN Clinical Practice Guidelines in Oncology (NCCN Guidelines [®] ) for Colon Cancer Version 4.2025 — June 27,
-2025 were developed by the following NCCN Panel Members:
-
-
-
-Al B. Benson, III, MD/Chair
-_Robert H. Lurie Comprehensive Cancer_
-_Center of Northwestern University_
-
-Alan P. Venook, MD/Vice-Chair
-_UCSF Helen Diller Family_
-_Comprehensive Cancer Center_
-
-Mohamed Adam, MD
-_UCSF Helen Diller Family_
-_Comprehensive Cancer Center_
-
-*George J. Chang, MD, MS, MHCM
-_The University of Texas_
-_MD Anderson Cancer Center_
-
-Yi-Jen Chen, MD, PhD
-_City of Hope_
-_National Medical Center_
-
-Kristen K. Ciombor, MD
-_Vanderbilt-Ingram Cancer Center_
-
-Stacey A. Cohen, MD
-_Fred Hutchinson Cancer Center_
-
-Madison Conces, MD
-_Case Comprehensive Cancer_
-_Center/University Hospitals_
-_Seidman Cancer Center and_
-_Cleveland Clinic Taussig_
-_Cancer Institute_
-
-Harry S. Cooper, MD
-_Fox Chase Cancer Center_
-
-Dustin Deming, MD
-_University of Wisconsin_
-_Carbone Cancer Center_
-
-Ignacio Garrido-Laguna, MD, PhD
-_Huntsman Cancer Institute_
-_at the University of Utah_
-
-Jean L. Grem, MD
-_Fred & Pamela Buffett Cancer Center_
-
-*Carla Harmath, MD
-_The UChicago Medicine_
-_Comprehensive Cancer Center_
-
-Paul Haste, MD
-_Indiana University Melvin and Bren Simon_
-_Comprehensive Cancer Center_
-
-J. Randolph Hecht, MD
-_UCLA Jonsson_
-_Comprehensive Cancer Center_
-
-
-
-*J. Kevin Hicks, PharmD, PhD, FCCP
-_Moffitt Cancer Center_
-
-Sarah Hoffe, MD
-_Moffitt Cancer Center_
-
-Steven Hunt, MD
-_Siteman Cancer Center at Barnes-_
-_Jewish Hospital and Washington_
-_University School of Medicine_
-
-Hisham Hussan, MD
-_UC Davis Comprehensive Cancer Center_
-
-Kimberly L. Johung, MD, PhD
-_Yale Cancer Center/Smilow Cancer Hospital_
-
-Nora Joseph, MD
-_University of Michigan Rogel Cancer Center_
-
-Natalie Kirilcuk, MD
-_Stanford Cancer Institute_
-
-Smitha Krishnamurthi, MD
-_Case Comprehensive Cancer Center/_
-_University Hospitals Seidman Cancer Center_
-_and Cleveland Clinic Taussig Cancer Institute_
-
-Midhun Malla, MD, MS
-_O’Neal Comprehensive_
-_Cancer Center at UAB_
-
-Rifat Mannan, MD
-_City of Hope_
-_National Medical Center_
-
-Jennifer K. Maratt, MD, MS
-_Indiana University Melvin and Bren Simon_
-_Comprehensive Cancer Center_
-
-Wells A. Messersmith, MD
-_University of Colorado Cancer Center_
-
-*Jeffrey Meyer, MD, MS
-_Johns Hopkins Kimmel Cancer Center_
-
-Jeffrey Meyerhardt, MD, MPH
-_Dana-Farber Brigham and_
-_Women’s Cancer Center_
-
-Eric D. Miller, MD, PhD
-_The Ohio State University Comprehensive_
-_Cancer Center - James Cancer Hospital_
-_and Solove Research Institute_
-
-Mary F. Mulcahy, MD
-_Robert H. Lurie Comprehensive Cancer_
-_Center of Northwestern University_
-
-
-
-Steven Nurkin, MD, MS
-_Roswell Park Comprehensive Cancer Center_
-
-Hitendra Patel, MD
-_UC San Diego Moores Cancer Center_
-
-Katrina Pedersen, MD, MS
-_Mayo Clinic Comprehensive Cancer Center_
-
-Leonard Saltz, MD
-_Memorial Sloan Kettering Cancer Center_
-
-Charles Schneider, MD
-_Abramson Cancer Center_
-_at the University of Pennsylvania_
-
-David Shibata, MD
-_The University of Tennessee_
-_Health Science Center_
-
-Benjamin Shogan, MD
-_The UChicago Medicine_
-_Comprehensive Cancer Center_
-
-*Laurie Singer
-_DoubleLL Productions_
-
-Constantinos T. Sofocleous, MD, PhD
-_Memorial Sloan Kettering Cancer Center_
-
-*Anna Tavakkoli, MD, MSc
-_UT Southwestern Simmons_
-_Comprehensive Cancer Center_
-
-Christopher G. Willett, MD
-_Duke Cancer Institute_
-
-Christina Wu, MD
-_Mayo Clinic Comprehensive Cancer Center_
-
-**NCCN**
-
-Faviolla Baez-Cruz, PhD
-_Associate Scientist/Medical Writer_
-
-Lisa Gurski, PhD
-_Senior Manager, Licensed Clinical Content_
-
-Frankie Jones
-_Guidelines Coordinator_
-
-
-
-
-[* Reviewed this patient guide. For disclosures, visit NCCN.org/disclosures.](https://www.nccn.org/disclosures)
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 49
-
-
-NCCN Cancer Centers
-
-
-NCCN Cancer Centers
-
-
-Abramson Cancer Center
-at the University of Pennsylvania
-_Philadelphia, Pennsylvania_
-_[800.789.7366 • pennmedicine.org/cancer](https://www.pennmedicine.org/cancer)_
-
-Case Comprehensive Cancer Center/
-University Hospitals Seidman Cancer Center and
-Cleveland Clinic Taussig Cancer Institute
-_Cleveland, Ohio_
-_UH Seidman Cancer Center_
-_[800.641.2422 • uhhospitals.org/services/cancer-services](https://www.uhhospitals.org/services/cancer-services)_
-_CC Taussig Cancer Institute_
-_[866.223.8100 • my.clevelandclinic.org/departments/cancer](http://my.clevelandclinic.org/departments/cancer)_
-_Case CCC_
-_[216.844.8797 • case.edu/cancer](https://www.case.edu/cancer)_
-
-City of Hope National Medical Center
-_Duarte, California_
-_[800.826.4673 • cityofhope.org](https://www.cityofhope.org)_
-
-Dana-Farber/Brigham and Women’s Cancer Center |
-Mass General Cancer Center
-_Boston, Massachusetts_
-_[877.442.3324 • youhaveus.org](https://www.youhaveus.org)_
-_[617.726.5130 • massgeneral.org/cancer-center](https://www.massgeneral.org/cancer-center)_
-
-Duke Cancer Institute
-_Durham, North Carolina_
-_[888.275.3853 • dukecancerinstitute.org](https://www.dukecancerinstitute.org)_
-
-Fox Chase Cancer Center
-_Philadelphia, Pennsylvania_
-_[888.369.2427 • foxchase.org](https://www.foxchase.org)_
-
-Fred & Pamela Buffett Cancer Center
-_Omaha, Nebraska_
-_[402.559.5600 • unmc.edu/cancercenter](https://www.unmc.edu/cancercenter)_
-
-Fred Hutchinson Cancer Center
-_Seattle, Washington_
-_[206.667.5000 • fredhutch.org](https://www.fredhutch.org)_
-
-Huntsman Cancer Institute at the University of Utah
-_Salt Lake City, Utah_
-_[800.824.2073 • healthcare.utah.edu/huntsmancancerinstitute](https://healthcare.utah.edu/huntsmancancerinstitute)_
-
-Indiana University Melvin and Bren Simon
-Comprehensive Cancer Center
-_Indianapolis, Indiana_
-_[888.600.4822 • www.cancer.iu.edu](https://cancer.iu.edu/index.php)_
-
-Johns Hopkins Kimmel Cancer Center
-_Baltimore, Maryland_
-_410.955.8964_
-_[www.hopkinskimmelcancercenter.org](http://www.hopkinskimmelcancercenter.org)_
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 50
-
-
-
-Mayo Clinic Comprehensive Cancer Center
-_Phoenix/Scottsdale, Arizona_
-_Jacksonville, Florida_
-_Rochester, Minnesota_
-_480.301.8000 • Arizona_
-_904.953.0853 • Florida_
-_507.538.3270 • Minnesota_
-_[mayoclinic.org/cancercenter](https://www.mayoclinic.org/cancercenter)_
-
-Memorial Sloan Kettering Cancer Center
-_New York, New York_
-_[800.525.2225 • mskcc.org](https://www.mskcc.org)_
-
-Moffitt Cancer Center
-_Tampa, Florida_
-_[888.663.3488 • moffitt.org](https://www.moffitt.org)_
-
-O’Neal Comprehensive Cancer Center at UAB
-_Birmingham, Alabama_
-_[800.822.0933 • uab.edu/onealcancercenter](https://www.uab.edu/onealcancercenter)_
-
-Robert H. Lurie Comprehensive Cancer Center
-of Northwestern University
-_Chicago, Illinois_
-_[866.587.4322 • cancer.northwestern.edu](https://www.cancer.northwestern.edu)_
-
-Roswell Park Comprehensive Cancer Center
-_Buffalo, New York_
-_[877.275.7724 • roswellpark.org](https://www.roswellpark.org)_
-
-Siteman Cancer Center at Barnes-Jewish Hospital
-and Washington University School of Medicine
-_St. Louis, Missouri_
-_[800.600.3606 • siteman.wustl.edu](https://www.siteman.wustl.edu)_
-
-St. Jude Children’s Research Hospital/
-The University of Tennessee Health Science Center
-_Memphis, Tennessee_
-_[866.278.5833 • stjude.org](https://www.stjude.org)_
-_[901.448.5500 • uthsc.edu](https://www.uthsc.edu)_
-
-Stanford Cancer Institute
-_Stanford, California_
-_[877.668.7535 • cancer.stanford.edu](http://cancer.stanford.edu)_
-
-The Ohio State University Comprehensive Cancer Center James Cancer Hospital and Solove Research Institute
-_Columbus, Ohio_
-_[800.293.5066 • cancer.osu.edu](https://cancer.osu.edu/)_
-
-The UChicago Medicine Comprehensive Cancer Center
-_Chicago, Illinois_
-_[773.702.1000 • uchicagomedicine.org/cancer](https://www.uchicagomedicine.org/cancer)_
-
-The University of Texas MD Anderson Cancer Center
-_Houston, Texas_
-_[844.269.5922 • mdanderson.org](https://www.mdanderson.org)_
-
-
-NCCN Cancer Centers
-
-
-UC Davis Comprehensive Cancer Center
-_Sacramento, California_
-_916.734.5959 • 800.770.9261_
-_[health.ucdavis.edu/cancer](http://health.ucdavis.edu/cancer)_
-
-UC San Diego Moores Cancer Center
-_La Jolla, California_
-_[858.822.6100 • cancer.ucsd.edu](http://cancer.ucsd.edu)_
-
-UCLA Jonsson Comprehensive Cancer Center
-_Los Angeles, California_
-_[310.825.5268 • uclahealth.org/cancer](https://www.uclahealth.org/cancer)_
-
-UCSF Helen Diller Family
-Comprehensive Cancer Center
-_San Francisco, California_
-_[800.689.8273 • cancer.ucsf.edu](http://cancer.ucsf.edu)_
-
-University of Colorado Cancer Center
-_Aurora, Colorado_
-_[720.848.0300 • coloradocancercenter.org](http://coloradocancercenter.org)_
-
-University of Michigan Rogel Cancer Center
-_Ann Arbor, Michigan_
-_[800.865.1125 • rogelcancercenter.org](https://www.rogelcancercenter.org)_
-
-University of Wisconsin Carbone Cancer Center
-_Madison, Wisconsin_
-_[608.265.1700 • uwhealth.org/cancer](https://www.uwhealth.org/cancer)_
-
-UT Southwestern Simmons
-Comprehensive Cancer Center
-_Dallas, Texas_
-_214.648.3111 •_ _[utsouthwestern.edu/simmons](https://www.utsouthwestern.edu/simmons )_
-
-Vanderbilt-Ingram Cancer Center
-_Nashville, Tennessee_
-_[877.936.8422 • vicc.org](https://www.vicc.org)_
-
-Yale Cancer Center/Smilow Cancer Hospital
-_New Haven, Connecticut_
-_855.4.SMILOW •_ _[yalecancercenter.org](https://www.yalecancercenter.org)_
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 51
-
-
-
-We want your
-feedback!
-
-**[Our goal is to provide helpful and](https://www.surveymonkey.com/r/PTGLfeedback)**
-**easy-to-understand information**
-**on cancer.**
-
-**Take our survey to let us know**
-**what we got right and what we**
-**could do better.**
-
-**[NCCN.org/patients/feedback](https://www.nccn.org/patients/feedback)**
-
-
-Index
-
-
-Index
-
-
-**ablation** 27–28
-
-**aspirin** 11, 23, 42
-
-_**BRAF**_ **gene mutation** 27, 30–31, 35
-
-**cancer staging** 20–21
-
-**carcinoembryonic antigen (CEA)** 12, 24, 34
-
-**circulating tumor DNA (ctDNA)** 13
-
-**clinical trial** 15–16
-
-**colostomy** 19–20, 39
-
-_**DPYD**_ **testing** 11–12
-
-**familial adenomatous polyposis (FAP)** 11
-
-**fertility** 10, 14
-
-**HER2** 27, 31, 35
-
-**immunotherapy** 22–23, 32–33, 35–36
-
-_**KRAS**_ **G12C gene mutation** 31, 35
-
-**Lynch syndrome** 10–11
-
-**microsatellite instability-high/mismatch**
-**repair deficiency (MSI-H/dMMR)** 6, 10, 22–
-23, 27, 32, 35–36
-
-**next-generation sequencing (NGS)** 27
-
-_**NRAS**_ **gene mutation** 27, 30
-
-_**PIK3CA**_ **mutation** 11, 23
-
-_**POLE/POLD1**_ **mutation** 27, 32, 35–36
-
-
-NCCN Guidelines for Patients [®]
-Colon Cancer, 2025 52
-
-
-
-**stereotactic body radiation therapy (SBRT)**
-29
-
-**supportive care** 33
-
-**surveillance** 24, 34
-
-**survivorship** 38–42
-
-
-##### Ü
-
-
-3025 Chemical Road, Suite 100
-Plymouth Meeting, PA 19462
-215.690.0300
-
-[NCCN.org/patients – For Patients](https://www.NCCN.org/patients) [|  NCCN.org – For Clinicians](https://www.NCCN.org)
-
-
-PAT-N-1896-1025
 
 

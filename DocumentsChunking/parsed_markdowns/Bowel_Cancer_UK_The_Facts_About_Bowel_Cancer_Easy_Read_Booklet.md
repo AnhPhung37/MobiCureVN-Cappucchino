@@ -1,58 +1,4 @@
-# **Facts about** **bowel cancer**
-
-
-##### **What is in this booklet**
-
-
-
-**Page**
-#### **2**
-
-
-**Page**
-#### **4**
-
-
-**Page**
-#### **5**
-
-
-**Page**
-#### **9**
-
-
-**Page**
-#### **11**
-
-
-**Page**
-#### **15**
-
-
-
-**About the bowel**
-
-
-**The facts about bowel cancer**
-
-
-**Symptoms of bowel cancer**
-
-
-**Bowel cancer screening**
-
-
-**Risk factors**
-
-
-**More information**
-
-
-
-1
-
-
-##### **About the bowel**
+#### **About the bowel**
 
 
 
@@ -86,7 +32,7 @@ large bowel.
 3
 
 
-##### **The facts about bowel cancer**
+#### **The facts about bowel cancer**
 
 When bowel cancer is found
 early there are lots of
@@ -106,7 +52,7 @@ found later on.
 4
 
 
-##### **Symptoms of bowel cancer**
+#### **Symptoms of bowel cancer**
 
 
 
@@ -230,7 +176,7 @@ every 2 years.
 
 
 
-##### **Risk factors**
+#### **Risk factors**
 
 
 
@@ -302,13 +248,5 @@ when it comes in the post
 
 
 14
-
-
-Visit **bowelcanceruk.org.uk**
-for information about bowel
-cancer.
-
-
-15
 
 

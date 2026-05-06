@@ -69,17 +69,17 @@ option for you.
 
 They will want to make sure that:
 
-  - the muscles in your anus are working.
+  - the muscles in your anus are working.
 If your cancer removal surgery
 damaged the anal sphincter muscles,
 you may struggle to control your bowel
 movements and could have some
 leakage from your bottom
 
-  - you have enough bowel left and it has
+  - you have enough bowel left and it has
 healed
 
-  - you’re fit and healthy enough for more
+  - you’re fit and healthy enough for more
 surgery
 
 ### **When will you have your stoma** **reversed?**
@@ -138,12 +138,12 @@ Before your operation, the surgeon will
 check that your bowel has healed. They
 may do this by:
 
-- using a gloved finger to check your
+- using a gloved finger to check your
 rectum – they may also use a camera
 to see where the bowel has been joined
 back together
 
-- giving you a liquid (enema) through
+- giving you a liquid (enema) through
 your bottom into your bowel – the
 liquid shows up on X-ray so the doctor
 can see any leaks around the join
@@ -209,13 +209,13 @@ surgery.
 **Your surgeon will explain the possible**
 **risks, which may include:**
 
-**• wound infection** - if your wound gets
+**• wound infection** - if your wound gets
 infected, you might need antibiotics.
 Tell your healthcare team as soon as
 possible if your wound is hot, red
 or sore
 
-**• ileus** - after surgery, your bowel might
+**• ileus** - after surgery, your bowel might
 be slow to start working again or stop
 working. This is a condition called ileus.
 You may feel bloated, have pain in your
@@ -223,7 +223,7 @@ stomach area and feel or be sick. You’ll
 need to stop eating and drinking until
 you start to pass wind again
 
-**• anastomotic leak** - if the newly joined
+**• anastomotic leak** - if the newly joined
 ends (anastomosis) of the bowel don’t
 heal properly, the bowel contents can
 leak into the abdomen. This can cause
@@ -234,7 +234,7 @@ or drinking for a few days. Or you
 may need more surgery and possibly
 another stoma
 
-**• bowel obstruction** - sometimes, the
+**• bowel obstruction** - sometimes, the
 bowel can become blocked. If this
 happens, you may need to rest the
 bowel by not eating or drinking, or you
@@ -256,12 +256,12 @@ surgery.
 
 **To help your recovery at home:**
 
-**• Avoid heavy lifting or bending for six**
+**• Avoid heavy lifting or bending for six**
 **weeks after your operation**   - you may
 want to plan any changes at work or
 support at home in advance
 
-**• Check with your doctor and insurance**
+**• Check with your doctor and insurance**
 **company when you can start driving**
 **again and start some gentle exercise,**
 **such as walking, soon after your**
@@ -271,12 +271,12 @@ short walk outside. As you get your
 strength and energy back, you’ll be able
 to do more
 
-**• Protect your skin**   - you may want
+**• Protect your skin**   - you may want
 to use moist toilet wipes and barrier
 creams, such as nappy rash creams, to
 help stop your bottom getting sore
 
-**• Listen to your body and rest when you**
+**• Listen to your body and rest when you**
 **need to**   - it can take a few weeks to get
 your energy back
 
@@ -319,16 +319,16 @@ Symptoms can include:
 
 - needing to empty your bowels urgently
 
-- feeling that you have not fully emptied
+- feeling that you have not fully emptied
 your bowels
 
-- having small, more frequent bowel
+- having small, more frequent bowel
 movements
 
-- difficulty knowing whether you need to
+- difficulty knowing whether you need to
 pass wind or a bowel movement
 
-- not being able to control when you
+- not being able to control when you
 have a bowel movement
 
 Contact your GP or specialist nurse if
@@ -384,12 +384,12 @@ After your stoma reversal surgery, your
 bowel is likely to be sensitive. To help
 with this, you could:
 
-- eat little and often, rather than having
+- eat little and often, rather than having
 large meals
 
 - avoid eating late at night
 
-- drink plenty of fluids, including some
+- drink plenty of fluids, including some
 water
 
 
@@ -398,19 +398,19 @@ tempting to eat all the foods you’ve
 missed, but some foods can irritate your
 bowel. Try to limit or avoid:
 
-- citrus fruits such as oranges,
+- citrus fruits such as oranges,
 grapefruits and lemons
 
-- spicy food such as curries and foods
+- spicy food such as curries and foods
 containing chillies
 
-- high-fibre foods, such as fruit,
+- high-fibre foods, such as fruit,
 vegetables and wholegrains
 
-- foods high in fat such as cheese, eggs,
+- foods high in fat such as cheese, eggs,
 avocado and salmon
 
-- too much alcohol, caffeinated tea and
+- too much alcohol, caffeinated tea and
 coffee or fizzy drinks
 
 
@@ -424,108 +424,5 @@ booklet.
 
 
 **5**
-
-
-## **More support**
-
-### **Online community**
-
-Our online community is a
-welcoming place for everyone
-affected by bowel cancer to
-ask questions, read about
-people’s experiences and
-support each other. Join us
-at **bowelcanceruk.org.uk/**
-**community**
-### **Publications**
-
-
-We produce a range of expert
-information to support
-anyone affected by bowel
-cancer. Order or download
-our free publications at
-**bowelcanceruk.org.uk/**
-**ourpublications**
-
-### **Other useful organisations**
-
-
-### **Ask the Nurse**
-
-If you have any questions
-about bowel cancer,
-contact our nurses at
-**bowelcancer.org.uk/nurse**
-
-### **Website**
-
-
-Visit our website for a
-range of information about
-bowel cancer including
-symptoms, risk factors,
-screening, diagnosis,
-treatment and living with
-and beyond the disease.
-Visit **bowelcanceruk.org.uk**
-
-
-### **Colostomy UK**
-
-**colostomyuk.org**
-**0800 328 4257**
-
-Provides support,
-reassurance and
-practical information
-to anyone who has or is
-about to have a stoma.
-
-
-### **Cancer Research UK**
-
-**cancerresearchuk.org**
-**0808 800 4040**
-Information for people
-affected by cancer.
-You can speak to an
-information nurse by
-calling their helpline.
-
-
-### **IA (Ileostomy and** **Internal Pouch** **Association)**
-
-**iasupport.org**
-**0800 018 4724**
-
-A support group run
-by and for people with
-ileostomies and internal
-pouches.
-
-
-### **Macmillan** **Cancer Support**
-
-**macmillan.org.uk**
-**0808 808 0000**
-
-Offers support and
-information for people
-with cancer, including
-information on diet and
-recipes.
-
-
-### To donate or find out more visit  /bowelcanceruk @bowelcanceruk **bowelcanceruk.org.uk**
-
-Please contact us if you have any comments about the information in this factsheet:
-feedback@bowelcanceruk.org.uk
-
-
-Registered Charity Number 1071038 (England and Wales) and SC040914 (Scotland)
-**6**
-Version 2.1. Information correct at time of publication: April 2024. To be reviewed: April 2027
 
 

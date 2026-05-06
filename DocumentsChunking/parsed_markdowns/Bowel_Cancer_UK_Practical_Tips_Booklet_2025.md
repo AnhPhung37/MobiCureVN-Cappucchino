@@ -1,28 +1,3 @@
-## **This booklet is for anyone who has had treatment for** **bowel cancer. It may also be helpful for your family** **and friends.**
-
-
-
-It has information and practical
-tips for working, managing money
-and traveling when you have
-bowel cancer.
-
-
-Please speak to your healthcare
-team if you have any questions
-about how the information in this
-booklet affects you. Our contact
-details and a list of other useful
-organisations are listed at the end
-of the booklet.
-
-
-
-
-
-
-
-
 # **Work**
 
 ## **As soon as you’re diagnosed with cancer, you’re protected** **from discrimination at work by the Equality Act 2010.** **In Northern Ireland, you’re protected by the Disability** **Discrimination Act 1995.**
@@ -50,15 +25,15 @@ help you do your job. Examples of
 reasonable adjustments are:
 
 
-**• ** working different hours or
+**•** working different hours or
 working part-time
 
 
-**• ** allowing time off for doctor’s
+**•** allowing time off for doctor’s
 appointments
 
 
-**• ** changing your role to remove
+**•** changing your role to remove
 difficult tasks
 
 
@@ -78,23 +53,23 @@ feel more comfortable at work.
 These might include:
 
 
-**• ** moving your desk nearer to the
+**•** moving your desk nearer to the
 toilets
 
 
-**• ** having a parking space near the
+**•** having a parking space near the
 entrance to your work
 
 
-**• ** allowing extra breaks if you feel
+**•** allowing extra breaks if you feel
 tired
 
 
-**• ** flexible hours to avoid a stressful
+**•** flexible hours to avoid a stressful
 commute
 
 
-**• ** having a quiet space where you
+**•** having a quiet space where you
 can rest
 
 
@@ -167,15 +142,15 @@ benefits to help with your living
 costs. These may include:
 
 
-**• ** Employment and Support
+**•** Employment and Support
 Allowance (ESA)
 
-**• ** Universal Credit (UC)
+**•** Universal Credit (UC)
 
-**• ** Personal Independence Payment
+**•** Personal Independence Payment
 (PIP)
 
-**• ** Adult Disability Payment (ADP)
+**•** Adult Disability Payment (ADP)
 in Scotland
 
 
@@ -557,240 +532,5 @@ or disabilities.
 
 
 
-
-
-# **Other useful organisations**
-
-
-
-**Bladder and Bowel Community**
-
-bladderandbowel.org
-
-
-An organisation providing support
-and products for people with
-bladder and bowel control problems.
-
-
-**Bladder and Bowel UK**
-
-bbuk.org.uk
-
-
-Signposts to local continence
-services and provides ‘Just can’t
-wait’ toilet cards.
-
-
-**Citizens Advice**
-
-citizensadvice.org.uk
-
-
-Provides free, confidential advice
-on money, work and housing. You
-can find details of your local Citizens
-Advice on their website or in your
-phone directory.
-
-
-**Colostomy UK**
-
-colostomyuk.org
-
-0800 328 4257
-
-
-Offers support, reassurance and
-practical information to anyone who
-has, or is about to have, a colostomy.
-
-
-
-**Disability Rights UK**
-
-disabilityrightsuk.org
-
-0330 995 0400
-
-
-Sells Radar Keys and provides
-information on work and benefits.
-
-
-**GOV.UK**
-
-gov.uk
-
-
-The Government website for the UK
-provides information about travel
-abroad, access to benefits, including
-applying for a blue badge, and the
-Equality Act.
-
-
-**Macmillan Cancer Support**
-
-macmillan.org.uk
-
-0808 808 0000
-
-
-Provides support and information
-on cancer, money, benefits and
-work.
-
-
-**Maggie’s**
-
-maggiescentres.org
-
-0300 123 1801
-
-
-Provides free practical, emotional
-and social support to people with
-cancer and their family and friends.
-Maggie’s has centres at some NHS
-hospitals as well as an online centre.
-
-
-
-**Marie Curie**
-
-mariecurie.org.uk
-
-
-Provides palliative and end of life
-care, information and support for
-people living with any illness.
-
-
-**Money Helper**
-
-moneyhelper.org.uk
-
-
-Provides free and impartial advice
-on all financial topics, including
-insurance policies.
-
-
-**NHS**
-
-nhs.uk
-
-
-Provides health and lifestyle
-information, as well as information
-on practical aspects, including
-travel costs and GHIC cards when
-travelling abroad.
-
-
-**nidirect**
-
-nidirect.gov.uk
-
-
-Government website for Northern
-Ireland citizens. Includes information
-on help with health costs.
-
-
-
-**Tenovus Cancer Care**
-
-tenovuscancercare.org.uk
-
-029 2076 8850
-
-
-Support for people with cancer in
-Wales, including practical advice
-and a helpline.
-
-
-**Trussell**
-
-trussell.org.uk
-
-
-Provides practical support and
-advice for people who may need to
-access a food bank.
-
-
-**Social Security Scotland’s Local**
-**Delivery service**
-
-mygov.scot
-
-0800 182 2222
-
-
-Provide personal support for people
-in Scotland with applying for
-benefits applications.
-
-
-**Working With Cancer**
-
-workingwithcancer.co.uk
-
-
-Provides employment support and
-career advice to people affected by
-cancer and their partners.
-
-
-
-**16** Practical tips Practical tips **17**
-
-
-# **More support**
-
-## **Online Communities**
-
-Our online communities are welcoming places for
-everyone affected by bowel cancer to ask questions,
-read about people’s experiences and support each other.
-Join us at **bowelcanceruk.org.uk/online-communities**
-## **Website**
-
-
-Visit our website for a range of information about
-bowel cancer including symptoms, risk factors,
-screening, diagnosis, treatment and living with and
-beyond the disease. Visit **bowelcanceruk.org.uk**
-## **Publications**
-
-
-We produce a range of expert information to
-support anyone affected by bowel cancer.
-Order or download our free publications at
-**bowelcanceruk.org.uk/our-publications**
-## **Ask the Nurse**
-
-
-If you have any questions about bowel cancer,
-contact our nurses at **bowelcanceruk.org.uk/nurse**
-
-
-# **Notes**
-
-
-
-**18** Practical tips Practical tips **19**
-
-
-Please contact us if you have any comments about the
-information in this booklet: feedback@bowelcanceruk.org.uk
-
-
-Registered Charity Number 1071038 (England and Wales) and SC040914 (Scotland) Version 1.0.
-Information correct at time of publication: June 2025. To be reviewed June 2028
 
 
