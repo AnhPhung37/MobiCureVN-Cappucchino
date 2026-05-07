@@ -16,17 +16,10 @@ More than 54% of colorectal cancers in the US are attributable to potentially mo
 Personal, hereditary, and medical risk factors include:
 
 - Age: Rates in younger adults have increased in recent years, but colorectal cancer is more common after age 50.
-
 - Personal or family history: Colorectal cancer risk is higher among individuals with a personal or family history of the disease.
-
 - Race and ethnicity: For colorectal cancer, Alaska Natives, American Indians, and African Americans have the highest incidence and mortality rates in the US. Ashkenazi Jews have one of the highest risks in the world.
-
-- Hereditary syndromes: About 5% of people who develop colorectal cancer have inherited gene mutations, such as Lynch syndrome (hereditary non-polyposis colorectal cancer
-
-[HNPCC]), and familial adenomatous polyposis (FAP).
-
+- Hereditary syndromes: About 5% of people who develop colorectal cancer have inherited gene mutations, such as Lynch syndrome (hereditary non-polyposis colorectal cancer [HNPCC]), and familial adenomatous polyposis (FAP).
 - Personal history of inflammatory bowel disease
-
 - Type 2 diabetes
 ### Screening and Detection [ 1, 2, 3]
 
@@ -42,16 +35,12 @@ People at high risk based on family and/or personal history or other factors may
 ### Stool-based tests
 
 - Highly sensitive fecal immunochemical test (FIT)* every year, or
-
 - Highly sensitive guaiac-based fecal occult blood test (gFOBT)* every year, or
-
 - Multi-targeted stool DNA test (MT-sDNA) every 3 years*
 ### Visual exams of the colon and rectum
 
 - Colonoscopy every 10 years, or
-
 - CT colonography (virtual colonoscopy)* every 5 years, or
-
 - Sigmoidoscopy (FSIG)* every 5 years
 
 _*If a person chooses to be screened with a test other than colonoscopy, any_
@@ -73,23 +62,17 @@ If a person is found to have a cancer syndrome, it might be appropriate to recom
 ### Treatment [ 1, 3, 4, 5,]
 
 Treatment options are based on the tumor location, stage, and molecular characteristics, along with patient comorbidities.
-Surgery, radiation therapy, chemotherapy, targeted therapy, and immunotherapy drugs, either in combination or alone,
-[might be used. Visit cancer.org/colorectalcancer to learn more](http://cancer.org/colorectalcancer) about treatment options for colorectal cancer.
+Surgery, radiation therapy, chemotherapy, targeted therapy, and immunotherapy drugs, either in combination or alone, [might be used. Visit cancer.org/colorectalcancer to learn more](http://cancer.org/colorectalcancer) about treatment options for colorectal cancer.
 
 References
 
 1. American Cancer Society. _Cancer Facts & Figures 2026_ . Atlanta: American Cancer [Society; 2026. Available at https://www.cancer.org/research/cancer-facts-statistics/all-](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html) [cancer-facts-figures/2026-cancer-facts-figures.html on January 13, 2026.](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)
-
 2. American Cancer Society. _Colorectal Cancer Facts & Figures 2023-2025_ . Atlanta:
-
-[American Cancer Society; 2023. Accessed at https://www.cancer.org/content/dam/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
-[cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
-[colorectal-cancer-facts-and-figures-2023.pdf on January 13, 2026.](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
+[American Cancer Society; 2023. Accessed at https://www.cancer.org/content/dam/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf) [cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf) [colorectal-cancer-facts-and-figures-2023.pdf on January 13, 2026.](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)
 
 New cases:
 
 - 108,860 cases of colon cancer
-
 - 49,990 cases of rectal cancer
 
 Deaths:
@@ -111,14 +94,10 @@ The most common concerns people with colorectal cancer have include chronic diar
 A cancer diagnosis can profoundly impact quality of life. Clinicians should assess for any physical, social, psychological, spiritual, and financial issues. Integrating palliative care can help manage symptoms, address issues, and improve quality of life. It can be offered at any time, from diagnosis until the end of life. Throughout a person’s cancer journey, it’s very important for clinicians to share information and coordinate care to ensure ongoing surveillance.
 
 3. American Cancer Society. Colorectal Cancer. Cancer.org. Updated January 29, 2024.
-
 [Accessed at https://www.cancer.org/cancer/colon-rectal-cancer.html on January 13, 2026.](https://www.cancer.org/cancer/colon-rectal-cancer.html)
 
 4. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology [(NCCN Guidelines®), Colon Cancer, Version 5.2025. Accessed at https://www.nccn.org](https://www.nccn.org) on January 13, 2026.
-
-5. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology
-
-[(NCCN Guidelines®), Rectal Cancer, Version 4.2025. Accessed at https://www.nccn.org](https://www.nccn.org) on January 13, 2026.
+5. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology [(NCCN Guidelines®), Rectal Cancer, Version 4.2025. Accessed at https://www.nccn.org](https://www.nccn.org) on January 13, 2026.
 
 ©2026, American Cancer Society, Inc.
 

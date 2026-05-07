@@ -17,7 +17,6 @@ A stent can relieve these symptoms by widening the bowel to open and unblock it.
 Stents can be temporary or permanent.
 
 - You might be offered a temporary stent if you are going to have surgery later to remove the cancer that is blocking your bowel. By relieving your symptoms, it gives you and your doctor more time to prepare for surgery. Some research suggests this can mean less time in hospital or intensive care and lead to fewer complications. Having a stent fitted might also reduce the need for a stoma.
-
 - If surgery isn’t suitable or you choose not to have it, you might be offered a permanent stent to relieve your symptoms. You can discuss this with your specialist nurse.
 
 ## Before your stent is fitted
@@ -38,7 +37,6 @@ You might also be given antibiotics through a needle (cannula) in your hand to h
 2. Small bowel
 3. Rectum
 4. Anus
-
 - Bowel cancer
 
 Stent position is shown within the colon at the site of blockage.
@@ -87,15 +85,10 @@ After the procedure you will be closely monitored for the first four to six hour
 Most people don’t have any serious problems caused by their stent. Your doctor or specialist nurse will explain the possible risks. They may include:
 
 - Stent failure – sometimes the stent can’t be fitted in the right place or doesn’t open the bowel enough and the bowel doesn’t start working again. If this happens, your doctor will need to stop the procedure and discuss other options with you
-
 - Perforation – this is when fitting the stent tears the bowel wall. This is uncommon but can be a serious complication. It can mean you need an operation to remove the damaged part of the bowel
-
 - Migration – this is where the stent comes loose from its position and moves out of place. If this happens your bowel could become blocked again. You might need to have the stent removed or replaced
-
 - Re-obstruction – this is where the tumour grows through the mesh of the stent, blocking your bowel again. This might need treating with another procedure such as a new stent fitted
-
 - Bleeding from your bottom – it’s normal to notice a little bit of blood after the stent is fitted and it’s usually nothing to worry about. If you notice a lot of bleeding, tell your specialist nurse straight away
-
 - Mild discomfort or pain – some discomfort or pain is normal as your bowel starts working normally again. You may feel discomfort in your tummy (abdomen) or your rectum depending on where your stent is fitted
 
 ## When to contact your specialist nurse
@@ -103,11 +96,8 @@ Most people don’t have any serious problems caused by their stent. Your doctor
 Contact your specialist nurse straight away if you have any of the following symptoms, as they could be a sign of a problem that needs treating quickly:
 
 - Pain or tenderness of the tummy (abdomen) that is more than mild or uncomfortable
-
 - A lot of bleeding from your bottom
-
 - Fever, a faster heart rate, faster breathing or confusion
-
 - You become constipated, feel sick, or your tummy becomes uncomfortable or bloated with spasms or gurgling
 
 ## Will there be any changes to my bowel habits?

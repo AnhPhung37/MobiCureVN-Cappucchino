@@ -22,8 +22,7 @@ The term colorectal cancer is used to describe cancers that form in either the c
 While these cancers are similar, their treatment is different. The focus of this guide is colon cancer.
 
 For information on rectal cancer treatment, see the _NCCN Guidelines for Patients: Rectal_
-_Cancer_ at [NCCN.org/patientguidelines and on](https://www.nccn.org/patientguidelines)
-[the NCCN Patient Guides for Cancer](https://www.nccn.org/guidelines/nccn-mobile-app) app.
+_Cancer_ at [NCCN.org/patientguidelines and on](https://www.nccn.org/patientguidelines) [the NCCN Patient Guides for Cancer](https://www.nccn.org/guidelines/nccn-mobile-app) app.
 
 #### What are polyps?
 
@@ -36,9 +35,7 @@ Polyps that rarely turn into cancer include hyperplastic and inflammatory polyps
 Removing polyps can prevent cancer before it starts. Most polyps can be removed during a colonoscopy using a minor endoscopic procedure called a polypectomy. Polyps can also be tested to make sure that cancer hasn’t already started to develop.
 
 For more information on screening for polyps, see the _NCCN Guidelines for Patients:_
-_Colorectal Cancer_ _Screening_ at [NCCN.org/](https://www.nccn.org/patientguidelines)
-[patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines)
-[Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
+_Colorectal Cancer_ _Screening_ at [NCCN.org/](https://www.nccn.org/patientguidelines) [patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines) [Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 Colon Cancer, 2025 6
 
@@ -96,9 +93,7 @@ The diagnosis and other findings will be included in a document called a patholo
 It's common to have another colonoscopy after colon cancer is diagnosed to thoroughly examine the colon and look for other possible areas of cancer. This is called a diagnostic colonoscopy.
 
 For more information on screening colonoscopy and what to expect, see the _NCCN Guidelines for Patients:_
-_Colorectal Cancer_ _Screening_ at [NCCN.org/](https://www.nccn.org/patientguidelines)
-[patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines)
-[Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
+_Colorectal Cancer_ _Screening_ at [NCCN.org/](https://www.nccn.org/patientguidelines) [patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines) [Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 #### Mismatch repair testing
 
@@ -222,9 +217,7 @@ Colon Cancer, 2025 14
 For more information on fertility and family planning, see the
 _NCCN Guidelines for Patients_
 _for Adolescent and Young_
-_Adult Cancer_ at [NCCN.org/](https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients)
-[patientguidelines and on the](https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app)
-[Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
+_Adult Cancer_ at [NCCN.org/](https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients) [patientguidelines and on the](https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app) [Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 ###### Clinical trials
 
@@ -240,11 +233,8 @@ Phases
 Most cancer clinical trials focus on treatment and are done in phases.
 
 - Phase 1 trials study the safety and side effects of an investigational drug or treatment approach.
-
 - Phase 2 trials study how well the drug or approach works against a specific type of cancer.
-
 - Phase 3 trials test the drug or approach against a standard treatment. If the results are good, it may be approved by the FDA.
-
 - Phase 4 trials study the safety and benefit of an FDA-approved treatment.
 
 Who can enroll?
@@ -261,26 +251,19 @@ Finding a clinical trial
 
 In the United States
 
-NCCN Cancer Centers
-[NCCN.org/cancercenters](https://www.nccn.org/home/member-institutions)
+NCCN Cancer Centers [NCCN.org/cancercenters](https://www.nccn.org/home/member-institutions)
 
-The National Cancer Institute (NCI)
-
-[cancer.gov/about-cancer/treatment/](https://www.cancer.gov/about-cancer/treatment/clinical-trials/search)
-[clinical-trials/search](https://www.cancer.gov/about-cancer/treatment/clinical-trials/search)
+The National Cancer Institute (NCI) [cancer.gov/about-cancer/treatment/](https://www.cancer.gov/about-cancer/treatment/clinical-trials/search) [clinical-trials/search](https://www.cancer.gov/about-cancer/treatment/clinical-trials/search)
 
 Worldwide
 
-The U.S. National Library of Medicine (NLM)
-[clinicaltrials.gov](https://www.clinicaltrials.gov/)
+The U.S. National Library of Medicine (NLM) [clinicaltrials.gov](https://www.clinicaltrials.gov/)
 
 Need help finding a clinical trial?
 
 NCI’s Cancer Information Service (CIS)
 
-1.800.4.CANCER (1.800.422.6237)
-
-[cancer.gov/contact](https://www.cancer.gov/contact)
+1.800.4.CANCER (1.800.422.6237) [cancer.gov/contact](https://www.cancer.gov/contact)
 
 Will I get a placebo?
 
@@ -293,29 +276,21 @@ There is no fee to enroll in a clinical trial. The study sponsor pays for resear
 ###### Key points
 
 - All colon tumors should be tested in a lab for mismatch repair deficiency (dMMR) or microsatellite instability-high (MSI-H). Cancers that don’t have these biomarkers are called microsatellite stable (MSS) or mismatch repair proficient (pMMR).
-
 - Inherited syndromes related to colon cancer include Lynch syndrome and familial adenomatous polyposis. Everyone with colon cancer should be asked about their family health history.
-
 - A complete blood count (CBC), chemistry profile, and carcinoembryonic antigen (CEA) test are recommended as part of initial testing.
-
 - Computed tomography (CT) is good at showing lymph nodes and other areas of possible cancer spread beyond the colon.
 
 Colon Cancer, 2025 16
 
 - If you want the option of starting or growing a family, talk to your care team about any fertility-related risks of your treatment plan and options for preserving your fertility.
-
 - Clinical trials provide access to investigational treatments that may, in time, be approved by the FDA.
 
 ###### Questions to ask
 
 - How bad is my cancer?
-
 - Is the cancer mismatch repair deficient or microsatellite instability-high?
-
 - What imaging has been ordered to assess if the cancer has spread in my body?
-
 - Can you give me a copy of my pathology report and other test results?
-
 - Is it worth it to go through treatment?
 
 ## 3 Treatment for non-metastatic cancer
@@ -340,9 +315,7 @@ Colon Cancer, 2025 18 polyp in which cancer has just started to grow is called a
 Most polyps can be removed during a colonoscopy, using a minor endoscopic procedure called a polypectomy. Often, no further treatment is needed. In other cases, surgery (resection) of a bigger piece of the colon is needed. This depends on:
 
 - The size and shape of the polyp (pedunculated or sessile),
-
 - The polypectomy results, and
-
 - The results of testing the removed tissue.
 
 Before deciding whether resection is needed after a polypectomy, your provider will review the results of testing with you and discuss your options.
@@ -380,11 +353,8 @@ Colon Cancer, 2025 20
 Your care team will give you information on:
 
 - How to prepare for surgery
-
 - What to expect during and after surgery
-
 - Recovery
-
 - Possible short- and long-term side effects of colectomy, including:
 
 ¬ Leaking from the spot where the colon was reconnected (anastomotic leak)
@@ -403,9 +373,7 @@ Cancer (AJCC) tumor, node, metastasis (TNM) system is used to stage colon cancer
 In the AJCC system, the following key pieces of information about the cancer are used to give it a stage:
 
 - T: How far the tumor has grown into or through the colon wall
-
 - N: Whether any lymph nodes have cancer
-
 - M: Whether the cancer has spread to areas or organs outside the colon (metastasized)
 
 The T, N, and M scores are combined to assign the cancer one of the following stages:
@@ -446,9 +414,7 @@ Sometimes radiation therapy (alone or with chemotherapy) is given along with sys
 
 For more information on the side effects of checkpoint inhibitors, see the _NCCN_
 _Guidelines for Patients: Immunotherapy Side_
-_Effects: Immune Checkpoint Inhibitors_ at
-[NCCN.org/patientguidelines and on the](https://www.nccn.org/patientguidelines) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app)
-[Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
+_Effects: Immune Checkpoint Inhibitors_ at [NCCN.org/patientguidelines and on the](https://www.nccn.org/patientguidelines) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app) [Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 Colon Cancer, 2025 22
 
@@ -478,9 +444,7 @@ Chemotherapy is typically given for 3 to 6 months. The length of treatment depen
 
 If immunotherapy is planned, see the _NCCN_
 _Guidelines for Patients for Immunotherapy_
-_Side Effects: Immune Checkpoint Inhibitors_ at
-[NCCN.org/patientguidelines and on the](https://www.nccn.org/patientguidelines) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app)
-[Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
+_Side Effects: Immune Checkpoint Inhibitors_ at [NCCN.org/patientguidelines and on the](https://www.nccn.org/patientguidelines) [NCCN](https://www.nccn.org/guidelines/nccn-mobile-app) [Patient Guides for Cancer app.](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 Does the cancer have a PIK3CA mutation?
 
@@ -513,19 +477,12 @@ Colon Cancer, 2025 24
 ###### Key points
 
 - No further treatment is needed for a malignant pedunculated polyp that was removed in one piece and found to be low risk.
-
 - Malignant sessile polyps are more likely to return after polypectomy than pedunculated polyps. Surgery and observation are options for sessile polyps.
-
 - Colectomy is needed for cancer that isn’t found early enough to be removed by polypectomy. If the cancer is advanced or has spread to lymph nodes, chemotherapy or immunotherapy may be given before surgery.
-
 - If surgery isn’t possible, treatment with systemic therapy is recommended.
-
 - Observation is recommended after surgery for stage 1 cancers. You don’t need chemotherapy.
-
 - Chemotherapy is recommended after surgery for stage 2 mismatch repair proficient (pMMR)/microsatellite stable (MSS) cancers that are at high risk of recurrence.
-
 - Chemotherapy is recommended after surgery for all stage 3 cancers.
-
 - Surveillance to check for recurrence is recommended for 5 years after treatment. Depending on the stage, testing may include colonoscopies, physical exams, carcinoembryonic antigen (CEA) blood tests, and computed tomography (CT) scans.
 
 Colon Cancer, 2025 25
@@ -533,18 +490,14 @@ Colon Cancer, 2025 25
 ###### Questions to ask
 
 - Am I a candidate for surgery (colectomy)?
-
 - Will I need chemotherapy or immunotherapy before surgery? For how long? What is the benefit?
-
 - What is treatment really going to do to me? Will I lose my hair?
-
 - How likely is the cancer to return after treatment with surgery?
 
 ##### share with us.
 
 Take our survey, and help make the
 NCCN Guidelines for Patients better for everyone!
-
 [NCCN.org/patients/comments](https://www.nccn.org/patients/comments)
 
 ## 4 Treatment for metastatic cancer
@@ -560,11 +513,8 @@ Biomarkers are targetable features of a cancer. They are often mutations (change
 All metastatic colon cancers should be tested for the following biomarkers:
 
 - Mismatch repair deficiency/microsatellite instability-high (dMMR/MSI-H) (if not already performed)
-
 - _RAS_ ( _KRAS_ and _NRAS_ ) mutations
-
 - _BRAF_ mutations
-
 - HER2 amplification
 
 Testing for many biomarkers at one time is called next-generation sequencing (NGS).
@@ -603,7 +553,6 @@ Embolization
 If the cancer has spread only (or mainly) to the liver, treatment with intra-arterial liver-directed therapies may be an option. These therapies may be considered for liver tumors that:
 
 - Didn't improve (or stopped improving) with chemotherapy, and
-
 - Can't be resected or ablated.
 
 Intra-arterial therapies treat liver tumors with chemotherapy beads (chemoembolization) or radioactive spheres (radioembolization).
@@ -658,11 +607,8 @@ Colon Cancer, 2025 30
 Recommended first-line regimens are listed below. The targeted therapy bevacizumab (Avastin) may be added to any of these regimens:
 
 - FOLFIRI
-
 - FOLFOX
-
 - CAPEOX
-
 - FOLFIRINOX
 
 For some tumors in the left side of the colon, there is another option for first-line therapy.
@@ -682,9 +628,7 @@ If the cancer progresses, your provider may suggest changing regimens. The choic
 If the cancer progresses through all available regimens, recommended options if you are eligible include:
 
 - Targeted therapy with fruquintinib (Fruzaqla)
-
 - Chemotherapy with trifluridine and tipiracil (Lonsurf)
-
 - Targeted therapy with regorafenib (Stivarga)
 
 These targeted therapies are tablets that can be taken by mouth. The targeted therapy bevacizumab may be given with trifluridine and tipiracil.
@@ -723,13 +667,9 @@ Supportive care helps improve your quality of life during and after cancer treat
 Supportive care is available to everyone with cancer and their families, not just those at the end of life. It can also help with:
 
 - Making treatment decisions
-
 - Coordinating your care
-
 - Paying for care
-
 - Planning for advanced care and end of life
-
 - Managing your symptoms
 
 Palliative care specialists are part of supportive care. They help to ensure that your quality of life is always considered, regardless of where you are in the treatment process or afterward.
@@ -742,11 +682,8 @@ Palliative care seeks to ensure that you are as comfortable as possible while co
 Surveillance after treatment for stage 4 colon cancer includes:
 
 - Colonoscopies
-
 - Physical exams
-
 - Carcinoembryonic antigen (CEA) blood tests
-
 - Computed tomography (CT) scans
 
 The recommended schedule for surveillance testing is shown in Guide 6.
@@ -781,13 +718,9 @@ Oxaliplatin can cause serious nerve damage.
 Your options for systemic therapy will depend, in part, on whether the cancer has any biomarkers. Therapies targeting the biomarkers listed below are available:
 
 - HER2 amplification
-
 - _KRAS_ G12C mutation
-
 - _BRAF_ mutations
-
 - _NTRK_ gene fusion
-
 - _RET_ gene fusion
 
 For cancers without biomarkers, chemotherapy with FOLFIRI or irinotecan is a recommended first-line option. A biologic may be given with chemotherapy. Biologics include bevacizumab, ziv-aflibercept, ramucirumab, cetuximab, and panitumumab.
@@ -822,7 +755,6 @@ There are 2 options for treating resectable, distant recurrences of dMMR/MSI-H c
 Local therapies may be used together with resection, or used alone for very small tumors. If you haven’t had immunotherapy, recommended options include:
 
 - Immunotherapy, followed by observation or resection
-
 - Resection followed by chemotherapy
 
 If you have received checkpoint inhibitor immunotherapy, one recommended option is resection first, followed by either chemotherapy or observation. Observation is recommended for those who have already had treatment with oxaliplatin.
@@ -833,17 +765,11 @@ More chemotherapy may follow.
 ##### Key points
 
 - If not already done, all metastatic cancers should be tested for biomarkers (features) including dMMR/MSI-H, _RAS_ and _BRAF_ mutations, and HER2 amplification.
-
 - Next-generation sequencing (NGS) can find other rare biomarkers for which targeted treatments may be available, including _POLE/POLD1_ mutations, _RET_ fusions, and _NTRK_ fusions.
-
 - Your treatment options may include thermal ablation and stereotactic body radiation therapy (SBRT). These local therapies may be used alone or with surgery, but only if all areas of cancer can be removed. To learn if surgery or treatment with other local therapies is an option, your case should be reviewed by a multidisciplinary team of experts.
-
 - When possible, treatment with surgery and systemic therapy is recommended for stage 4 colon cancer. The choice of chemotherapy or immunotherapy depends on the mismatch repair (MMR) status of the cancer.
-
 - Stage 4 cancer that can’t be removed with surgery or local therapies is treated with systemic therapy.
-
 - For colon cancer that has spread to the peritoneum, systemic therapy is usually given. The goal is to relieve or prevent symptoms.
-
 - The return and spread of stage 1, 2, or 3 colon cancer to areas far from the colon is called a distant recurrence. Most distant recurrences are treated with systemic therapy.
 
 Colon Cancer, 2025 37
@@ -851,13 +777,9 @@ Colon Cancer, 2025 37
 ###### Questions to ask
 
 - Am I a candidate for a clinical trial? Do you know of one I can join?
-
 - Am I a candidate for surgery? If not, is it possible that I’ll become a candidate?
-
 - Does my cancer have any biomarkers? How does this affect my options?
-
 - Did an interventional oncologist/ radiologist review my case, along with a multidisciplinary team, to see if I am a candidate for local therapies?
-
 - Which systemic therapy regimen do you recommend for me? Why?
 
 ## 5 Survivorship
@@ -873,13 +795,9 @@ After cancer treatment, your primary care provider and oncologist will work toge
 Ask your oncologist for a written survivorship care plan. Ideally, the plan will include:
 
 - A summary of your cancer treatment history
-
 - A description of possible short-term, late, and long-term side effects
-
 - A schedule of follow-up cancer tests
-
 - Clear roles and responsibilities for your providers
-
 - General health and wellness recommendations
 
 ### Help with side effects
@@ -898,13 +816,9 @@ You may have more bowel movements than usual, and they may come on urgently.
 Having frequent and watery bowel movements is called diarrhea. Incontinence is the inability to control urination (urinary incontinence) or bowel movements (fecal incontinence). The following may help with these side effects:
 
 - Supplemental fiber
-
 - Changing your diet
-
 - Anti-diarrhea medicines
-
 - Strengthening your pelvic floor
-
 - Wearing protective undergarments
 
 A cancer nutritionist can help you make changes to your diet after colon surgery.
@@ -964,13 +878,9 @@ If you need help paying for cancer care, financial assistance may be available. 
 
 ###### More information
 
-For more information on cancer survivorship,
-[the following are available at NCCN.org/](https://www.nccn.org/patientguidelines)
-[patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines)
-[Guides for Cancer app:](https://www.nccn.org/guidelines/nccn-mobile-app)
+For more information on cancer survivorship, [the following are available at NCCN.org/](https://www.nccn.org/patientguidelines) [patientguidelines and on the NCCN Patient](https://www.nccn.org/patientguidelines) [Guides for Cancer app:](https://www.nccn.org/guidelines/nccn-mobile-app)
 
 - _Survivorship Care for Healthy Living_
-
 - _Survivorship Care for Cancer-Related_ _Late and Long-Term Effects_
 
 Colon Cancer, 2025 42
@@ -978,11 +888,8 @@ Colon Cancer, 2025 42
 ###### Key points
 
 - Survivorship focuses on the physical, emotional, and financial issues unique to cancer survivors.
-
 - Ideally, your oncologist and primary care provider will work together to provide recommended follow-up care. Nurse navigators can also be helpful resources.
-
 - A survivorship care plan is helpful in transitioning your care to your primary care provider.
-
 - Healthy habits, including exercising and eating right, play an important role in helping to prevent other diseases and second cancers.
 
 Words to know
@@ -1067,4 +974,3 @@ supportive care
 A range of care available to everyone diagnosed with cancer that is intended to improve quality of life.
 unresectable
 Cancer that cannot be removed safely using surgery.
-

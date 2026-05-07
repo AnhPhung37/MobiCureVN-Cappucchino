@@ -26,9 +26,7 @@ Not everyone can have their stoma reversed. Your surgeon will talk to you about 
 They will want to make sure that:
 
 - the muscles in your anus are working. If your cancer removal surgery damaged the anal sphincter muscles, you may struggle to control your bowel movements and could have some leakage from your bottom
-
 - you have enough bowel left and it has healed
-
 - you’re fit and healthy enough for more surgery
 
 ### When will you have your stoma reversed?
@@ -48,7 +46,6 @@ They may also give you information on pelvic floor exercises. Your pelvic floor 
 Before your operation, the surgeon will check that your bowel has healed. They may do this by:
 
 - using a gloved finger to check your rectum – they may also use a camera to see where the bowel has been joined back together
-
 - giving you a liquid (enema) through your bottom into your bowel – the liquid shows up on X-ray so the doctor can see any leaks around the join
 
 ### Your stoma reversal surgery
@@ -77,11 +74,8 @@ Many people don’t have serious problems after having stoma reversal surgery.
 Your surgeon will explain the possible risks, which may include:
 
 - wound infection - if your wound gets infected, you might need antibiotics. Tell your healthcare team as soon as possible if your wound is hot, red or sore
-
 - ileus - after surgery, your bowel might be slow to start working again or stop working. This is a condition called ileus. You may feel bloated, have pain in your stomach area and feel or be sick. You’ll need to stop eating and drinking until you start to pass wind again
-
 - anastomotic leak - if the newly joined ends (anastomosis) of the bowel don’t heal properly, the bowel contents can leak into the abdomen. This can cause pain in your lower tummy area, a high temperature and tiredness. You may need to rest your bowel by not eating or drinking for a few days. Or you may need more surgery and possibly another stoma
-
 - bowel obstruction - sometimes, the bowel can become blocked. If this happens, you may need to rest the bowel by not eating or drinking, or you may need another operation
 
 Contact your healthcare team if you feel unwell or have any symptoms after your surgery.
@@ -91,11 +85,8 @@ Contact your healthcare team if you feel unwell or have any symptoms after your 
 To help your recovery at home:
 
 - Avoid heavy lifting or bending for six weeks after your operation - you may want to plan any changes at work or support at home in advance
-
 - Check with your doctor and insurance company when you can start driving again and start some gentle exercise, such as walking, soon after your operation - you could start with a walk around the house then move on to a short walk outside. As you get your strength and energy back, you’ll be able to do more
-
 - Protect your skin - you may want to use moist toilet wipes and barrier creams, such as nappy rash creams, to help stop your bottom getting sore
-
 - Listen to your body and rest when you need to - it can take a few weeks to get your energy back
 
 ### Regaining bowel control after stoma reversal
@@ -115,13 +106,9 @@ If you had surgery for rectal cancer, you may have long-term problems after stom
 Symptoms can include:
 
 - needing to empty your bowels urgently
-
 - feeling that you have not fully emptied your bowels
-
 - having small, more frequent bowel movements
-
 - difficulty knowing whether you need to pass wind or a bowel movement
-
 - not being able to control when you have a bowel movement
 
 Contact your GP or specialist nurse if you have any of these symptoms. They can give you medicine or refer you for further investigation and treatment.
@@ -146,21 +133,15 @@ Once you’re feeling stronger, you may feel able to start having sex again. If 
 After your stoma reversal surgery, your bowel is likely to be sensitive. To help with this, you could:
 
 - eat little and often, rather than having large meals
-
 - avoid eating late at night
-
 - drink plenty of fluids, including some water
 
 After your stoma reversal it may be tempting to eat all the foods you’ve missed, but some foods can irritate your bowel. Try to limit or avoid:
 
 - citrus fruits such as oranges, grapefruits and lemons
-
 - spicy food such as curries and foods containing chillies
-
 - high-fibre foods, such as fruit, vegetables and wholegrains
-
 - foods high in fat such as cheese, eggs, avocado and salmon
-
 - too much alcohol, caffeinated tea and coffee or fizzy drinks
 
 You can gradually add these foods to your diet once your bowel has settled down. It might take a bit of trial and error to find foods that work for you. You can read more about diet in our ‘Eating well’ booklet.

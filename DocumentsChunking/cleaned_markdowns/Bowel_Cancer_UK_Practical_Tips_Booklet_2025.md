@@ -7,9 +7,7 @@ Your employer must make reasonable adjustments at work.
 These are changes to help you carry on working or go back to work after time off. ‘Reasonable’ depends on the type of work you do and will consider cost, practicality and how much the arrangements will help you do your job. Examples of reasonable adjustments are:
 
 - working different hours or working part-time
-
 - allowing time off for doctor’s appointments
-
 - changing your role to remove difficult tasks
 
 If you’ve had time off work and are thinking of going back, you may want to ask if you can start off with a few hours or days and gradually build them up when you feel able to. This is sometimes called a phased return.
@@ -18,13 +16,9 @@ Your employer can also make practical adjustments to help you feel more comforta
 These might include:
 
 - moving your desk nearer to the toilets
-
 - having a parking space near the entrance to your work
-
 - allowing extra breaks if you feel tired
-
 - flexible hours to avoid a stressful commute
-
 - having a quiet space where you can rest
 
 Your employer can also refer you to an occupational health advisor or the HR team to discuss other ways they can support you. They will keep your information confidential if you ask them to.
@@ -46,11 +40,8 @@ Benefits Advisor in person who will help you find and apply for financial suppor
 When you’re diagnosed with cancer you may be entitled to some benefits to help with your living costs. These may include:
 
 - Employment and Support Allowance (ESA)
-
 - Universal Credit (UC)
-
 - Personal Independence Payment (PIP)
-
 - Adult Disability Payment (ADP) in Scotland
 
 If your bowel cancer is advanced or you have a disability, you may be entitled to more financial support.
@@ -157,4 +148,3 @@ Some high street companies offer insurance to people with cancer but there may b
 Your Cancer Support Worker or Cancer Care Coordinator may be able to give advice on travel insurance.
 
 If you already have travel insurance, check that it covers all your medical conditions. If you don’t have travel insurance, get quotes from different companies that cover all your medical conditions. Money Helper has a list of companies that offer travel insurance policies to people with serious medical conditions or disabilities.
-

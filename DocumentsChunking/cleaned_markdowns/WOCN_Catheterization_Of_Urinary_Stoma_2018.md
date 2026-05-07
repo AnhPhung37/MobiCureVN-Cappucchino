@@ -12,23 +12,16 @@ To obtain an uncontaminated urinary specimen from the stoma for laboratory analy
 Management
 
 - Specimens from the urostomy sample often have bacteria. Ensure that the specimen obtained is not contaminated during the collection of the sample.
-
 - The sample collection will take several minutes because the ileoconduit serves only as a passageway for the urine, not a reservoir.
-
 - Specimens for culture should never be obtained directly from an existing urostomy pouch or bedside drainage bag (Pagana & Pagana, 2007).
-
 - One small random controlled trial indicated no significant difference between samples obtained directly from the stoma via clean catheterization, obtained by allowing urine to drip into a sterile specimen cup, or obtained from a clean urostomy pouch (Vaarala, 2018).
-
 - Expert opinion is that the best method to obtain the urine specimen from the urostomy is sterile catheterization or clean catch drip collection method.
 
 Pouch Considerations
 
 - Patient with one-piece pouching system: The urostomy pouch system is completely removed, the specimen collected, and a new pouching system is placed.
-
 - Patient with two-piece pouch systems. One of the following options may be chosen:
-
 - The urostomy pouch is removed from the skin barrier flange (wafer), the specimen collected, and the pouch replaced.
-
 - The urostomy pouching system is completely removed, the specimen collected, and a new pouching system is placed.
 
 Procedure When Catheter Is Available
@@ -63,7 +56,6 @@ of urine before removing catheter. Collecting a sufficient amount of urine may t
 Procedure for Clean Catch Drip Collection Method
 
 - Cleansing solution. Follow institution policy. Further research is needed on the use of antiseptic solutions vs. sterile water or saline for cleaning prior to catheter insertion. Some of the solutions recommended are: betadine, chlorhexidine, soap and water (Gould et al., 2009; Unlu et al., 2007).
-
 - Sterile 4 x 4 gauze. • Sterile specimen container with lid, label, and laboratory specimen bag. • Sterile and clean gloves. • Soft paper towels and/or wash cloths for cleaning prior to replacing pouch. • New pouching system.
 
 1. Explain procedure to patient.
@@ -87,7 +79,6 @@ of urine. Collecting a sufficient amount of urine may take 5–15 minutes.
 Procedure if Stents are Present in the Urostomy Stoma**
 
 - Cleansing solution: Follow institution policy. Further research is needed on the use of antiseptic solutions vs. sterile water or saline for cleaning prior to catheter insertion. Some of the solutions recommended are: betadine, chlorhexidine, soap and water (Gould et al., 2009; Unlu et al., 2007).
-
 - Sterile 4 x 4 gauze. • Sterile specimen container with lid, label, and laboratory specimen bag. • Sterile and clean gloves. • Soft paper towels and/or wash cloths for cleaning prior to replacing pouch. • New pouching system.
 
 1. Explain procedure to patient.
@@ -113,41 +104,30 @@ Do not insert a Catheter to obtain specimen when stents are present.
 Aftercare
 
 - Place lid on specimen container. Apply patient identification label on container with a note that the specimen is from a urostomy stoma and put in a laboratory specimen bag for transport to the laboratory.
-
 - Transport specimen to lab within 1 hour. In the home care setting, if unable to transport specimen in 1 hour, refrigerate the specimen and transport within 24 hours.
-
 - Document in patient’s record:
-
 - Procedure and observations.
-
 - Instructions given to patient/caregiver.
 
 Antibiotic Therapy Considerations
 
 - Use caution when considering antibiotics to treat urinary infection for patients with a urostomy: “Patients should only commence antibiotic therapy if they are symptomatic” (Spraggon, 2008, p. 26).
-
 - Asymptomatic bacteriuria should not be treated, unless history of recurrent pyelonephritis. Patients with a history of recurrent pyelonephritis may warrant prophylactic antibiotic treatment (Falagas & Vergidis, 2005).
-
 - “In the case of ileal conduit or continent urinary diversion, bacteriuria is practically always present, and measurements taken to eradicate the bacterial carriage are fruitless” (Wullt, Agace, & Mansson, 2004, p. 192).
-
 - “The detection of urinary infection in these patients is difficult because the ileal loops are almost always colonized. Asymptomatic bacteriuria in the presence of a ureteroileal conduit should not be treated and prophylactic antibiotics are not recommended. Positive urine cultures associated with physical findings of fever, chills, and flank pain should prompt initiation of appropriate bactericidal antibiotics” (Schrier, 2007, p. 884).
 
 Recommendations for Future Research
 
 - Further research is needed on the use of antiseptic solutions vs. sterile water or saline for cleaning of the stoma prior to catheterization of the urinary stoma.
-
 - Replication of the small randomized controlled trial comparing the three urinary collection methods (Vaarala, 2018) using a larger sample and more robust crossover methodology.
 
 Summary
 
 - The recommended method for collecting a urine specimen from the urinary ostomy is via sterile catheterization.
-
 - If sterile catheterization cannot be accomplished, the secondary method for obtaining a urine specimen from the urinary ostomy is via clean catch drip collection method using a sterile urine collection container.
 
 - If urinary stents are present in the urinary ostomy, the urine specimen should be collected via clean catch drip collection method using a sterile urine collection container.
-
 - Urinary specimens should never be collected directly from an existing pouching system or the bedside drainage bag.
-
 - Antibiotic therapy should be initiated with caution in patients with urinary ostomies and based on physical findings rather than asymptomatic bacteriuria.
 
 Patient Education

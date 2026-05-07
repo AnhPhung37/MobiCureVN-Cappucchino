@@ -608,13 +608,11 @@ Making healthy lifestyle choices is good for your overall health and can prevent
 #### Do I need to see a specialist?
 
 Ask to see a dietitian if you have:
-diabetes a long-term health condition that affects what you can eat, such as high cholesterol, high blood pressure, gall stones, diverticulitis, coeliac disease or inflammatory bowel disease food allergies or sensitivities unintended weight loss side effects of treatment that affect your ability to eat, such as sickness, diarrhoea, fatigue or mouth sores low anterior resection syndrome (LARS)– this is a long-term bowel condition that some people may experience after some types of rectal cancer surgery. For more information about LARS, visit
-[bowelcanceruk.org.uk](https://www.bowelcanceruk.org.uk/about-bowel-cancer/living-with-and-beyond-bowel-cancer/change-in-bowel-habit-after-treatment/)
+diabetes a long-term health condition that affects what you can eat, such as high cholesterol, high blood pressure, gall stones, diverticulitis, coeliac disease or inflammatory bowel disease food allergies or sensitivities unintended weight loss side effects of treatment that affect your ability to eat, such as sickness, diarrhoea, fatigue or mouth sores low anterior resection syndrome (LARS)– this is a long-term bowel condition that some people may experience after some types of rectal cancer surgery. For more information about LARS, visit [bowelcanceruk.org.uk](https://www.bowelcanceruk.org.uk/about-bowel-cancer/living-with-and-beyond-bowel-cancer/change-in-bowel-habit-after-treatment/)
 
 A physiotherapist can help if you have extreme tiredness (fatigue) or need help getting your strength and fitness back. Physiotherapists can also help with other problems caused by bowel cancer and its treatment.
 
-For example, if surgery has caused you to lose control of your bowel, they can show you pelvic floor exercises that may help. You can find more ways to help you regain bowel control on our website at
-[bowelcanceruk.org.uk](https://www.bowelcanceruk.org.uk/about-bowel-cancer/our-publications/regaining-bowel-control/)
+For example, if surgery has caused you to lose control of your bowel, they can show you pelvic floor exercises that may help. You can find more ways to help you regain bowel control on our website at [bowelcanceruk.org.uk](https://www.bowelcanceruk.org.uk/about-bowel-cancer/our-publications/regaining-bowel-control/)
 
 #### Health and wellbeing events
 
@@ -658,8 +656,7 @@ You may get symptoms up to a day after you eat the food. You could share your di
 ||||||
 ||||||
 
-You can download copies of this diary from
-[bowelcanceruk.org.uk/ourpublications](http://www.bowelcanceruk.org.uk/ourpublications)
+You can download copies of this diary from [bowelcanceruk.org.uk/ourpublications](http://www.bowelcanceruk.org.uk/ourpublications)
 
 Eating well with and beyond bowel cancer 41
 

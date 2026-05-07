@@ -95,4 +95,3 @@ REFERENCES
 1. Ermer-Seltun JM. Anatomy and physiology of the urinary system. In: Carmel J, et al., editors. _Wound, Ostomy, and_ _Continence Nurses Society core curriculum: ostomy management_ .
 
 _A_ JN [M] June 2024 [M] Vol. 124, No. 6 35
-
