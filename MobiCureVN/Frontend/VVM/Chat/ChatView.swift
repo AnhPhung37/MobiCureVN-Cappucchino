@@ -198,14 +198,47 @@ struct ChatView: View {
     }
 
     private var statusBadge: some View {
-        HStack(spacing: 4) {
+        let status = viewModel.backendStatus
+        return HStack(spacing: 4) {
             Circle()
                 .frame(width: 7, height: 7)
-                .foregroundColor(viewModel.isLoading ? .orange : .green)
-                .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
-            Text(viewModel.isLoading ? "Đang trả lời..." : "Sẵn sàng")
+                .foregroundColor(statusColor(for: status))
+                .animation(.easeInOut(duration: 0.3), value: status)
+            Text(statusLabel(for: status))
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(Color(.secondaryLabel))
+                .lineLimit(1)
+        }
+        .fixedSize() // ← move fixedSize here, to the HStack level
+    }
+
+    private func statusLabel(for status: LLMBackendStatus) -> String {
+        switch status {
+        case .mock:
+            return "Mock service"
+        case .mockWithDownloadedModel:
+            return "Mock + model downloaded"
+        case .loading:
+            return "Đang tải model..."
+        case .localModelReady:
+            return "Model cục bộ"
+        case .unavailable:
+            return "Model không sẵn sàng"
+        }
+    }
+
+    private func statusColor(for status: LLMBackendStatus) -> Color {
+        switch status {
+        case .mock:
+            return .blue
+        case .mockWithDownloadedModel:
+            return .cyan
+        case .loading:
+            return .orange
+        case .localModelReady:
+            return .green
+        case .unavailable:
+            return .red
         }
     }
 
