@@ -57,6 +57,19 @@ public final class ModelManager {
         return modelsRoot.appendingPathComponent(resolvedRepoID.replacingOccurrences(of: "/", with: "_"), isDirectory: true)
     }
 
+    /// Return the local model directory URL if a valid model exists, otherwise `nil`.
+    public func getLocalModelPath(modelName: String, repoID: String?) -> URL? {
+        do {
+            let dir = try localModelDirectory(modelName: modelName, repoID: repoID)
+            if isValidLocalModelDirectory(dir) {
+                return dir
+            }
+        } catch {
+            return nil
+        }
+        return nil
+    }
+
     private func containsFile(in directory: URL, named fileName: String) -> Bool {
         guard let enumerator = fileManager.enumerator(at: directory,
                                                       includingPropertiesForKeys: nil,
@@ -377,6 +390,30 @@ public final class ModelManager {
         #endif
     }
 
+    private func validateArchiveLooksLikeZip(at archive: URL, source: URL) throws {
+        let fh = try FileHandle(forReadingFrom: archive)
+        defer { try? fh.close() }
+
+        let header = fh.readData(ofLength: 4)
+        guard header.count >= 2 else {
+            throw ModelManagerError.validationFailed("Archive too small: \(source.absoluteString)")
+        }
+
+        let bytes = [UInt8](header)
+        // ZIP: PK\x03\x04 (50 4B 03 04), also allow central directory signatures variants
+        if bytes.count >= 4,
+           bytes[0] == 0x50, bytes[1] == 0x4B {
+            return
+        }
+
+        // GZIP: 1F 8B
+        if bytes[0] == 0x1F, bytes[1] == 0x8B {
+            return
+        }
+
+        throw ModelManagerError.validationFailed("Archive at \(source.absoluteString) does not appear to be ZIP or GZIP")
+    }
+
     private func freeDiskSpace(at url: URL) -> Int? {
         do {
             let values = try url.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
@@ -397,49 +434,5 @@ public final class ModelManager {
         }
 
         return nil
-    }
-
-    private func validateArchiveLooksLikeZip(at archive: URL, source: URL) throws {
-        let data = try Data(contentsOf: archive)
-        guard data.count >= 4 else {
-            throw ModelManagerError.validationFailed("Downloaded file is too small to be a valid zip: \(source.absoluteString)")
-        }
-
-        let zipSignatures: [[UInt8]] = [
-            [0x50, 0x4B, 0x03, 0x04],
-            [0x50, 0x4B, 0x05, 0x06],
-            [0x50, 0x4B, 0x07, 0x08]
-        ]
-
-        let header = Array(data.prefix(4))
-        if zipSignatures.contains(header) {
-            return
-        }
-
-        let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<binary>"
-        throw ModelManagerError.validationFailed(
-            "Downloaded content is not a zip archive for URL: \(source.absoluteString). First bytes preview: \(preview)"
-        )
-    }
-
-    /// Check if a model exists locally without downloading.
-    /// Returns the model directory URL if it exists, nil otherwise.
-    public func getLocalModelPath(modelName: String, repoID: String? = nil) -> URL? {
-        do {
-            let modelDir = try localModelDirectory(modelName: modelName, repoID: repoID)
-
-            if isValidLocalModelDirectory(modelDir) {
-                print("ModelManager: found local model at \(modelDir.path)")
-                return modelDir
-            }
-
-            if fileManager.fileExists(atPath: modelDir.path) {
-                print("ModelManager: local model directory exists but is not valid at \(modelDir.path)")
-            }
-            return nil
-        } catch {
-            print("ModelManager: error checking for local model: \(error)")
-            return nil
-        }
     }
 }
