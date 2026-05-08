@@ -20,8 +20,15 @@ struct AppConfig {
             NotificationCenter.default.post(name: llmServiceDidChange,
                                             object: nil,
                                             userInfo: [llmServiceUserInfoKey: llmService])
+            // Update orchestrator with new service
+            orchestrator = MedicalChatOrchestrator(llmService: llmService)
         }
     }
+    
+    /// Medical chat orchestrator: full pipeline with guardrails + RAG
+    static var orchestrator: MedicalChatOrchestrator = MedicalChatOrchestrator(
+        llmService: MockLLMService()
+    )
 
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {
@@ -65,10 +72,17 @@ struct AppConfig {
         if let localModelPath = ModelManager.shared.getLocalModelPath(modelName: modelName, repoID: repoID) {
             print("AppConfig: found local model at \(localModelPath.path)")
 
+            guard initializeRuntime else {
+                updateStatus(.mockWithDownloadedModel)
+                print("AppConfig: runtime initialization disabled for this environment; keeping MockLLMService")
+                progress?(1.0)
+                return
+            }
+
             let service = LLMService(modelPath: localModelPath.path, useMock: false)
             llmService = service
 
-            if initializeRuntime, await service.initializeModel() {
+            if await service.initializeModel() {
                 updateStatus(.localModelReady)
                 print("AppConfig: switched to real LLMService at \(localModelPath.path)")
                 progress?(1.0)

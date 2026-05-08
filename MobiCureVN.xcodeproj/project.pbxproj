@@ -378,22 +378,6 @@
 				minimumVersion = 3.31.3;
 			};
 		};
-		EC2D77AB2FA2287600720421 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ml-explore/mlx-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.31.3;
-			};
-		};
-		EC2D77B82FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-huggingface" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/huggingface/swift-huggingface.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.0;
-			};
-		};
 		EC2D77BD2FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-tokenizers-mlx" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DePasqualeOrg/swift-tokenizers-mlx";
@@ -410,26 +394,6 @@
 			package = A84800E82FA28D5E00938AF4 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
 		};
-		EC2D779D2FA2277500720421 /* BenchmarkHelpers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
-			productName = BenchmarkHelpers;
-		};
-		EC2D779F2FA2277500720421 /* IntegrationTestHelpers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
-			productName = IntegrationTestHelpers;
-		};
-		EC2D77A12FA2277500720421 /* MLXEmbedders */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
-			productName = MLXEmbedders;
-		};
-		EC2D77A32FA2277500720421 /* MLXHuggingFace */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
-			productName = MLXHuggingFace;
-		};
 		EC2D77A52FA2277500720421 /* MLXLLM */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
@@ -439,26 +403,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
 			productName = MLXLMCommon;
-		};
-		EC2D77A92FA2277500720421 /* MLXVLM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D779C2FA2277500720421 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
-			productName = MLXVLM;
-		};
-		EC2D77AC2FA2287600720421 /* MLXRandom */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D77AB2FA2287600720421 /* XCRemoteSwiftPackageReference "mlx-swift" */;
-			productName = MLXRandom;
-		};
-		EC2D77AF2FA228EF00720421 /* MLXOptimizers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D77AB2FA2287600720421 /* XCRemoteSwiftPackageReference "mlx-swift" */;
-			productName = MLXOptimizers;
-		};
-		EC2D77B92FA22C4500720421 /* HuggingFace */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EC2D77B82FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-huggingface" */;
-			productName = HuggingFace;
 		};
 		EC2D77BC2FA22C4500720421 /* MLXLMTokenizers */ = {
 			isa = XCSwiftPackageProductDependency;

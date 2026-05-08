@@ -17,7 +17,10 @@ struct MobiCureVNApp: App {
 
         let defaults = UserDefaults.standard
         let repoID = defaults.string(forKey: Self.modelRepoIDKey) ?? "mlx-community/Qwen2.5-3B-Instruct-4bit"
-        let initializeRuntime = !ProcessInfo.processInfo.isiOSAppOnMac && !ProcessInfo.processInfo.isMacCatalystApp
+        let isSimulator = ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
+        let initializeRuntime = !isSimulator
+            && !ProcessInfo.processInfo.isiOSAppOnMac
+            && !ProcessInfo.processInfo.isMacCatalystApp
 
         print("MobiCureVNApp: starting model initialization task")
 

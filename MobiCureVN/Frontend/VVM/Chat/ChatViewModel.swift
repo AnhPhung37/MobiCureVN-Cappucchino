@@ -35,14 +35,14 @@ class ChatViewModel: ObservableObject {
 
     // MARK: - Dependencies
 
-    private var llmService: LLMServiceProtocol
+    private var orchestrator: MedicalChatOrchestrator
     private var streamingTask: Task<Void, Never>?
     private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Init
 
     init(llmService: LLMServiceProtocol) {
-        self.llmService = llmService
+        self.orchestrator = MedicalChatOrchestrator(llmService: llmService)
         backendStatus = AppConfig.llmStatus
         bindLLMStatusUpdates()
     }
@@ -60,7 +60,7 @@ class ChatViewModel: ObservableObject {
             .compactMap { $0.userInfo?[AppConfig.llmServiceUserInfoKey] as? LLMServiceProtocol }
             .receive(on: RunLoop.main)
             .sink { [weak self] service in
-                self?.llmService = service
+                self?.orchestrator = MedicalChatOrchestrator(llmService: service)
             }
             .store(in: &cancellables)
     }
@@ -83,12 +83,11 @@ class ChatViewModel: ObservableObject {
         messages.append(assistantMessage)
         let assistantIndex = messages.count - 1
 
-        // Stream response
+        // Stream response using orchestrator (with guardrails + RAG)
         streamingTask = Task {
-            let request = LLMRequest(userMessage: text, conversationHistory: messages)
             var fullText = ""
 
-            for await token in llmService.stream(request: request) {
+            for await token in orchestrator.processQuery(text, conversationHistory: Array(messages.dropLast())) {
                 guard !Task.isCancelled else { break }
                 fullText += token
                 messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText)
