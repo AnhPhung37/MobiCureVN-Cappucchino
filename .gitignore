@@ -4,6 +4,7 @@
 
 # Xcode*
 .xcodeproj
+project.pbxproj
 *.xcworkspace
 xcuserdata/
 build/
