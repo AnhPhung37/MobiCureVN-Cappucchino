@@ -2,11 +2,20 @@
 .DS_Store
 *.swp
 
-# Xcode
-*.xcodeproj
+# Xcode*
+.xcodeproj
 *.xcworkspace
 xcuserdata/
+build/
 DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+*.mode1v3
+*.mode2v3
+*.perspectivev3
 
 # Swift Package Manager
 .build/
@@ -32,3 +41,4 @@ __pycache__/
 .vscode/
 .idea/
 .history/
+
