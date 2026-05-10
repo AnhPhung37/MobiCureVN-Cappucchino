@@ -1,5 +1,6 @@
 annotated-doc==0.0.4
-anyio==4.13.0
+accelerate==1.7.0
+# anyio==4.13.0
 appnope==0.1.4
 asttokens==3.0.1
 certifi==2026.4.22
@@ -80,3 +81,4 @@ transformers==5.8.0
 typer==0.25.1
 typing_extensions==4.15.0
 wcwidth==0.7.0
+sqlite-vec

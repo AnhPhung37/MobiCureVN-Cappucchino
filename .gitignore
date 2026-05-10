@@ -14,7 +14,6 @@ DerivedData/
 Package.resolved
 
 # Python / MLX Environments
-venv/
 env/
 .env/
 __pycache__/
@@ -31,9 +30,12 @@ __pycache__/
 # IDEs & Editors
 .vscode/
 .idea/
+.history/
 
 # Jupyter Notebook checkpoint
 .ipynb_checkpoints/
 
 # Python venv
-venv/
+.venv/
+
+

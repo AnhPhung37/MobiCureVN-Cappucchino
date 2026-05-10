@@ -334,6 +334,8 @@ or microsatellite stable (MSS).
 
 
 
+
+
 NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 10
 
@@ -1862,8 +1864,6 @@ tipiracil.
 
 
 
-
-
 NCCN Guidelines for Patients [®]
 Colon Cancer, 2025 31
 
@@ -1904,8 +1904,6 @@ check the extent of the cancer every 2 to 3
 months. Surgery may become possible. Or,
 you may continue immunotherapy or switch to
 a different systemic therapy.
-
-
 
 
 

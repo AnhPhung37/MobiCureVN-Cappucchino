@@ -88,12 +88,6 @@ Bethany A. Schempp, MS, RN, CWOCN
 
 
 
-
-
-
-
-
-
 up to a previous article in _AJN_ by one of us (HHC)
 on nursing care for patients undergoing ostomy surgery of the bowel. [7]
 
