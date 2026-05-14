@@ -31,16 +31,38 @@ class ChatViewModel: ObservableObject {
     @Published var inputText: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var backendStatus: LLMBackendStatus = .mock
 
     // MARK: - Dependencies
 
-    private let llmService: LLMServiceProtocol
+    private var orchestrator: MedicalChatOrchestrator
     private var streamingTask: Task<Void, Never>?
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Init
 
     init(llmService: LLMServiceProtocol) {
-        self.llmService = llmService
+        self.orchestrator = MedicalChatOrchestrator(llmService: llmService)
+        backendStatus = AppConfig.llmStatus
+        bindLLMStatusUpdates()
+    }
+
+    private func bindLLMStatusUpdates() {
+        NotificationCenter.default.publisher(for: AppConfig.llmStatusDidChange)
+            .compactMap { $0.userInfo?[AppConfig.llmStatusUserInfoKey] as? LLMBackendStatus }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] status in
+                self?.backendStatus = status
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: AppConfig.llmServiceDidChange)
+            .compactMap { $0.userInfo?[AppConfig.llmServiceUserInfoKey] as? LLMServiceProtocol }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] service in
+                self?.orchestrator = MedicalChatOrchestrator(llmService: service)
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Actions
@@ -61,12 +83,11 @@ class ChatViewModel: ObservableObject {
         messages.append(assistantMessage)
         let assistantIndex = messages.count - 1
 
-        // Stream response
+        // Stream response using orchestrator (with guardrails + RAG)
         streamingTask = Task {
-            let request = LLMRequest(userMessage: text, conversationHistory: messages)
             var fullText = ""
 
-            for await token in llmService.stream(request: request) {
+            for await token in orchestrator.processQuery(text, conversationHistory: Array(messages.dropLast())) {
                 guard !Task.isCancelled else { break }
                 fullText += token
                 messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText)
