@@ -36,6 +36,7 @@ class ChatViewModel: ObservableObject {
     // MARK: - Dependencies
 
     private var orchestrator: MedicalChatOrchestrator
+
     private var streamingTask: Task<Void, Never>?
     private var cancellables: Set<AnyCancellable> = []
 
@@ -43,6 +44,7 @@ class ChatViewModel: ObservableObject {
 
     init(llmService: LLMServiceProtocol) {
         self.orchestrator = MedicalChatOrchestrator(llmService: llmService)
+
         backendStatus = AppConfig.llmStatus
         bindLLMStatusUpdates()
     }
@@ -61,6 +63,7 @@ class ChatViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] service in
                 self?.orchestrator = MedicalChatOrchestrator(llmService: service)
+
             }
             .store(in: &cancellables)
     }
