@@ -1,0 +1,87 @@
+{
+  "doc_id": "BCUK_TFABCERB",
+  "source_file": "Bowel_Cancer_UK_The_Facts_About_Bowel_Cancer_Easy_Read_Booklet.md",
+  "chunk_count": 8,
+  "chunks": [
+    {
+      "chunk_id": "BCUK_TFABCERB_c001",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "#### About the bowel\n\nThe bowel is part of digestive system.\n\nFood moves from your stomach into the bowel where it is turned into poo.\n\nThe bowel is a long wiggly tube. It is made of two parts called the small bowel and the large bowel.\n\nThe large bowel is made of two parts called the colon and the rectum.\n\nBowel cancer starts in the large bowel.\n\n",
+      "token_count": 88,
+      "section": "About the bowel",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c002",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "#### The facts about bowel cancer\n\nWhen bowel cancer is found early there are lots of treatments for it.\n\nMost people with bowel cancer live longer if it is found early.\n\nMost people with bowel cancer die quickly if it is found later on.\n\n",
+      "token_count": 54,
+      "section": "The facts about bowel cancer",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c003",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "#### Symptoms of bowel cancer\n\nYour body shows signs when you’re not well. These are called symptoms.\n\nThe symptoms of bowel cancer are:\n\nBleeding from your bottom.\n\nBlood in your poo.\n\nNeeding to poo more often.\n\nHaving a runny poo. This is called diarrhoea.\n\nFinding it hard to poo. This is called constipation.\n\nLosing weight but you do not know why.\n\nFeeling more tired but you do not know why.\n\nHaving a pain or a lump in your tummy.\n\nIf you have any of these symptoms you might have bowel cancer.\n\nThe symptoms could be caused by other things that might not be cancer.\n\n",
+      "token_count": 162,
+      "section": "Symptoms of bowel cancer",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c004",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "## ?\n\nIt is important to talk to your doctor if you have any of these symptoms.\n\nThe doctor can give you a test to do at home.\n\nYou can ask for Easy Read instructions for the test.\n",
+      "token_count": 48,
+      "section": "?",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c005",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "\nThere is a test you can do to check if you have bowel cancer.\n\nBowel cancer screening is a test that looks for blood in your poo.\n\nThe test will be sent to your home. You do not need to ask for it.\n",
+      "token_count": 55,
+      "section": "?",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c006",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "\nIf you live in England,\nScotland or Wales, you will get a test in the post when you turn 50 years old.\n\nIf you live in Northern Ireland you will get a test in the post when you turn 60 years old.\n\nYou will get a test in the post every 2 years.\n\n",
+      "token_count": 67,
+      "section": "?",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c007",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "### Risk factors\n\nRisk factors are things that increase your risk of getting bowel cancer.\n\nThese include:\n\nPeople in your family have had bowel cancer.\n\nPeople in your family have had polyps. Polyps are small lumps in your bowel.\n\nYou are older than 50.\n\nYou have another bowel condition like Crohn's disease or ulcerative colitis.\n\n",
+      "token_count": 81,
+      "section": "Risk factors",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "BCUK_TFABCERB_c008",
+      "doc_id": "BCUK_TFABCERB",
+      "text": "You can lower your change of getting bowel cancer by doing the following things:\n\nBeing a healthy body weight.\n\nMoving more.\n\nDrinking less alcohol.\n\nNot smoking.\n\nEating less processed meat.\nThis is things like bacon, sausages and ham.\n\nEating less red meat. This is things like beef, pork and lamb.\n\nEating a healthy diet.\n\nDoing your screening test when it comes in the post\n\n",
+      "token_count": 101,
+      "section": "Risk factors",
+      "doc_type": "patient_education",
+      "source_org": "BCUK",
+      "credibility_tier": 2
+    }
+  ]
+}

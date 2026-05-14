@@ -27,6 +27,9 @@ __pycache__/
 *.sqlite-wal
 *.db
 
+# Keep the RAG vector index — ships inside the iOS app bundle
+!DocumentsChunking/vectorstore.db
+
 # IDEs & Editors
 .vscode/
 .idea/
