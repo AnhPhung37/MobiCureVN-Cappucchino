@@ -4,7 +4,7 @@ build_index.py
 Embeds enriched chunks and stores them in vectorstore.db (sqlite-vec).
 The output file ships inside the iOS app bundle as a read-only resource.
 
-Run from Pipeline/:
+Run from DocumentsChunking/:
     python enrich_chunks.py   # must run first
     python build_index.py
 
@@ -28,17 +28,7 @@ vec_chunks (sqlite-vec virtual table)
     rowid            INTEGER  FK → chunks.rowid
     embedding        FLOAT[384]
 
-chunks_fts (FTS5 virtual table — used by Swift for keyword retrieval)
-    chunk_id, text, section, doc_type, source_org  (content mirror of chunks)
-
-iOS keyword query (FTS5 BM25, used now):
-    SELECT c.*, -fts.rank AS score
-    FROM chunks_fts fts
-    JOIN chunks c ON fts.rowid = c.rowid
-    WHERE chunks_fts MATCH ?
-    ORDER BY rank LIMIT 5;
-
-iOS vector query (KNN, future — needs CoreML query embedder):
+iOS query (KNN, k=5):
     SELECT c.*, v.distance
     FROM vec_chunks v
     JOIN chunks c ON v.rowid = c.rowid
@@ -141,21 +131,6 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
             "INSERT INTO vec_chunks(rowid, embedding) VALUES (?, ?)",
             (rowid, _to_bytes(vec)),
         )
-    # FTS5 table — mirrors chunks for keyword/BM25 retrieval (used by Swift)
-    conn.execute("""
-        CREATE VIRTUAL TABLE chunks_fts USING fts5(
-            chunk_id,
-            text,
-            section,
-            doc_type,
-            source_org,
-            content=chunks,
-            content_rowid=rowid,
-            tokenize='porter ascii'
-        )
-    """)
-    conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES ('rebuild')")
-
     conn.execute("COMMIT")
 
     # Smoke-test: verify KNN works
@@ -165,12 +140,6 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
         [sample_vec],
     ).fetchall()
     print(f"\nSmoke-test KNN (k=3): {[r[0] for r in rows]}")
-
-    # Smoke-test FTS5
-    fts_rows = conn.execute(
-        "SELECT c.chunk_id, c.section FROM chunks_fts fts JOIN chunks c ON fts.rowid = c.rowid WHERE chunks_fts MATCH 'wound infection' ORDER BY rank LIMIT 3"
-    ).fetchall()
-    print(f"Smoke-test FTS5 (wound infection): {[(r[0], r[1]) for r in fts_rows]}")
 
     conn.close()
 

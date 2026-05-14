@@ -4,7 +4,7 @@ enrich_chunks.py
 Post-processing pass: joins neural chunks with registry.csv metadata
 and extracts section headings from chunk text.
 
-Run from Pipeline/:
+Run from DocumentsChunking/:
     python enrich_chunks.py
 
 Input:  neural_chunks/*.json  +  registry.csv
