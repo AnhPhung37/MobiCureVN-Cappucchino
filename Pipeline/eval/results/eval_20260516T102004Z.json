@@ -1,0 +1,605 @@
+{
+  "config": {
+    "registry_path": "../registry.csv",
+    "embed": {
+      "model_name": "BAAI/bge-small-en-v1.5",
+      "embed_dim": 384,
+      "batch_size": 64,
+      "normalize": true
+    },
+    "evaluation": {
+      "queries_path": "./data/queries.jsonl",
+      "qrels_path": "./data/qrels.jsonl",
+      "top_k": 5,
+      "seed": 42,
+      "results_dir": "./results"
+    },
+    "answerer": {
+      "type": "none"
+    },
+    "experiments": [
+      {
+        "name": "semantic",
+        "source_chunks_dir": "../semantic_chunks",
+        "enriched_output_dir": "./outputs/enriched_semantic",
+        "index_db_path": "./outputs/vectorstore_semantic.db"
+      },
+      {
+        "name": "neural",
+        "source_chunks_dir": "../neural_chunks",
+        "enriched_output_dir": "./outputs/enriched_neural",
+        "index_db_path": "./outputs/vectorstore_neural.db"
+      }
+    ]
+  },
+  "experiments": [
+    {
+      "experiment": "semantic",
+      "metrics": {
+        "recall@k": 0.125,
+        "mrr": 0.05208333333333333,
+        "ndcg@k": 0.0706831095982161,
+        "answer_similarity": 0.0,
+        "faithfulness": 0.0
+      },
+      "per_query": [
+        {
+          "query_id": "q001",
+          "question": "What are the most common signs and symptoms of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c011",
+            "ACS_CCFS_c006",
+            "BCUK_TFABCERB_c002",
+            "BCUK_TFABCERB_c003",
+            "ACS_CCFS_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q002",
+          "question": "At what age should average-risk adults start colorectal cancer screening?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c004",
+            "ACS_CCFS_c007",
+            "ACS_CCFS_c006",
+            "ACS_CCFS_c001",
+            "NCCN_CCGFP_2025_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q003",
+          "question": "Which screening tests are recommended for colorectal cancer detection?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c005",
+            "NCCN_CCGFP_2025_c009",
+            "ACS_CCFS_c006",
+            "NCCN_CCGFP_2025_c007",
+            "NCCN_CCGFP_2025_c014"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q004",
+          "question": "What lifestyle factors increase the risk of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c003",
+            "BCUK_TFABCERB_c005",
+            "ACS_CCFS_c001",
+            "ACS_CCFS_c011",
+            "ACS_CCFS_c006"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q005",
+          "question": "How can colorectal cancer be prevented?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c006",
+            "BCUK_EW_2023_c084",
+            "ACS_CCFS_c007",
+            "ACS_CCFS_c004",
+            "NCCN_CCGFP_2025_c108"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q006",
+          "question": "What are the main treatment options for colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c007",
+            "NCCN_CCGFP_2025_c084",
+            "NCCN_CCGFP_2025_c051",
+            "NCCN_CCGFP_2025_c098",
+            "NCCN_CCGFP_2025_c064"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q007",
+          "question": "What foods are recommended before bowel cancer surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c049",
+            "BCUK_EW_2023_c002",
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c043",
+            "BCUK_EW_2023_c001"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q008",
+          "question": "How can patients manage low appetite during bowel cancer treatment?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c023",
+            "BCUK_EW_2023_c003",
+            "BCUK_EW_2023_c026",
+            "BCUK_EW_2023_c024",
+            "BCUK_EW_2023_c040"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q009",
+          "question": "Why is fibre important for bowel health?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c018",
+            "BCUK_EW_2023_c097",
+            "BCUK_EW_2023_c020",
+            "BCUK_EW_2023_c006",
+            "BCUK_EW_2023_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q010",
+          "question": "What are examples of soluble fibre foods?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c019",
+            "BCUK_EW_2023_c020",
+            "BCUK_EW_2023_c022",
+            "BCUK_EW_2023_c094",
+            "BCUK_EW_2023_c018"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q011",
+          "question": "What advice is given for following a low-fibre diet?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c022",
+            "BCUK_EW_2023_c094",
+            "BCUK_EW_2023_c021",
+            "BCUK_EW_2023_c007",
+            "BCUK_EW_2023_c061"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q012",
+          "question": "How much red meat is recommended per week for bowel cancer prevention?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c013",
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c043",
+            "BCUK_EW_2023_c069",
+            "NCCN_CCGFP_2025_c105"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q013",
+          "question": "Why should processed meat be avoided?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c088",
+            "BCUK_TFABCERB_c007",
+            "BCUK_EW_2023_c013",
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c087"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q014",
+          "question": "What are common causes of weight loss in bowel cancer patients?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c030",
+            "BCUK_TFABCERB_c003",
+            "BCUK_EW_2023_c023",
+            "BCUK_EW_2023_c034",
+            "BCUK_TFABCERB_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q015",
+          "question": "What strategies can help patients cope with cancer-related fatigue?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c040",
+            "BCUK_EW_2023_c044",
+            "BCUK_EW_2023_c033",
+            "NCCN_CCGFP_2025_c086",
+            "BCUK_EW_2023_c090"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q016",
+          "question": "What dietary advice is recommended for people with a stoma?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c047",
+            "BCUK_EW_2023_c050",
+            "BCUK_ASR_2024_c021",
+            "BCUK_EW_2023_c056",
+            "BCUK_EW_2023_c044"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        }
+      ]
+    },
+    {
+      "experiment": "neural",
+      "metrics": {
+        "recall@k": 1.0,
+        "mrr": 0.8802083333333334,
+        "ndcg@k": 0.9024263516864313,
+        "answer_similarity": 0.0,
+        "faithfulness": 0.0
+      },
+      "per_query": [
+        {
+          "query_id": "q001",
+          "question": "What are the most common signs and symptoms of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c007",
+            "BCUK_TFABCERB_c003",
+            "ACS_CCFS_c012",
+            "NCCN_CCGFP_2025_c036",
+            "ACS_CCFS_c003"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q002",
+          "question": "At what age should average-risk adults start colorectal cancer screening?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c005",
+            "ACS_CCFS_c008",
+            "ACS_CCFS_c002",
+            "NCCN_CCGFP_2025_c021",
+            "ACS_CCFS_c004"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q003",
+          "question": "Which screening tests are recommended for colorectal cancer detection?",
+          "retrieved_chunk_ids": [
+            "BCUK_TFABCERB_c005",
+            "ACS_CCFS_c005",
+            "ACS_CCFS_c008",
+            "ACS_CCFS_c006",
+            "NCCN_CCGFP_2025_c013"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.25,
+          "ndcg@k": 0.43067655807339306,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q004",
+          "question": "What lifestyle factors increase the risk of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c004",
+            "BCUK_TFABCERB_c007",
+            "ACS_CCFS_c008",
+            "NCCN_CCGFP_2025_c039",
+            "ACS_CCFS_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q005",
+          "question": "How can colorectal cancer be prevented?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c008",
+            "NCCN_CCGFP_2025_c039",
+            "BCUK_TFABCERB_c008",
+            "BCUK_EW_2023_c027",
+            "ACS_CCFS_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q006",
+          "question": "What are the main treatment options for colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c009",
+            "NCCN_CCGFP_2025_c027",
+            "NCCN_CCGFP_2025_c033",
+            "NCCN_CCGFP_2025_c025",
+            "NCCN_CCGFP_2025_c022"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q007",
+          "question": "What foods are recommended before bowel cancer surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c002",
+            "BCUK_TFABCERB_c008",
+            "BCUK_EW_2023_c022",
+            "BCUK_EW_2023_c017",
+            "BCUK_ASR_2024_c017"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q008",
+          "question": "How can patients manage low appetite during bowel cancer treatment?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c012",
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c013",
+            "BCUK_EW_2023_c002",
+            "BCUK_EW_2023_c029"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 0.8772153153380493,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q009",
+          "question": "Why is fibre important for bowel health?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c009",
+            "BCUK_EW_2023_c010",
+            "BCUK_EW_2023_c004",
+            "BCUK_EW_2023_c011",
+            "BCUK_EW_2023_c031"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q010",
+          "question": "What are examples of soluble fibre foods?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c010",
+            "BCUK_EW_2023_c011",
+            "BCUK_EW_2023_c009",
+            "BCUK_EW_2023_c005",
+            "BCUK_EW_2023_c004"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q011",
+          "question": "What advice is given for following a low-fibre diet?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c011",
+            "BCUK_EW_2023_c004",
+            "BCUK_EW_2023_c027",
+            "NCCN_CCGFP_2025_c039",
+            "BCUK_EW_2023_c009"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q012",
+          "question": "How much red meat is recommended per week for bowel cancer prevention?",
+          "retrieved_chunk_ids": [
+            "BCUK_TFABCERB_c008",
+            "BCUK_EW_2023_c006",
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c001",
+            "NCCN_CCGFP_2025_c039"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q013",
+          "question": "Why should processed meat be avoided?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c006",
+            "BCUK_TFABCERB_c008",
+            "NCPD_NCFPAUS_c007",
+            "BCUK_EW_2023_c009",
+            "ACS_CCFS_c004"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q014",
+          "question": "What are common causes of weight loss in bowel cancer patients?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c013",
+            "BCUK_TFABCERB_c003",
+            "BCUK_TFABCERB_c007",
+            "ACS_CCFS_c007",
+            "BCUK_EW_2023_c029"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q015",
+          "question": "What strategies can help patients cope with cancer-related fatigue?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c015",
+            "NCCN_CCGFP_2025_c029",
+            "BCUK_EW_2023_c029",
+            "BCUK_EW_2023_c013"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q016",
+          "question": "What dietary advice is recommended for people with a stoma?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c017",
+            "BCUK_EW_2023_c017",
+            "BCUK_EW_2023_c016",
+            "NCPD_NCFPAUS_c007",
+            "BCUK_CS_V2.1_2023_c011"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        }
+      ]
+    }
+  ]
+}
