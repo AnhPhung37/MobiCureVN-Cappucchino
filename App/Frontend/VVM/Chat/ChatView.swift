@@ -20,6 +20,11 @@ struct ChatView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Model download progress
+                if viewModel.backendStatus == .loading {
+                    downloadProgressBanner
+                }
+
                 // Message list
                 messageList
 
@@ -39,6 +44,32 @@ struct ChatView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Download Progress Banner
+
+    private var downloadProgressBanner: some View {
+        let percent = Int((viewModel.downloadProgress * 100).rounded())
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.down.circle")
+                    .foregroundColor(.accentColor)
+                Text("Đang tải model...")
+                    .font(.system(size: 13, weight: .medium))
+                Spacer()
+                Text("\(percent)%")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Color(.secondaryLabel))
+                    .monospacedDigit()
+            }
+            ProgressView(value: viewModel.downloadProgress)
+                .progressViewStyle(.linear)
+                .animation(.easeInOut(duration: 0.25), value: viewModel.downloadProgress)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Color(.secondarySystemBackground))
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 
     // MARK: - Message List

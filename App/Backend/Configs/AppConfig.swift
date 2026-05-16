@@ -11,8 +11,10 @@ struct AppConfig {
 
     static let llmStatusDidChange = Notification.Name("AppConfigLLMStatusDidChange")
     static let llmServiceDidChange = Notification.Name("AppConfigLLMServiceDidChange")
+    static let llmDownloadProgressDidChange = Notification.Name("AppConfigLLMDownloadProgressDidChange")
     static let llmStatusUserInfoKey = "llmStatus"
     static let llmServiceUserInfoKey = "llmService"
+    static let llmDownloadProgressUserInfoKey = "llmDownloadProgress"
 
     /// Stored LLM service instance. Default to mock for fast startup.
     static var llmService: LLMServiceProtocol = MockLLMService() {
@@ -37,6 +39,14 @@ struct AppConfig {
                                             userInfo: [llmStatusUserInfoKey: llmStatus])
         }
     }
+
+    private(set) static var llmDownloadProgress: Double = 0 {
+        didSet {
+            NotificationCenter.default.post(name: llmDownloadProgressDidChange,
+                                            object: nil,
+                                            userInfo: [llmDownloadProgressUserInfoKey: llmDownloadProgress])
+        }
+    }
     /// Key for runtime toggle in `UserDefaults`.
     private static let useRealKey = "UseRealLLM"
 
@@ -48,6 +58,12 @@ struct AppConfig {
     private static func updateStatus(_ status: LLMBackendStatus) {
         guard llmStatus != status else { return }
         llmStatus = status
+    }
+
+    private static func updateDownloadProgress(_ value: Double) {
+        let clamped = min(max(value, 0), 1)
+        guard llmDownloadProgress != clamped else { return }
+        llmDownloadProgress = clamped
     }
 
     /// Attempt to use local model if available, otherwise use mock while downloading in background.
@@ -69,10 +85,18 @@ struct AppConfig {
         }
 
         updateStatus(.loading)
+        updateDownloadProgress(0)
 
         Task(priority: .utility) {
             do {
-                let modelURL = try await ModelManager.shared.ensureModelReady(modelName: modelName)
+                let modelURL = try await ModelManager.shared.ensureModelReady(
+                    modelName: modelName,
+                    progress: { value in
+                        Task { @MainActor in
+                            updateDownloadProgress(value)
+                        }
+                    }
+                )
                 print("AppConfig: model ready at \(modelURL.path)")
 
                 let service = LLMService(modelPath: modelURL.path, useMock: false)

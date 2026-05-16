@@ -32,6 +32,7 @@ class ChatViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     @Published var backendStatus: LLMBackendStatus = .mock
+    @Published var downloadProgress: Double = 0
 
     // MARK: - Dependencies
 
@@ -46,6 +47,7 @@ class ChatViewModel: ObservableObject {
         self.orchestrator = MedicalChatOrchestrator(llmService: llmService)
 
         backendStatus = AppConfig.llmStatus
+        downloadProgress = AppConfig.llmDownloadProgress
         bindLLMStatusUpdates()
     }
 
@@ -64,6 +66,14 @@ class ChatViewModel: ObservableObject {
             .sink { [weak self] service in
                 self?.orchestrator = MedicalChatOrchestrator(llmService: service)
 
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: AppConfig.llmDownloadProgressDidChange)
+            .compactMap { $0.userInfo?[AppConfig.llmDownloadProgressUserInfoKey] as? Double }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                self?.downloadProgress = value
             }
             .store(in: &cancellables)
     }
