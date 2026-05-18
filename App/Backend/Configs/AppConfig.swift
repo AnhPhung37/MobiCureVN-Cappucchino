@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 struct AppConfig {
 
@@ -31,6 +32,17 @@ struct AppConfig {
     static var orchestrator: MedicalChatOrchestrator = MedicalChatOrchestrator(
         llmService: MockLLMService()
     )
+
+    static let chatHistoryRepository: ChatHistoryRepository = {
+        do {
+            return try SwiftDataChatHistoryRepository()
+        } catch {
+            assertionFailure("Failed to create SwiftData chat history repository: \(error)")
+            return InMemoryChatHistoryRepository()
+        }
+    }()
+
+    static let patientProfileRepository: PatientProfileRepository = MockPatientProfileRepository()
 
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {

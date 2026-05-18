@@ -28,6 +28,13 @@ struct HomeView: View {
                     Text("Chat")
                 }
                 .tag(1)
+
+            ProfileView()
+                .tabItem {
+                    Image(systemName: "person.crop.circle.fill")
+                    Text("Profile")
+                }
+                .tag(2)
         }
         .tint(.accentColor)
     }
