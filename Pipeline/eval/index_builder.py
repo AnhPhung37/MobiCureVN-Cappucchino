@@ -62,6 +62,7 @@ def build_index(
             text             TEXT    NOT NULL,
             token_count      INTEGER,
             section          TEXT,
+            page_start       INTEGER,
             doc_type         TEXT,
             source_org       TEXT,
             credibility_tier INTEGER
@@ -82,8 +83,8 @@ def build_index(
         conn.execute(
             """
             INSERT INTO chunks
-                (chunk_id, doc_id, text, token_count, section, doc_type, source_org, credibility_tier)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (chunk_id, doc_id, text, token_count, section, page_start, doc_type, source_org, credibility_tier)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 chunk["chunk_id"],
@@ -91,6 +92,7 @@ def build_index(
                 chunk["text"],
                 chunk.get("token_count"),
                 chunk.get("section"),
+                chunk.get("page_start"),
                 chunk.get("doc_type"),
                 chunk.get("source_org"),
                 chunk.get("credibility_tier"),

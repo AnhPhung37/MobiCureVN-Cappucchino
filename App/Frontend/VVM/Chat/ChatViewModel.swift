@@ -169,8 +169,12 @@ class ChatViewModel: ObservableObject {
                 // Update the date for the assistant message to current time once finalized
                 messageDates[assistantIndex] = Date()
                 let refinedForCitation = queryRefiner.refineQuery(text)
-                let retrieved = citationRetriever.retrieve(query: refinedForCitation, topK: 5)
-                print("CitationRetriever: query='\(refinedForCitation)' sources=\(retrieved.sources.count)")
+                let retrieved = citationRetriever.retrieve(
+                    query: refinedForCitation.baseQuery,
+                    enrichedTerms: refinedForCitation.enrichedTerms,
+                    topK: 5
+                )
+                print("CitationRetriever: query='\(refinedForCitation.baseQuery)' sources=\(retrieved.sources.count)")
                 let assistantItem = ChatItem(
                     conversationId: currentConversationId,
                     role: "assistant",
