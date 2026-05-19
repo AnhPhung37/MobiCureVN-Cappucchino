@@ -1,0 +1,33 @@
+{
+    "registry_path": "../registry.csv",
+    "embed": {
+        "model_name": "BAAI/bge-small-en-v1.5",
+        "embed_dim": 384,
+        "batch_size": 64,
+        "normalize": true
+    },
+    "evaluation": {
+        "queries_path": "./data/queries.jsonl",
+        "qrels_path": "./data/qrels.jsonl",
+        "top_k": 5,
+        "seed": 42,
+        "results_dir": "./results"
+    },
+    "answerer": {
+        "type": "none"
+    },
+    "experiments": [
+        {
+            "name": "semantic",
+            "source_chunks_dir": "../semantic_chunks",
+            "enriched_output_dir": "./outputs/enriched_semantic",
+            "index_db_path": "./outputs/vectorstore_semantic.db"
+        },
+        {
+            "name": "neural",
+            "source_chunks_dir": "../neural_chunks",
+            "enriched_output_dir": "./outputs/enriched_neural",
+            "index_db_path": "./outputs/vectorstore_neural.db"
+        }
+    ]
+}

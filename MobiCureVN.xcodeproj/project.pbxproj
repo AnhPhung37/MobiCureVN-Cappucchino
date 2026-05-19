@@ -301,7 +301,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9BKF2KNSWW;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -315,7 +315,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = loadingbar;
+				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccino;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -334,7 +334,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9BKF2KNSWW;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -348,7 +348,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = loadingbar;
+				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccino;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -411,6 +411,9 @@
 		EC8AFE272FB818CC00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm";
+		EC2D77BD2FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-tokenizers-mlx" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/DePasqualeOrg/swift-tokenizers-mlx";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.31.3;
@@ -473,6 +476,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EC8AFE272FB818CC00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
 			productName = MLXVLM;
+		EC2D77BC2FA22C4500720421 /* MLXLMTokenizers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC2D77BD2FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-tokenizers-mlx" */;
+			productName = MLXLMTokenizers;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
