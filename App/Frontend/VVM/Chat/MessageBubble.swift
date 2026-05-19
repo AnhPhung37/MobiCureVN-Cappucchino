@@ -32,6 +32,10 @@ struct MessageBubble: View {
                     .font(.system(size: 11))
                     .foregroundColor(Color(.secondaryLabel))
                     .padding(.horizontal, 4)
+
+                if !isUser && !message.sources.isEmpty {
+                    CitationsView(sources: message.sources)
+                }
             }
 
             if !isUser { Spacer(minLength: 48) }

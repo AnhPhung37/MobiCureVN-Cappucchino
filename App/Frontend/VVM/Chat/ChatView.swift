@@ -235,7 +235,7 @@ struct ChatView: View {
                                 .padding(.horizontal, 16)
                                 .padding(.top, 8)
                             ForEach(section.items) { item in
-                                MessageBubble(message: ChatMessage(role: item.role, content: item.content))
+                                MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources))
                                     .padding(.vertical, 4)
                             }
                         }

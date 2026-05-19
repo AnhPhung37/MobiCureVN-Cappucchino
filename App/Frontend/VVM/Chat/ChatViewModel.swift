@@ -42,6 +42,8 @@ class ChatViewModel: ObservableObject {
 
     private var orchestrator: MedicalChatOrchestrator
     private let historyRepository: ChatHistoryRepository
+    private let citationRetriever = SQLiteRetriever()
+    private let queryRefiner = QueryRefiner()
     @Published private(set) var currentConversationId: UUID = UUID()
 
     private var streamingTask: Task<Void, Never>?
@@ -97,9 +99,25 @@ class ChatViewModel: ObservableObject {
     private func itemsAsChatItems() -> [ChatItem] {
         guard messages.count == messageDates.count else {
             // fallback if counts mismatch
-            return zip(messages, messageDates).map { ChatItem(role: $0.0.role, content: $0.0.content, date: $0.1) }
+            return zip(messages, messageDates).map {
+                ChatItem(
+                    conversationId: currentConversationId,
+                    role: $0.0.role,
+                    content: $0.0.content,
+                    date: $0.1,
+                    sources: $0.0.sources
+                )
+            }
         }
-        return zip(messages, messageDates).map { ChatItem(role: $0.0.role, content: $0.0.content, date: $0.1) }
+        return zip(messages, messageDates).map {
+            ChatItem(
+                conversationId: currentConversationId,
+                role: $0.0.role,
+                content: $0.0.content,
+                date: $0.1,
+                sources: $0.0.sources
+            )
+        }
     }
 
     private func rebuildSections(now: Date = Date()) {
@@ -150,6 +168,9 @@ class ChatViewModel: ObservableObject {
             } else {
                 // Update the date for the assistant message to current time once finalized
                 messageDates[assistantIndex] = Date()
+                let refinedForCitation = queryRefiner.refineQuery(text)
+                let retrieved = citationRetriever.retrieve(query: refinedForCitation, topK: 5)
+                print("CitationRetriever: query='\(refinedForCitation)' sources=\(retrieved.sources.count)")
                 let assistantItem = ChatItem(
                     conversationId: currentConversationId,
                     role: "assistant",
@@ -157,6 +178,7 @@ class ChatViewModel: ObservableObject {
                     date: messageDates[assistantIndex]
                 )
                 Task { try? await historyRepository.append(assistantItem) }
+                messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: retrieved.sources)
             }
 
             rebuildSections()
