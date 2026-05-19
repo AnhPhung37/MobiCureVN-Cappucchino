@@ -16,11 +16,11 @@ struct GuardRailRules {
         "hồi phục", "vận động", "ăn uống", "sinh hoạt", "hạn chế",
         
         // English medical terms
-        "symptom", "disease", "pain", "infection", "inflammation", "surgery",
-        "wound", "fever", "bleeding", "nausea", "vomit", "diarrhea", "constipation",
+        "symptom", "disease", "pain", "infection", "inflammation", "surgery", "surgical",
+        "wound", "incision", "scar", "fever", "bleeding", "nausea", "vomit", "diarrhea", "constipation",
         "blood pressure", "heart", "lung", "liver", "kidney", "stomach", "intestine",
         "medicine", "drug", "dose", "treatment", "recovery", "exercise", "diet",
-        "physician", "doctor", "health", "medical"
+        "physician", "doctor", "health", "medical", "postoperative", "post-op", "healing"
     ])
     
     /// Rule Group 2: Hard-block dangerous requests

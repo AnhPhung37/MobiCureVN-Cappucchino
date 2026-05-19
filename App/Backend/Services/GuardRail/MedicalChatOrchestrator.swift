@@ -26,12 +26,21 @@ final class MedicalChatOrchestrator {
     }
     
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
-    func processQuery(_ userQuery: String, conversationHistory: [ChatMessage]) -> AsyncStream<String> {
+    /// - Parameter originalQuery: The pre-translation query (e.g. Vietnamese). When provided,
+    ///   the input guardrail validates this instead of `userQuery` so that keyword matching
+    ///   runs against the language the user actually typed.
+    func processQuery(
+        _ userQuery: String,
+        conversationHistory: [ChatMessage],
+        originalQuery: String? = nil
+    ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
             Task {
                 do {
-                    // Step 1: Input GuardRail
-                    let inputResult = inputGuardRail.validate(query: userQuery)
+                    // Step 1: Input GuardRail — prefer the original (pre-translation) query
+                    // so Vietnamese keyword matching works on the text the user typed.
+                    let queryForGuardRail = originalQuery ?? userQuery
+                    let inputResult = inputGuardRail.validate(query: queryForGuardRail)
                     switch inputResult.status {
                     case .blocked(let reason):
                         continuation.yield("❌ \(reason)\n\n")

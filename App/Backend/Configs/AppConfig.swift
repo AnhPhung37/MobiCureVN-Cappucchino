@@ -10,6 +10,11 @@ import SwiftData
 
 struct AppConfig {
 
+    // Shared on-device translation service. @MainActor because TranslationSession is @MainActor.
+    // Populated by the .translationTask() modifiers in ChatView.
+    @MainActor
+    static let translationService = TranslationService()
+
     static let llmStatusDidChange = Notification.Name("AppConfigLLMStatusDidChange")
     static let llmServiceDidChange = Notification.Name("AppConfigLLMServiceDidChange")
     static let llmDownloadProgressDidChange = Notification.Name("AppConfigLLMDownloadProgressDidChange")
