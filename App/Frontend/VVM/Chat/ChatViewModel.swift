@@ -54,10 +54,12 @@ class ChatViewModel: ObservableObject {
     // MARK: - Init
 
     init(
-        llmService: LLMServiceProtocol,
+        llmService: LLMServiceProtocol? = nil,
         historyRepository: ChatHistoryRepository = AppConfig.chatHistoryRepository
     ) {
-        self.orchestrator = MedicalChatOrchestrator(llmService: llmService)
+        // Always use the current AppConfig service so we don't miss notifications
+        // that fired before this view was first shown.
+        self.orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.historyRepository = historyRepository
 
         backendStatus = AppConfig.llmStatus

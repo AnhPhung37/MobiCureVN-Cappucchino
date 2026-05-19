@@ -22,7 +22,7 @@ struct HomeView: View {
                 .tag(0)
             
             // Chat Tab
-            ChatView(llmService: AppConfig.llmService)
+            ChatView()
                 .tabItem {
                     Image(systemName: "message.fill")
                     Text("Chat")

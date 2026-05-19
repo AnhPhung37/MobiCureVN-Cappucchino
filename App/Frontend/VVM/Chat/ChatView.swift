@@ -14,7 +14,7 @@ struct ChatView: View {
     @State private var scrollProxy: ScrollViewProxy? = nil
     @State private var isShowingHistorySidebar = false
 
-    init(llmService: LLMServiceProtocol) {
+    init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
     }
 
