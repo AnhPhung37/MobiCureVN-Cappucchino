@@ -1,0 +1,10 @@
+doc_id,title,source_org,doc_type,credibility_tier,year,language,structure_quality,layout_type,has_headings,has_lists,has_tables,pages,parsing_notes,chunking_strategy,priority
+BCUK_ASR_2024,Bowel_Cancer_UK_About_Stoma_Reversal_2024,BCUK,patient_education,2,2024,en,high,multi_column,TRUE,TRUE,FALSE,6,,,medium
+BCUK_CS_V2.1_2023,Bowel_Cancer_UK_Colonic_Stenting_V2.1,BCUK,patient_education,2,2023,en,medium,mixed,TRUE,TRUE,FALSE,5,,,medium
+BCUK_EW_2023,Bowel_Cancer_UK_Eating_Well,BCUK,patient_education,2,2024,en,medium,mixed,TRUE,TRUE,FALSE,48,,,medium
+BCUK_PTS_2025,Bowel_Cancer_UK_Practical_Tips_Booklet_2025,BCUK,patient_education,2,2025,en,medium,mixed,TRUE,TRUE,FALSE,11,2 pages in 1 pdf page,,medium
+BCUK_TFABCERB,Bowel_Cancer_UK_The_Facts_About_Bowel_Cancer_Easy_Read_Booklet,BCUK,patient_education,2,,en,high,single_column,TRUE,FALSE,FALSE,16,,,low
+WOCN_COUS_2018,WOCN_Catheterization_Of_Urinary_Stoma_2018,WOCN,guideline,1,2018,en,high,single_column,TRUE,TRUE,FALSE,13,,,high
+NCCN_CCGFP_2025,NCCN_Colon_Cancer_Guideline_For_Patient_2025,NCCN,guideline,1,2025,en,high,mixed,TRUE,TRUE,TRUE,56,,,high
+ACS_CCFS,ACS_Colorectal_Cancer_Fact_Sheet,ACS,guideline,1,,en,high,multi_column,TRUE,TRUE,FALSE,2,,,high
+NCPD_NCFPAUS,NCPD_Nursing_Care_For_Patients_After_Urostomy_Surgery,NCPD,guideline,1,2024,en,high,mixed,TRUE,TRUE,TRUE,9,,,high

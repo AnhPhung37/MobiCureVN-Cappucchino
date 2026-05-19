@@ -14,7 +14,6 @@ DerivedData/
 Package.resolved
 
 # Python / MLX Environments
-venv/
 env/
 .env/
 __pycache__/
@@ -28,7 +27,19 @@ __pycache__/
 *.sqlite-wal
 *.db
 
+# Keep the RAG vector index — ships inside the iOS app bundle
+!Pipeline/vectorstore.db
+
 # IDEs & Editors
 .vscode/
 .idea/
+.history/
+
+# Jupyter Notebook checkpoint
+.ipynb_checkpoints/
+
+# Python venv
+.venv/
+
+
 .history/

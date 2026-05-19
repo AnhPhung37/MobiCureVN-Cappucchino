@@ -1,0 +1,83 @@
+{
+  "source_file": "NCPD_Nursing_Care_For_Patients_After_Urostomy_Surgery.md",
+  "source_path": "cleaned_markdowns/NCPD_Nursing_Care_For_Patients_After_Urostomy_Surgery.md",
+  "chunker": "semantic",
+  "chunk_count": 15,
+  "chunks": [
+    {
+      "chunk_index": 1,
+      "text": "##### HOURS 2.5\n\nNursing Continuing Professional Development\n\n#### What nurses need to know about urostomy management\n\nABSTRACT\nWhen an ostomy care nurse is not available, bedside nurses must assume responsibility for providing necessary care and educating patients who undergo a urinary diversion. However, staff nurses often lack the necessary knowledge and experience to provide the best care, rehabilitation, and patient education. This article details pre- and postoperative interventions for nurses who encounter patients undergoing urostomy surgery in order to help eliminate gaps in care, increase nurses’ and patients’ competence and confidence, and optimize patient outcomes and quality of life. It also includes a tear sheet that nurses can use to provide patients with the basic information and skills they need for effective self-care.\n\nKeywords: ileal conduit, ostomy care, patient education, urinary diversion, urostomy rinary diversion is a surgical procedure to reroute the flow of urine from its normal elimination pathway from the body. (For\n##",
+      "token_count": 197
+    },
+    {
+      "chunk_index": 2,
+      "text": "(For\n## U\na description of the normal urinary system, see\n_Normal Urinary System Anatomy and Function_ . [1-4] )\nDiversions are performed to address both malignant conditions (those affecting the urothelial lining of the bladder, for example) and nonmalignant ones. [5] For example, for select high-grade nonmuscle-invasive or muscle-invasive bladder cancer, the gold standard treatment is radical cystectomy.\nIn men, this involves removal of the bladder, prostate, and pelvic lymph nodes; in women, this entails removal of the bladder, uterus, fallopian tubes, ovaries, and anterior vagina. [5] As a result, there needs to be a new pathway for urine to exit the body.\nNonmalignant indications for a urinary diversion include neurogenic bladder (a neurologic condition that impedes bladder control), radiation cystitis, interstitial cystitis, birth defects, and severe pelvic trauma that injures either the urethra or the urinary sphincter resulting in intractable urinary incontinence. [5] While these conditions may not necessitate removal of the bladder, a urinary diversion will be required for urine to pass from the body.\n\n",
+      "token_count": 230
+    },
+    {
+      "chunk_index": 3,
+      "text": "[5] While these conditions may not necessitate removal of the bladder, a urinary diversion will be required for urine to pass from the body.\n\nThe most common type of diversion, and a focus of this article, is an ileal conduit or urostomy. This procedure is accomplished through a surgically resected intestinal segment that creates a passageway for elimination of urine from the ureters to an exte rior stoma (opening) on the abdomen. ",
+      "token_count": 87
+    },
+    {
+      "chunk_index": 4,
+      "text": "This procedure is accomplished through a surgically resected intestinal segment that creates a passageway for elimination of urine from the ureters to an exte rior stoma (opening) on the abdomen. An external pouch or ostomy bag is used to collect the urine. In the case of an ileal conduit, the patient does not control the flow of urine into the pouch; hence, it is considered an _incontinent_ urinary diversion. By contrast,\n_continent_ urinary diversions, such as an Indiana pouch or orthotopic neobladder, involve the creation of an artificial bladder inside the body and will not be discussed here.\n\n",
+      "token_count": 121
+    },
+    {
+      "chunk_index": 5,
+      "text": "By contrast,\n_continent_ urinary diversions, such as an Indiana pouch or orthotopic neobladder, involve the creation of an artificial bladder inside the body and will not be discussed here.\n\nWhen a certified wound, ostomy, and continence (WOC) nurse is not available, bedside nurses must assume responsibility for providing necessary care and educating patients who undergo ostomy surgery.\nHowever, staff nurses often lack the knowledge and experience to provide the best care, rehabilitation, and patient teaching. Patients frequently express frustration that nurses do not know how to care for their ostomy. ",
+      "token_count": 106
+    },
+    {
+      "chunk_index": 6,
+      "text": "Patients frequently express frustration that nurses do not know how to care for their ostomy. Bedside nurses often experience frustration when they encounter complications such as persistent leakage. A recent survey found that many nurses believe they did not receive adequate education on skin and wound care. [6] Moreover, about 25% reported not feeling confident in their ability to apply ostomy barriers and pouches in patients with a urinary diversion. [6]\n\nThis article details pre- and postoperative interventions for nurses who encounter patients undergoing a urostomy in order to eliminate gaps in care, increase nurses’ and patients’ competence and confidence, and optimize outcomes and quality of life. It is a follow\n\nBy Heidi H. ",
+      "token_count": 134
+    },
+    {
+      "chunk_index": 7,
+      "text": "By Heidi H. Cross, MSN, RN, FNP-BC, CWON, and\n\nBethany A. Schempp, MS, RN, CWOCN up to a previous article in _AJN_ by one of us (HHC) on nursing care for patients undergoing ostomy surgery of the bowel. [7]\n\nPREOPERATIVE CONSIDERATIONS\nIdeally, patients with planned urostomy surgery should meet with a WOC nurse for preoperative ostomy site marking and teaching. When a WOC nurse is not available, then bedside nurses, if given the opportunity, should be prepared to meet with the patient and family to address their concerns and to provide basic information about the rationale for site marking; the type of surgery they will undergo; and what to expect during the initial postoperative period in terms of diet, activity, and pain management. Nurses should discuss the basics of ostomy care, demonstrating a urostomy pouching system, and provide reassurance to an undoubtedly anxious patient.\n\nSite marking. Preoperative site marking is important for optimal placement of the stoma to reduce skin problems, avoid postoperative complications including leakage of the pouching system, and improve patient self-care and quality of life. Siting is optimally done by a surgeon or trained ostomy nurse during the preoperative period, when surgery is planned. [8] Discussion of this step is beyond the scope of this article, but a description is included in the Wound, Ostomy, and\nContinence Nurses (WOCN) Society, American Urological Association, and American Society of Colon and Rectal Surgeons position statement on preoperative stoma site marking for patients undergoing ostomy surgery. [8] Nurses can discuss this step with the surgeon if there is opportunity to do so and explain to patients why site marking is important.\n\n",
+      "token_count": 350
+    },
+    {
+      "chunk_index": 8,
+      "text": "[8] Nurses can discuss this step with the surgeon if there is opportunity to do so and explain to patients why site marking is important.\n\nIncontinent urinary diversion/ileal conduit surgery. Minimally invasive methods are preferred.\nWith newer robotic cystectomy procedures, there is less blood loss and a quicker recovery than with open surgery. However, based on intraoperative findings, an open resection may be required. ",
+      "token_count": 81
+    },
+    {
+      "chunk_index": 9,
+      "text": "However, based on intraoperative findings, an open resection may be required. Diseased or cancerous bladders are removed, but on rare occasions, the bladder may be left intact and simply bypassed, depending on the reason for the surgery. The most common approach is to use a segment of the ileum. A 12-to18-cm section of the ileum is excised, [9] avoiding the distal ileum so as not to interfere with absorption of bile salts and vitamin B12, which may lead to fat malabsorption, steatorrhea, and loss of fat-soluble vitamins, [10] and used as a conduit (meaning “channel”) for urine.\nThe remaining small intestine is anastomosed to reestablish continuity of the bowel (see Figure 2).\n\nThe ureters are disconnected from the bladder and implanted into a proximal portion of the conduit,\n\n_A_ JN [M] June 2024 [M] Vol. 124, No. 6 29\n\nFigure 3. Stents. Photos courtesy of the authors, except where noted.\n\nIntake and output. It is important to document urinary output following cystectomy surgery to confirm adequate urine excretion, assess kidney func\n\n",
+      "token_count": 235
+    },
+    {
+      "chunk_index": 10,
+      "text": "Intake and output. It is important to document urinary output following cystectomy surgery to confirm adequate urine excretion, assess kidney func\n\n\n_A_ JN [M] June 2024 [M] Vol. 124, No. 6 31\n\n",
+      "token_count": 41
+    },
+    {
+      "chunk_index": 11,
+      "text": "6 31\n\nmal. However, frank red blood from inside the stoma should be reported. [12]\n\nOther postoperative concerns include uncontrolled pain, nausea, abdominal distention, and developing signs of depression.\n\nOstomy surgery can exact a physical, emotional, and mental toll on patients. Patients may fear ostomyrelated events that cause embarrassment. Nurses can reassure patients that the vast majority of people with known as a wafer) that adheres to the skin around the stoma, protecting the skin from urine. One-piece systems (see Figure 4) combine the pouch and skin barrier, show less Figure 4. ",
+      "token_count": 120
+    },
+    {
+      "chunk_index": 12,
+      "text": "One-piece systems (see Figure 4) combine the pouch and skin barrier, show less Figure 4. One-piece pouching under clothing, system.\n\n_A_ JN [M] June 2024 [M] Vol. 124, No. 6 33 around the stoma by leveling out uneven contours while providing an additional solid skin barrier. [24]\nThey are often necessary when a stoma has minimal height, if the stoma opening is not ideally centered or is at skin level, or if there are creases or folds in the peristomal field. Barrier rings can be applied directly to the skin around the stoma or to the back of the skin barrier at the edge next to the stoma (see\nFigure 6). Stoma powder is an absorbent powder to be used when there is denuded peristomal skin. It should be lightly dusted onto the irritated skin and nies will even contact the patient’s physician to obtain the necessary prescriptions.\nPatients should be prepared to provide all the n e c e s s a r y information Figure 6. Barrier ring.\n\n",
+      "token_count": 206
+    },
+    {
+      "chunk_index": 13,
+      "text": "Barrier ring.\n\n\nPatients should be encouraged to contact an ostomy support group if one is available. The UOAA has local listings. Participation in such a group has been shown to decrease hospital readmissions and\nED visits [26] and positively impacts a person’s ability to independently adjust to and manage stoma care. [27, 28]\n\nWith appropriate support, encouragement, and education, patients undergoing urostomy can successfully transition to their new life with an ostomy with minimal trauma and disruption and be able to continue most, if not all, of the activities they pur\n\n_Heidi H. Cross is an NP at Central New York Surgical Physicians_\n_in Syracuse and Strong Memorial Hospital, University of Roches-_\n_ter Medical Center, in Rochester, NY. Bethany A. Schempp is an_\n_ostomy nurse at Strong Memorial Hospital, University of Rochester_\n_[Medical Center. ",
+      "token_count": 177
+    },
+    {
+      "chunk_index": 14,
+      "text": "Bethany A. Schempp is an_\n_ostomy nurse at Strong Memorial Hospital, University of Rochester_\n_[Medical Center. Contact author: Heidi H. Cross, hcross914@gmail.](mailto:hcross914@gmail.com)_\n_[com. The authors and planners have disclosed no potential conflicts](mailto:hcross914@gmail.com)_\n_of interest, financial or otherwise._\n\nREFERENCES\n\n1. Ermer-Seltun JM. ",
+      "token_count": 93
+    },
+    {
+      "chunk_index": 15,
+      "text": "REFERENCES\n\n1. Ermer-Seltun JM. Anatomy and physiology of the urinary system. In: Carmel J, et al., editors. _Wound, Ostomy, and_ _Continence Nurses Society core curriculum: ostomy management_ .\n\n_A_ JN [M] June 2024 [M] Vol. 124, No. 6 35\n",
+      "token_count": 65
+    }
+  ]
+}
