@@ -47,8 +47,6 @@ struct AppConfig {
         }
     }()
 
-    static let patientProfileRepository: PatientProfileRepository = MockPatientProfileRepository()
-
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {
             NotificationCenter.default.post(name: llmStatusDidChange,

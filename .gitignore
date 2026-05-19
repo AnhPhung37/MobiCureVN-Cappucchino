@@ -34,6 +34,7 @@ __pycache__/
 .vscode/
 .idea/
 .history/
+.claude/
 
 # Jupyter Notebook checkpoint
 .ipynb_checkpoints/
