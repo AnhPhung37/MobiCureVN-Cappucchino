@@ -28,6 +28,13 @@ struct HomeView: View {
                     Text("Chat")
                 }
                 .tag(1)
+
+            ProfileView()
+                .tabItem {
+                    Image(systemName: "person.crop.circle.fill")
+                    Text("Profile")
+                }
+                .tag(2)
         }
         .tint(.accentColor)
     }
@@ -36,7 +43,56 @@ struct HomeView: View {
 // MARK: - Home Content View
 
 struct HomeContentView: View {
-    
+    @StateObject private var medStore = MedicationStore()
+    @State private var displayedDate: Date = Date()
+    @State private var showingMedList = false
+    @State private var showingDayDetail = false
+    @State private var selectedDateForDetail: Date = Date()
+    private var calendar: Calendar { Calendar.current }
+
+    // MARK: - Date Helpers
+    private func monthYearString(for date: Date) -> String {
+        let df = DateFormatter()
+        df.locale = Locale.current
+        df.dateFormat = "LLLL yyyy"
+        return df.string(from: date)
+    }
+
+    private func generateMonthDays(for date: Date) -> [Int?] {
+        let components = calendar.dateComponents([.year, .month], from: date)
+        guard let firstOfMonth = calendar.date(from: components) else { return [] }
+
+        let weekdayOfFirst = calendar.component(.weekday, from: firstOfMonth) // 1 = Sunday
+        // Convert to Monday = 0 ... Sunday = 6 to match our weekday headers (mo..su)
+        let leadingEmpty = (weekdayOfFirst + 5) % 7
+
+        let daysCount = calendar.range(of: .day, in: .month, for: date)?.count ?? 0
+
+        var days: [Int?] = Array(repeating: nil, count: leadingEmpty)
+        days += (1...daysCount).map { Optional($0) }
+
+        while days.count < 42 { days.append(nil) }
+        return days
+    }
+
+    private func isToday(day: Int, in monthDate: Date) -> Bool {
+        let today = Date()
+        guard calendar.isDate(today, equalTo: monthDate, toGranularity: .month) &&
+              calendar.isDate(today, equalTo: monthDate, toGranularity: .year)
+        else { return false }
+        return calendar.component(.day, from: today) == day
+    }
+
+    private func firstOfMonth(for date: Date) -> Date? {
+        let components = calendar.dateComponents([.year, .month], from: date)
+        return calendar.date(from: components)
+    }
+
+    private func dateFor(day: Int, in monthDate: Date) -> Date? {
+        guard let first = firstOfMonth(for: monthDate) else { return nil }
+        return calendar.date(byAdding: .day, value: day - 1, to: first)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -61,6 +117,17 @@ struct HomeContentView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     menuButton
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingMedList = true }) {
+                        Image(systemName: "pills.fill")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingMedList) {
+                MedicationListView().environmentObject(medStore)
+            }
+            .sheet(isPresented: $showingDayDetail) {
+                DayDetailView(date: selectedDateForDetail).environmentObject(medStore)
             }
         }
     }
@@ -154,11 +221,33 @@ struct HomeContentView: View {
     
     private var calendarPlaceholder: some View {
         VStack(spacing: 12) {
-            // Month Header
-            Text("September")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundColor(Color(.label))
-                .padding(.top, 16)
+            // Month Header with navigation
+            HStack(spacing: 12) {
+                Button(action: {
+                    if let prev = calendar.date(byAdding: .month, value: -1, to: displayedDate) {
+                        displayedDate = prev
+                    }
+                }) {
+                    Image(systemName: "chevron.left")
+                }
+
+                Spacer()
+
+                Text(monthYearString(for: displayedDate))
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(Color(.label))
+
+                Spacer()
+
+                Button(action: {
+                    if let next = calendar.date(byAdding: .month, value: 1, to: displayedDate) {
+                        displayedDate = next
+                    }
+                }) {
+                    Image(systemName: "chevron.right")
+                }
+            }
+            .padding(.top, 16)
             
             // Weekday Headers
             HStack(spacing: 0) {
@@ -171,22 +260,42 @@ struct HomeContentView: View {
             }
             .padding(.horizontal, 8)
             
-            // Calendar Grid (Simplified)
+            // Calendar Grid (dynamic)
             VStack(spacing: 8) {
-                ForEach(0..<5, id: \.self) { week in
+                let monthDays = generateMonthDays(for: displayedDate)
+                ForEach(0..<6, id: \.self) { week in
                     HStack(spacing: 0) {
-                        ForEach(0..<7, id: \.self) { day in
-                            let dayNumber = week * 7 + day + 1
-                            if dayNumber <= 30 {
-                                Text("\(dayNumber)")
-                                    .font(.system(size: 14, weight: dayNumber == 13 ? .bold : .regular))
-                                    .foregroundColor(dayNumber == 13 ? .accentColor : Color(.label))
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 32)
-                                    .background(
-                                        dayNumber == 13 ? 
-                                        Circle().fill(Color.accentColor.opacity(0.1)) : nil
-                                    )
+                        ForEach(0..<7, id: \.self) { weekday in
+                            let index = week * 7 + weekday
+                            if index < monthDays.count, let dayNumber = monthDays[index] {
+                                let todayMark = isToday(day: dayNumber, in: displayedDate)
+                                VStack(spacing: 4) {
+                                    Text("\(dayNumber)")
+                                        .font(.system(size: 14, weight: todayMark ? .bold : .regular))
+                                        .foregroundColor(todayMark ? .accentColor : Color(.label))
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 28)
+                                        .background(
+                                            todayMark ? Circle().fill(Color.accentColor.opacity(0.12)) : nil
+                                        )
+
+                                    // medication dot
+                                    if let dayDate = dateFor(day: dayNumber, in: displayedDate), medStore.hasMedication(on: dayDate) {
+                                        Circle()
+                                            .fill(medStore.dayCompletionStatus(on: dayDate) == true ? Color.green : Color.red)
+                                            .frame(width: 6, height: 6)
+                                    } else {
+                                        Color.clear.frame(width: 6, height: 6)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if let dayDate = dateFor(day: dayNumber, in: displayedDate) {
+                                        selectedDateForDetail = dayDate
+                                        showingDayDetail = true
+                                    }
+                                }
                             } else {
                                 Text("")
                                     .frame(maxWidth: .infinity)

@@ -12,6 +12,7 @@ struct ChatView: View {
     @StateObject private var viewModel: ChatViewModel
     @FocusState private var inputFocused: Bool
     @State private var scrollProxy: ScrollViewProxy? = nil
+    @State private var isShowingHistorySidebar = false
 
     init(llmService: LLMServiceProtocol) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -37,13 +38,155 @@ struct ChatView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    clearButton
+                    HStack(spacing: 14) {
+                        historyButton
+                        newChatButton
+                    }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     statusBadge
                 }
             }
+            .overlay(alignment: .trailing) {
+                if isShowingHistorySidebar {
+                    historySidebar
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                }
+            }
         }
+    }
+
+    // MARK: - History Sidebar
+
+    private var historySidebar: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .trailing) {
+                Color.black.opacity(0.22)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isShowingHistorySidebar = false
+                        }
+                    }
+
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Chat History")
+                                .font(.headline)
+                            Text("Grouped by time")
+                                .font(.caption)
+                                .foregroundColor(Color(.secondaryLabel))
+                        }
+                        Spacer()
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isShowingHistorySidebar = false
+                            }
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(Color(.secondaryLabel))
+                                .frame(width: 30, height: 30)
+                                .background(Circle().fill(Color(.tertiarySystemBackground)))
+                        }
+                    }
+
+                    ScrollView {
+                        if viewModel.conversationSections.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("No chat history yet.")
+                                    .font(.system(size: 15, weight: .semibold))
+                                Text("Start a chat and your saved messages will show here.")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(Color(.secondaryLabel))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(14)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(Color(.secondarySystemBackground))
+                            )
+                        } else {
+                            LazyVStack(spacing: 12) {
+                                ForEach(viewModel.conversationSections) { section in
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        Text(section.title)
+                                            .font(.subheadline.weight(.semibold))
+                                            .foregroundColor(Color(.label))
+
+                                        ForEach(section.items) { conversation in
+                                            HStack(alignment: .top, spacing: 10) {
+                                                Button {
+                                                    Task {
+                                                        await viewModel.loadConversation(conversation.id)
+                                                    }
+                                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                                        isShowingHistorySidebar = false
+                                                    }
+                                                } label: {
+                                                    VStack(alignment: .leading, spacing: 4) {
+                                                        Text(conversation.title.isEmpty ? "Chat" : conversation.title)
+                                                            .font(.system(size: 14, weight: .semibold))
+                                                            .foregroundColor(Color(.label))
+                                                            .lineLimit(1)
+                                                        Text(conversation.preview.isEmpty ? "No preview" : conversation.preview)
+                                                            .font(.system(size: 13))
+                                                            .foregroundColor(Color(.secondaryLabel))
+                                                            .lineLimit(2)
+                                                    }
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .padding(12)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                                            .fill(viewModel.currentConversationId == conversation.id ? Color.accentColor.opacity(0.12) : Color(.systemBackground))
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                                                    .strokeBorder(viewModel.currentConversationId == conversation.id ? Color.accentColor.opacity(0.35) : Color.clear, lineWidth: 1)
+                                                            )
+                                                    )
+                                                }
+                                                .buttonStyle(.plain)
+
+                                                Button {
+                                                    Task {
+                                                        await viewModel.deleteConversation(conversation.id)
+                                                    }
+                                                } label: {
+                                                    Image(systemName: "trash")
+                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .foregroundColor(.red)
+                                                        .frame(width: 34, height: 34)
+                                                        .background(Circle().fill(Color.red.opacity(0.12)))
+                                                }
+                                                .buttonStyle(.plain)
+                                            }
+                                        }
+                                    }
+                                    .padding(14)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+
+                    Spacer(minLength: 0)
+                }
+                .padding(16)
+                .frame(width: min(geometry.size.width * 0.84, 360), height: geometry.size.height)
+                .background(
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .fill(Color(.systemBackground))
+                        .shadow(color: Color.black.opacity(0.18), radius: 20, x: -4, y: 0)
+                )
+                .offset(x: isShowingHistorySidebar ? 0 : min(geometry.size.width * 0.84, 360))
+            }
+        }
+        .ignoresSafeArea()
     }
 
     // MARK: - Download Progress Banner
@@ -83,12 +226,19 @@ struct ChatView: View {
                         emptyState
                     }
 
-                    // Messages
-                    ForEach(Array(viewModel.messages.enumerated()), id: \.offset) { _, message in
+                    // Messages grouped by sections
+                    ForEach(viewModel.sections) { section in
                         VStack(alignment: .leading, spacing: 8) {
-                            MessageBubble(message: message)
+                            Text(section.title)
+                                .font(.footnote)
+                                .foregroundColor(Color(.secondaryLabel))
+                                .padding(.horizontal, 16)
+                                .padding(.top, 8)
+                            ForEach(section.items) { item in
+                                MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources))
+                                    .padding(.vertical, 4)
+                            }
                         }
-                        .padding(.vertical, 4)
                     }
 
                     // Error banner
@@ -226,6 +376,39 @@ struct ChatView: View {
                 .font(.system(size: 16))
         }
         .disabled(viewModel.messages.isEmpty)
+    }
+
+    private var historyButton: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isShowingHistorySidebar.toggle()
+            }
+        } label: {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.system(size: 16))
+        }
+        .accessibilityLabel("Chat history")
+    }
+
+    private var newChatButton: some View {
+        Button {
+            viewModel.clearConversation()
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isShowingHistorySidebar = false
+            }
+        } label: {
+            Image(systemName: "square.and.pencil")
+                .font(.system(size: 16))
+        }
+        .accessibilityLabel("New chat")
+        .disabled(viewModel.messages.isEmpty)
+    }
+
+    private func formatConversationDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 
     private var statusBadge: some View {
