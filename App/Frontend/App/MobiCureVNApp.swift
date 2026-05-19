@@ -11,8 +11,6 @@ import SwiftUI
 struct MobiCureVNApp: App {
 
     init() {
-        AppConfig.useRealLLM = true
-
         let isSimulator = ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
         let initializeRuntime = !isSimulator
             && !ProcessInfo.processInfo.isiOSAppOnMac

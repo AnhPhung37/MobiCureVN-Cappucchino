@@ -24,7 +24,14 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     }
 
     func initializeModel() async -> Bool {
-        if useMock || !isModelAvailable { return false }
+        guard !useMock else {
+            print("LLMService: useMock=true, skipping MLX init")
+            return false
+        }
+        guard isModelAvailable else {
+            print("LLMService: model path not found: \(modelPath)")
+            return false
+        }
 #if canImport(MLXLLM)
         do {
             let modelURL = URL(fileURLWithPath: modelPath, isDirectory: true)
@@ -37,12 +44,13 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
             print("LLMService: MLX initialized at \(modelPath)")
             return true
         } catch {
-            print("LLMService: MLX initialization failed: \(error)")
+            print("LLMService: MLX initialization failed — \(error)")
+            print("LLMService: model path was: \(modelPath)")
             mlxInitialized = false
             return false
         }
 #else
-        print("LLMService: MLX not available in this build — cannot initialize runtime")
+        print("LLMService: MLXLLM not available in this build — add the MLX Swift packages to the target")
         return false
 #endif
     }
@@ -74,7 +82,7 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                     do {
                         let input = UserInput(prompt: prompt)
                         let lmInput = try await container.prepare(input: input)
-                        let params = GenerateParameters(maxTokens: 512, temperature: 0.7, topP: 0.9)
+                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.7, topP: 0.9)
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
                             if case let .chunk(text) = event {

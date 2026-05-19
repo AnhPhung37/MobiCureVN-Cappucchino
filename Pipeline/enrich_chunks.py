@@ -16,6 +16,7 @@ Output schema per chunk:
     text            — raw chunk text
     token_count     — from chunker
     section         — nearest preceding heading  e.g. "Risk Factors"
+    page_start      — page number (if available)
     doc_type        — from registry              e.g. "guideline"
     source_org      — from registry              e.g. "ACS"
     credibility_tier — from registry             e.g. 1
@@ -37,12 +38,25 @@ _HEADING_RE = re.compile(r"^#{1,6}\s+(.+)", re.MULTILINE)
 _CITATION_RE = re.compile(r"\s*[\[\(][\d,\s.\-]+[\]\)]\s*$")
 
 
-def _extract_section(text: str) -> str | None:
+def _extract_section(text: str, max_offset: int = 120) -> str | None:
     m = _HEADING_RE.search(text)
-    if not m:
+    if not m or m.start() > max_offset:
         return None
     heading = _CITATION_RE.sub("", m.group(1)).strip()
-    return heading or None
+    # Reject single-character or suspiciously short headings — PDF parsing artifacts
+    if not heading or len(heading) < 3 or (len(heading.split()) == 1 and len(heading) < 5):
+        return None
+    return heading
+
+
+def _extract_page_start(chunk: dict) -> int | None:
+    for key in ("page_start", "page", "page_number"):
+        value = chunk.get(key)
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+    return None
 
 
 def load_registry() -> dict[str, dict]:
@@ -87,6 +101,7 @@ def enrich(registry: dict[str, dict]) -> None:
             found = _extract_section(chunk["text"])
             if found:
                 current_section = found
+            page_start = _extract_page_start(chunk)
 
             enriched.append(
                 {
@@ -95,6 +110,7 @@ def enrich(registry: dict[str, dict]) -> None:
                     "text": chunk["text"],
                     "token_count": chunk.get("token_count"),
                     "section": current_section,
+                    "page_start": page_start,
                     "doc_type": meta["doc_type"],
                     "source_org": meta["source_org"],
                     "credibility_tier": meta["credibility_tier"],

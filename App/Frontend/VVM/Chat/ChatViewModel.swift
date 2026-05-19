@@ -135,9 +135,6 @@ class ChatViewModel: ObservableObject {
         streamingTask = Task {
             let fullText = await streamResponse(for: text, assistantIndex: assistantIndex)
             await finalizeResponse(fullText, originalQuery: text, assistantIndex: assistantIndex)
-            rebuildSections()
-            await refreshConversationHistory()
-            isLoading = false
         }
     }
 
@@ -173,14 +170,16 @@ class ChatViewModel: ObservableObject {
 
     private func finalizeResponse(_ fullText: String, originalQuery: String, assistantIndex: Int) async {
         if fullText.isEmpty {
-            messages[assistantIndex] = ChatMessage(
-                role: "assistant",
-                content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại."
-            )
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.")
         } else {
             messageDates[assistantIndex] = Date()
-            let refinedQuery = queryRefiner.refineQuery(originalQuery)
-            let retrieved = citationRetriever.retrieve(query: refinedQuery, topK: 5)
+            let refinedForCitation = queryRefiner.refineQuery(originalQuery)
+            let retrieved = citationRetriever.retrieve(
+                query: refinedForCitation.baseQuery,
+                enrichedTerms: refinedForCitation.enrichedTerms,
+                topK: 5
+            )
+            print("CitationRetriever: query='\(refinedForCitation.baseQuery)' sources=\(retrieved.sources.count)")
             let assistantItem = ChatItem(
                 conversationId: currentConversationId,
                 role: "assistant",
@@ -190,6 +189,10 @@ class ChatViewModel: ObservableObject {
             Task { try? await historyRepository.append(assistantItem) }
             messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: retrieved.sources)
         }
+
+        rebuildSections()
+        await refreshConversationHistory()
+        isLoading = false
     }
 
     func cancelStreaming() {

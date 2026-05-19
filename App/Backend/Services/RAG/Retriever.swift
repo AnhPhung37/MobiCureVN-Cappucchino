@@ -13,9 +13,9 @@ final class RAGService {
 
     func process(userQuery: String) async -> RetrievedContext {
         let refined = queryRefiner.refineQuery(userQuery)
-        print("RAGService: '\(userQuery)' → '\(refined)'")
+        print("RAGService: '\(userQuery)' → '\(refined.baseQuery)'")
 
-        let context = retriever.retrieve(query: refined)
+        let context = retriever.retrieve(query: refined.baseQuery, enrichedTerms: refined.enrichedTerms)
         print("RAGService: \(context.chunks.count) chunks, confidence=\(String(format: "%.2f", context.confidenceScore))")
 
         return context
