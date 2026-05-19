@@ -411,6 +411,11 @@
 		EC8AFE272FB818CC00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ml-explore/mlx-swift-lm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.31.3;
+			};
+		};
 		EC2D77BD2FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-tokenizers-mlx" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DePasqualeOrg/swift-tokenizers-mlx";
@@ -476,6 +481,7 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EC8AFE272FB818CC00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */;
 			productName = MLXVLM;
+		};
 		EC2D77BC2FA22C4500720421 /* MLXLMTokenizers */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EC2D77BD2FA22C4500720421 /* XCRemoteSwiftPackageReference "swift-tokenizers-mlx" */;

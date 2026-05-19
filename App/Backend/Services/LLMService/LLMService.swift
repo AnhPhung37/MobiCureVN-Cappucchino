@@ -12,6 +12,10 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let modelPath: String
     private let useMock: Bool
     private let isModelAvailable: Bool
+    private var mlxInitialized: Bool = false
+#if canImport(MLXLLM)
+    private var modelContainer: ModelContainer?
+#endif
 
     init(modelPath: String = "qwen-2.5-7b-instruct", useMock: Bool = false) {
         self.modelPath = modelPath
@@ -19,11 +23,28 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
         self.isModelAvailable = FileManager.default.fileExists(atPath: modelPath)
     }
 
-    /// MLX loading is temporarily disabled to avoid broken package/module errors.
-    /// This keeps the app compiling while we fix the MLX integration separately.
     func initializeModel() async -> Bool {
-        print("LLMService: MLX model loading is temporarily disabled.")
+        if useMock || !isModelAvailable { return false }
+#if canImport(MLXLLM)
+        do {
+            let modelURL = URL(fileURLWithPath: modelPath, isDirectory: true)
+            let container = try await LLMModelFactory.shared.loadContainer(
+                from: modelURL,
+                using: #huggingFaceTokenizerLoader()
+            )
+            modelContainer = container
+            mlxInitialized = true
+            print("LLMService: MLX initialized at \(modelPath)")
+            return true
+        } catch {
+            print("LLMService: MLX initialization failed: \(error)")
+            mlxInitialized = false
+            return false
+        }
+#else
+        print("LLMService: MLX not available in this build — cannot initialize runtime")
         return false
+#endif
     }
 
     // MARK: - LLMServiceProtocol
@@ -34,7 +55,6 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
             history: request.conversationHistory,
             user: request.userMessage
         )
-
         return generate(prompt: prompt)
     }
 
@@ -42,18 +62,38 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 
     private func generate(prompt: String) -> AsyncStream<String> {
         return AsyncStream<String>(bufferingPolicy: .unbounded) { continuation in
-            Task(priority: .userInitiated) { [weak self] in
+            Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self = self else {
                     continuation.finish()
                     return
                 }
 
-                let reply: String
+#if canImport(MLXLLM)
+                if !self.useMock, self.isModelAvailable, self.mlxInitialized,
+                   let container = self.modelContainer {
+                    do {
+                        let input = UserInput(prompt: prompt)
+                        let lmInput = try await container.prepare(input: input)
+                        let params = GenerateParameters(maxTokens: 512, temperature: 0.7, topP: 0.9)
+                        let stream = try await container.generate(input: lmInput, parameters: params)
+                        for await event in stream {
+                            if case let .chunk(text) = event {
+                                continuation.yield(text)
+                            }
+                        }
+                    } catch {
+                        continuation.yield("[MLX error: \(error.localizedDescription)]")
+                    }
+                    continuation.finish()
+                    return
+                }
+#endif
 
+                let reply: String
                 if !self.useMock && self.isModelAvailable {
-                    reply = "Model found at \(self.modelPath), but MLX loading is temporarily disabled while fixing package integration."
+                    reply = "Model found at \(self.modelPath). MLX runtime unavailable for this build; returning placeholder response."
                 } else {
-                    reply = "Test response: This is local test mode. Model loading is disabled. Ready to integrate MLX later."
+                    reply = "Test response: This is local test mode. Model loading disabled. Ready to integrate MLX later."
                 }
 
                 for chunk in Self.chunk(reply, size: 48) {

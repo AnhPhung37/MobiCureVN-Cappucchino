@@ -114,7 +114,14 @@ struct AppConfig {
                 let service = LLMService(modelPath: modelURL.path, useMock: false)
                 llmService = service
                 updateStatus(.mockWithDownloadedModel)
-                print("AppConfig: model downloaded, MLX integration pending")
+
+                let initialized = await service.initializeModel()
+                if initialized {
+                    updateStatus(.localModelReady)
+                    print("AppConfig: MLX runtime ready")
+                } else {
+                    print("AppConfig: MLX runtime unavailable, using placeholder responses")
+                }
             } catch {
                 updateStatus(.unavailable)
                 print("AppConfig: model setup failed: \(error). Continuing with MockLLMService.")
