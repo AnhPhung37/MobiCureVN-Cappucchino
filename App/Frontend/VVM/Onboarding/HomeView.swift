@@ -43,7 +43,11 @@ struct HomeView: View {
 // MARK: - Home Content View
 
 struct HomeContentView: View {
+    @StateObject private var medStore = MedicationStore()
     @State private var displayedDate: Date = Date()
+    @State private var showingMedList = false
+    @State private var showingDayDetail = false
+    @State private var selectedDateForDetail: Date = Date()
     private var calendar: Calendar { Calendar.current }
 
     // MARK: - Date Helpers
@@ -79,6 +83,16 @@ struct HomeContentView: View {
         return calendar.component(.day, from: today) == day
     }
 
+    private func firstOfMonth(for date: Date) -> Date? {
+        let components = calendar.dateComponents([.year, .month], from: date)
+        return calendar.date(from: components)
+    }
+
+    private func dateFor(day: Int, in monthDate: Date) -> Date? {
+        guard let first = firstOfMonth(for: monthDate) else { return nil }
+        return calendar.date(byAdding: .day, value: day - 1, to: first)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -103,6 +117,17 @@ struct HomeContentView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     menuButton
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingMedList = true }) {
+                        Image(systemName: "pills.fill")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingMedList) {
+                MedicationListView().environmentObject(medStore)
+            }
+            .sheet(isPresented: $showingDayDetail) {
+                DayDetailView(date: selectedDateForDetail).environmentObject(medStore)
             }
         }
     }
@@ -244,14 +269,33 @@ struct HomeContentView: View {
                             let index = week * 7 + weekday
                             if index < monthDays.count, let dayNumber = monthDays[index] {
                                 let todayMark = isToday(day: dayNumber, in: displayedDate)
-                                Text("\(dayNumber)")
-                                    .font(.system(size: 14, weight: todayMark ? .bold : .regular))
-                                    .foregroundColor(todayMark ? .accentColor : Color(.label))
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 32)
-                                    .background(
-                                        todayMark ? Circle().fill(Color.accentColor.opacity(0.12)) : nil
-                                    )
+                                VStack(spacing: 4) {
+                                    Text("\(dayNumber)")
+                                        .font(.system(size: 14, weight: todayMark ? .bold : .regular))
+                                        .foregroundColor(todayMark ? .accentColor : Color(.label))
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 28)
+                                        .background(
+                                            todayMark ? Circle().fill(Color.accentColor.opacity(0.12)) : nil
+                                        )
+
+                                    // medication dot
+                                    if let dayDate = dateFor(day: dayNumber, in: displayedDate), medStore.hasMedication(on: dayDate) {
+                                        Circle()
+                                            .fill(medStore.dayCompletionStatus(on: dayDate) == true ? Color.green : Color.red)
+                                            .frame(width: 6, height: 6)
+                                    } else {
+                                        Color.clear.frame(width: 6, height: 6)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if let dayDate = dateFor(day: dayNumber, in: displayedDate) {
+                                        selectedDateForDetail = dayDate
+                                        showingDayDetail = true
+                                    }
+                                }
                             } else {
                                 Text("")
                                     .frame(maxWidth: .infinity)

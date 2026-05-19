@@ -131,27 +131,4 @@ final class ChatRecord {
 
 Below is a small Mermaid diagram that visualises the RAG → LLM → Citation pipeline used by the app.
 
-```mermaid
-flowchart LR
-   U[User]
-   U -->|sends query| VM[ChatViewModel]
-   VM -->|orchestrate| O[MedicalChatOrchestrator]
-   O --> IG[Input GuardRail]
-   O --> ED[Emergency Detector]
-   O --> RS[RAGService]
-   RS --> SR[SQLiteRetriever]
-   SR --> VDB[(vectorstore.db)]
-   RS --> O
-   O --> LLM[LLMService]
-   LLM -->|stream tokens| VM
-   VM -->|post-retrieve for citations| SR
-   SR --> MS[MedicalSource[]]
-   VM -->|attach sources| UI[CitationsView / CitationCard]
-
-   classDef external fill:#f9f,stroke:#333,stroke-width:1px;
-   class VDB external;
-```
-
-
-
-
+![alt text](image.png)
