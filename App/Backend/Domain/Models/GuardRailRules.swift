@@ -20,7 +20,16 @@ struct GuardRailRules {
         "wound", "incision", "scar", "fever", "bleeding", "nausea", "vomit", "diarrhea", "constipation",
         "blood pressure", "heart", "lung", "liver", "kidney", "stomach", "intestine",
         "medicine", "drug", "dose", "treatment", "recovery", "exercise", "diet",
-        "physician", "doctor", "health", "medical", "postoperative", "post-op", "healing"
+        "physician", "doctor", "health", "medical", "postoperative", "post-op", "healing",
+
+        // Stoma / colorectal / urology — core domain terms for this app
+        "stoma", "colostomy", "ileostomy", "urostomy", "ostomy",
+        "bowel", "colon", "colorectal", "rectal", "rectum",
+        "cancer", "tumor", "malignant", "carcinoma",
+        "catheter", "catheterization", "urinary", "urine", "diversion",
+        "stent", "colonic", "reversal", "pouch", "bag", "output",
+        "continent", "incontinent", "appliance", "wafer", "flange",
+        "peristomal", "stomal", "effluent"
     ])
     
     /// Rule Group 2: Hard-block dangerous requests

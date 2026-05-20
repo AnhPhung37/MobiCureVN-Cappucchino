@@ -126,6 +126,7 @@ final class MedicalChatOrchestrator {
         context: RetrievedContext,
         history: [ChatMessage]
     ) -> EnrichedPrompt {
+        let budgetedChunks = applyContextBudget(context.chunks, budget: 1500)
         let systemPrompt = """
         You are a medical informational assistant. Your role is to provide educational health information only.
         
@@ -139,7 +140,7 @@ final class MedicalChatOrchestrator {
         - For medical advice, include a disclaimer that they should consult with a healthcare provider.
         
         Retrieved Medical Context:
-        \(formatContextChunks(context.chunks))
+        \(formatContextChunks(budgetedChunks))
         
         Sources:
         \(formatSources(context.sources))
@@ -151,6 +152,20 @@ final class MedicalChatOrchestrator {
         
         return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userMessage)
     }
+
+    private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
+        var usedTokens = 0
+        var selected: [ContextChunk] = []
+
+        for chunk in chunks {
+            let estimate = chunk.content.split { $0.isWhitespace }.count
+            if usedTokens + estimate > budget { break }
+            usedTokens += estimate
+            selected.append(chunk)
+        }
+
+        return selected
+    }
     
     private func formatContextChunks(_ chunks: [ContextChunk]) -> String {
         guard !chunks.isEmpty else {
@@ -158,9 +173,10 @@ final class MedicalChatOrchestrator {
         }
         
         return chunks.enumerated().map { index, chunk in
-            """
+            let sectionLabel = chunk.section.isEmpty ? "General" : chunk.section
+            return """
             ---
-            Context \(index + 1) (\(chunk.section)):
+            Context \(index + 1) (\(sectionLabel)):
             \(chunk.content)
             """
         }.joined(separator: "\n")
@@ -172,7 +188,8 @@ final class MedicalChatOrchestrator {
         }
         
         return sources.enumerated().map { index, source in
-            "[\(index + 1)] \(source.title) - \(source.documentName) (p.\(source.page))"
+            let pageStr = source.page > 0 ? " (p.\(source.page))" : ""
+            return "[\(index + 1)] \(source.title) - \(source.documentName)\(pageStr)"
         }.joined(separator: "\n")
     }
 }

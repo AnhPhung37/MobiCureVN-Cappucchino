@@ -20,6 +20,7 @@ chunks (metadata table)
     text             TEXT
     token_count      INTEGER
     section          TEXT
+    page_start       INTEGER
     doc_type         TEXT
     source_org       TEXT
     credibility_tier INTEGER
@@ -85,6 +86,7 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
             text             TEXT    NOT NULL,
             token_count      INTEGER,
             section          TEXT,
+            page_start       INTEGER,
             doc_type         TEXT,
             source_org       TEXT,
             credibility_tier INTEGER
@@ -94,6 +96,15 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
     conn.execute(f"""
         CREATE VIRTUAL TABLE vec_chunks USING vec0(
             embedding float[{EMBED_DIM}]
+        )
+    """)
+
+    conn.execute("""
+        CREATE VIRTUAL TABLE chunks_fts USING fts5(
+            text,
+            content='chunks',
+            content_rowid='rowid',
+            tokenize='porter ascii'
         )
     """)
 
@@ -112,8 +123,8 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
         conn.execute(
             """
             INSERT INTO chunks
-                (chunk_id, doc_id, text, token_count, section, doc_type, source_org, credibility_tier)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (chunk_id, doc_id, text, token_count, section, page_start, doc_type, source_org, credibility_tier)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 chunk["chunk_id"],
@@ -121,6 +132,7 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
                 chunk["text"],
                 chunk.get("token_count"),
                 chunk.get("section"),
+                chunk.get("page_start"),
                 chunk.get("doc_type"),
                 chunk.get("source_org"),
                 chunk.get("credibility_tier"),
@@ -132,6 +144,10 @@ def build(chunks: list[dict], model: SentenceTransformer) -> None:
             (rowid, _to_bytes(vec)),
         )
     conn.execute("COMMIT")
+
+    conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
+    conn.commit()
+    print(f"FTS5 index built")
 
     # Smoke-test: verify KNN works
     sample_vec = _to_bytes(embeddings[0])
@@ -153,8 +169,8 @@ if __name__ == "__main__":
             f"[ERROR] Run enrich_chunks.py first — {ENRICHED_DIR}/ is empty or missing."
         )
 
-    chunks = load_all_chunks()
-    print(f"Loaded {len(chunks)} enriched chunks from {ENRICHED_DIR}/")
+    all_chunks = load_all_chunks()
+    print(f"Loaded {len(all_chunks)} enriched chunks from {ENRICHED_DIR}/")
 
-    model = SentenceTransformer(EMBED_MODEL)
-    build(chunks, model)
+    embedder = SentenceTransformer(EMBED_MODEL)
+    build(all_chunks, embedder)
