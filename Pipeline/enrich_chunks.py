@@ -59,6 +59,16 @@ def _extract_page_start(chunk: dict) -> int | None:
     return None
 
 
+def _extract_page_start(chunk: dict) -> int | None:
+    for key in ("page_start", "page", "page_number"):
+        value = chunk.get(key)
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+    return None
+
+
 def load_registry() -> dict[str, dict]:
     """Returns {title_stem: {doc_id, doc_type, source_org, credibility_tier}}."""
     result: dict[str, dict] = {}
