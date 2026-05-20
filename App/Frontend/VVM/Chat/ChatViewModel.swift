@@ -34,13 +34,14 @@ class ChatViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var backendStatus: LLMBackendStatus = .mock
     @Published var downloadProgress: Double = 0
-    
+    @Published private(set) var processingState: ChatProcessingState = .idle
+
     @Published var sections: [ChatSection] = []
     @Published var conversationSections: [ChatConversationSection] = []
 
     // MARK: - Dependencies
 
-    private var orchestrator: MedicalChatOrchestrator
+    private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
     private let citationRetriever = SQLiteRetriever()
     private let queryRefiner = QueryRefiner()
@@ -48,16 +49,20 @@ class ChatViewModel: ObservableObject {
 
     private var streamingTask: Task<Void, Never>?
     private var cancellables: Set<AnyCancellable> = []
-    
+
     private var messageDates: [Date] = []
 
     // MARK: - Init
 
     init(
-        llmService: LLMServiceProtocol,
+        llmService: LLMServiceProtocol? = nil,
         historyRepository: ChatHistoryRepository = AppConfig.chatHistoryRepository
     ) {
-        self.orchestrator = MedicalChatOrchestrator(llmService: llmService)
+        let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
+        self.chatService = ChatService(
+            orchestrator: orchestrator,
+            translationService: AppConfig.translationService
+        )
         self.historyRepository = historyRepository
 
         backendStatus = AppConfig.llmStatus
@@ -80,8 +85,8 @@ class ChatViewModel: ObservableObject {
             .compactMap { $0.userInfo?[AppConfig.llmServiceUserInfoKey] as? LLMServiceProtocol }
             .receive(on: RunLoop.main)
             .sink { [weak self] service in
-                self?.orchestrator = MedicalChatOrchestrator(llmService: service)
-
+                guard let self else { return }
+                self.chatService.updateOrchestrator(MedicalChatOrchestrator(llmService: service))
             }
             .store(in: &cancellables)
 
@@ -92,24 +97,17 @@ class ChatViewModel: ObservableObject {
                 self?.downloadProgress = value
             }
             .store(in: &cancellables)
+
+        // Forward ChatService processing state so the view only needs to observe this ViewModel.
+        chatService.$processingState
+            .receive(on: RunLoop.main)
+            .assign(to: &$processingState)
     }
-    
+
     // MARK: - Chat History Grouping
-    
+
     private func itemsAsChatItems() -> [ChatItem] {
-        guard messages.count == messageDates.count else {
-            // fallback if counts mismatch
-            return zip(messages, messageDates).map {
-                ChatItem(
-                    conversationId: currentConversationId,
-                    role: $0.0.role,
-                    content: $0.0.content,
-                    date: $0.1,
-                    sources: $0.0.sources
-                )
-            }
-        }
-        return zip(messages, messageDates).map {
+        zip(messages, messageDates).map {
             ChatItem(
                 conversationId: currentConversationId,
                 role: $0.0.role,
@@ -130,67 +128,73 @@ class ChatViewModel: ObservableObject {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isLoading else { return }
 
-        // Add user message
-        let userMessage = ChatMessage(role: "user", content: text)
-        messages.append(userMessage)
-        messageDates.append(Date())
-        inputText = ""
-        errorMessage = nil
-        isLoading = true
-        
-        let userItem = ChatItem(conversationId: currentConversationId, role: userMessage.role, content: userMessage.content, date: Date())
-        Task { try? await historyRepository.append(userItem) }
-        Task { await refreshConversationHistory() }
-        
-        // Add placeholder assistant message for streaming
-        let assistantMessage = ChatMessage(role: "assistant", content: "")
-        messages.append(assistantMessage)
-        messageDates.append(Date())
-        let assistantIndex = messages.count - 1
-        
+        appendUserMessage(text)
+        let assistantIndex = appendAssistantPlaceholder()
         rebuildSections()
 
-        // Stream response using orchestrator (with guardrails + RAG)
         streamingTask = Task {
-            var fullText = ""
-
-            for await token in orchestrator.processQuery(text, conversationHistory: Array(messages.dropLast())) {
-                guard !Task.isCancelled else { break }
-                fullText += token
-                messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText)
-                // No new date appended for streaming updates, reuse same date at assistantIndex
-                rebuildSections()
-            }
-
-            // Finalize message
-            if fullText.isEmpty {
-                messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.")
-            } else {
-                // Update the date for the assistant message to current time once finalized
-                messageDates[assistantIndex] = Date()
-                let refinedForCitation = queryRefiner.refineQuery(text)
-                let retrieved = citationRetriever.retrieve(query: refinedForCitation, topK: 5)
-                print("CitationRetriever: query='\(refinedForCitation)' sources=\(retrieved.sources.count)")
-                let assistantItem = ChatItem(
-                    conversationId: currentConversationId,
-                    role: "assistant",
-                    content: fullText,
-                    date: messageDates[assistantIndex]
-                )
-                Task { try? await historyRepository.append(assistantItem) }
-                messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: retrieved.sources)
-            }
-
+            let fullText = await streamResponse(for: text, assistantIndex: assistantIndex)
+            await finalizeResponse(fullText, originalQuery: text, assistantIndex: assistantIndex)
             rebuildSections()
             await refreshConversationHistory()
             isLoading = false
         }
     }
 
+    private func appendUserMessage(_ text: String) {
+        let userMessage = ChatMessage(role: "user", content: text)
+        messages.append(userMessage)
+        messageDates.append(Date())
+        inputText = ""
+        errorMessage = nil
+        isLoading = true
+
+        let userItem = ChatItem(conversationId: currentConversationId, role: userMessage.role, content: userMessage.content, date: Date())
+        Task { try? await historyRepository.append(userItem) }
+        Task { await refreshConversationHistory() }
+    }
+
+    private func appendAssistantPlaceholder() -> Int {
+        messages.append(ChatMessage(role: "assistant", content: ""))
+        messageDates.append(Date())
+        return messages.count - 1
+    }
+
+    private func streamResponse(for text: String, assistantIndex: Int) async -> String {
+        var fullText = ""
+        for await token in chatService.processQuery(text, history: Array(messages.dropLast())) {
+            guard !Task.isCancelled else { break }
+            fullText += token
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText)
+            rebuildSections()
+        }
+        return fullText
+    }
+
+    private func finalizeResponse(_ fullText: String, originalQuery: String, assistantIndex: Int) async {
+        if fullText.isEmpty {
+            messages[assistantIndex] = ChatMessage(
+                role: "assistant",
+                content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại."
+            )
+        } else {
+            messageDates[assistantIndex] = Date()
+            let refinedQuery = queryRefiner.refineQuery(originalQuery)
+            let retrieved = citationRetriever.retrieve(query: refinedQuery, topK: 5)
+            let assistantItem = ChatItem(
+                conversationId: currentConversationId,
+                role: "assistant",
+                content: fullText,
+                date: messageDates[assistantIndex]
+            )
+            Task { try? await historyRepository.append(assistantItem) }
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: retrieved.sources)
+        }
+    }
+
     func cancelStreaming() {
         streamingTask?.cancel()
         streamingTask = nil
-        // No streaming flag in current model; nothing to toggle here.
         isLoading = false
     }
 
@@ -215,11 +219,9 @@ class ChatViewModel: ObservableObject {
     func deleteConversation(_ conversationId: UUID) async {
         do {
             try await historyRepository.deleteConversation(id: conversationId)
-
             if currentConversationId == conversationId {
                 clearConversation()
             }
-
             await refreshConversationHistory()
         } catch {
             await MainActor.run {
@@ -227,7 +229,7 @@ class ChatViewModel: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - History Loading
 
     func bootstrapHistory() async {
@@ -235,7 +237,6 @@ class ChatViewModel: ObservableObject {
         await MainActor.run {
             self.conversationSections = ChatConversationGrouper.group(conversations)
         }
-
         if let latestConversation = conversations.first {
             currentConversationId = latestConversation.id
             let items = (try? await historyRepository.loadHistory(conversationId: latestConversation.id)) ?? []
@@ -257,5 +258,17 @@ class ChatViewModel: ObservableObject {
         self.messages = items.map { ChatMessage(role: $0.role, content: $0.content) }
         self.messageDates = items.map { $0.date }
         self.rebuildSections()
+    }
+
+    // MARK: - Processing State Label (for the UI)
+
+    var processingStateLabel: String? {
+        switch processingState {
+        case .idle:                return nil
+        case .validatingLanguage:  return "Đang kiểm tra ngôn ngữ..."
+        case .translatingInput:    return "Đang dịch câu hỏi..."
+        case .generating:          return nil   // handled by the existing streaming bubble
+        case .translatingOutput:   return "Đang dịch câu trả lời..."
+        }
     }
 }

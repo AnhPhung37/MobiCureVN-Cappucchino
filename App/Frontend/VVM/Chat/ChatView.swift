@@ -6,15 +6,19 @@
 //
 
 import SwiftUI
+import Translation
 
 struct ChatView: View {
 
     @StateObject private var viewModel: ChatViewModel
+    // Observe the shared TranslationService so the hint strip and state banner
+    // re-render automatically when sessions become ready.
+    @ObservedObject private var translationService = AppConfig.translationService
     @FocusState private var inputFocused: Bool
     @State private var scrollProxy: ScrollViewProxy? = nil
     @State private var isShowingHistorySidebar = false
 
-    init(llmService: LLMServiceProtocol) {
+    init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
     }
 
@@ -24,6 +28,16 @@ struct ChatView: View {
                 // Model download progress
                 if viewModel.backendStatus == .loading {
                     downloadProgressBanner
+                }
+
+                // Language pack download (only shown while packs are being fetched for the first time)
+                if translationService.isPreparingLanguagePacks && !translationService.isReady {
+                    languagePackDownloadBanner
+                }
+
+                // Translation pipeline status (shown when translating input or output)
+                if let label = viewModel.processingStateLabel {
+                    translationStatusBanner(label: label)
                 }
 
                 // Message list
@@ -53,6 +67,21 @@ struct ChatView: View {
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }
+        }
+        // MARK: - Translation session setup (iOS 17.4+, on-device vi↔en)
+        // These modifiers ask the system to vend on-device TranslationSession objects.
+        // The sessions are injected into the shared TranslationService so the chat
+        // pipeline can translate without any network calls.
+        .translationTask(TranslationService.viToEnConfiguration) { session in
+            AppConfig.translationService.configure(viToEn: session)
+        }
+        .translationTask(TranslationService.enToViConfiguration) { session in
+            AppConfig.translationService.configure(enToVi: session)
+        }
+        // Check device language availability early — before sessions are ready — so
+        // we can surface an error quickly if the vi↔en pack is not installed.
+        .task {
+            await AppConfig.translationService.checkLanguageAvailability()
         }
     }
 
@@ -189,6 +218,46 @@ struct ChatView: View {
         .ignoresSafeArea()
     }
 
+    // MARK: - Translation Status Banner
+
+    @ViewBuilder
+    private func translationStatusBanner(label: String) -> some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .progressViewStyle(.circular)
+                .scaleEffect(0.75)
+                .tint(.accentColor)
+            Text(label)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(Color(.secondaryLabel))
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 7)
+        .background(Color(.secondarySystemBackground))
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .animation(.easeInOut(duration: 0.2), value: label)
+    }
+
+    // MARK: - Language Pack Download Banner
+
+    private var languagePackDownloadBanner: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .progressViewStyle(.circular)
+                .scaleEffect(0.75)
+                .tint(.accentColor)
+            Text("Đang tải gói ngôn ngữ Việt↔Anh... / Downloading Vietnamese↔English language packs...")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(Color(.secondaryLabel))
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Color(.secondarySystemBackground))
+        .transition(.move(edge: .top).combined(with: .opacity))
+    }
+
     // MARK: - Download Progress Banner
 
     private var downloadProgressBanner: some View {
@@ -273,49 +342,68 @@ struct ChatView: View {
     // MARK: - Input Bar
 
     private var inputBar: some View {
-        HStack(alignment: .bottom, spacing: 10) {
-            // Text field
-            TextField("Hỏi về quá trình hồi phục...", text: $viewModel.inputText, axis: .vertical)
-                .font(.system(size: 16))
-                .lineLimit(1...5)
-                .focused($inputFocused)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(Color(.secondarySystemBackground))
-                )
-                .onSubmit {
-                    viewModel.sendMessage()
+        VStack(spacing: 0) {
+            // Language hint strip — only shown when translation sessions are ready
+            if translationService.isReady {
+                HStack(spacing: 4) {
+                    Image(systemName: "globe")
+                        .font(.system(size: 10))
+                        .foregroundColor(Color(.tertiaryLabel))
+                    Text("Hỗ trợ tiếng Việt & English / Supports Vietnamese & English")
+                        .font(.system(size: 10))
+                        .foregroundColor(Color(.tertiaryLabel))
+                    Spacer()
                 }
-
-            // Send / Stop button
-            Button {
-                if viewModel.isLoading {
-                    viewModel.cancelStreaming()
-                } else {
-                    viewModel.sendMessage()
-                }
-            } label: {
-                Image(systemName: viewModel.isLoading ? "stop.fill" : "arrow.up")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
-                    .background(
-                        Circle().fill(
-                            viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-                            ? Color(.tertiaryLabel)
-                            : Color.accentColor
-                        )
-                    )
+                .padding(.horizontal, 16)
+                .padding(.top, 6)
             }
-            .disabled(
-                viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-            )
-            .animation(.easeInOut(duration: 0.15), value: viewModel.isLoading)
+
+            HStack(alignment: .bottom, spacing: 10) {
+                // Text field
+                TextField("Hỏi về quá trình hồi phục... / Ask about recovery...",
+                          text: $viewModel.inputText,
+                          axis: .vertical)
+                    .font(.system(size: 16))
+                    .lineLimit(1...5)
+                    .focused($inputFocused)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .onSubmit {
+                        viewModel.sendMessage()
+                    }
+
+                // Send / Stop button
+                Button {
+                    if viewModel.isLoading {
+                        viewModel.cancelStreaming()
+                    } else {
+                        viewModel.sendMessage()
+                    }
+                } label: {
+                    Image(systemName: viewModel.isLoading ? "stop.fill" : "arrow.up")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 36, height: 36)
+                        .background(
+                            Circle().fill(
+                                viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
+                                ? Color(.tertiaryLabel)
+                                : Color.accentColor
+                            )
+                        )
+                }
+                .disabled(
+                    viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
+                )
+                .animation(.easeInOut(duration: 0.15), value: viewModel.isLoading)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
         .background(Color(.systemBackground))
     }
 
