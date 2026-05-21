@@ -49,3 +49,5 @@ App/Backend/Configs/Secrets.swift
 
 
 .history/
+
+Secrets.swift
