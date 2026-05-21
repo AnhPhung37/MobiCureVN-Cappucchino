@@ -109,22 +109,22 @@ struct AppConfig {
     static func initializeLLMService(model: ModelCatalog = .default,
                                      initializeRuntime: Bool = true) async {
         print("AppConfig: initializeLLMService called with \(model.displayName)")
-
+        
         guard useRealLLM else {
             updateStatus(.mock)
             print("AppConfig: useRealLLM is false — keeping MockLLMService")
             return
         }
-
+        
         guard initializeRuntime else {
             print("AppConfig: simulator/Mac — skipping model download, placeholder responses active")
             updateStatus(.unavailable)
             return
         }
-
+        
         updateStatus(.loading)
         updateDownloadProgress(0)
-
+        
         Task(priority: .utility) {
             do {
                 let modelURL = try await ModelManager.shared.ensureModelReady(
@@ -136,11 +136,11 @@ struct AppConfig {
                     }
                 )
                 print("AppConfig: model ready at \(modelURL.path)")
-
+                
                 let service = LLMService(modelPath: modelURL.path, useMock: false)
                 llmService = service
                 updateStatus(.mockWithDownloadedModel)
-
+                
                 let initialized = await service.initializeModel()
                 if initialized {
                     updateStatus(.localModelReady)
@@ -148,23 +148,13 @@ struct AppConfig {
                 } else {
                     print("AppConfig: MLX runtime unavailable, using placeholder responses")
                 }
-            )
-            print("AppConfig: model ready at \(modelURL.path)")
-
-            let service = LLMService(modelPath: modelURL.path, useMock: false)
-            llmService = service
-            updateStatus(.mockWithDownloadedModel)
-
-            let initialized = await service.initializeModel()
-            if initialized {
-                updateStatus(.localModelReady)
-                print("AppConfig: MLX runtime ready")
-            } else {
-                print("AppConfig: MLX runtime unavailable — model downloaded but running in placeholder mode")
+                
+                print("AppConfig: model ready at \(modelURL.path)")
+                
+            } catch {
+                updateStatus(.unavailable)
+                print("AppConfig: model setup failed: \(error)")
             }
-        } catch {
-            updateStatus(.unavailable)
-            print("AppConfig: model setup failed: \(error)")
         }
     }
 }

@@ -46,7 +46,8 @@ struct GuardRailRules {
         "eat", "food", "drink", "meal", "nutrition", "nutrient", "vitamin", "mineral",
         "calorie", "weight", "hydration", "water", "fruit", "vegetable", "protein",
         "carbohydrate", "fiber", "supplement", "appetite", "avoid eating", "should eat",
-        "what to eat", "foods to", "dietary"
+        "what to eat", "foods to", "dietary",
+        
         // Stoma / colorectal / urology — core domain terms for this app
         "stoma", "colostomy", "ileostomy", "urostomy", "ostomy",
         "bowel", "colon", "colorectal", "rectal", "rectum",

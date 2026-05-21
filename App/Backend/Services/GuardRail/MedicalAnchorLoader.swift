@@ -1,5 +1,5 @@
 import Foundation
-import ZipFoundation
+import ZIPFoundation
 
 /// Downloads the Kaggle "medical-text" dataset to the device's temp directory on first run,
 /// extracts representative medical anchor phrases, and caches them as JSON for subsequent
