@@ -1,5 +1,6 @@
 import Foundation
 import ZIPFoundation
+import CodableCSV
 
 /// Downloads the Kaggle "medical-text" dataset to the device's temp directory on first run,
 /// extracts representative medical anchor phrases, and caches them as JSON for subsequent
@@ -18,12 +19,12 @@ actor MedicalAnchorLoader {
 
     static let shared = MedicalAnchorLoader()
 
-    private let datasetOwner  = "chaitanyakck"
-    private let datasetSlug   = "medical-text"
-    private let targetFile    = "train.dat"
+    private let datasetOwner  = "gvaldenebro"
+    private let datasetSlug   = "cancer-q-and-a-dataset"
+    private let targetFile    = "CancerQA.csv"
     private let cacheFilename = "medical_anchors.json"
 
-    private let maxAnchors   = 300
+    private let maxAnchors   = 700
     private let maxWordCount = 12
     private let minWordCount = 4
 
@@ -86,8 +87,8 @@ actor MedicalAnchorLoader {
         if !FileManager.default.fileExists(atPath: zipURL.path) {
             try await downloadZip(username: username, apiKey: apiKey)
         }
-        let text    = try extractDatFile(from: zipURL)
-        let anchors = parseAnchors(from: text)
+        let text    = try extractCsvFile(from: zipURL)
+        let anchors = parseAnchors(fromCSV: text)
         guard !anchors.isEmpty else { throw LoaderError.emptyDataset }
         return anchors
     }
@@ -118,10 +119,12 @@ actor MedicalAnchorLoader {
 
     // MARK: - ZIP Extraction
 
-    private func extractDatFile(from zipURL: URL) throws -> String {
+    private func extractCsvFile(from zipURL: URL) throws -> String {
+
         guard let archive = Archive(url: zipURL, accessMode: .read) else {
             throw LoaderError.zipOpenFailed
         }
+
         guard let entry = archive.first(where: {
             $0.path == targetFile || $0.path.hasSuffix("/\(targetFile)")
         }) else {
@@ -129,11 +132,15 @@ actor MedicalAnchorLoader {
         }
 
         var buffer = Data()
-        _ = try archive.extract(entry) { buffer.append($0) }
+
+        _ = try archive.extract(entry) {
+            buffer.append($0)
+        }
 
         guard let text = String(data: buffer, encoding: .utf8) else {
             throw LoaderError.encodingError
         }
+
         return text
     }
 
@@ -141,33 +148,87 @@ actor MedicalAnchorLoader {
 
     /// Extracts short medical phrases from the dataset.
     /// Format per line: optional integer label followed by the medical text.
-    private func parseAnchors(from text: String) -> [String] {
-        var seen   = Set<String>()
-        var result = [String]()
+    private func parseAnchors(fromCSV csvText: String) -> [String] {
 
-        for line in text.components(separatedBy: .newlines) {
-            guard result.count < maxAnchors else { break }
+        var seen = Set<String>()
+        var result: [String] = []
 
-            var words = line
-                .trimmingCharacters(in: .whitespaces)
-                .components(separatedBy: " ")
-                .filter { !$0.isEmpty }
+        do {
 
-            if let first = words.first, Int(first) != nil { words.removeFirst() }
-            guard words.count >= minWordCount else { continue }
+            let reader = try CSVReader(
+                input: csvText
+            )
 
-            let phrase = words
-                .prefix(maxWordCount)
-                .joined(separator: " ")
-                .lowercased()
-                .trimmingCharacters(in: .punctuationCharacters)
+            // Read header row
+            _ = try reader.readRow()
 
-            guard !phrase.isEmpty, seen.insert(phrase).inserted else { continue }
-            result.append(phrase)
+            while let row = try reader.readRow() {
+
+                guard result.count < maxAnchors else {
+                    break
+                }
+
+                // Columns:
+                // 0 = Question
+                // 1 = Answer
+                // 2 = topic
+                // 3 = split
+
+                guard row.count >= 2 else {
+                    continue
+                }
+
+                let question = cleanText(row[0])
+                let answer   = cleanText(row[1])
+
+                let candidates = [question, answer]
+
+                for text in candidates {
+
+                    let words = text
+                        .components(separatedBy: .whitespacesAndNewlines)
+                        .filter { !$0.isEmpty }
+
+                    guard words.count >= minWordCount else {
+                        continue
+                    }
+
+                    let phrase = words
+                        .prefix(maxWordCount)
+                        .joined(separator: " ")
+                        .lowercased()
+                        .trimmingCharacters(in: .punctuationCharacters)
+
+                    guard !phrase.isEmpty else {
+                        continue
+                    }
+
+                    guard seen.insert(phrase).inserted else {
+                        continue
+                    }
+
+                    result.append(phrase)
+
+                    if result.count >= maxAnchors {
+                        break
+                    }
+                }
+            }
+
+        } catch {
+            print("MedicalAnchorLoader CSV parse error: \(error)")
         }
+
         return result
     }
-
+    
+    private func cleanText(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: "\"", with: "")
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\r", with: " ")
+            .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+    }
     // MARK: - Errors
 
     enum LoaderError: Error, LocalizedError {
