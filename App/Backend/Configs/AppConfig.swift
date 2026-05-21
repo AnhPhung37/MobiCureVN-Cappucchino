@@ -22,20 +22,19 @@ struct AppConfig {
     static let llmServiceUserInfoKey = "llmService"
     static let llmDownloadProgressUserInfoKey = "llmDownloadProgress"
 
-    /// Stored LLM service instance. Default to mock for fast startup.
-    static var llmService: LLMServiceProtocol = MockLLMService() {
+    /// Stored LLM service instance. Starts with a placeholder LLMService; replaced once the model is ready.
+    static var llmService: LLMServiceProtocol = LLMService() {
         didSet {
             NotificationCenter.default.post(name: llmServiceDidChange,
                                             object: nil,
                                             userInfo: [llmServiceUserInfoKey: llmService])
-            // Update orchestrator with new service
             orchestrator = MedicalChatOrchestrator(llmService: llmService)
         }
     }
-    
+
     /// Medical chat orchestrator: full pipeline with guardrails + RAG
     static var orchestrator: MedicalChatOrchestrator = MedicalChatOrchestrator(
-        llmService: MockLLMService()
+        llmService: LLMService()
     )
 
     static let chatHistoryRepository: ChatHistoryRepository = {
@@ -46,8 +45,6 @@ struct AppConfig {
             return InMemoryChatHistoryRepository()
         }
     }()
-
-    static let patientProfileRepository: PatientProfileRepository = MockPatientProfileRepository()
 
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {
@@ -120,8 +117,8 @@ struct AppConfig {
         }
 
         guard initializeRuntime else {
-            updateStatus(.mockWithDownloadedModel)
-            print("AppConfig: runtime initialization disabled for this environment")
+            print("AppConfig: simulator/Mac — skipping model download, placeholder responses active")
+            updateStatus(.unavailable)
             return
         }
 
@@ -151,10 +148,23 @@ struct AppConfig {
                 } else {
                     print("AppConfig: MLX runtime unavailable, using placeholder responses")
                 }
-            } catch {
-                updateStatus(.unavailable)
-                print("AppConfig: model setup failed: \(error). Continuing with MockLLMService.")
+            )
+            print("AppConfig: model ready at \(modelURL.path)")
+
+            let service = LLMService(modelPath: modelURL.path, useMock: false)
+            llmService = service
+            updateStatus(.mockWithDownloadedModel)
+
+            let initialized = await service.initializeModel()
+            if initialized {
+                updateStatus(.localModelReady)
+                print("AppConfig: MLX runtime ready")
+            } else {
+                print("AppConfig: MLX runtime unavailable — model downloaded but running in placeholder mode")
             }
+        } catch {
+            updateStatus(.unavailable)
+            print("AppConfig: model setup failed: \(error)")
         }
     }
 }

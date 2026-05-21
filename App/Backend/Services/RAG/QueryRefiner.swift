@@ -5,24 +5,29 @@ import Foundation
 /// 1. Normalize Vietnamese → English medical terminology
 /// 2. Expand abbreviations
 /// 3. Rewrite into standardized medical search terms
+struct RefinedQuery {
+    let baseQuery: String
+    let enrichedTerms: [String]
+}
+
 final class QueryRefiner {
-    
+
     init() {}
-    
+
     /// Rewrite query for better retrieval
-    func refineQuery(_ userQuery: String) -> String {
+    func refineQuery(_ userQuery: String) -> RefinedQuery {
         var refined = userQuery
-        
+
         // Step 1: Normalize Vietnamese medical terms to English
         refined = normalizeVietnameseMedical(refined)
-        
+
         // Step 2: Expand common abbreviations
         refined = expandAbbreviations(refined)
-        
-        // Step 3: Add medical context/keywords
-        refined = enrichWithMedicalContext(refined)
-        
-        return refined
+
+        let normalized = normalizeWhitespace(refined)
+        let enrichedTerms = enrichWithMedicalContext(normalized)
+
+        return RefinedQuery(baseQuery: normalized, enrichedTerms: enrichedTerms)
     }
     
     // MARK: - Private Refinement Steps
@@ -119,31 +124,34 @@ final class QueryRefiner {
     }
     
     /// Enrich query with medical search context
-    private func enrichWithMedicalContext(_ query: String) -> String {
-        // Add contextual keywords to help retrieval
-        var enriched = query
-        
-        // If query mentions pain, add symptom context
-        if query.lowercased().contains("pain") || query.lowercased().contains("đau") {
-            enriched += " symptoms management treatment"
+    private func enrichWithMedicalContext(_ query: String) -> [String] {
+        var terms: [String] = []
+        let lower = query.lowercased()
+
+        if lower.contains("pain") || lower.contains("đau") {
+            terms.append(contentsOf: ["symptoms", "management", "treatment"])
         }
-        
-        // If query mentions medication, add dosage/safety context
-        if query.lowercased().contains("medication") || query.lowercased().contains("drug") || query.lowercased().contains("thuốc") {
-            enriched += " dosage safety contraindications side effects"
+
+        if lower.contains("medication") || lower.contains("drug") || lower.contains("thuốc") {
+            terms.append(contentsOf: ["dosage", "safety", "contraindications", "side", "effects"])
         }
-        
-        // If query mentions recovery/post-op, add rehabilitation context
-        if query.lowercased().contains("recovery") || query.lowercased().contains("post") || query.lowercased().contains("hồi phục") {
-            enriched += " rehabilitation exercises activity guidelines"
+
+        if lower.contains("recovery") || lower.contains("post") || lower.contains("hồi phục") {
+            terms.append(contentsOf: ["rehabilitation", "exercises", "activity", "guidelines"])
         }
-        
-        // If query mentions infection, add prevention context
-        if query.lowercased().contains("infection") || query.lowercased().contains("nhiễm") {
-            enriched += " prevention signs symptoms care"
+
+        if lower.contains("infection") || lower.contains("nhiễm") {
+            terms.append(contentsOf: ["prevention", "signs", "symptoms", "care"])
         }
-        
-        return enriched
+
+        var seen = Set<String>()
+        return terms.filter { seen.insert($0).inserted }
+    }
+
+    private func normalizeWhitespace(_ text: String) -> String {
+        return text
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
@@ -156,7 +164,7 @@ final class QueryRewriteService {
     }
     
     /// Async query rewriting (can integrate LLM-based rewriting later)
-    func rewrite(userQuery: String) async -> String {
+    func rewrite(userQuery: String) async -> RefinedQuery {
         // For MVP: use rule-based refiner
         // Future: use local LLM for sophisticated rewriting
         return refiner.refineQuery(userQuery)

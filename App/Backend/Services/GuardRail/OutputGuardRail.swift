@@ -29,23 +29,11 @@ final class OutputGuardRail {
         originalQuery: String
     ) -> OutputGuardRailResult {
         var issues: [String] = []
-        
-        // Check 1: Emergency Detection (highest priority)
-        let emergencyResult = detectEmergency(in: originalQuery)
-        if emergencyResult.isEmergency {
-            issues.append("Emergency detected: \(emergencyResult.symptomType?.rawValue ?? "unknown")")
-            let emergencyResponse = EmergencyResponses.templates[emergencyResult.symptomType!] ?? ""
-            return OutputGuardRailResult(
-                status: .blocked(reason: "Emergency detected"),
-                originalResponse: response,
-                filteredResponse: emergencyResponse,
-                issues: issues,
-                requiresEmergencyResponse: true,
-                confidenceScore: 0.0
-            )
-        }
-        
-        // Check 2: Citation Enforcement
+
+        // Emergency is already handled upstream in MedicalChatOrchestrator before the
+        // LLM is ever called, so we skip it here to avoid a redundant check.
+
+        // Check 1: Citation Enforcement
         let hasCitations = responseMentionsCitations(response) || (retrievedContext?.sources.count ?? 0) > 0
         if !hasCitations && isMedicalAdvice(response) {
             issues.append("Medical advice without citations")
@@ -110,25 +98,7 @@ final class OutputGuardRail {
     }
     
     // MARK: - Private Detectors
-    
-    /// Detect emergency symptoms in user query
-    private func detectEmergency(in query: String) -> EmergencyDetectionResult {
-        let lower = query.lowercased()
-        
-        for (symptomPattern, symptomType) in GuardRailRules.emergencySymptomPatterns {
-            if lower.contains(symptomPattern.lowercased()) {
-                let recommendation = EmergencyResponses.templates[symptomType]
-                return EmergencyDetectionResult(
-                    isEmergency: true,
-                    symptomType: symptomType,
-                    recommendation: recommendation
-                )
-            }
-        }
-        
-        return EmergencyDetectionResult(isEmergency: false)
-    }
-    
+
     /// Detect hallucinated medical advice (definitive claims, unrealistic claims)
     private func detectHallucination(_ response: String) -> String? {
         let lower = response.lowercased()
@@ -161,12 +131,17 @@ final class OutputGuardRail {
         return citationKeywords.contains(where: { lower.contains($0) })
     }
     
-    /// Check if response is giving medical advice (not just information)
+    /// Check if response is giving specific medical advice (not just general information)
     private func isMedicalAdvice(_ response: String) -> Bool {
-        let adviceKeywords = ["should", "recommend", "take", "avoid", "stop", "start", "try", "use", "apply"]
+        let advicePhrases = [
+            "you should take", "you must take", "take this medication",
+            "i recommend taking", "i recommend you take",
+            "you should stop", "stop taking", "do not take",
+            "the dose is", "dosage of", "mg per day", "mg daily",
+            "apply this", "inject", "administer"
+        ]
         let lower = response.lowercased()
-        
-        return adviceKeywords.contains(where: { lower.contains($0) })
+        return advicePhrases.contains(where: { lower.contains($0) })
     }
     
     // MARK: - Response Modifiers

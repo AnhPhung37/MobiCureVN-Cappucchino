@@ -47,6 +47,14 @@ struct GuardRailRules {
         "calorie", "weight", "hydration", "water", "fruit", "vegetable", "protein",
         "carbohydrate", "fiber", "supplement", "appetite", "avoid eating", "should eat",
         "what to eat", "foods to", "dietary"
+        // Stoma / colorectal / urology — core domain terms for this app
+        "stoma", "colostomy", "ileostomy", "urostomy", "ostomy",
+        "bowel", "colon", "colorectal", "rectal", "rectum",
+        "cancer", "tumor", "malignant", "carcinoma",
+        "catheter", "catheterization", "urinary", "urine", "diversion",
+        "stent", "colonic", "reversal", "pouch", "bag", "output",
+        "continent", "incontinent", "appliance", "wafer", "flange",
+        "peristomal", "stomal", "effluent"
     ])
     
     /// Rule Group 2: Hard-block dangerous requests

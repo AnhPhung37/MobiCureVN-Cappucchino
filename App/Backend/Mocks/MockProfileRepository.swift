@@ -1,12 +1,8 @@
 import Foundation
 
-protocol ProfileRepository {
-    func fetchProfile() async throws -> PatientProfile
-}
-
 struct MockProfileRepository: ProfileRepository {
     func fetchProfile() async throws -> PatientProfile {
-        return PatientProfile(
+        PatientProfile(
             name: "Nguyen Van A",
             age: 52,
             gender: "Male",
