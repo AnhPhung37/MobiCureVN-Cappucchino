@@ -6,26 +6,23 @@ import Combine
 // Describes which stage of the translation+generation pipeline is active.
 // Drives the status indicator in ChatView.
 enum ChatProcessingState: Equatable {
-    
     case idle
     case validatingLanguage
-    case translatingInput       // vi → en before the LLM
-    case generating             // LLM is running
-    case translatingOutput      // en → vi after the LLM
+    case translatingInput   // vi → en (for RAG retrieval only)
+    case generating         // LLM is running
 }
 
 // MARK: - ChatService
 
-// Top-level orchestrator: language validation → translation → LLM → translation.
+// Top-level orchestrator: language validation → (optional translation) → LLM → stream.
 // Wraps MedicalChatOrchestrator so the existing guardrail / RAG / LLM pipeline
-// is unchanged; translation is layered on top.
+// is unchanged; language handling is layered on top.
 //
-// For English input:  tokens stream live from the LLM (no translation overhead).
+// For English input:  tokens stream live from the LLM in English.
 // For Vietnamese / mixed input:
-//   1. Translate input vi → en  (one-shot, shows .translatingInput)
-//   2. Accumulate full LLM response in English
-//   3. Translate response en → vi  (one-shot, shows .translatingOutput)
-//   4. Yield the Vietnamese words one-by-one to preserve the streaming feel
+//   1. Translate input vi → en  (one-shot, shows .translatingInput) — used only for RAG retrieval
+//   2. Pass original Vietnamese query to the LLM with a "respond in Vietnamese" instruction
+//   3. Stream Vietnamese tokens directly from the LLM (no post-translation step)
 @MainActor
 final class ChatService: ObservableObject {
 
@@ -106,54 +103,45 @@ final class ChatService: ObservableObject {
 
     // MARK: - Pipeline Branches
 
-    // Vietnamese / mixed: translate → LLM → translate back
+    // Vietnamese / mixed: translate vi→en for RAG only, then LLM responds in Vietnamese directly.
     private func runViToViPipeline(
         originalText: String,
         history: [ChatMessage],
         continuation: AsyncStream<String>.Continuation
     ) async throws {
-        // Step 1: vi → en
+        // Step 1: vi → en translation used only for RAG document retrieval.
         processingState = .translatingInput
         let englishQuery = try await translationService.translateToEnglish(originalText)
 
         guard !Task.isCancelled else { return }
 
-        // Step 2: LLM (accumulate; cannot stream because we must translate the whole response)
-        // Pass originalText so the guardrail validates the pre-translation query (Vietnamese
-        // keywords match the text the user typed, not the English translation).
+        // Step 2: LLM receives the original Vietnamese query; system prompt instructs it
+        // to respond in Vietnamese. The English translation is passed as ragQuery so the
+        // retrieval layer can match English medical documents.
         processingState = .generating
-        var fullEnglishResponse = ""
-        for await token in orchestrator.processQuery(englishQuery, conversationHistory: history, originalQuery: originalText) {
+        for await token in orchestrator.processQuery(
+            originalText,
+            conversationHistory: history,
+            ragQuery: englishQuery,
+            responseLanguage: .vietnamese
+        ) {
             guard !Task.isCancelled else { return }
-            fullEnglishResponse += token
-        }
-
-        guard !Task.isCancelled, !fullEnglishResponse.isEmpty else { return }
-
-        // Step 3: en → vi
-        processingState = .translatingOutput
-        let vietnameseResponse = try await translationService.translateToVietnamese(fullEnglishResponse)
-
-        guard !Task.isCancelled else { return }
-
-        // Step 4: Fake-stream the Vietnamese result word-by-word to preserve UX feel.
-        processingState = .idle
-        let tokens = vietnameseResponse.split(separator: " ", omittingEmptySubsequences: false)
-        for (index, word) in tokens.enumerated() {
-            guard !Task.isCancelled else { return }
-            let chunk = index == 0 ? String(word) : " \(word)"
-            continuation.yield(chunk)
+            continuation.yield(token)
         }
     }
 
-    // English: stream LLM tokens directly with no translation overhead.
+    // English: stream LLM tokens directly.
     private func runEnglishPipeline(
         text: String,
         history: [ChatMessage],
         continuation: AsyncStream<String>.Continuation
     ) async throws {
         processingState = .generating
-        for await token in orchestrator.processQuery(text, conversationHistory: history) {
+        for await token in orchestrator.processQuery(
+            text,
+            conversationHistory: history,
+            responseLanguage: .english
+        ) {
             guard !Task.isCancelled else { return }
             continuation.yield(token)
         }

@@ -22,8 +22,9 @@ struct AppConfig {
     static let llmServiceUserInfoKey = "llmService"
     static let llmDownloadProgressUserInfoKey = "llmDownloadProgress"
 
-    /// Stored LLM service instance. Starts with a placeholder LLMService; replaced once the model is ready.
-    static var llmService: LLMServiceProtocol = LLMService() {
+    /// Stored LLM service instance. Defaults to MockLLMService for fast startup;
+    /// replaced with the real LLMService once the on-device model is ready.
+    static var llmService: LLMServiceProtocol = MockLLMService() {
         didSet {
             NotificationCenter.default.post(name: llmServiceDidChange,
                                             object: nil,
@@ -34,7 +35,7 @@ struct AppConfig {
 
     /// Medical chat orchestrator: full pipeline with guardrails + RAG
     static var orchestrator: MedicalChatOrchestrator = MedicalChatOrchestrator(
-        llmService: LLMService()
+        llmService: MockLLMService()
     )
 
     static let chatHistoryRepository: ChatHistoryRepository = {
@@ -45,6 +46,10 @@ struct AppConfig {
             return InMemoryChatHistoryRepository()
         }
     }()
+
+    /// Shared SQLiteRetriever — opening a SQLite connection is expensive; reuse one instance
+    /// across the RAGService (inside MedicalChatOrchestrator) and ChatViewModel citation lookup.
+    static let retriever = SQLiteRetriever()
 
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {
@@ -61,6 +66,43 @@ struct AppConfig {
                                             userInfo: [llmDownloadProgressUserInfoKey: llmDownloadProgress])
         }
     }
+    // MARK: - Kaggle Dataset Config
+    // Credentials live in Secrets.swift (gitignored). See Secrets.swift.example for the template.
+    static let kaggleUsername = Secrets.kaggleUsername
+    static let kaggleApiKey   = Secrets.kaggleApiKey
+
+    /// Downloads the Kaggle medical-text dataset (if not already cached in the temp directory)
+    /// and updates GuardRailRules.medicalAnchors. Safe to call at startup from a background task.
+    static func initializeMedicalAnchors() async {
+        let anchors = await MedicalAnchorLoader.shared.load(
+            username: kaggleUsername,
+            apiKey: kaggleApiKey
+        )
+        GuardRailRules.updateMedicalAnchors(anchors)
+    }
+
+    private static let useRealKey = "UseRealLLM"
+    private static let selectedModelKey = "SelectedLLMModel"
+
+    /// Register defaults once at app start so `bool(forKey:)` never silently returns false.
+    static func registerDefaults() {
+        UserDefaults.standard.register(defaults: [useRealKey: true])
+    }
+
+    static var useRealLLM: Bool {
+        get { UserDefaults.standard.bool(forKey: useRealKey) }
+        set { UserDefaults.standard.set(newValue, forKey: useRealKey) }
+    }
+
+    static var selectedModel: ModelCatalog {
+        get {
+            guard let raw = UserDefaults.standard.string(forKey: selectedModelKey),
+                  let model = ModelCatalog(rawValue: raw) else { return .default }
+            return model
+        }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: selectedModelKey) }
+    }
+
     private static func updateStatus(_ status: LLMBackendStatus) {
         guard llmStatus != status else { return }
         llmStatus = status
@@ -74,42 +116,55 @@ struct AppConfig {
 
     /// Attempt to use local model if available, otherwise use mock while downloading in background.
     /// Call this from app startup inside a Task.
-    static func initializeLLMService(modelName: String = "mlx-community/Qwen2.5-3B-Instruct-4bit",
+    static func initializeLLMService(model: ModelCatalog = .default,
                                      initializeRuntime: Bool = true) async {
-        print("AppConfig: initializeLLMService called, initializeRuntime=\(initializeRuntime)")
-
+        print("AppConfig: initializeLLMService called with \(model.displayName)")
+        
+        guard useRealLLM else {
+            updateStatus(.mock)
+            print("AppConfig: useRealLLM is false — keeping MockLLMService")
+            return
+        }
+        
         guard initializeRuntime else {
             print("AppConfig: simulator/Mac — skipping model download, placeholder responses active")
             updateStatus(.unavailable)
             return
         }
-
+        
         updateStatus(.loading)
         updateDownloadProgress(0)
-
-        do {
-            let modelURL = try await ModelManager.shared.ensureModelReady(
-                modelName: modelName,
-                progress: { value in
-                    Task { @MainActor in updateDownloadProgress(value) }
+        
+        Task(priority: .utility) {
+            do {
+                let modelURL = try await ModelManager.shared.ensureModelReady(
+                    modelName: model.repoID,
+                    progress: { value in
+                        Task { @MainActor in
+                            updateDownloadProgress(value)
+                        }
+                    }
+                )
+                print("AppConfig: model ready at \(modelURL.path)")
+                
+                let service = LLMService(modelPath: modelURL.path, useMock: false)
+                llmService = service
+                updateStatus(.mockWithDownloadedModel)
+                
+                let initialized = await service.initializeModel()
+                if initialized {
+                    updateStatus(.localModelReady)
+                    print("AppConfig: MLX runtime ready")
+                } else {
+                    print("AppConfig: MLX runtime unavailable, using placeholder responses")
                 }
-            )
-            print("AppConfig: model ready at \(modelURL.path)")
-
-            let service = LLMService(modelPath: modelURL.path, useMock: false)
-            llmService = service
-            updateStatus(.mockWithDownloadedModel)
-
-            let initialized = await service.initializeModel()
-            if initialized {
-                updateStatus(.localModelReady)
-                print("AppConfig: MLX runtime ready")
-            } else {
-                print("AppConfig: MLX runtime unavailable — model downloaded but running in placeholder mode")
+                
+                print("AppConfig: model ready at \(modelURL.path)")
+                
+            } catch {
+                updateStatus(.unavailable)
+                print("AppConfig: model setup failed: \(error)")
             }
-        } catch {
-            updateStatus(.unavailable)
-            print("AppConfig: model setup failed: \(error)")
         }
     }
 }

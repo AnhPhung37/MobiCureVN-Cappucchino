@@ -43,7 +43,7 @@ class ChatViewModel: ObservableObject {
 
     private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
-    private let citationRetriever = SQLiteRetriever()
+    private let citationRetriever = AppConfig.retriever   // shared SQLite connection
     private let queryRefiner = QueryRefiner()
     @Published private(set) var currentConversationId: UUID = UUID()
 
@@ -270,8 +270,7 @@ class ChatViewModel: ObservableObject {
         case .idle:                return nil
         case .validatingLanguage:  return "Đang kiểm tra ngôn ngữ..."
         case .translatingInput:    return "Đang dịch câu hỏi..."
-        case .generating:          return nil   // handled by the existing streaming bubble
-        case .translatingOutput:   return "Đang dịch câu trả lời..."
+        case .generating:          return nil
         }
     }
 }

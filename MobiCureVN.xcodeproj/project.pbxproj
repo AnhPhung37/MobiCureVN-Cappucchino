@@ -21,11 +21,40 @@
 		EC8AFE352FB818CC00AEED59 /* MLXVLM in Frameworks */ = {isa = PBXBuildFile; productRef = EC8AFE342FB818CC00AEED59 /* MLXVLM */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9CA9D5942FBD175F00B8DB14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC54676E2F9BC6C800B07544 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC5467752F9BC6C800B07544;
+			remoteInfo = MobiCureVN;
+		};
+		9CA9D5A32FBD182300B8DB14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC54676E2F9BC6C800B07544 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC5467752F9BC6C800B07544;
+			remoteInfo = MobiCureVN;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		9CA9D58E2FBD175F00B8DB14 /* MobiCureVNUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MobiCureVNUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA9D59F2FBD182300B8DB14 /* MobiCureVNTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MobiCureVNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC5467762F9BC6C800B07544 /* MobiCureVN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MobiCureVN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9CA9D58F2FBD175F00B8DB14 /* MobiCureVNUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MobiCureVNUITests;
+			sourceTree = "<group>";
+		};
+		9CA9D5A02FBD182300B8DB14 /* MobiCureVNTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MobiCureVNTests;
+			sourceTree = "<group>";
+		};
 		EC5467782F9BC6C800B07544 /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = App;
@@ -34,6 +63,20 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9CA9D58B2FBD175F00B8DB14 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CA9D59C2FBD182300B8DB14 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC5467732F9BC6C800B07544 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -67,6 +110,8 @@
 			isa = PBXGroup;
 			children = (
 				EC5467782F9BC6C800B07544 /* App */,
+				9CA9D58F2FBD175F00B8DB14 /* MobiCureVNUITests */,
+				9CA9D5A02FBD182300B8DB14 /* MobiCureVNTests */,
 				EC2D77AE2FA228EF00720421 /* Frameworks */,
 				EC5467772F9BC6C800B07544 /* Products */,
 			);
@@ -76,6 +121,8 @@
 			isa = PBXGroup;
 			children = (
 				EC5467762F9BC6C800B07544 /* MobiCureVN.app */,
+				9CA9D58E2FBD175F00B8DB14 /* MobiCureVNUITests.xctest */,
+				9CA9D59F2FBD182300B8DB14 /* MobiCureVNTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,6 +130,52 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		9CA9D58D2FBD175F00B8DB14 /* MobiCureVNUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9CA9D5962FBD175F00B8DB14 /* Build configuration list for PBXNativeTarget "MobiCureVNUITests" */;
+			buildPhases = (
+				9CA9D58A2FBD175F00B8DB14 /* Sources */,
+				9CA9D58B2FBD175F00B8DB14 /* Frameworks */,
+				9CA9D58C2FBD175F00B8DB14 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9CA9D5952FBD175F00B8DB14 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9CA9D58F2FBD175F00B8DB14 /* MobiCureVNUITests */,
+			);
+			name = MobiCureVNUITests;
+			packageProductDependencies = (
+			);
+			productName = MobiCureVNUITests;
+			productReference = 9CA9D58E2FBD175F00B8DB14 /* MobiCureVNUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		9CA9D59E2FBD182300B8DB14 /* MobiCureVNTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9CA9D5A52FBD182300B8DB14 /* Build configuration list for PBXNativeTarget "MobiCureVNTests" */;
+			buildPhases = (
+				9CA9D59B2FBD182300B8DB14 /* Sources */,
+				9CA9D59C2FBD182300B8DB14 /* Frameworks */,
+				9CA9D59D2FBD182300B8DB14 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9CA9D5A42FBD182300B8DB14 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9CA9D5A02FBD182300B8DB14 /* MobiCureVNTests */,
+			);
+			name = MobiCureVNTests;
+			packageProductDependencies = (
+			);
+			productName = MobiCureVNTests;
+			productReference = 9CA9D59F2FBD182300B8DB14 /* MobiCureVNTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		EC5467752F9BC6C800B07544 /* MobiCureVN */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC5467812F9BC6C900B07544 /* Build configuration list for PBXNativeTarget "MobiCureVN" */;
@@ -127,6 +220,14 @@
 				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
+					9CA9D58D2FBD175F00B8DB14 = {
+						CreatedOnToolsVersion = 26.4.1;
+						TestTargetID = EC5467752F9BC6C800B07544;
+					};
+					9CA9D59E2FBD182300B8DB14 = {
+						CreatedOnToolsVersion = 26.4.1;
+						TestTargetID = EC5467752F9BC6C800B07544;
+					};
 					EC5467752F9BC6C800B07544 = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
@@ -154,11 +255,27 @@
 			projectRoot = "";
 			targets = (
 				EC5467752F9BC6C800B07544 /* MobiCureVN */,
+				9CA9D58D2FBD175F00B8DB14 /* MobiCureVNUITests */,
+				9CA9D59E2FBD182300B8DB14 /* MobiCureVNTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		9CA9D58C2FBD175F00B8DB14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CA9D59D2FBD182300B8DB14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC5467742F9BC6C800B07544 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -169,6 +286,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9CA9D58A2FBD175F00B8DB14 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CA9D59B2FBD182300B8DB14 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC5467722F9BC6C800B07544 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -178,7 +309,106 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		9CA9D5952FBD175F00B8DB14 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC5467752F9BC6C800B07544 /* MobiCureVN */;
+			targetProxy = 9CA9D5942FBD175F00B8DB14 /* PBXContainerItemProxy */;
+		};
+		9CA9D5A42FBD182300B8DB14 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC5467752F9BC6C800B07544 /* MobiCureVN */;
+			targetProxy = 9CA9D5A32FBD182300B8DB14 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		9CA9D5972FBD175F00B8DB14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Cappuccino.MobiCureVNUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MobiCureVN;
+			};
+			name = Debug;
+		};
+		9CA9D5982FBD175F00B8DB14 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Cappuccino.MobiCureVNUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MobiCureVN;
+			};
+			name = Release;
+		};
+		9CA9D5A62FBD182300B8DB14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Cappuccino.MobiCureVNTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MobiCureVN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MobiCureVN";
+			};
+			name = Debug;
+		};
+		9CA9D5A72FBD182300B8DB14 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Cappuccino.MobiCureVNTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MobiCureVN.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MobiCureVN";
+			};
+			name = Release;
+		};
 		EC54677F2F9BC6C900B07544 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -305,7 +535,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B499V2ZXB6;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -319,7 +549,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccine;
+				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccino.Hanh;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -338,7 +568,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B499V2ZXB6;
+				DEVELOPMENT_TEAM = 2T9YX684FR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -352,7 +582,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccine;
+				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccino.Hanh;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -367,6 +597,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9CA9D5962FBD175F00B8DB14 /* Build configuration list for PBXNativeTarget "MobiCureVNUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CA9D5972FBD175F00B8DB14 /* Debug */,
+				9CA9D5982FBD175F00B8DB14 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9CA9D5A52FBD182300B8DB14 /* Build configuration list for PBXNativeTarget "MobiCureVNTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CA9D5A62FBD182300B8DB14 /* Debug */,
+				9CA9D5A72FBD182300B8DB14 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EC5467712F9BC6C800B07544 /* Build configuration list for PBXProject "MobiCureVN" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -403,6 +651,8 @@
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.3.2;
 			};
+			traits = (
+			);
 		};
 		EC8AFE232FB8185100AEED59 /* XCRemoteSwiftPackageReference "swift-huggingface" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -411,6 +661,8 @@
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.9.0;
 			};
+			traits = (
+			);
 		};
 		EC8AFE262FB8186F00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;

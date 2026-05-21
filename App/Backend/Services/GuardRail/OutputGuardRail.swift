@@ -7,7 +7,15 @@ import Foundation
 /// 3. Confidence threshold (only answer if confident + has citations)
 /// 4. Citation enforcement (medical advice MUST have source)
 final class OutputGuardRail {
-    
+
+    // Compiled once at class load time — recreating NSRegularExpression per-call causes malloc errors under load
+    private static let hallucinationRegexes: [NSRegularExpression] = GuardRailRules.hallucinationIndicators.compactMap {
+        try? NSRegularExpression(pattern: $0, options: [.caseInsensitive])
+    }
+    private static let unsafeDosageRegexes: [NSRegularExpression] = GuardRailRules.unsafeDosagePatterns.compactMap {
+        try? NSRegularExpression(pattern: $0, options: [.caseInsensitive])
+    }
+
     init() {}
     
     /// Check LLM response against output safety rules
@@ -94,33 +102,24 @@ final class OutputGuardRail {
     /// Detect hallucinated medical advice (definitive claims, unrealistic claims)
     private func detectHallucination(_ response: String) -> String? {
         let lower = response.lowercased()
-        
-        for indicator in GuardRailRules.hallucinationIndicators {
-            // Use regex for flexible matching
-            if let regex = try? NSRegularExpression(pattern: indicator, options: [.caseInsensitive]) {
-                let range = NSRange(lower.startIndex..<lower.endIndex, in: lower)
-                if regex.firstMatch(in: lower, options: [], range: range) != nil {
-                    return "Hallucinated claim detected: \(indicator)"
-                }
+        let range = NSRange(lower.startIndex..<lower.endIndex, in: lower)
+        for (regex, indicator) in zip(Self.hallucinationRegexes, GuardRailRules.hallucinationIndicators) {
+            if regex.firstMatch(in: lower, options: [], range: range) != nil {
+                return "Hallucinated claim detected: \(indicator)"
             }
         }
-        
         return nil
     }
-    
+
     /// Detect unsafe dosage information
     private func detectUnsafeDosage(_ response: String) -> String? {
         let lower = response.lowercased()
-        
-        for pattern in GuardRailRules.unsafeDosagePatterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
-                let range = NSRange(lower.startIndex..<lower.endIndex, in: lower)
-                if regex.firstMatch(in: lower, options: [], range: range) != nil {
-                    return "Unsafe dosage detected: \(pattern)"
-                }
+        let range = NSRange(lower.startIndex..<lower.endIndex, in: lower)
+        for (regex, pattern) in zip(Self.unsafeDosageRegexes, GuardRailRules.unsafeDosagePatterns) {
+            if regex.firstMatch(in: lower, options: [], range: range) != nil {
+                return "Unsafe dosage detected: \(pattern)"
             }
         }
-        
         return nil
     }
     
@@ -178,28 +177,22 @@ final class OutputGuardRail {
     /// Remove hallucinated claims from response
     private func removeHallucinatedClaims(_ response: String) -> String {
         var filtered = response
-        
-        for indicator in GuardRailRules.hallucinationIndicators {
-            if let regex = try? NSRegularExpression(pattern: indicator, options: [.caseInsensitive]) {
-                let range = NSRange(filtered.startIndex..<filtered.endIndex, in: filtered)
-                filtered = regex.stringByReplacingMatches(in: filtered, options: [], range: range, withTemplate: "[removed: unverified claim]")
-            }
+        for regex in Self.hallucinationRegexes {
+            let range = NSRange(filtered.startIndex..<filtered.endIndex, in: filtered)
+            filtered = regex.stringByReplacingMatches(in: filtered, options: [], range: range,
+                                                      withTemplate: "[removed: unverified claim]")
         }
-        
         return filtered
     }
-    
+
     /// Remove unsafe dosage information
     private func removeUnsafeDosage(_ response: String) -> String {
         var filtered = response
-        
-        for pattern in GuardRailRules.unsafeDosagePatterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
-                let range = NSRange(filtered.startIndex..<filtered.endIndex, in: filtered)
-                filtered = regex.stringByReplacingMatches(in: filtered, options: [], range: range, withTemplate: "[dosage information removed - consult healthcare provider]")
-            }
+        for regex in Self.unsafeDosageRegexes {
+            let range = NSRange(filtered.startIndex..<filtered.endIndex, in: filtered)
+            filtered = regex.stringByReplacingMatches(in: filtered, options: [], range: range,
+                                                      withTemplate: "[dosage information removed - consult healthcare provider]")
         }
-        
         return filtered
     }
 }

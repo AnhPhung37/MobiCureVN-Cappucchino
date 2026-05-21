@@ -6,18 +6,34 @@
 //
 
 import SwiftUI
+import NaturalLanguage
 
 @main
 struct MobiCureVNApp: App {
 
     init() {
+        // Must run before initializeLLMService so UserDefaults.bool(forKey:) doesn't
+        // silently return false for keys that have never been explicitly written.
+        AppConfig.registerDefaults()
+
         let isSimulator = ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
         let initializeRuntime = !isSimulator
             && !ProcessInfo.processInfo.isiOSAppOnMac
             && !ProcessInfo.processInfo.isMacCatalystApp
 
+        // Warm up NLEmbedding in the background so the CoreML model is loaded
+        // before the user's first message, eliminating the cold-start penalty.
+        Task(priority: .background) {
+            _ = NLEmbedding.sentenceEmbedding(for: .english)
+        }
+
         Task(priority: .utility) {
-            await AppConfig.initializeLLMService(initializeRuntime: initializeRuntime)
+            await AppConfig.initializeLLMService(model: AppConfig.selectedModel,
+                                                 initializeRuntime: initializeRuntime)
+        }
+
+        Task(priority: .utility) {
+            await AppConfig.initializeMedicalAnchors()
         }
     }
 

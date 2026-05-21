@@ -26,21 +26,29 @@ final class MedicalChatOrchestrator {
     }
     
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
-    /// - Parameter originalQuery: The pre-translation query (e.g. Vietnamese). When provided,
-    ///   the input guardrail validates this instead of `userQuery` so that keyword matching
-    ///   runs against the language the user actually typed.
+    /// - Parameters:
+    ///   - userQuery: The query in its original language (Vietnamese or English).
+    ///   - ragQuery: Optional English translation used exclusively for RAG retrieval.
+    ///     Pass this when the user typed in Vietnamese so the retrieval hits English docs.
+    ///   - responseLanguage: Language the LLM should reply in. Matches the user's input language.
     func processQuery(
         _ userQuery: String,
         conversationHistory: [ChatMessage],
-        originalQuery: String? = nil
+        originalQuery: String? = nil,
+        ragQuery: String? = nil,
+        responseLanguage: DetectedLanguage = .english
     ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
             Task {
                 do {
-                    // Step 1: Input GuardRail — prefer the original (pre-translation) query
-                    // so Vietnamese keyword matching works on the text the user typed.
+                    // Step 1: Input GuardRail — pass the original-language query for
+                    // dangerous/injection/PII checks, and the English translation (ragQuery)
+                    // for semantic relevance so NLEmbedding runs in a single language space.
                     let queryForGuardRail = originalQuery ?? userQuery
-                    let inputResult = inputGuardRail.validate(query: queryForGuardRail)
+                    let inputResult = inputGuardRail.validate(
+                        query: queryForGuardRail,
+                        englishQuery: ragQuery
+                    )
                     switch inputResult.status {
                     case .blocked(let reason):
                         continuation.yield("❌ \(reason)\n\n")
@@ -52,9 +60,9 @@ final class MedicalChatOrchestrator {
                     case .allowed:
                         break
                     }
-                    
+
                     let sanitizedQuery = inputResult.sanitizedQuery ?? userQuery
-                    
+
                     // Step 2: Emergency Detection (immediate redirect)
                     let emergency = emergencyDetector.detect(query: userQuery)
                     if emergency.isEmergency {
@@ -64,28 +72,35 @@ final class MedicalChatOrchestrator {
                         continuation.finish()
                         return
                     }
-                    
-                    // Step 3: RAG Pipeline (retrieve context)
-                    let retrievedContext = await ragService.process(userQuery: sanitizedQuery)
-                    
+
+                    // Step 3: RAG Pipeline — use English query for retrieval when available
+                    // so Vietnamese input still matches the English medical documents.
+                    let retrievalQuery = ragQuery ?? sanitizedQuery
+                    let retrievedContext = await ragService.process(userQuery: retrievalQuery)
+
                     // Step 4: Build enriched prompt with retrieved context
                     let enrichedPrompt = buildEnrichedPrompt(
                         userQuery: sanitizedQuery,
                         context: retrievedContext,
-                        history: conversationHistory
+                        history: conversationHistory,
+                        responseLanguage: responseLanguage
                     )
                     
-                    // Step 5: Stream LLM response with output guardrail
+                    // Step 5: Stream LLM response with output guardrail.
+                    // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
+                    // so the total prompt length stays within the model's sweet spot.
                     var accumulatedResponse = ""
                     for await token in llmService.stream(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
-                        conversationHistory: conversationHistory
+                        conversationHistory: enrichedPrompt.history
                     )) {
                         accumulatedResponse += token
                         continuation.yield(token)
                     }
                     
+                    print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
+
                     // Step 6: Final Output GuardRail Check
                     let outputResult = outputGuardRail.validate(
                         response: accumulatedResponse,
@@ -115,42 +130,77 @@ final class MedicalChatOrchestrator {
     }
     
     // MARK: - Private Helpers
-    
+
     private struct EnrichedPrompt {
         let systemPrompt: String
         let userMessage: String
+        /// History trimmed to `maxHistoryTurns` so the LLM prompt stays compact.
+        let history: [ChatMessage]
     }
     
+    // Token budget for RAG context injected into the system prompt.
+    // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
+    private static let contextTokenBudget = 600
+    // Maximum number of past turns included in the conversation history sent to the LLM.
+    // Each turn = 1 user + 1 assistant message. Older turns are dropped to limit prompt length.
+    private static let maxHistoryTurns = 4
+
     private func buildEnrichedPrompt(
         userQuery: String,
         context: RetrievedContext,
-        history: [ChatMessage]
+        history: [ChatMessage],
+        responseLanguage: DetectedLanguage = .english
     ) -> EnrichedPrompt {
-        let budgetedChunks = applyContextBudget(context.chunks, budget: 1500)
+        let languageInstruction = responseLanguage.requiresTranslation
+            ? "Respond ONLY in Vietnamese (Tiếng Việt). Do NOT use English, Chinese, or any other language under any circumstances. Even if the retrieved context is written in English, your entire response MUST be in Vietnamese only."
+            : "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
+
+        // Apply token budget to RAG chunks so the system prompt stays compact.
+        let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+
+        let noContextFound = budgetedChunks.isEmpty
+        let noContextInstruction = noContextFound ? """
+
+        ⚠️ KNOWLEDGE BASE NOTE:
+        No specific documents were retrieved for this query. However, if the question is a common health or
+        lifestyle concern (e.g. what to eat, what to avoid, daily habits, nutrition, hydration, rest) that
+        patients typically ask in a medical context, you MAY answer using your general medical knowledge.
+        - Always frame the answer as general health guidance, not personalised medical advice.
+        - Include a disclaimer recommending the patient consult their healthcare provider for advice tailored to their condition.
+        - Do NOT answer questions that are clearly unrelated to health or medicine.
+        """ : ""
+
         let systemPrompt = """
         You are a medical informational assistant. Your role is to provide educational health information only.
-        
+
         IMPORTANT CONSTRAINTS:
+        - \(languageInstruction)
         - You are NOT a licensed physician and cannot provide medical diagnosis or treatment plans.
-        - Always base your answers on the provided medical context below.
-        - If you lack sufficient context, say: "I don't have reliable information to answer this safely."
+        - Prefer the Retrieved Medical Context below when it is available — cite it and use it as the primary source.
+        - If the Retrieved Medical Context shows '[No relevant medical context found]', you may still answer common health and lifestyle questions (nutrition, diet, hydration, rest, activity) from your general medical knowledge, but clearly label the answer as general guidance and advise the user to confirm with their healthcare provider.
+        - If the question is clearly unrelated to health or medicine, politely decline and explain you can only assist with health topics.
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.
-        
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)
+
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
-        
+
         Sources:
         \(formatSources(context.sources))
-        
+
         Confidence Score: \(String(format: "%.0f%%", context.confidenceScore * 100))
         """
-        
-        let userMessage = userQuery
-        
-        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userMessage)
+
+        // Cap history to the most recent N turns so the prompt stays short.
+        // Older context is less useful for a 3B model and significantly increases prefill time.
+        let maxMessages = Self.maxHistoryTurns * 2
+        let trimmedHistory = history.count > maxMessages
+            ? Array(history.suffix(maxMessages))
+            : history
+
+        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: trimmedHistory)
     }
 
     private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {

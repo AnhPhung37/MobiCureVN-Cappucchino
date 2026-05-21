@@ -141,7 +141,6 @@ final class SQLiteRetriever {
                 c.doc_type,
                 c.credibility_tier,
                 \(pageSelect) AS page_start,
-                \(pageSelect) AS page_start,
                 -fts.rank AS score
             FROM chunks_fts fts
             JOIN chunks c ON fts.rowid = c.rowid
@@ -211,7 +210,6 @@ final class SQLiteRetriever {
                 c.source_org,
                 c.doc_type,
                 c.credibility_tier,
-                \(pageSelect) AS page_start
                 \(pageSelect) AS page_start
             FROM chunks c
             WHERE \(conditions)
