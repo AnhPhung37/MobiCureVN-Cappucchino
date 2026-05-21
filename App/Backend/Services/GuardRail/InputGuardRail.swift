@@ -1,4 +1,5 @@
 import Foundation
+import NaturalLanguage
 
 /// Input GuardRail: validates queries before they reach LLM
 /// Rule Group 1: Domain filter (medical-only)
@@ -6,15 +7,23 @@ import Foundation
 /// Rule Group 3: Prompt injection/jailbreak
 /// Rule Group 4: PII detection + masking
 final class InputGuardRail {
-    
+
+    // Loaded once — sentence embedding initialisation is expensive
+    private static let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english)
+    // Cosine distance below this → query is semantically close to a medical anchor
+    private static let similarityThreshold: NLDistance = 0.45
+
     init() {}
-    
-    /// Check input query against all guardrails
-    /// Returns: GuardRailStatus and sanitized query (with PII masked)
-    func validate(query: String) -> InputGuardRailResult {
+
+    /// Check input query against all guardrails.
+    /// - Parameters:
+    ///   - query: Original user query (any language). Used for dangerous/injection/PII checks.
+    ///   - englishQuery: English translation of the query. When provided, used for semantic
+    ///     relevance so Vietnamese input is correctly compared against English anchor phrases.
+    func validate(query: String, englishQuery: String? = nil) -> InputGuardRailResult {
         var violations: [String] = []
         var sanitizedQuery = query
-        
+
         // Rule Group 2: Hard-block dangerous requests FIRST (highest priority)
         if let blocked = checkDangerousRequests(query) {
             violations.append(blocked)
@@ -24,7 +33,7 @@ final class InputGuardRail {
                 violations: violations
             )
         }
-        
+
         // Rule Group 3: Prompt injection/jailbreak detection
         if let injectionReason = checkPromptInjection(query) {
             violations.append(injectionReason)
@@ -34,18 +43,20 @@ final class InputGuardRail {
                 violations: violations
             )
         }
-        
+
         // Rule Group 4: PII Detection + Masking (before medical check)
         sanitizedQuery = maskPII(sanitizedQuery)
         let piiIssues = detectPII(query)
         if !piiIssues.isEmpty {
             violations.append(contentsOf: piiIssues)
-            // Log warning but don't block - just mask
             print("InputGuardRail: PII detected and masked: \(piiIssues)")
         }
-        
-        // Rule Group 1: Domain filter (medical relevance)
-        if !checkMedicalRelevance(query) {
+
+        // Rule Group 1: Domain filter — semantic relevance using NLEmbedding.
+        // Use the English translation when available so Vietnamese queries are compared
+        // against English anchor phrases in the same embedding space.
+        let queryForRelevance = englishQuery ?? query
+        if !checkMedicalRelevance(queryForRelevance) {
             violations.append("Query not medical-related")
             return InputGuardRailResult(
                 status: .blocked(reason: "This question is not medical-related. Please ask medical questions."),
@@ -54,8 +65,7 @@ final class InputGuardRail {
                 violations: violations
             )
         }
-        
-        // All checks passed
+
         return InputGuardRailResult(
             status: .allowed,
             originalQuery: query,
@@ -66,24 +76,23 @@ final class InputGuardRail {
     
     // MARK: - Private Checkers
     
-    /// Rule Group 1: Check if query is medical-related
+    /// Rule Group 1: Semantic medical relevance check.
+    /// Primary: NLEmbedding cosine distance against medical anchor phrases.
+    /// Fallback: keyword and intent-pattern matching for when the embedding model is unavailable.
     private func checkMedicalRelevance(_ query: String) -> Bool {
         let lower = query.lowercased()
-        
-        // Quick check: does it contain any medical keyword?
-        for keyword in GuardRailRules.medicalKeywords {
-            if lower.contains(keyword) {
-                return true
+
+        if let embedding = Self.sentenceEmbedding {
+            let isNearAnchor = GuardRailRules.medicalAnchors.contains { anchor in
+                embedding.distance(between: lower, and: anchor) < Self.similarityThreshold
             }
+            if isNearAnchor { return true }
         }
-        
-        // If very short and no keywords, reject
-        if query.trimmingCharacters(in: .whitespaces).count < 5 {
-            return false
-        }
-        
-        // Future: add semantic medical classifier here
-        // For MVP: keyword-based is sufficient
+
+        // Fallback: keyword + intent patterns when embedding model is unavailable
+        if GuardRailRules.medicalKeywords.contains(where: { lower.contains($0) }) { return true }
+        if GuardRailRules.patientIntentPatterns.contains(where: { lower.contains($0) }) { return true }
+
         return false
     }
     
