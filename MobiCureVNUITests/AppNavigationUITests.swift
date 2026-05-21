@@ -5,7 +5,11 @@ import XCTest
 ///   - The app launches without crashing
 ///   - The 3 main tabs exist and are tappable
 ///   - The Chat tab shows the input field
-///   - Medications can be navigated to
+///   - Home tab shows content on launch
+///
+/// iOS 18+ note: Apple replaced the classic tab bar with a floating tab bar
+/// (_UIFloatingTabBarItemCell). XCTest no longer finds it via app.tabBars, so
+/// tests now use app.buttons["Label"] which resolves tab items by accessibility label.
 final class AppNavigationUITests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -28,40 +32,35 @@ final class AppNavigationUITests: XCTestCase {
         XCTAssertTrue(app.state == .runningForeground)
     }
 
-    // MARK: - Tab Navigation
+    // MARK: - Tab Existence
 
     func testThreeTabsExist() {
-        let tabBar = app.tabBars.firstMatch
-        XCTAssertTrue(tabBar.exists, "Tab bar should exist")
-        XCTAssertGreaterThanOrEqual(tabBar.buttons.count, 3, "Should have at least 3 tabs")
+        XCTAssertTrue(homeTab.waitForExistence(timeout: 3), "Home tab should exist")
+        XCTAssertTrue(chatTab.waitForExistence(timeout: 3), "Chat tab should exist")
+        XCTAssertTrue(profileTab.waitForExistence(timeout: 3), "Profile tab should exist")
     }
 
     func testHomeTabIsSelectedByDefault() {
-        // The first tab (Home) should be selected on launch
-        let tabBar = app.tabBars.firstMatch
-        XCTAssertTrue(tabBar.exists)
-        let firstTab = tabBar.buttons.element(boundBy: 0)
-        XCTAssertTrue(firstTab.isSelected, "Home tab should be selected by default")
+        XCTAssertTrue(homeTab.waitForExistence(timeout: 3))
+        XCTAssertTrue(homeTab.isSelected, "Home tab should be selected on launch")
     }
 
+    // MARK: - Tab Navigation
+
     func testCanNavigateToChatTab() {
-        let tabBar = app.tabBars.firstMatch
-        let chatTab = tabBar.buttons.element(boundBy: 1)
+        XCTAssertTrue(chatTab.waitForExistence(timeout: 3))
         chatTab.tap()
         XCTAssertTrue(chatTab.isSelected)
     }
 
     func testCanNavigateToProfileTab() {
-        let tabBar = app.tabBars.firstMatch
-        let profileTab = tabBar.buttons.element(boundBy: 2)
+        XCTAssertTrue(profileTab.waitForExistence(timeout: 3))
         profileTab.tap()
         XCTAssertTrue(profileTab.isSelected)
     }
 
     func testTabNavigationIsReversible() {
-        let tabBar = app.tabBars.firstMatch
-        let homeTab = tabBar.buttons.element(boundBy: 0)
-        let chatTab = tabBar.buttons.element(boundBy: 1)
+        XCTAssertTrue(chatTab.waitForExistence(timeout: 3))
 
         chatTab.tap()
         XCTAssertTrue(chatTab.isSelected)
@@ -73,11 +72,10 @@ final class AppNavigationUITests: XCTestCase {
     // MARK: - Chat Tab
 
     func testChatTabShowsInputField() {
-        let tabBar = app.tabBars.firstMatch
-        tabBar.buttons.element(boundBy: 1).tap()
+        XCTAssertTrue(chatTab.waitForExistence(timeout: 3))
+        chatTab.tap()
 
-        // The chat input text field or text view should be present
-        let inputExists = app.textFields.firstMatch.waitForExistence(timeout: 3) ||
+        let inputExists = app.textFields.firstMatch.waitForExistence(timeout: 5) ||
                           app.textViews.firstMatch.waitForExistence(timeout: 1)
         XCTAssertTrue(inputExists, "Chat tab should show a text input field")
     }
@@ -85,13 +83,40 @@ final class AppNavigationUITests: XCTestCase {
     // MARK: - Home Tab
 
     func testHomeTabShowsCalendarOrContent() {
-        // Home tab is already selected; verify something is visible
-        let tabBar = app.tabBars.firstMatch
-        tabBar.buttons.element(boundBy: 0).tap()
-
-        // Some content should be visible within 3 seconds
+        // Home tab is already selected on launch
         let hasContent = app.staticTexts.firstMatch.waitForExistence(timeout: 3) ||
                          app.buttons.firstMatch.waitForExistence(timeout: 1)
         XCTAssertTrue(hasContent, "Home tab should show content")
+    }
+}
+
+// MARK: - Helpers
+
+private extension AppNavigationUITests {
+
+    /// Resolves the Home tab item regardless of classic vs floating tab bar style.
+    /// Classic (< iOS 18): app.tabBars.buttons["Home"]
+    /// Floating (iOS 18+): app.buttons["Home"] at the window level
+    var homeTab: XCUIElement {
+        tabItem(label: "Home")
+    }
+
+    var chatTab: XCUIElement {
+        tabItem(label: "Chat")
+    }
+
+    var profileTab: XCUIElement {
+        tabItem(label: "Profile")
+    }
+
+    func tabItem(label: String) -> XCUIElement {
+        // Prefer the classic tab bar button when available (pre-iOS 18)
+        let classicBar = app.tabBars.firstMatch
+        if classicBar.exists {
+            let btn = classicBar.buttons[label]
+            if btn.exists { return btn }
+        }
+        // Fall back to direct button lookup used by iOS 18 floating tab bar
+        return app.buttons[label]
     }
 }

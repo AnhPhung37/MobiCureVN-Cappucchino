@@ -64,12 +64,36 @@ struct AppConfig {
                                             userInfo: [llmDownloadProgressUserInfoKey: llmDownloadProgress])
         }
     }
-    /// Key for runtime toggle in `UserDefaults`.
+    // MARK: - Kaggle Dataset Config
+    // Credentials live in Secrets.swift (gitignored). See Secrets.swift.example for the template.
+    static let kaggleUsername = Secrets.kaggleUsername
+    static let kaggleApiKey   = Secrets.kaggleApiKey
+
+    /// Downloads the Kaggle medical-text dataset (if not already cached in the temp directory)
+    /// and updates GuardRailRules.medicalAnchors. Safe to call at startup from a background task.
+    static func initializeMedicalAnchors() async {
+        let anchors = await MedicalAnchorLoader.shared.load(
+            username: kaggleUsername,
+            apiKey: kaggleApiKey
+        )
+        GuardRailRules.updateMedicalAnchors(anchors)
+    }
+
     private static let useRealKey = "UseRealLLM"
+    private static let selectedModelKey = "SelectedLLMModel"
 
     static var useRealLLM: Bool {
         get { UserDefaults.standard.bool(forKey: useRealKey) }
         set { UserDefaults.standard.set(newValue, forKey: useRealKey) }
+    }
+
+    static var selectedModel: ModelCatalog {
+        get {
+            guard let raw = UserDefaults.standard.string(forKey: selectedModelKey),
+                  let model = ModelCatalog(rawValue: raw) else { return .default }
+            return model
+        }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: selectedModelKey) }
     }
 
     private static func updateStatus(_ status: LLMBackendStatus) {
@@ -85,9 +109,9 @@ struct AppConfig {
 
     /// Attempt to use local model if available, otherwise use mock while downloading in background.
     /// Call this from app startup inside a Task.
-    static func initializeLLMService(modelName: String = "mlx-community/Qwen2.5-3B-Instruct-4bit",
+    static func initializeLLMService(model: ModelCatalog = .default,
                                      initializeRuntime: Bool = true) async {
-        print("AppConfig: initializeLLMService called")
+        print("AppConfig: initializeLLMService called with \(model.displayName)")
 
         guard useRealLLM else {
             updateStatus(.mock)
@@ -107,7 +131,7 @@ struct AppConfig {
         Task(priority: .utility) {
             do {
                 let modelURL = try await ModelManager.shared.ensureModelReady(
-                    modelName: modelName,
+                    modelName: model.repoID,
                     progress: { value in
                         Task { @MainActor in
                             updateDownloadProgress(value)

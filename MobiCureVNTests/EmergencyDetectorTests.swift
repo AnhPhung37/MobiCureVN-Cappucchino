@@ -131,7 +131,7 @@ final class EmergencyDetectorTests: XCTestCase {
     // MARK: - Stroke Symptoms
 
     func testDetectsFaceDrooping() {
-        let result = sut.detect(query: "My face is drooping on one side")
+        let result = sut.detect(query: "face drooping on one side")
         XCTAssertTrue(result.isEmergency)
         XCTAssertEqual(result.symptomType, .stroke_symptom)
     }

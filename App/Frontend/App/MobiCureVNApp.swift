@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 @main
 struct MobiCureVNApp: App {
 
@@ -19,7 +20,12 @@ struct MobiCureVNApp: App {
             && !ProcessInfo.processInfo.isMacCatalystApp
 
         Task(priority: .utility) {
-            await AppConfig.initializeLLMService(initializeRuntime: initializeRuntime)
+            await AppConfig.initializeLLMService(model: AppConfig.selectedModel,
+                                                 initializeRuntime: initializeRuntime)
+        }
+
+        Task(priority: .utility) {
+            await AppConfig.initializeMedicalAnchors()
         }
     }
 

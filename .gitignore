@@ -35,6 +35,12 @@ __pycache__/
 .idea/
 .history/
 
+# Claude Code (AI assistant memory — local only)
+.claude/
+
+# Credentials — never commit real secrets
+App/Backend/Configs/Secrets.swift
+
 # Jupyter Notebook checkpoint
 .ipynb_checkpoints/
 

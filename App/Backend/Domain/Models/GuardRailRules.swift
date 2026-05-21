@@ -3,9 +3,23 @@ import Foundation
 // MARK: - GuardRail Rules
 
 struct GuardRailRules {
-    
+
+    // MARK: - Semantic Medical Anchors (NLEmbedding)
+
+    /// Anchor phrases compared against user queries via NLEmbedding cosine distance.
+    /// Seeded with the built-in fallback set at launch; replaced with dataset-derived phrases
+    /// once MedicalAnchorLoader finishes downloading the Kaggle medical-text corpus.
+    /// `nonisolated(unsafe)` is safe here: written exactly once at app startup before any
+    /// queries arrive, then only read afterwards.
+    nonisolated(unsafe) static var medicalAnchors: [String] = MedicalAnchorLoader.builtInAnchors
+
+    static func updateMedicalAnchors(_ anchors: [String]) {
+        guard !anchors.isEmpty else { return }
+        medicalAnchors = anchors
+    }
+
     // MARK: - Input Rules
-    
+
     /// Rule Group 1: Domain Filter — only medical queries
     static let medicalKeywords = Set([
         // Vietnamese medical terms
@@ -14,13 +28,25 @@ struct GuardRailRules {
         "huyết áp", "tim", "phổi", "gan", "thận", "dạ dày", "ruột",
         "thuốc", "liều", "điều trị", "khỏe", "sức khỏe", "bác sĩ", "y tế",
         "hồi phục", "vận động", "ăn uống", "sinh hoạt", "hạn chế",
-        
+
+        // Vietnamese nutrition/lifestyle terms patients commonly ask
+        "ăn", "uống", "thức ăn", "thực phẩm", "dinh dưỡng", "bữa ăn",
+        "calo", "cân nặng", "vitamin", "nước", "rau", "trái cây",
+        "chất đạm", "chất béo", "tinh bột", "chế độ ăn", "tránh ăn",
+        "nên ăn", "không nên ăn", "kiêng", "bổ sung",
+
         // English medical terms
         "symptom", "disease", "pain", "infection", "inflammation", "surgery", "surgical",
         "wound", "incision", "scar", "fever", "bleeding", "nausea", "vomit", "diarrhea", "constipation",
         "blood pressure", "heart", "lung", "liver", "kidney", "stomach", "intestine",
         "medicine", "drug", "dose", "treatment", "recovery", "exercise", "diet",
-        "physician", "doctor", "health", "medical", "postoperative", "post-op", "healing"
+        "physician", "doctor", "health", "medical", "postoperative", "post-op", "healing",
+
+        // English nutrition/lifestyle terms patients commonly ask
+        "eat", "food", "drink", "meal", "nutrition", "nutrient", "vitamin", "mineral",
+        "calorie", "weight", "hydration", "water", "fruit", "vegetable", "protein",
+        "carbohydrate", "fiber", "supplement", "appetite", "avoid eating", "should eat",
+        "what to eat", "foods to", "dietary"
     ])
     
     /// Rule Group 2: Hard-block dangerous requests
@@ -41,6 +67,26 @@ struct GuardRailRules {
         "lethal dose", "overdose amount"
     ]
     
+    /// Rule Group 1b: Patient intent patterns — health-related phrasing even without explicit medical vocab.
+    /// Covers lifestyle/diet questions patients ask without using clinical language.
+    static let patientIntentPatterns = [
+        // English — permission/safety questions
+        "can i have", "can i eat", "can i drink", "can i take", "can i use",
+        "should i eat", "should i drink", "should i take", "should i avoid",
+        "is it okay to", "is it safe to", "is it okay if", "is it ok to",
+        "is it good for", "is it bad for", "is it healthy",
+        "what can i eat", "what should i eat", "what to eat", "what to drink",
+        "what foods", "what food", "foods to avoid", "foods to eat",
+        "good for my", "bad for my", "safe for me",
+
+        // Vietnamese — common patient phrasing
+        "tôi có thể ăn", "tôi có thể uống", "có được ăn", "có nên ăn",
+        "có được uống", "có nên uống", "nên ăn gì", "nên uống gì",
+        "ăn gì tốt", "uống gì tốt", "có hại không", "có tốt không",
+        "có được dùng", "tôi nên ăn", "tôi nên uống", "kiêng gì",
+        "có ảnh hưởng không", "có tốt cho", "có hại cho"
+    ]
+
     /// Rule Group 3: Prompt injection / jailbreak patterns
     static let injectionPatterns = [
         "ignore previous instruction",

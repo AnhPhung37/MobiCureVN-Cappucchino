@@ -82,7 +82,8 @@ final class QueryRefiner {
         ]
         
         var result = query.lowercased()
-        for (vietnamese, english) in vietnameseToEnglish {
+        // Longest keys first — prevents shorter substrings (e.g. "nôn") from corrupting longer matches ("buồn nôn")
+        for (vietnamese, english) in vietnameseToEnglish.sorted(by: { $0.key.count > $1.key.count }) {
             result = result.replacingOccurrences(of: vietnamese, with: english, options: .caseInsensitive)
         }
         

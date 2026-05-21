@@ -272,8 +272,7 @@ class ChatViewModel: ObservableObject {
         case .idle:                return nil
         case .validatingLanguage:  return "Đang kiểm tra ngôn ngữ..."
         case .translatingInput:    return "Đang dịch câu hỏi..."
-        case .generating:          return nil   // handled by the existing streaming bubble
-        case .translatingOutput:   return "Đang dịch câu trả lời..."
+        case .generating:          return nil
         }
     }
 }

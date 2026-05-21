@@ -13,15 +13,6 @@ public final class ModelManager {
 
     private let fileManager = FileManager.default
 
-    private let defaultCommunityRepoID = "mlx-community/Qwen2.5-3B-Instruct-4bit"
-
-    private func defaultCommunityRepoID(for modelName: String) -> String {
-        if modelName.hasPrefix("mlx-community/") {
-            return modelName
-        }
-        return defaultCommunityRepoID
-    }
-
     private enum ModelManagerError: Error {
         case applicationSupportUnavailable
         case downloadFailed
@@ -53,7 +44,7 @@ public final class ModelManager {
     private func localModelDirectory(modelName: String, repoID: String?) throws -> URL {
         let support = try applicationSupportDirectory()
         let modelsRoot = support.appendingPathComponent("models", isDirectory: true)
-        let resolvedRepoID = defaultCommunityRepoID(for: repoID ?? modelName)
+        let resolvedRepoID = repoID ?? modelName
         return modelsRoot.appendingPathComponent(resolvedRepoID.replacingOccurrences(of: "/", with: "_"), isDirectory: true)
     }
 
@@ -127,7 +118,7 @@ public final class ModelManager {
         let modelsRoot = support.appendingPathComponent("models", isDirectory: true)
         try fileManager.createDirectory(at: modelsRoot, withIntermediateDirectories: true, attributes: nil)
 
-        let resolvedRepoID = defaultCommunityRepoID(for: repoID ?? modelName)
+        let resolvedRepoID = repoID ?? modelName
         let modelDir = try localModelDirectory(modelName: modelName, repoID: repoID)
         if fileManager.fileExists(atPath: modelDir.path) {
             if isValidLocalModelDirectory(modelDir) {

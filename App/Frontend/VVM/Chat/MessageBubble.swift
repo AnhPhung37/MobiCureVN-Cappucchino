@@ -19,9 +19,10 @@ struct MessageBubble: View {
 
             VStack(alignment: isUser ? .trailing : .leading, spacing: 6) {
                 // Bubble
-                Text(message.content)
+                markdownText(message.content)
                     .font(.system(size: 16, weight: .regular, design: .rounded))
                     .foregroundColor(isUser ? .white : Color(.label))
+                    .textSelection(.enabled)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
                     .background(bubbleBackground)
@@ -44,6 +45,15 @@ struct MessageBubble: View {
     }
 
     // MARK: - Sub-views
+
+    @ViewBuilder
+    private func markdownText(_ content: String) -> some View {
+        if let attributed = try? AttributedString(markdown: content, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
+            Text(attributed)
+        } else {
+            Text(content)
+        }
+    }
 
     @ViewBuilder
     private var bubbleBackground: some View {
