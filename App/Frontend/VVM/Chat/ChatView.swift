@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Translation
 
 struct ChatView: View {
 
@@ -68,21 +67,11 @@ struct ChatView: View {
                 }
             }
         }
-        // MARK: - Translation session setup (iOS 17.4+, on-device vi↔en)
-        // These modifiers ask the system to vend on-device TranslationSession objects.
-        // The sessions are injected into the shared TranslationService so the chat
-        // pipeline can translate without any network calls.
-        .translationTask(TranslationService.viToEnConfiguration) { session in
-            AppConfig.translationService.configure(viToEn: session)
-        }
-        .translationTask(TranslationService.enToViConfiguration) { session in
-            AppConfig.translationService.configure(enToVi: session)
-        }
-        // Check device language availability early — before sessions are ready — so
-        // we can surface an error quickly if the vi↔en pack is not installed.
-        .task {
-            await AppConfig.translationService.checkLanguageAvailability()
-        }
+        // NOTE: .translationTask modifiers live on HomeView (the persistent TabView container)
+        // so the TranslationSession stays valid regardless of which tab is active.
+        // Attaching them here caused fatal crashes when ChatView disappeared while a
+        // translation was in-flight: "Attempted to use TranslationSession after the view
+        // it was attached to has disappeared."
     }
 
     // MARK: - History Sidebar
