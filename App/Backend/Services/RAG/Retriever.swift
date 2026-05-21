@@ -6,8 +6,9 @@ final class RAGService {
     private let retriever: SQLiteRetriever
     private let queryRefiner: QueryRefiner
 
-    init() {
-        self.retriever = SQLiteRetriever()
+    /// - Parameter retriever: Pass `AppConfig.retriever` to reuse the shared SQLite connection.
+    init(retriever: SQLiteRetriever = AppConfig.retriever) {
+        self.retriever = retriever
         self.queryRefiner = QueryRefiner()
     }
 

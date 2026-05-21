@@ -76,22 +76,34 @@ final class InputGuardRail {
     
     // MARK: - Private Checkers
     
+    // Cap how many anchor phrases the expensive NLEmbedding path checks per query.
+    // Keyword matching already covers the common cases; the embedding is a safety net
+    // for edge-case phrasing, so 50 anchors is more than sufficient.
+    private static let maxAnchorsForEmbedding = 50
+
     /// Rule Group 1: Semantic medical relevance check.
-    /// Primary: NLEmbedding cosine distance against medical anchor phrases.
-    /// Fallback: keyword and intent-pattern matching for when the embedding model is unavailable.
+    ///
+    /// Order (fast → slow):
+    ///  1. Keyword / intent-pattern match — O(n) string contains, sub-millisecond.
+    ///  2. NLEmbedding cosine distance — only if keywords miss, capped at the first
+    ///     `maxAnchorsForEmbedding` anchors to bound per-query latency.
     private func checkMedicalRelevance(_ query: String) -> Bool {
         let lower = query.lowercased()
 
+        // Fast path: exact keyword / intent-pattern matching.
+        // Covers the vast majority of medical queries with negligible CPU cost.
+        if GuardRailRules.medicalKeywords.contains(where: { lower.contains($0) }) { return true }
+        if GuardRailRules.patientIntentPatterns.contains(where: { lower.contains($0) }) { return true }
+
+        // Slow path: semantic similarity for edge-case phrasing not caught by keywords.
+        // Limited to the first N anchors so worst-case latency stays bounded.
         if let embedding = Self.sentenceEmbedding {
-            let isNearAnchor = GuardRailRules.medicalAnchors.contains { anchor in
+            let anchorsToCheck = GuardRailRules.medicalAnchors.prefix(Self.maxAnchorsForEmbedding)
+            let isNearAnchor = anchorsToCheck.contains { anchor in
                 embedding.distance(between: lower, and: anchor) < Self.similarityThreshold
             }
             if isNearAnchor { return true }
         }
-
-        // Fallback: keyword + intent patterns when embedding model is unavailable
-        if GuardRailRules.medicalKeywords.contains(where: { lower.contains($0) }) { return true }
-        if GuardRailRules.patientIntentPatterns.contains(where: { lower.contains($0) }) { return true }
 
         return false
     }

@@ -43,7 +43,7 @@ class ChatViewModel: ObservableObject {
 
     private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
-    private let citationRetriever = SQLiteRetriever()
+    private let citationRetriever = AppConfig.retriever   // shared SQLite connection
     private let queryRefiner = QueryRefiner()
     @Published private(set) var currentConversationId: UUID = UUID()
 

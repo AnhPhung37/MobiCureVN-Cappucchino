@@ -22,8 +22,9 @@ struct AppConfig {
     static let llmServiceUserInfoKey = "llmService"
     static let llmDownloadProgressUserInfoKey = "llmDownloadProgress"
 
-    /// Stored LLM service instance. Starts with a placeholder LLMService; replaced once the model is ready.
-    static var llmService: LLMServiceProtocol = LLMService() {
+    /// Stored LLM service instance. Defaults to MockLLMService for fast startup;
+    /// replaced with the real LLMService once the on-device model is ready.
+    static var llmService: LLMServiceProtocol = MockLLMService() {
         didSet {
             NotificationCenter.default.post(name: llmServiceDidChange,
                                             object: nil,
@@ -34,7 +35,7 @@ struct AppConfig {
 
     /// Medical chat orchestrator: full pipeline with guardrails + RAG
     static var orchestrator: MedicalChatOrchestrator = MedicalChatOrchestrator(
-        llmService: LLMService()
+        llmService: MockLLMService()
     )
 
     static let chatHistoryRepository: ChatHistoryRepository = {
@@ -45,6 +46,10 @@ struct AppConfig {
             return InMemoryChatHistoryRepository()
         }
     }()
+
+    /// Shared SQLiteRetriever — opening a SQLite connection is expensive; reuse one instance
+    /// across the RAGService (inside MedicalChatOrchestrator) and ChatViewModel citation lookup.
+    static let retriever = SQLiteRetriever()
 
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {
@@ -78,6 +83,11 @@ struct AppConfig {
 
     private static let useRealKey = "UseRealLLM"
     private static let selectedModelKey = "SelectedLLMModel"
+
+    /// Register defaults once at app start so `bool(forKey:)` never silently returns false.
+    static func registerDefaults() {
+        UserDefaults.standard.register(defaults: [useRealKey: true])
+    }
 
     static var useRealLLM: Bool {
         get { UserDefaults.standard.bool(forKey: useRealKey) }

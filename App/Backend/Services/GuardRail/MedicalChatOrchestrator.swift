@@ -86,12 +86,14 @@ final class MedicalChatOrchestrator {
                         responseLanguage: responseLanguage
                     )
                     
-                    // Step 5: Stream LLM response with output guardrail
+                    // Step 5: Stream LLM response with output guardrail.
+                    // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
+                    // so the total prompt length stays within the model's sweet spot.
                     var accumulatedResponse = ""
                     for await token in llmService.stream(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
-                        conversationHistory: conversationHistory
+                        conversationHistory: enrichedPrompt.history
                     )) {
                         accumulatedResponse += token
                         continuation.yield(token)
@@ -128,12 +130,21 @@ final class MedicalChatOrchestrator {
     }
     
     // MARK: - Private Helpers
-    
+
     private struct EnrichedPrompt {
         let systemPrompt: String
         let userMessage: String
+        /// History trimmed to `maxHistoryTurns` so the LLM prompt stays compact.
+        let history: [ChatMessage]
     }
     
+    // Token budget for RAG context injected into the system prompt.
+    // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
+    private static let contextTokenBudget = 600
+    // Maximum number of past turns included in the conversation history sent to the LLM.
+    // Each turn = 1 user + 1 assistant message. Older turns are dropped to limit prompt length.
+    private static let maxHistoryTurns = 4
+
     private func buildEnrichedPrompt(
         userQuery: String,
         context: RetrievedContext,
@@ -144,7 +155,10 @@ final class MedicalChatOrchestrator {
             ? "Respond ONLY in Vietnamese (Tiếng Việt). Do NOT use English, Chinese, or any other language under any circumstances. Even if the retrieved context is written in English, your entire response MUST be in Vietnamese only."
             : "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
 
-        let noContextFound = context.chunks.isEmpty
+        // Apply token budget to RAG chunks so the system prompt stays compact.
+        let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+
+        let noContextFound = budgetedChunks.isEmpty
         let noContextInstruction = noContextFound ? """
 
         ⚠️ KNOWLEDGE BASE NOTE:
@@ -171,17 +185,22 @@ final class MedicalChatOrchestrator {
         - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)
 
         Retrieved Medical Context:
-        \(formatContextChunks(context.chunks))
+        \(formatContextChunks(budgetedChunks))
 
         Sources:
         \(formatSources(context.sources))
 
         Confidence Score: \(String(format: "%.0f%%", context.confidenceScore * 100))
         """
-        
-        let userMessage = userQuery
-        
-        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userMessage)
+
+        // Cap history to the most recent N turns so the prompt stays short.
+        // Older context is less useful for a 3B model and significantly increases prefill time.
+        let maxMessages = Self.maxHistoryTurns * 2
+        let trimmedHistory = history.count > maxMessages
+            ? Array(history.suffix(maxMessages))
+            : history
+
+        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: trimmedHistory)
     }
 
     private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
