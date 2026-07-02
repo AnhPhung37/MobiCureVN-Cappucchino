@@ -206,3 +206,44 @@ telemetry · second input modality / full multimodal fusion.
 10. Dead code — `ToolExecutor.swift`, `ConversationMemory.swift`
 11. Stale default model path — `LLMService.swift:20`
 12. Word-count "token" budget — `MedicalChatOrchestrator.swift:206`
+
+---
+
+## 7. Personal Notes — Additional Issues (2026-07-02)
+
+### 7.1 OOM — App Quits Unexpectedly (Critical)
+
+The app crashes under memory pressure when running on-device. Root causes are already identified but not yet fixed:
+
+- **Unbounded stream buffer** (`LLMService.swift:72`, issue #5 above): `AsyncStream(bufferingPolicy: .unbounded)` lets token backpressure accumulate indefinitely in RAM.
+- **No MLX GPU cache limit** (issue from §3.5): no `MLX.GPU.set(cacheLimit:)` call means the MLX metal cache grows freely. On a 6–8 GB device this competes with the OS.
+- **Sequential model file downloads** (`ModelManager.swift:315`, issue #9): large model files held in memory during download before being written to disk.
+- **Fix priority**: add `MLX.GPU.set(cacheLimit:)` in `AppConfig` during model init; cap stream buffer to `.bufferingNewest(N)`; add a `didReceiveMemoryWarning` hook that clears the KV cache.
+
+### 7.2 Citation Card Still Uses Mock Data
+
+`CitationCard.swift` renders hardcoded placeholder source data rather than the real retrieval result. The underlying citation mismatch bug (#2 above) means even when wired up, the sources shown may not match what the model actually read.
+
+- Fix the duplicate-RAG bug first (issue #2 / Phase 1 in §5), so generation and citation use the same retrieval pass.
+- Then wire `CitationCard` to the `MedicalSource` objects returned from that single retrieval, using the tracked `documentName`, `pageStart` fields already on `MedicalSource.swift`.
+
+### 7.3 Translation Is Not Stable
+
+The on-device `Translation` framework (iOS 17.4+) produces inconsistent results:
+
+- Apple's framework can fail silently or return `nil` when the language pair session hasn't warmed up — fallback handling in `TranslationService.swift` may be insufficient.
+- Vietnamese diacritics detection in `LanguageValidationService` covers most cases, but code-switched input (mixed Vi/En within one sentence) can land in the wrong path.
+- Medical terminology often has no consumer-grade translation equivalent (e.g., stoma reversal, urostomy, LARS score) — Apple's model will guess, producing noisy English queries passed to RAG.
+- **Mitigation**: maintain an expanded override dictionary in `QueryRefiner` for known medical terms that Apple's model mistranslates; log translation inputs/outputs during testing sessions to spot failures.
+
+### 7.4 Rule-Based RAG — Needs to Be More Advanced
+
+The current retrieval is FTS5 BM25 + vector KNN + RRF, which is structurally correct, but the *query side* is still largely rule-based:
+
+- `QueryRefiner` does manual Vietnamese→English mapping (~50 hardcoded terms) and abbreviation expansion. This won't scale to varied patient phrasing.
+- The FTS base clause is AND-restrictive on the core query tokens, causing zero results on paraphrased or conversational queries.
+- **Recommended improvements** (see also §3 Phase 2 / nextStep.md Tier 1):
+  - Replace or augment manual term mapping with the on-device embedding similarity already available via `QueryEmbedder` — use it to expand the query at retrieval time, not just rerank.
+  - Relax the AND clause to OR + BM25 scoring; the RRF fusion already handles noise from over-retrieval.
+  - Consider LLM-based query rewriting (the model rewrites the patient's question into a retrieval-optimised form) as a stretch goal — the LLM is already on-device, so latency cost is just one extra short generation step.
+  - Expand the corpus to 1,500+ chunks (see Phase 2 in `bugCheck.md`) to reduce the "no context found" fallback rate.
