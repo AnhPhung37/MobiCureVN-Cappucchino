@@ -226,3 +226,19 @@ The app processes sensitive health information. Before real patients interact wi
 **Session hygiene:**
 - Add a "Clear all data" option in the profile screen that wipes SwiftData stores and cached model files — patients may share devices or hand over a phone.
 - Consider auto-lock: if the app goes to background and returns after N minutes, require biometric re-auth before showing chat history.
+
+### 5.3 Persistence Is Split Across Three Uncoordinated Mechanisms
+
+The app currently persists state through three different mechanisms, each with its own error-handling convention and no shared abstraction between them:
+
+- **Raw SQLite3 C API** (`SQLiteRetriever.swift`) for the read-only bundled `vectorstore.db` — failures fall back silently to an empty `RetrievedContext` rather than surfacing an error.
+- **SwiftData `@Model`** (`SwiftDataChatHistoryRepository.swift`) for chat history — throws typed SwiftData errors.
+- **`UserDefaults`** (`AppConfig.swift`) for app/model settings (`UseRealLLM`, `SelectedLLMModel`) — reads return silently-defaulted optionals.
+
+**Why this matters now:** §5.1 above proposes adding a `SwiftDataProfileRepository` for `PatientProfile`, which will be a fourth persisted entity. Without a documented convention, it's a coin flip which of the three existing patterns (or a new one) gets used, and error handling will likely diverge again.
+
+**Recommendation:** before adding `ProfileRepository`, write a one-paragraph convention (e.g., "all app-owned mutable data goes through SwiftData with a `Repository` protocol; `UserDefaults` is only for non-critical UI/feature-flag state; the bundled vector store remains read-only raw SQLite since it's never written by the app") and apply it consistently as new persisted state is added.
+
+### 5.4 Cross-Reference
+
+See `bugCheck.md` §7.5–7.8 for related findings from a full architecture pass: missing CI/CD, inconsistent dependency pinning (`Package.resolved` not committed, `sqlite-vec` unpinned), repo hygiene issues (stray `build.log`, duplicate `DocumentsChunking/` Python workspace, empty `README.md`), and the `AppConfig` service-locator pattern that enables the citation/generation mismatch bug in §4.2.

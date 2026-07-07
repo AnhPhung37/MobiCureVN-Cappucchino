@@ -82,7 +82,10 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                     do {
                         let input = UserInput(prompt: prompt)
                         let lmInput = try await container.prepare(input: input)
-                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.7, topP: 0.9)
+                        // Lower temperature/topP than default: this is a medical Q&A assistant where
+                        // deterministic, on-language output matters more than lexical variety. Higher
+                        // values let the small multilingual model drift into English/Chinese/Thai mid-reply.
+                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.3, topP: 0.85)
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
                             if case let .chunk(text) = event {
