@@ -29,14 +29,8 @@ struct AppConfig {
             NotificationCenter.default.post(name: llmServiceDidChange,
                                             object: nil,
                                             userInfo: [llmServiceUserInfoKey: llmService])
-            orchestrator = MedicalChatOrchestrator(llmService: llmService)
         }
     }
-
-    /// Medical chat orchestrator: full pipeline with guardrails + RAG
-    static var orchestrator: MedicalChatOrchestrator = MedicalChatOrchestrator(
-        llmService: MockLLMService()
-    )
 
     static let chatHistoryRepository: ChatHistoryRepository = {
         do {
@@ -158,9 +152,6 @@ struct AppConfig {
                 } else {
                     print("AppConfig: MLX runtime unavailable, using placeholder responses")
                 }
-                
-                print("AppConfig: model ready at \(modelURL.path)")
-                
             } catch {
                 updateStatus(.unavailable)
                 print("AppConfig: model setup failed: \(error)")

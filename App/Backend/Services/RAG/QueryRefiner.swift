@@ -154,19 +154,3 @@ final class QueryRefiner {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
-
-/// Query Rewrite Service: standalone async version
-final class QueryRewriteService {
-    private let refiner: QueryRefiner
-    
-    init() {
-        self.refiner = QueryRefiner()
-    }
-    
-    /// Async query rewriting (can integrate LLM-based rewriting later)
-    func rewrite(userQuery: String) async -> RefinedQuery {
-        // For MVP: use rule-based refiner
-        // Future: use local LLM for sophisticated rewriting
-        return refiner.refineQuery(userQuery)
-    }
-}
