@@ -34,19 +34,30 @@ final class MedicalChatOrchestrator {
     func processQuery(
         _ userQuery: String,
         conversationHistory: [ChatMessage],
-        originalQuery: String? = nil,
         ragQuery: String? = nil,
-        responseLanguage: DetectedLanguage = .english
+        responseLanguage: DetectedLanguage = .english,
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
-            Task {
+            let task = Task {
                 do {
-                    // Step 1: Input GuardRail — pass the original-language query for
-                    // dangerous/injection/PII checks, and the English translation (ragQuery)
+                    // Step 1: Emergency Detection FIRST — a user describing a crisis
+                    // (chest pain, "I want to die", etc.) must reach the emergency template
+                    // before any domain/safety filter can reject them.
+                    let emergency = emergencyDetector.detect(query: userQuery)
+                    if emergency.isEmergency {
+                        if let response = emergency.recommendation {
+                            continuation.yield(response)
+                        }
+                        continuation.finish()
+                        return
+                    }
+
+                    // Step 2: Input GuardRail — original-language query for
+                    // dangerous/injection/PII checks, English translation (ragQuery)
                     // for semantic relevance so NLEmbedding runs in a single language space.
-                    let queryForGuardRail = originalQuery ?? userQuery
                     let inputResult = inputGuardRail.validate(
-                        query: queryForGuardRail,
+                        query: userQuery,
                         englishQuery: ragQuery
                     )
                     switch inputResult.status {
@@ -63,20 +74,13 @@ final class MedicalChatOrchestrator {
 
                     let sanitizedQuery = inputResult.sanitizedQuery ?? userQuery
 
-                    // Step 2: Emergency Detection (immediate redirect)
-                    let emergency = emergencyDetector.detect(query: userQuery)
-                    if emergency.isEmergency {
-                        if let response = emergency.recommendation {
-                            continuation.yield(response)
-                        }
-                        continuation.finish()
-                        return
-                    }
-
                     // Step 3: RAG Pipeline — use English query for retrieval when available
                     // so Vietnamese input still matches the English medical documents.
                     let retrievalQuery = ragQuery ?? sanitizedQuery
                     let retrievedContext = await ragService.process(userQuery: retrievalQuery)
+                    // Surface retrieved sources so the UI can show citations without a
+                    // second, redundant retrieval pass.
+                    onSourcesRetrieved?(retrievedContext.sources)
 
                     // Step 4: Build enriched prompt with retrieved context
                     let enrichedPrompt = buildEnrichedPrompt(
@@ -86,17 +90,24 @@ final class MedicalChatOrchestrator {
                         responseLanguage: responseLanguage
                     )
                     
-                    // Step 5: Stream LLM response with output guardrail.
-                    // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
-                    // so the total prompt length stays within the model's sweet spot.
+                    // Step 5: Generate the full response, buffering it. We do NOT stream
+                    // tokens live: the output guardrail can only redact unsafe/hallucinated
+                    // content if the user hasn't already seen it.
+                    // Use the budget-trimmed history from EnrichedPrompt, not the raw
+                    // conversationHistory, so the prompt stays within the model's sweet spot.
                     var accumulatedResponse = ""
                     for await token in llmService.stream(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
                         conversationHistory: enrichedPrompt.history
                     )) {
+                        if Task.isCancelled { break }
                         accumulatedResponse += token
-                        continuation.yield(token)
+                    }
+
+                    guard !Task.isCancelled else {
+                        continuation.finish()
+                        return
                     }
                     
                     print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
@@ -109,14 +120,12 @@ final class MedicalChatOrchestrator {
                     )
                     
                     switch outputResult.status {
-                    case .blocked(let reason):
-                        // If output was blocked, stream the filtered version
-                        if let filtered = outputResult.filteredResponse {
-                            continuation.yield("\n\n⚠️ [Response filtered for safety]\n\(filtered)")
-                        }
+                    case .blocked:
+                        // Emit the filtered/validated text. The raw response was buffered,
+                        // never shown, so unsafe content does not reach the user.
+                        continuation.yield(outputResult.filteredResponse ?? accumulatedResponse)
                     case .allowed:
-                        // Already streamed, just finish
-                        break
+                        continuation.yield(accumulatedResponse)
                     }
                     
                     continuation.finish()
@@ -126,6 +135,10 @@ final class MedicalChatOrchestrator {
                     continuation.finish()
                 }
             }
+
+            // Propagate consumer cancellation (e.g. user taps Stop) down to the LLM so
+            // generation actually halts instead of running to completion in the background.
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
     

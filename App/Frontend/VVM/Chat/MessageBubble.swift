@@ -18,21 +18,22 @@ struct MessageBubble: View {
             if isUser { Spacer(minLength: 48) }
 
             VStack(alignment: isUser ? .trailing : .leading, spacing: 6) {
-                // Bubble
-                markdownText(message.content)
-                    .font(.system(size: 16, weight: .regular, design: .rounded))
-                    .foregroundColor(isUser ? .white : Color(.label))
-                    .textSelection(.enabled)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(bubbleBackground)
-                    .overlay(streamingCursor)
-
-                // Timestamp
-                Text("")
-                    .font(.system(size: 11))
-                    .foregroundColor(Color(.secondaryLabel))
-                    .padding(.horizontal, 4)
+                // Bubble — while an assistant reply is still empty, show a typing indicator.
+                // Responses are buffered (validated by the output guardrail before display),
+                // so without this the bubble would sit blank for the whole generation.
+                Group {
+                    if !isUser && message.content.isEmpty {
+                        TypingIndicator()
+                    } else {
+                        markdownText(message.content)
+                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                            .foregroundColor(isUser ? .white : Color(.label))
+                            .textSelection(.enabled)
+                    }
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(bubbleBackground)
 
                 if !isUser && !message.sources.isEmpty {
                     CitationsView(sources: message.sources)
@@ -65,28 +66,32 @@ struct MessageBubble: View {
                 .fill(Color(.secondarySystemBackground))
         }
     }
-
-    @ViewBuilder
-    private var streamingCursor: some View {
-        EmptyView()
-    }
 }
 
-// MARK: - Blinking Cursor
+// MARK: - Typing Indicator
 
-private struct BlinkingCursor: View {
-    @State private var visible = true
+/// Three pulsing dots shown inside an assistant bubble while its reply is still being
+/// generated (responses are buffered, so the bubble would otherwise sit empty).
+private struct TypingIndicator: View {
+    @State private var phase = 0
 
     var body: some View {
-        Rectangle()
-            .frame(width: 2, height: 16)
-            .foregroundColor(Color(.secondaryLabel))
-            .opacity(visible ? 1 : 0)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 0.5).repeatForever()) {
-                    visible.toggle()
+        HStack(spacing: 4) {
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .frame(width: 6, height: 6)
+                    .foregroundColor(Color(.secondaryLabel))
+                    .opacity(phase == index ? 1.0 : 0.3)
+            }
+        }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 350_000_000)
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    phase = (phase + 1) % 3
                 }
             }
+        }
     }
 }
 
