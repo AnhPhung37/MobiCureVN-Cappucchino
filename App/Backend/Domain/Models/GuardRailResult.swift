@@ -81,10 +81,10 @@ struct EmergencyDetectionResult {
 
 enum EmergencySymptomType: String {
     case chestPain = "chest_pain"
-    case difficulty_breathing = "difficulty_breathing"
+    case difficultyBreathing = "difficulty_breathing"
     case seizure = "seizure"
-    case suicidal_ideation = "suicidal_ideation"
-    case stroke_symptom = "stroke_symptom"
-    case severe_bleeding = "severe_bleeding"
-    case loss_of_consciousness = "loss_of_consciousness"
+    case suicidalIdeation = "suicidal_ideation"
+    case strokeSymptom = "stroke_symptom"
+    case severeBleeding = "severe_bleeding"
+    case lossOfConsciousness = "loss_of_consciousness"
 }
