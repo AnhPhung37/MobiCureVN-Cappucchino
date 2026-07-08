@@ -7,8 +7,7 @@
 
 import Foundation
 
-// TODO: Implement document retrieval and citation tracking for medical references
-public struct MedicalSource: Identifiable, Sendable {
+public struct MedicalSource: Identifiable, Sendable, Codable {
     public let id: String
     public let title: String
     public let excerpt: String
