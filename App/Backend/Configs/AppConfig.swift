@@ -7,6 +7,9 @@
 
 import Foundation
 import SwiftData
+#if canImport(UIKit)
+import UIKit
+#endif
 
 struct AppConfig {
 
@@ -87,6 +90,27 @@ struct AppConfig {
     /// Register defaults once at app start so `bool(forKey:)` never silently returns false.
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [useRealKey: true])
+    }
+
+    private static var memoryWarningObserver: NSObjectProtocol?
+
+    /// Releases the MLX model and its Metal buffer cache under memory pressure. The next
+    /// chat turn falls back to placeholder text until the model reloads; this trades a
+    /// worse response for avoiding a jetsam kill. Call once at app start.
+    static func observeMemoryWarnings() {
+#if canImport(UIKit)
+        guard memoryWarningObserver == nil else { return }
+        memoryWarningObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            print("AppConfig: memory warning received — unloading LLM model")
+            if let realService = llmService as? LLMService {
+                realService.unload()
+            }
+        }
+#endif
     }
 
     static var useRealLLM: Bool {

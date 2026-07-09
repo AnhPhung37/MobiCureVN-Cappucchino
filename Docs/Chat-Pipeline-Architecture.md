@@ -86,6 +86,8 @@ Pipeline inside `processQuery`:
 
 > **Known issue (see `fix/translation-service-errors` investigation):** `UserInput(prompt:)` wraps the entire flattened text as a single `.chat([.user(...)])` message with no real system role. `container.prepare` applies Qwen's actual ChatML template on top of that single user turn, so the model never sees a proper `<|im_start|>system` block — the strong "respond only in Vietnamese" instruction ends up as plain text inside a user turn instead of a system-level directive, which is a likely contributor to occasional English/Chinese/Thai drift. Planned fix: build `[Chat.Message]` with real `.system`/`.user`/`.assistant` roles and use `UserInput(chat:)` instead.
 
+> **Memory management** (stream buffering, MLX cache limits, memory-pressure handling) is documented separately in [`OOM-Memory-Management.md`](./OOM-Memory-Management.md).
+
 ## Key design properties
 
 - **Language integrity is enforced twice**: once implicitly via prompt instructions, once explicitly via post-hoc detection + single retry — because a wrong-language answer can't be un-sent once streamed.

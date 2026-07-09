@@ -1,6 +1,7 @@
 import Foundation
 
 #if canImport(MLXLLM)
+import MLX
 import MLXLLM
 import MLXLMCommon
 import MLXHuggingFace
@@ -8,7 +9,7 @@ import HuggingFace
 import Tokenizers
 #endif
 
-final class LLMService: @unchecked Sendable, LLMServiceProtocol {
+nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let modelPath: String
     private let useMock: Bool
     private let isModelAvailable: Bool
@@ -41,6 +42,9 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
             )
             modelContainer = container
             mlxInitialized = true
+            // Cap Metal's buffer-reuse cache so it doesn't compete unbounded with the
+            // OS memory budget on iOS (jetsam will kill the app past its RAM limit).
+            MLX.Memory.cacheLimit = 512 * 1024 * 1024
             print("LLMService: MLX initialized at \(modelPath)")
             return true
         } catch {
@@ -52,6 +56,17 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 #else
         print("LLMService: MLXLLM not available in this build — add the MLX Swift packages to the target")
         return false
+#endif
+    }
+
+    /// Releases the loaded model and drops MLX's Metal buffer cache. Called on memory
+    /// pressure; the next `stream(request:)` call will return placeholder text until
+    /// `initializeModel()` is invoked again.
+    func unload() {
+#if canImport(MLXLLM)
+        modelContainer = nil
+        mlxInitialized = false
+        MLX.Memory.clearCache()
 #endif
     }
 
@@ -79,7 +94,7 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 
 #if canImport(MLXLLM)
     private func generate(messages: [Chat.Message]) -> AsyncStream<String> {
-        return AsyncStream<String>(bufferingPolicy: .unbounded) { continuation in
+        return AsyncStream<String>(bufferingPolicy: .bufferingNewest(512)) { continuation in
             Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self = self else {
                     continuation.finish()
@@ -126,7 +141,7 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 #endif
 
     private func generate(prompt: String) -> AsyncStream<String> {
-        return AsyncStream<String>(bufferingPolicy: .unbounded) { continuation in
+        return AsyncStream<String>(bufferingPolicy: .bufferingNewest(512)) { continuation in
             Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self = self else {
                     continuation.finish()

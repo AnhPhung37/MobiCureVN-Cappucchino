@@ -2,7 +2,7 @@ import Foundation
 
 /// Catalog of supported on-device MLX models.
 /// To try a new model, add a case here — everything else reads from this enum.
-enum ModelCatalog: String, CaseIterable {
+nonisolated enum ModelCatalog: String, CaseIterable {
     case qwen2_5_3B  = "mlx-community/Qwen2.5-3B-Instruct-4bit"
     case llama3_2_3B = "mlx-community/Llama-3.2-3B-Instruct-4bit"
     case phi3_5Mini  = "mlx-community/Phi-3.5-mini-instruct-4bit"

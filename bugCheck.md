@@ -211,14 +211,15 @@ telemetry · second input modality / full multimodal fusion.
 
 ## 7. Personal Notes — Additional Issues (2026-07-02)
 
-### 7.1 OOM — App Quits Unexpectedly (Critical)
+### 7.1 OOM — App Quits Unexpectedly (Critical) — ✅ Fixed
 
-The app crashes under memory pressure when running on-device. Root causes are already identified but not yet fixed:
+The app crashed under memory pressure when running on-device. Fixed; see [`Docs/OOM-Memory-Management.md`](Docs/OOM-Memory-Management.md) for the full writeup (root causes, the fix, what was investigated but didn't need changing, and future optimization ideas).
 
-- **Unbounded stream buffer** (`LLMService.swift:72`, issue #5 above): `AsyncStream(bufferingPolicy: .unbounded)` lets token backpressure accumulate indefinitely in RAM.
-- **No MLX GPU cache limit** (issue from §3.5): no `MLX.GPU.set(cacheLimit:)` call means the MLX metal cache grows freely. On a 6–8 GB device this competes with the OS.
-- **Sequential model file downloads** (`ModelManager.swift:315`, issue #9): large model files held in memory during download before being written to disk.
-- **Fix priority**: add `MLX.GPU.set(cacheLimit:)` in `AppConfig` during model init; cap stream buffer to `.bufferingNewest(N)`; add a `didReceiveMemoryWarning` hook that clears the KV cache.
+Summary of the fix:
+- **Unbounded stream buffer** (`LLMService.swift`, issue #5 above): `.unbounded` → `.bufferingNewest(512)`.
+- **No MLX Metal cache limit** (issue from §3.5): added `MLX.Memory.cacheLimit = 512 * 1024 * 1024` after model load. Note: `MLX.GPU.set(cacheLimit:)` (as originally proposed) is deprecated in the pinned mlx-swift version — `MLX.Memory.cacheLimit` is the current API.
+- **Model file downloads** (`ModelManager.swift:315`, issue #9): investigated — already streams to disk via `URLSession.download(for:)`, no change needed.
+- **Memory-pressure hook**: added `LLMService.unload()` + `AppConfig.observeMemoryWarnings()` subscribing to `UIApplication.didReceiveMemoryWarningNotification`, releasing the model and force-clearing the MLX cache on pressure.
 
 ### 7.2 Citation Card Still Uses Mock Data
 

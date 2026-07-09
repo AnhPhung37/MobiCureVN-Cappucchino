@@ -89,10 +89,16 @@ final class MedicalChatOrchestrator {
                         responseLanguage: responseLanguage
                     )
                     
-                    // Step 5: Generate LLM response fully buffered (not streamed live) so its
-                    // language can be verified before anything reaches the user. A wrong-language
-                    // reply can't be un-sent once tokens are on screen, so we hold the tokens back
-                    // until we know the language is correct — regenerating once if it isn't.
+                    // Step 5: Generate LLM response. This is buffered rather than streamed live
+                    // because outputGuardRail.validate (Step 6) inspects the COMPLETE response —
+                    // hallucination detection, unsafe dosage detection, and citation enforcement
+                    // all need the full text and can replace it outright. There is no safe way to
+                    // show tokens before that check runs, so buffering isn't just about language —
+                    // it's required for the safety filter regardless.
+                    //
+                    // Given that we're already buffering, we also verify language before showing
+                    // anything: a wrong-language reply can't be un-sent once tokens are on screen,
+                    // so we regenerate once if the first attempt doesn't match.
                     // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
                     // so the total prompt length stays within the model's sweet spot.
                     var accumulatedResponse = await Self.accumulate(
