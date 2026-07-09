@@ -56,14 +56,14 @@ class ChatViewModel: ObservableObject {
 
     init(
         llmService: LLMServiceProtocol? = nil,
-        historyRepository: ChatHistoryRepository = AppConfig.chatHistoryRepository
+        historyRepository: ChatHistoryRepository? = nil
     ) {
         let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.chatService = ChatService(
             orchestrator: orchestrator,
             translationService: AppConfig.translationService
         )
-        self.historyRepository = historyRepository
+        self.historyRepository = historyRepository ?? AppConfig.chatHistoryRepository
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
