@@ -39,7 +39,7 @@ __pycache__/
 .claude/
 
 # Credentials — never commit real secrets
-App/Backend/Configs/Secrets.swift
+**/Secrets.swift
 
 # Jupyter Notebook checkpoint
 .ipynb_checkpoints/

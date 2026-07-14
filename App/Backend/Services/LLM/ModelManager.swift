@@ -225,9 +225,7 @@ public final class ModelManager {
         }
 
         if let expected = expectedSHA256?.lowercased() {
-            let data = try Data(contentsOf: tempArchive)
-            let digest = SHA256.hash(data: data)
-            let actual = digest.map { String(format: "%02x", $0) }.joined()
+            let actual = try sha256Hex(of: tempArchive)
             if actual != expected {
                 print("ModelManager: checksum mismatch expected=\(expected) actual=\(actual)")
                 print("ModelManager: progress 50% - checksum phase failed")
@@ -309,6 +307,17 @@ public final class ModelManager {
             throw ModelManagerError.repositoryLookupFailed
         }
 
+        // Disk-space guard (the archive path had one; this path did not). Estimate from the
+        // HF sibling sizes when available, with headroom; otherwise fall back to a floor.
+        let estimatedBytes = (modelInfo.siblings ?? [])
+            .filter { downloadableFiles.contains($0.rfilename) }
+            .reduce(Int64(0)) { $0 + Int64($1.size ?? 0) }
+        let requiredBytes = max(Int64(Double(estimatedBytes) * 1.3), 800_000_000)
+        if let free = insufficientDiskSpace(at: downloadDir, requiredBytes: requiredBytes) {
+            try? fileManager.removeItem(at: downloadDir)
+            throw ModelManagerError.validationFailed("Not enough free disk space: \(free) < \(requiredBytes)")
+        }
+
         try fileManager.createDirectory(at: modelDir, withIntermediateDirectories: true, attributes: nil)
 
         let total = Double(downloadableFiles.count)
@@ -341,6 +350,13 @@ public final class ModelManager {
         print("ModelManager: installed community repo files at \(modelDir.path)")
         progress?(1.0)
         try? fileManager.removeItem(at: downloadDir)
+    }
+
+    /// Whether there is enough free space at `url` for an estimated download of `requiredBytes`.
+    /// Returns the available byte count when under budget so callers can report it.
+    private func insufficientDiskSpace(at url: URL, requiredBytes: Int64) -> Int? {
+        guard let free = freeDiskSpace(at: url) else { return nil }
+        return Int64(free) < requiredBytes ? free : nil
     }
 
     private func unzipArchive(at archive: URL, to destination: URL) throws {
@@ -391,8 +407,13 @@ public final class ModelManager {
     }
 
     private func validateArchiveLooksLikeZip(at archive: URL, source: URL) throws {
-        let data = try Data(contentsOf: archive)
-        guard data.count >= 4 else {
+        // Read only the first 200 bytes — never load a multi-GB archive into memory just to
+        // sniff its 4-byte magic number.
+        let handle = try FileHandle(forReadingFrom: archive)
+        defer { try? handle.close() }
+        let head = (try? handle.read(upToCount: 200)) ?? Data()
+
+        guard head.count >= 4 else {
             throw ModelManagerError.validationFailed("Downloaded file is too small to be a valid zip: \(source.absoluteString)")
         }
 
@@ -402,35 +423,27 @@ public final class ModelManager {
             [0x50, 0x4B, 0x07, 0x08]
         ]
 
-        let header = Array(data.prefix(4))
+        let header = Array(head.prefix(4))
         if zipSignatures.contains(header) {
             return
         }
 
-        let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<binary>"
+        let preview = String(data: head, encoding: .utf8) ?? "<binary>"
         throw ModelManagerError.validationFailed(
             "Downloaded content is not a zip archive for URL: \(source.absoluteString). First bytes preview: \(preview)"
         )
     }
 
-    /// Check if a model exists locally without downloading.
-    /// Returns the model directory URL if it exists, nil otherwise.
-    public func getLocalModelPath(modelName: String, repoID: String? = nil) -> URL? {
-        do {
-            let modelDir = try localModelDirectory(modelName: modelName, repoID: repoID)
+    /// Streaming SHA-256 so a large archive is hashed in 1 MB chunks instead of being read
+    /// fully into RAM.
+    private func sha256Hex(of url: URL) throws -> String {
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
 
-            if isValidLocalModelDirectory(modelDir) {
-                print("ModelManager: found local model at \(modelDir.path)")
-                return modelDir
-            }
-
-            if fileManager.fileExists(atPath: modelDir.path) {
-                print("ModelManager: local model directory exists but is not valid at \(modelDir.path)")
-            }
-            return nil
-        } catch {
-            print("ModelManager: error checking for local model: \(error)")
-            return nil
+        var hasher = SHA256()
+        while let chunk = try handle.read(upToCount: 1_048_576), !chunk.isEmpty {
+            hasher.update(data: chunk)
         }
+        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
     }
 }

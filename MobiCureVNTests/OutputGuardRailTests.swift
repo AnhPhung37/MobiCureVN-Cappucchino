@@ -2,8 +2,9 @@ import XCTest
 @testable import MobiCureVN
 
 /// Tests for OutputGuardRail — validates LLM responses before streaming to the user.
-/// A new build passes if all five checks (emergency, citation, confidence,
-/// hallucination, unsafe dosage) fire correctly and allowed responses pass cleanly.
+/// A new build passes if the four checks (citation, confidence, hallucination, unsafe
+/// dosage) fire correctly and allowed responses pass cleanly. Emergency detection is the
+/// orchestrator's job (it runs before the LLM), so it is covered by EmergencyDetectorTests.
 @MainActor
 final class OutputGuardRailTests: XCTestCase {
 
@@ -29,7 +30,6 @@ final class OutputGuardRailTests: XCTestCase {
             originalQuery: "How do I recover from surgery?"
         )
         XCTAssertAllowed(result)
-        XCTAssertFalse(result.requiresEmergencyResponse)
     }
 
     func testAllowsResponseWithInlineCitationKeyword_AccordingTo() {
@@ -70,7 +70,6 @@ final class OutputGuardRailTests: XCTestCase {
             retrievedContext: context,
             originalQuery: "What is post-op care?"
         )
-        XCTAssertFalse(result.requiresEmergencyResponse)
         XCTAssertTrue(result.issues.isEmpty)
     }
 
@@ -86,66 +85,7 @@ final class OutputGuardRailTests: XCTestCase {
         XCTAssertEqual(result.originalResponse, response)
     }
 
-    // MARK: - Guard Rail: Emergency Detection (Check 1 — Highest Priority)
-
-    func testBlocksEmergencyQuery_ChestPain() {
-        let context = makeContext(confidence: 0.9, sourceCount: 1)
-        let result = sut.validate(
-            response: "You might be experiencing cardiac issues.",
-            retrievedContext: context,
-            originalQuery: "I have chest pain and cannot breathe"
-        )
-        XCTAssertBlocked(result)
-        XCTAssertTrue(result.requiresEmergencyResponse)
-        XCTAssertTrue(result.filteredResponse?.contains("119") ?? false,
-                      "Emergency response must include Vietnam hotline 119")
-    }
-
-    func testBlocksEmergencyQuery_SuicidalIdeation() {
-        let context = makeContext(confidence: 0.9, sourceCount: 1)
-        let result = sut.validate(
-            response: "Please seek professional help.",
-            retrievedContext: context,
-            originalQuery: "I want to die and kill myself"
-        )
-        XCTAssertBlocked(result)
-        XCTAssertTrue(result.requiresEmergencyResponse)
-        XCTAssertTrue(result.filteredResponse?.contains("1925") ?? false,
-                      "Crisis response must include Vietnam crisis hotline 1925")
-    }
-
-    func testBlocksEmergencyQuery_SeizureVietnamese() {
-        let context = makeContext(confidence: 0.9, sourceCount: 1)
-        let result = sut.validate(
-            response: "Some response.",
-            retrievedContext: context,
-            originalQuery: "bệnh nhân đang co giật"
-        )
-        XCTAssertBlocked(result)
-        XCTAssertTrue(result.requiresEmergencyResponse)
-    }
-
-    func testBlocksEmergencyQuery_HeavyBleeding() {
-        let context = makeContext(confidence: 0.9, sourceCount: 1)
-        let result = sut.validate(
-            response: "Apply pressure to the wound.",
-            retrievedContext: context,
-            originalQuery: "heavy bleeding from my surgical wound"
-        )
-        XCTAssertBlocked(result)
-        XCTAssertTrue(result.requiresEmergencyResponse)
-    }
-
-    func testBlocksEmergencyQuery_LossOfConsciousnessVietnamese() {
-        let context = makeContext(confidence: 0.9, sourceCount: 1)
-        let result = sut.validate(
-            response: "Some response.",
-            retrievedContext: context,
-            originalQuery: "bệnh nhân bất tỉnh"
-        )
-        XCTAssertBlocked(result)
-        XCTAssertTrue(result.requiresEmergencyResponse)
-    }
+    // MARK: - Result Shape
 
     func testBlockedResultAlwaysPreservesOriginalResponse() {
         let context = makeContext(confidence: 0.9)

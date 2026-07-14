@@ -23,7 +23,9 @@ actor MedicalAnchorLoader {
     private let targetFile    = "train.dat"
     private let cacheFilename = "medical_anchors.json"
 
-    private let maxAnchors   = 300
+    // InputGuardRail only ever consults the first ~50 anchors (and only on a keyword miss),
+    // so parsing/caching hundreds is wasted work — keep a small buffer above that.
+    private let maxAnchors   = 60
     private let maxWordCount = 12
     private let minWordCount = 4
 
