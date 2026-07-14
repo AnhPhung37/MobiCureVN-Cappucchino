@@ -1,6 +1,7 @@
 import Foundation
 
 #if canImport(MLXLLM)
+import MLX
 import MLXLLM
 import MLXLMCommon
 import MLXHuggingFace
@@ -8,7 +9,7 @@ import HuggingFace
 import Tokenizers
 #endif
 
-final class LLMService: @unchecked Sendable, LLMServiceProtocol {
+nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let modelPath: String
     private let useMock: Bool
     private let isModelAvailable: Bool
@@ -46,6 +47,9 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
             modelContainer = container
             mlxInitialized = true
             stateLock.unlock()
+            // Cap Metal's buffer-reuse cache so it doesn't compete unbounded with the
+            // OS memory budget on iOS (jetsam will kill the app past its RAM limit).
+            MLX.Memory.cacheLimit = 512 * 1024 * 1024
             print("LLMService: MLX initialized at \(modelPath)")
             return true
         } catch {
@@ -62,9 +66,35 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 #endif
     }
 
+    /// Releases the loaded model and drops MLX's Metal buffer cache. Called on memory
+    /// pressure; the next `stream(request:)` call will return placeholder text until
+    /// `initializeModel()` is invoked again.
+    func unload() {
+#if canImport(MLXLLM)
+        modelContainer = nil
+        mlxInitialized = false
+        MLX.Memory.clearCache()
+#endif
+    }
+
     // MARK: - LLMServiceProtocol
 
     func stream(request: LLMRequest) -> AsyncStream<String> {
+#if canImport(MLXLLM)
+        let messages = buildChatMessages(
+            system: request.systemPrompt,
+            history: request.conversationHistory,
+            user: request.userMessage
+        )
+        return generate(messages: messages)
+#else
+        let prompt = buildPrompt(
+            system: request.systemPrompt,
+            history: request.conversationHistory,
+            user: request.userMessage
+        )
+        return generate(prompt: prompt)
+#endif
         return generate(request: request)
     }
 
@@ -97,7 +127,10 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                         )
                         let input = UserInput(chat: chat)
                         let lmInput = try await container.prepare(input: input)
-                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.7, topP: 0.9)
+                        // Lower temperature/topP than default: this is a medical Q&A assistant where
+                        // deterministic, on-language output matters more than lexical variety. Higher
+                        // values let the small multilingual model drift into English/Chinese/Thai mid-reply.
+                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.3, topP: 0.85)
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
                             if Task.isCancelled { break }
@@ -112,6 +145,34 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                     return
                 }
 #endif
+
+                let reply: String
+                if !self.useMock && self.isModelAvailable {
+                    reply = "Model found at \(self.modelPath). MLX runtime unavailable for this build; returning placeholder response."
+                } else {
+                    reply = "Test response: This is local test mode. Model loading disabled. Ready to integrate MLX later."
+                }
+
+                for chunk in Self.chunk(reply, size: 48) {
+                    if Task.isCancelled { break }
+                    continuation.yield(chunk)
+                }
+
+                continuation.finish()
+            }
+
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+#endif
+
+    private func generate(prompt: String) -> AsyncStream<String> {
+        return AsyncStream<String>(bufferingPolicy: .bufferingNewest(512)) { continuation in
+            Task.detached(priority: .userInitiated) { [weak self] in
+                guard let self = self else {
+                    continuation.finish()
+                    return
+                }
 
                 let reply: String
                 if !self.useMock && self.isModelAvailable {
@@ -154,6 +215,39 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 
 #if canImport(MLXLLM)
     // MARK: - Chat Builder
+    // MARK: - Prompt Builder
+
+#if canImport(MLXLLM)
+    /// Builds a role-tagged message list so the model's own chat template puts the
+    /// language/behavior directives in a real system turn instead of inside user content.
+    /// `UserInput(prompt:)` with a flattened string collapses everything into a single
+    /// `.user` message (see `Chat.generate(from:)` in mlx-swift-lm), so the "respond only
+    /// in Vietnamese" instruction was just body text the model could deprioritize — a likely
+    /// contributor to occasional English/Chinese/Thai drift.
+    func buildChatMessages(system: String, history: [ChatMessage], user: String) -> [Chat.Message] {
+        var messages: [Chat.Message] = []
+
+        let sys = system.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !sys.isEmpty {
+            messages.append(.system(sys))
+        }
+
+        for msg in history {
+            let normalized = msg.role
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .lowercased()
+            switch normalized {
+            case "assistant":
+                messages.append(.assistant(msg.content))
+            default:
+                messages.append(.user(msg.content))
+            }
+        }
+
+        messages.append(.user(user))
+        return messages
+    }
+#endif
 
     /// Assemble structured chat messages for MLX. `container.prepare` runs these through the
     /// model's chat template, so role labels must NOT be pre-formatted into the text here.

@@ -10,19 +10,22 @@ final class MedicalChatOrchestrator {
     private let ragService: RAGService
     private let llmService: LLMServiceProtocol
     private let emergencyDetector: EmergencyDetector
-    
+    private let languageValidator: LanguageValidationService
+
     init(
         llmService: LLMServiceProtocol,
         inputGuardRail: InputGuardRail = InputGuardRail(),
         outputGuardRail: OutputGuardRail = OutputGuardRail(),
         ragService: RAGService = RAGService(),
-        emergencyDetector: EmergencyDetector = EmergencyDetector()
+        emergencyDetector: EmergencyDetector = EmergencyDetector(),
+        languageValidator: LanguageValidationService = LanguageValidationService()
     ) {
         self.llmService = llmService
         self.inputGuardRail = inputGuardRail
         self.outputGuardRail = outputGuardRail
         self.ragService = ragService
         self.emergencyDetector = emergencyDetector
+        self.languageValidator = languageValidator
     }
     
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
@@ -90,26 +93,49 @@ final class MedicalChatOrchestrator {
                         responseLanguage: responseLanguage
                     )
                     
-                    // Step 5: Generate the full response, buffering it. We do NOT stream
-                    // tokens live: the output guardrail can only redact unsafe/hallucinated
-                    // content if the user hasn't already seen it.
-                    // Use the budget-trimmed history from EnrichedPrompt, not the raw
-                    // conversationHistory, so the prompt stays within the model's sweet spot.
-                    var accumulatedResponse = ""
-                    for await token in llmService.stream(request: LLMRequest(
-                        systemPrompt: enrichedPrompt.systemPrompt,
-                        userMessage: enrichedPrompt.userMessage,
-                        conversationHistory: enrichedPrompt.history
-                    )) {
-                        if Task.isCancelled { break }
-                        accumulatedResponse += token
+                    // Step 5: Generate LLM response. This is buffered rather than streamed live
+                    // because outputGuardRail.validate (Step 6) inspects the COMPLETE response —
+                    // hallucination detection, unsafe dosage detection, and citation enforcement
+                    // all need the full text and can replace it outright. There is no safe way to
+                    // show tokens before that check runs, so buffering isn't just about language —
+                    // it's required for the safety filter regardless.
+                    //
+                    // Given that we're already buffering, we also verify language before showing
+                    // anything: a wrong-language reply can't be un-sent once tokens are on screen,
+                    // so we regenerate once if the first attempt doesn't match.
+                    // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
+                    // so the total prompt length stays within the model's sweet spot.
+                    var accumulatedResponse = await Self.accumulate(
+                        stream: llmService.stream(request: LLMRequest(
+                            systemPrompt: enrichedPrompt.systemPrompt,
+                            userMessage: enrichedPrompt.userMessage,
+                            conversationHistory: enrichedPrompt.history
+                        ))
+                    )
+
+                    if !languageMatches(accumulatedResponse, expected: responseLanguage) {
+                        let correctionPrompt = enrichedPrompt.systemPrompt + """
+
+
+                        Your previous answer was NOT in the required language. Rewrite your ENTIRE \
+                        answer below, in full, in \(responseLanguage.requiresTranslation ? "Vietnamese" : "English") \
+                        only:
+                        \(accumulatedResponse)
+                        """
+                        let retryResponse = await Self.accumulate(
+                            stream: llmService.stream(request: LLMRequest(
+                                systemPrompt: correctionPrompt,
+                                userMessage: enrichedPrompt.userMessage,
+                                conversationHistory: enrichedPrompt.history
+                            ))
+                        )
+                        if languageMatches(retryResponse, expected: responseLanguage) {
+                            accumulatedResponse = retryResponse
+                        }
+                        // If the retry still doesn't match, fall back to the original response
+                        // rather than spinning further and adding more latency.
                     }
 
-                    guard !Task.isCancelled else {
-                        continuation.finish()
-                        return
-                    }
-                    
                     print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
 
                     // Step 6: Final Output GuardRail Check
@@ -118,16 +144,17 @@ final class MedicalChatOrchestrator {
                         retrievedContext: retrievedContext,
                         originalQuery: userQuery
                     )
-                    
+
                     switch outputResult.status {
                     case .blocked:
-                        // Emit the filtered/validated text. The raw response was buffered,
-                        // never shown, so unsafe content does not reach the user.
-                        continuation.yield(outputResult.filteredResponse ?? accumulatedResponse)
+                        if let filtered = outputResult.filteredResponse {
+                            continuation.yield(filtered)
+                            continuation.yield("\n\n⚠️ [Response filtered for safety]")
+                        }
                     case .allowed:
                         continuation.yield(accumulatedResponse)
                     }
-                    
+
                     continuation.finish()
                     
                 } catch {
@@ -143,6 +170,27 @@ final class MedicalChatOrchestrator {
     }
     
     // MARK: - Private Helpers
+
+    /// Drains an LLM token stream into a single string.
+    private static func accumulate(stream: AsyncStream<String>) async -> String {
+        var result = ""
+        for await token in stream {
+            result += token
+        }
+        return result
+    }
+
+    /// Verifies the generated response is actually in the language that was requested,
+    /// using the same detector applied to user input (`LanguageValidationService`).
+    private func languageMatches(_ response: String, expected: DetectedLanguage) -> Bool {
+        guard !response.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return true }
+        let detected = languageValidator.detect(response)
+        if expected.requiresTranslation {
+            return detected == .vietnamese || detected == .mixed
+        } else {
+            return detected == .english
+        }
+    }
 
     private struct EnrichedPrompt {
         let systemPrompt: String
@@ -184,6 +232,8 @@ final class MedicalChatOrchestrator {
         """ : ""
 
         let systemPrompt = """
+        LANGUAGE: \(languageInstruction)
+
         You are a medical informational assistant. Your role is to provide educational health information only.
 
         IMPORTANT CONSTRAINTS:
@@ -204,6 +254,8 @@ final class MedicalChatOrchestrator {
         \(formatSources(context.sources))
 
         Confidence Score: \(String(format: "%.0f%%", context.confidenceScore * 100))
+
+        REMINDER — \(languageInstruction)
         """
 
         // Cap history to the most recent N turns so the prompt stays short.

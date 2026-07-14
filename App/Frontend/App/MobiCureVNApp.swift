@@ -15,6 +15,7 @@ struct MobiCureVNApp: App {
         // Must run before initializeLLMService so UserDefaults.bool(forKey:) doesn't
         // silently return false for keys that have never been explicitly written.
         AppConfig.registerDefaults()
+        AppConfig.observeMemoryWarnings()
 
         let isSimulator = ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
         let initializeRuntime = !isSimulator
