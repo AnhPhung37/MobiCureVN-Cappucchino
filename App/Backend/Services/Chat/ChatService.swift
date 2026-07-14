@@ -18,11 +18,14 @@ enum ChatProcessingState: Equatable {
 // Wraps MedicalChatOrchestrator so the existing guardrail / RAG / LLM pipeline
 // is unchanged; language handling is layered on top.
 //
-// For English input:  tokens stream live from the LLM in English.
+// For English input:  the query goes straight to the orchestrator.
 // For Vietnamese / mixed input:
 //   1. Translate input vi → en  (one-shot, shows .translatingInput) — used only for RAG retrieval
 //   2. Pass original Vietnamese query to the LLM with a "respond in Vietnamese" instruction
-//   3. Stream Vietnamese tokens directly from the LLM (no post-translation step)
+//   3. The LLM replies in Vietnamese directly (no post-translation step)
+//
+// NOTE: MedicalChatOrchestrator buffers the full LLM output so the output guardrail can
+// validate/redact it before delivery — the response arrives as one chunk, not token-by-token.
 @MainActor
 final class ChatService: ObservableObject {
 
@@ -49,7 +52,11 @@ final class ChatService: ObservableObject {
 
     // MARK: - Main Pipeline
 
-    func processQuery(_ text: String, history: [ChatMessage]) -> AsyncStream<String> {
+    func processQuery(
+        _ text: String,
+        history: [ChatMessage],
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
+    ) -> AsyncStream<String> {
         // Language validation is synchronous — reject immediately if unsupported.
         processingState = .validatingLanguage
         let detected = languageValidator.detect(text)
@@ -75,12 +82,14 @@ final class ChatService: ObservableObject {
                         try await self.runViToViPipeline(
                             originalText: text,
                             history: history,
+                            onSourcesRetrieved: onSourcesRetrieved,
                             continuation: continuation
                         )
                     } else {
                         try await self.runEnglishPipeline(
                             text: text,
                             history: history,
+                            onSourcesRetrieved: onSourcesRetrieved,
                             continuation: continuation
                         )
                     }
@@ -107,6 +116,7 @@ final class ChatService: ObservableObject {
     private func runViToViPipeline(
         originalText: String,
         history: [ChatMessage],
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
         continuation: AsyncStream<String>.Continuation
     ) async throws {
         // Step 1: vi → en translation used only for RAG document retrieval.
@@ -123,24 +133,27 @@ final class ChatService: ObservableObject {
             originalText,
             conversationHistory: history,
             ragQuery: englishQuery,
-            responseLanguage: .vietnamese
+            responseLanguage: .vietnamese,
+            onSourcesRetrieved: onSourcesRetrieved
         ) {
             guard !Task.isCancelled else { return }
             continuation.yield(token)
         }
     }
 
-    // English: stream LLM tokens directly.
+    // English: forward the orchestrator's (guardrail-validated) response.
     private func runEnglishPipeline(
         text: String,
         history: [ChatMessage],
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
         continuation: AsyncStream<String>.Continuation
     ) async throws {
         processingState = .generating
         for await token in orchestrator.processQuery(
             text,
             conversationHistory: history,
-            responseLanguage: .english
+            responseLanguage: .english,
+            onSourcesRetrieved: onSourcesRetrieved
         ) {
             guard !Task.isCancelled else { return }
             continuation.yield(token)

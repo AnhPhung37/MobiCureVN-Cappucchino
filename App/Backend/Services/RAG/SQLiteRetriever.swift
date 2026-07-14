@@ -3,11 +3,14 @@ import SQLite3
 
 private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
-/// Retrieves medical context from the bundled vectorstore.db using FTS5 (BM25).
-/// Replaces the hardcoded mock Retriever.
+/// Retrieves medical context from the bundled vectorstore.db.
 ///
-/// Query path (current):  FTS5 keyword search  — no on-device embedding needed
-/// Query path (future):   vec_chunks KNN        — requires CoreML query embedder
+/// Hybrid retrieval:
+///   1. FTS5 keyword search (BM25) — always run, cheap.
+///   2. vec_chunks KNN via the CoreML query embedder — run only when FTS is thin
+///      (see `retrieve`), since on-device embedding is the most expensive step per query.
+/// Results from both are fused with Reciprocal Rank Fusion. When the vec index or the
+/// embedder is unavailable the retriever degrades gracefully to FTS-only.
 final class SQLiteRetriever {
 
     private var db: OpaquePointer?
@@ -21,7 +24,9 @@ final class SQLiteRetriever {
             print("SQLiteRetriever: vectorstore.db not found in bundle")
             return
         }
-        if sqlite3_open_v2(url.path, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK {
+        // FULLMUTEX: this single connection is shared (AppConfig.retriever) and may be
+        // touched from the background generation task and other callers; serialize access.
+        if sqlite3_open_v2(url.path, &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX, nil) != SQLITE_OK {
             print("SQLiteRetriever: failed to open db — \(errorMessage)")
             db = nil
             return
@@ -49,7 +54,11 @@ final class SQLiteRetriever {
 
         let candidateLimit = max(topK * 3, topK)
         let rows = runFTS(baseQuery: query, enrichedTerms: enrichedTerms, limit: candidateLimit)
-        let vectorRows = runVectorSearch(query: query, limit: candidateLimit)
+        // Only pay for on-device embedding when FTS came back thin. A full FTS candidate set
+        // rarely benefits from the vector pass, and embedding dominates per-query latency.
+        let vectorRows = rows.count >= candidateLimit
+            ? []
+            : runVectorSearch(query: query, limit: candidateLimit)
         let mergedRows = mergeRows(ftsRows: rows, vectorRows: vectorRows)
         let dedupedRows = dedupeRowsByContent(mergedRows)
         let finalRows = Array(dedupedRows.prefix(topK))
@@ -78,7 +87,10 @@ final class SQLiteRetriever {
         let baseTokens = tokenizeForFTS(baseText)
         let enrichedTokens = enrichedTerms.flatMap { tokenizeForFTS($0) }
 
-        let baseClause = baseTokens.joined(separator: " AND ")
+        // OR, not AND: a natural-language question ANDed across every term is over-constrained
+        // and frequently matches zero chunks. BM25 still ranks chunks covering more terms
+        // higher, so recall improves without sacrificing the best matches.
+        let baseClause = baseTokens.joined(separator: " OR ")
         let enrichedClause = enrichedTokens.joined(separator: " OR ")
 
         if !baseClause.isEmpty && !enrichedClause.isEmpty {
