@@ -24,7 +24,9 @@ final class SQLiteRetriever {
             print("SQLiteRetriever: vectorstore.db not found in bundle")
             return
         }
-        if sqlite3_open_v2(url.path, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK {
+        // FULLMUTEX: this single connection is shared (AppConfig.retriever) and may be
+        // touched from the background generation task and other callers; serialize access.
+        if sqlite3_open_v2(url.path, &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX, nil) != SQLITE_OK {
             print("SQLiteRetriever: failed to open db — \(errorMessage)")
             db = nil
             return

@@ -120,8 +120,8 @@ final class EmergencySymptomTypeTests: XCTestCase {
 
     func testAllCasesHaveRawValues() {
         let cases: [EmergencySymptomType] = [
-            .chestPain, .difficulty_breathing, .seizure,
-            .suicidal_ideation, .stroke_symptom, .severe_bleeding, .loss_of_consciousness
+            .chestPain, .difficultyBreathing, .seizure,
+            .suicidalIdeation, .strokeSymptom, .severeBleeding, .lossOfConsciousness
         ]
         for symptom in cases {
             XCTAssertFalse(symptom.rawValue.isEmpty, "\(symptom) should have a non-empty rawValue")
@@ -130,8 +130,8 @@ final class EmergencySymptomTypeTests: XCTestCase {
 
     func testAllCasesHaveEmergencyResponseTemplates() {
         let cases: [EmergencySymptomType] = [
-            .chestPain, .difficulty_breathing, .seizure,
-            .suicidal_ideation, .stroke_symptom, .severe_bleeding, .loss_of_consciousness
+            .chestPain, .difficultyBreathing, .seizure,
+            .suicidalIdeation, .strokeSymptom, .severeBleeding, .lossOfConsciousness
         ]
         for symptom in cases {
             let template = EmergencyResponses.templates[symptom]

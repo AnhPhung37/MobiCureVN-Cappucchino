@@ -22,60 +22,60 @@ final class QueryRefinerTests: XCTestCase {
     // MARK: - Step 1: Vietnamese Medical Term Normalisation
 
     func testNormalisesFever() {
-        let result = sut.refineQuery("tôi bị sốt sau phẫu thuật")
+        let result = sut.refineQuery("tôi bị sốt sau phẫu thuật").baseQuery
         XCTAssertTrue(result.contains("fever"), "sốt should map to 'fever'")
     }
 
     func testNormalisesSurgicalWound() {
-        let result = sut.refineQuery("vết mổ bị đau")
+        let result = sut.refineQuery("vết mổ bị đau").baseQuery
         XCTAssertTrue(result.contains("surgical wound incision"), "vết mổ should map to 'surgical wound incision'")
     }
 
     func testNormalisesNausea() {
-        let result = sut.refineQuery("tôi bị buồn nôn sau mổ")
+        let result = sut.refineQuery("tôi bị buồn nôn sau mổ").baseQuery
         XCTAssertTrue(result.contains("nausea"), "buồn nôn should map to 'nausea'")
     }
 
     func testNormalisesInfection() {
-        let result = sut.refineQuery("có dấu hiệu nhiễm trùng")
+        let result = sut.refineQuery("có dấu hiệu nhiễm trùng").baseQuery
         XCTAssertTrue(result.contains("infection"), "nhiễm trùng should map to 'infection'")
     }
 
     func testNormalisesMedication() {
-        let result = sut.refineQuery("dùng thuốc như thế nào")
+        let result = sut.refineQuery("dùng thuốc như thế nào").baseQuery
         XCTAssertTrue(result.contains("medication medicine"), "thuốc should map to 'medication medicine'")
     }
 
     func testNormalisesPostSurgery() {
-        let result = sut.refineQuery("sau phẫu thuật cần làm gì")
+        let result = sut.refineQuery("sau phẫu thuật cần làm gì").baseQuery
         XCTAssertTrue(result.contains("post-operative post-surgery"),
                       "sau phẫu thuật should map to 'post-operative post-surgery'")
     }
 
     func testNormalisesRecovery() {
-        let result = sut.refineQuery("thời gian hồi phục mất bao lâu")
+        let result = sut.refineQuery("thời gian hồi phục mất bao lâu").baseQuery
         XCTAssertTrue(result.contains("recovery"), "hồi phục should map to 'recovery'")
     }
 
     func testNormalisesDiarrhea() {
-        let result = sut.refineQuery("bị tiêu chảy sau mổ")
+        let result = sut.refineQuery("bị tiêu chảy sau mổ").baseQuery
         XCTAssertTrue(result.contains("diarrhea"), "tiêu chảy should map to 'diarrhea'")
     }
 
     func testNormalisesBloodPressure() {
-        let result = sut.refineQuery("huyết áp cao ảnh hưởng không")
+        let result = sut.refineQuery("huyết áp cao ảnh hưởng không").baseQuery
         XCTAssertTrue(result.contains("hypertension"), "huyết áp cao should map to 'hypertension'")
     }
 
     func testNormalisesMultipleTermsInOneQuery() {
-        let result = sut.refineQuery("đau và sốt sau phẫu thuật")
+        let result = sut.refineQuery("đau và sốt sau phẫu thuật").baseQuery
         XCTAssertTrue(result.contains("pain") || result.contains("fever") || result.contains("surgery"),
                       "Multiple Vietnamese terms should all be mapped")
     }
 
     func testPreservesEnglishQuery() {
         let query = "wound infection after surgery"
-        let result = sut.refineQuery(query)
+        let result = sut.refineQuery(query).baseQuery
         XCTAssertTrue(result.contains("wound") || result.contains("infection") || result.contains("surgery"),
                       "English medical terms must survive normalisation")
     }
@@ -83,51 +83,51 @@ final class QueryRefinerTests: XCTestCase {
     // MARK: - Step 2: Abbreviation Expansion
 
     func testExpandsRx() {
-        let result = sut.refineQuery("what rx should I take")
+        let result = sut.refineQuery("what rx should I take").baseQuery
         XCTAssertTrue(result.contains("prescription") || result.contains("treatment"),
                       "rx should expand to prescription/treatment")
     }
 
     func testExpandsDx() {
-        let result = sut.refineQuery("my dx is colorectal cancer")
+        let result = sut.refineQuery("my dx is colorectal cancer").baseQuery
         XCTAssertTrue(result.contains("diagnosis"), "dx should expand to 'diagnosis'")
     }
 
     func testExpandsTx() {
-        let result = sut.refineQuery("what tx is recommended")
+        let result = sut.refineQuery("what tx is recommended").baseQuery
         XCTAssertTrue(result.contains("treatment"), "tx should expand to 'treatment'")
     }
 
     func testExpandsBP() {
-        let result = sut.refineQuery("my bp is high today")
+        let result = sut.refineQuery("my bp is high today").baseQuery
         XCTAssertTrue(result.contains("blood pressure"), "bp should expand to 'blood pressure'")
     }
 
     func testExpandsHTN() {
-        let result = sut.refineQuery("patient has htn complication")
+        let result = sut.refineQuery("patient has htn complication").baseQuery
         XCTAssertTrue(result.contains("hypertension") || result.contains("high blood pressure"),
                       "htn should expand to hypertension/high blood pressure")
     }
 
     func testExpandsDM() {
-        let result = sut.refineQuery("patient has dm type 2")
+        let result = sut.refineQuery("patient has dm type 2").baseQuery
         XCTAssertTrue(result.contains("diabetes"), "dm should expand to 'diabetes mellitus'")
     }
 
     func testExpandsMg() {
-        let result = sut.refineQuery("take 500 mg of paracetamol")
+        let result = sut.refineQuery("take 500 mg of paracetamol").baseQuery
         XCTAssertTrue(result.contains("milligram"), "mg should expand to 'milligram'")
     }
 
     func testExpandsUTI() {
-        let result = sut.refineQuery("symptoms of uti after catheter removal")
+        let result = sut.refineQuery("symptoms of uti after catheter removal").baseQuery
         XCTAssertTrue(result.contains("urinary tract infection"), "uti should expand to 'urinary tract infection'")
     }
 
     // MARK: - Step 3: Medical Context Enrichment
 
     func testEnrichmentAddsSymptomKeywordsForPainQuery() {
-        let result = sut.refineQuery("I have post-op pain")
+        let result = sut.refineQuery("I have post-op pain").baseQuery
         XCTAssertTrue(
             result.contains("symptoms") && result.contains("management") && result.contains("treatment"),
             "Pain queries should be enriched with symptom/management/treatment keywords"
@@ -135,7 +135,7 @@ final class QueryRefinerTests: XCTestCase {
     }
 
     func testEnrichmentAddsDosageKeywordsForMedicationQuery() {
-        let result = sut.refineQuery("I need medication advice")
+        let result = sut.refineQuery("I need medication advice").baseQuery
         XCTAssertTrue(
             result.contains("dosage") || result.contains("safety") || result.contains("side effects"),
             "Medication queries should be enriched with dosage/safety/side-effects keywords"
@@ -143,7 +143,7 @@ final class QueryRefinerTests: XCTestCase {
     }
 
     func testEnrichmentAddsRehabKeywordsForRecoveryQuery() {
-        let result = sut.refineQuery("I am in recovery post surgery")
+        let result = sut.refineQuery("I am in recovery post surgery").baseQuery
         XCTAssertTrue(
             result.contains("rehabilitation") || result.contains("exercises") || result.contains("guidelines"),
             "Recovery queries should be enriched with rehabilitation/exercises/guidelines"
@@ -151,7 +151,7 @@ final class QueryRefinerTests: XCTestCase {
     }
 
     func testEnrichmentAddsPreventionKeywordsForInfectionQuery() {
-        let result = sut.refineQuery("how to prevent infection at surgical site")
+        let result = sut.refineQuery("how to prevent infection at surgical site").baseQuery
         XCTAssertTrue(
             result.contains("prevention") && result.contains("signs"),
             "Infection queries should be enriched with prevention/signs keywords"
@@ -160,39 +160,39 @@ final class QueryRefinerTests: XCTestCase {
 
     func testEnrichmentDoesNotDuplicateKeywordsForMultipleMatches() {
         // Pain + medication + infection: all three enrichments should fire without crash
-        let result = sut.refineQuery("pain from infected wound, need medication")
+        let result = sut.refineQuery("pain from infected wound, need medication").baseQuery
         XCTAssertFalse(result.isEmpty)
     }
 
     // MARK: - Edge Cases
 
     func testEmptyQueryDoesNotCrash() {
-        let result = sut.refineQuery("")
+        let result = sut.refineQuery("").baseQuery
         XCTAssertNotNil(result)
     }
 
     func testQueryWithOnlySpacesDoesNotCrash() {
-        let result = sut.refineQuery("   ")
+        let result = sut.refineQuery("   ").baseQuery
         XCTAssertNotNil(result)
     }
 
     func testCombinedVietnameseAndAbbreviationQuery() {
         // vết mổ → surgical wound incision; rx should expand
-        let result = sut.refineQuery("vết mổ bị nhiễm trùng cần rx gì")
+        let result = sut.refineQuery("vết mổ bị nhiễm trùng cần rx gì").baseQuery
         XCTAssertTrue(result.contains("infection") || result.contains("surgical"))
         XCTAssertTrue(result.contains("prescription") || result.contains("treatment"))
     }
 
     func testRefinedQueryIsLongerThanOrEqualToOriginal() {
         let query = "wound infection after surgery"
-        let result = sut.refineQuery(query)
+        let result = sut.refineQuery(query).baseQuery
         // Enrichment always appends context, so refined >= original
         XCTAssertGreaterThanOrEqual(result.count, query.count)
     }
 
     func testVietnameseQueryProducesEnglishOutput() {
         // After normalisation, the result should contain English medical terms
-        let result = sut.refineQuery("sốt và đau sau phẫu thuật")
+        let result = sut.refineQuery("sốt và đau sau phẫu thuật").baseQuery
         let englishMedicalTerms = ["fever", "pain", "surgery", "symptom", "management"]
         let containsEnglish = englishMedicalTerms.contains(where: { result.contains($0) })
         XCTAssertTrue(containsEnglish, "Vietnamese query should produce English medical output for FTS retrieval")
@@ -204,7 +204,7 @@ final class QueryRefinerTests: XCTestCase {
         let query = "vết mổ đau và sốt sau phẫu thuật, cần rx và dx ngay, hồi phục mất bao lâu"
         let start = Date()
         for _ in 0..<2_000 {
-            _ = sut.refineQuery(query)
+            _ = sut.refineQuery(query).baseQuery
         }
         let elapsed = Date().timeIntervalSince(start)
         XCTAssertLessThan(elapsed, 2.0, "2000 Vietnamese query refinements should complete within 2 seconds")
