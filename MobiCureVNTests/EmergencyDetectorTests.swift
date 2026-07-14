@@ -62,19 +62,19 @@ final class EmergencyDetectorTests: XCTestCase {
     func testDetectsDifficultyBreathingEnglish() {
         let result = sut.detect(query: "I have difficulty breathing and shortness of breath")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .difficulty_breathing)
+        XCTAssertEqual(result.symptomType, .difficultyBreathing)
     }
 
     func testDetectsCantBreathe() {
         let result = sut.detect(query: "I can't breathe properly")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .difficulty_breathing)
+        XCTAssertEqual(result.symptomType, .difficultyBreathing)
     }
 
     func testDetectsDifficultyBreathingVietnamese() {
         let result = sut.detect(query: "Tôi khó thở, thở không được")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .difficulty_breathing)
+        XCTAssertEqual(result.symptomType, .difficultyBreathing)
     }
 
     func testBreathingRecommendationContainsEmergencyNumber() {
@@ -107,19 +107,19 @@ final class EmergencyDetectorTests: XCTestCase {
     func testDetectsWantToDie() {
         let result = sut.detect(query: "I want to die, I can't cope anymore")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .suicidal_ideation)
+        XCTAssertEqual(result.symptomType, .suicidalIdeation)
     }
 
     func testDetectsKillMyself() {
         let result = sut.detect(query: "I want to kill myself")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .suicidal_ideation)
+        XCTAssertEqual(result.symptomType, .suicidalIdeation)
     }
 
     func testDetectsSuicidalIdeationVietnamese() {
         let result = sut.detect(query: "Tôi muốn chết, không muốn sống nữa")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .suicidal_ideation)
+        XCTAssertEqual(result.symptomType, .suicidalIdeation)
     }
 
     func testSuicidalIdeationRecommendationContainsCrisisHotline() {
@@ -133,19 +133,19 @@ final class EmergencyDetectorTests: XCTestCase {
     func testDetectsFaceDrooping() {
         let result = sut.detect(query: "face drooping on one side")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .stroke_symptom)
+        XCTAssertEqual(result.symptomType, .strokeSymptom)
     }
 
     func testDetectsArmWeakness() {
         let result = sut.detect(query: "sudden arm weakness and speech difficulty")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .stroke_symptom)
+        XCTAssertEqual(result.symptomType, .strokeSymptom)
     }
 
     func testDetectsStrokeVietnamese() {
         let result = sut.detect(query: "Mặt bị xệch và yếu tay trái")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .stroke_symptom)
+        XCTAssertEqual(result.symptomType, .strokeSymptom)
     }
 
     func testStrokeRecommendationContainsEmergencyNumber() {
@@ -158,13 +158,13 @@ final class EmergencyDetectorTests: XCTestCase {
     func testDetectsHeavyBleeding() {
         let result = sut.detect(query: "There is heavy bleeding from the wound and I can't stop it")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .severe_bleeding)
+        XCTAssertEqual(result.symptomType, .severeBleeding)
     }
 
     func testDetectsSevereBleedingVietnamese() {
         let result = sut.detect(query: "Vết thương đang chảy máu nhiều không cầm được")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .severe_bleeding)
+        XCTAssertEqual(result.symptomType, .severeBleeding)
     }
 
     // MARK: - Loss of Consciousness
@@ -172,19 +172,19 @@ final class EmergencyDetectorTests: XCTestCase {
     func testDetectsLostConsciousness() {
         let result = sut.detect(query: "The patient lost consciousness suddenly")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .loss_of_consciousness)
+        XCTAssertEqual(result.symptomType, .lossOfConsciousness)
     }
 
     func testDetectsFainting() {
         let result = sut.detect(query: "fainting and cannot be woken up")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .loss_of_consciousness)
+        XCTAssertEqual(result.symptomType, .lossOfConsciousness)
     }
 
     func testDetectsLossOfConsciousnessVietnamese() {
         let result = sut.detect(query: "Bệnh nhân đang bất tỉnh")
         XCTAssertTrue(result.isEmergency)
-        XCTAssertEqual(result.symptomType, .loss_of_consciousness)
+        XCTAssertEqual(result.symptomType, .lossOfConsciousness)
     }
 
     // MARK: - All Emergency Results Have Recommendations
@@ -192,12 +192,12 @@ final class EmergencyDetectorTests: XCTestCase {
     func testAllEmergencyTypesHaveRecommendation() {
         let queries: [(String, EmergencySymptomType)] = [
             ("chest pain", .chestPain),
-            ("difficulty breathing", .difficulty_breathing),
+            ("difficulty breathing", .difficultyBreathing),
             ("seizure", .seizure),
-            ("want to die", .suicidal_ideation),
-            ("face drooping", .stroke_symptom),
-            ("heavy bleeding", .severe_bleeding),
-            ("lost consciousness", .loss_of_consciousness),
+            ("want to die", .suicidalIdeation),
+            ("face drooping", .strokeSymptom),
+            ("heavy bleeding", .severeBleeding),
+            ("lost consciousness", .lossOfConsciousness),
         ]
         for (query, expectedType) in queries {
             let result = sut.detect(query: query)

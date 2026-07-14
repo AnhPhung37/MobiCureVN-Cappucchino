@@ -7,18 +7,28 @@
 
 import Foundation
 
-class MockLLMService: LLMServiceProtocol {
+final class MockLLMService: LLMServiceProtocol {
 
     func stream(request: LLMRequest) -> AsyncStream<String> {
         AsyncStream { continuation in
-            Task {
+            let task = Task {
                 let response = mockResponse(for: request.userMessage)
                 for word in response.split(separator: " ") {
-                    try? await Task.sleep(nanoseconds: 80_000_000) // 80ms per word
+                    // Stop promptly when the consumer cancels, mirroring the real LLMService.
+                    // (Task.sleep throws on cancellation, so without this the loop would
+                    // otherwise dump the rest of the response instantly.)
+                    if Task.isCancelled { break }
+                    do {
+                        try await Task.sleep(nanoseconds: 80_000_000) // 80ms per word
+                    } catch {
+                        break
+                    }
                     continuation.yield(String(word) + " ")
                 }
                 continuation.finish()
             }
+
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 

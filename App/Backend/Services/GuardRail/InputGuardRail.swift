@@ -13,6 +13,14 @@ final class InputGuardRail {
     // Cosine distance below this → query is semantically close to a medical anchor
     private static let similarityThreshold: NLDistance = 0.45
 
+    // Precompiled once — recreating NSRegularExpression per query is wasteful (and can
+    // fail under load). Mirrors the precompilation already done in OutputGuardRail.
+    private static let piiRegexes: [(regex: NSRegularExpression, label: String)] =
+        GuardRailRules.piiPatterns.compactMap { pattern, label in
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return nil }
+            return (regex, label)
+        }
+
     init() {}
 
     /// Check input query against all guardrails.
@@ -138,13 +146,11 @@ final class InputGuardRail {
     private func detectPII(_ query: String) -> [String] {
         var piiFound: [String] = []
         
-        for (pattern, label) in GuardRailRules.piiPatterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
-                let range = NSRange(query.startIndex..<query.endIndex, in: query)
-                let matches = regex.matches(in: query, options: [], range: range)
-                if !matches.isEmpty {
-                    piiFound.append("Found \(label): \(matches.count) instance(s)")
-                }
+        let range = NSRange(query.startIndex..<query.endIndex, in: query)
+        for (regex, label) in Self.piiRegexes {
+            let matches = regex.matches(in: query, options: [], range: range)
+            if !matches.isEmpty {
+                piiFound.append("Found \(label): \(matches.count) instance(s)")
             }
         }
         
@@ -155,11 +161,9 @@ final class InputGuardRail {
     private func maskPII(_ query: String) -> String {
         var masked = query
         
-        for (pattern, _) in GuardRailRules.piiPatterns {
-            if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
-                let range = NSRange(masked.startIndex..<masked.endIndex, in: masked)
-                masked = regex.stringByReplacingMatches(in: masked, options: [], range: range, withTemplate: "[MASKED]")
-            }
+        for (regex, _) in Self.piiRegexes {
+            let range = NSRange(masked.startIndex..<masked.endIndex, in: masked)
+            masked = regex.stringByReplacingMatches(in: masked, options: [], range: range, withTemplate: "[MASKED]")
         }
         
         return masked

@@ -11,11 +11,3 @@ public struct ChatMessage: Sendable {
         self.sources = sources
     }
 }
-
-public struct ChatResponse: Sendable {
-    public let reply: String
-
-    public init(reply: String) {
-        self.reply = reply
-    }
-}

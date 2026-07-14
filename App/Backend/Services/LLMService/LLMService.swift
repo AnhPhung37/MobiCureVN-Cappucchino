@@ -13,6 +13,9 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let useMock: Bool
     private let isModelAvailable: Bool
     private var mlxInitialized: Bool = false
+    // Guards mlxInitialized/modelContainer: written by initializeModel and read by the
+    // detached generation task, potentially on different threads.
+    private let stateLock = NSLock()
 #if canImport(MLXLLM)
     private var modelContainer: ModelContainer?
 #endif
@@ -39,14 +42,18 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                 from: modelURL,
                 using: #huggingFaceTokenizerLoader()
             )
+            stateLock.lock()
             modelContainer = container
             mlxInitialized = true
+            stateLock.unlock()
             print("LLMService: MLX initialized at \(modelPath)")
             return true
         } catch {
             print("LLMService: MLX initialization failed — \(error)")
             print("LLMService: model path was: \(modelPath)")
+            stateLock.lock()
             mlxInitialized = false
+            stateLock.unlock()
             return false
         }
 #else
@@ -65,15 +72,19 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 
     private func generate(request: LLMRequest) -> AsyncStream<String> {
         return AsyncStream<String>(bufferingPolicy: .unbounded) { continuation in
-            Task.detached(priority: .userInitiated) { [weak self] in
+            let task = Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self = self else {
                     continuation.finish()
                     return
                 }
 
 #if canImport(MLXLLM)
-                if !self.useMock, self.isModelAvailable, self.mlxInitialized,
-                   let container = self.modelContainer {
+                self.stateLock.lock()
+                let mlxReady = self.mlxInitialized
+                let readyContainer = self.modelContainer
+                self.stateLock.unlock()
+                if !self.useMock, self.isModelAvailable, mlxReady,
+                   let container = readyContainer {
                     do {
                         // Build structured chat messages so container.prepare applies the model's
                         // own chat template (e.g. Qwen's <|im_start|> format) via the tokenizer.
@@ -89,6 +100,7 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                         let params = GenerateParameters(maxTokens: 1024, temperature: 0.7, topP: 0.9)
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
+                            if Task.isCancelled { break }
                             if case let .chunk(text) = event {
                                 continuation.yield(text)
                             }
@@ -109,11 +121,14 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                 }
 
                 for chunk in Self.chunk(reply, size: 48) {
+                    if Task.isCancelled { break }
                     continuation.yield(chunk)
                 }
 
                 continuation.finish()
             }
+
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 
