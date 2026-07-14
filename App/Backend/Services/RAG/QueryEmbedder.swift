@@ -15,6 +15,10 @@ final class QueryEmbedder {
     private let tokenizer: WordPieceTokenizer
     private let maxSeqLen: Int = 128
     private let embedDim:  Int = 384
+    // Serializes prediction: this embedder is reached through the single shared
+    // SQLiteRetriever, which several tasks may touch. MLModel inference is treated as
+    // not-reentrant here rather than relying on undocumented thread-safety.
+    private let predictionLock = NSLock()
 
     init?() {
         guard
@@ -57,8 +61,15 @@ final class QueryEmbedder {
             let input = try? MLDictionaryFeatureProvider(dictionary: [
                 "input_ids":      MLFeatureValue(multiArray: inputIDsArray),
                 "attention_mask": MLFeatureValue(multiArray: attentionMaskArray),
-            ]),
-            let output    = try? model.prediction(from: input),
+            ])
+        else { return nil }
+
+        predictionLock.lock()
+        let prediction = try? model.prediction(from: input)
+        predictionLock.unlock()
+
+        guard
+            let output = prediction,
             let multiArray = output.featureValue(for: "embedding")?.multiArrayValue
         else { return nil }
 

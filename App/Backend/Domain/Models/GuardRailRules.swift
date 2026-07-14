@@ -7,15 +7,27 @@ struct GuardRailRules {
     // MARK: - Semantic Medical Anchors (NLEmbedding)
 
     /// Anchor phrases compared against user queries via NLEmbedding cosine distance.
-    /// Seeded with the built-in fallback set at launch; replaced with dataset-derived phrases
-    /// once MedicalAnchorLoader finishes downloading the Kaggle medical-text corpus.
-    /// `nonisolated(unsafe)` is safe here: written exactly once at app startup before any
-    /// queries arrive, then only read afterwards.
-    nonisolated(unsafe) static var medicalAnchors: [String] = MedicalAnchorLoader.builtInAnchors
+    /// Seeded with the built-in fallback set at launch, then replaced with dataset-derived
+    /// phrases when MedicalAnchorLoader finishes downloading the Kaggle corpus — which can
+    /// happen *after* queries start arriving. Reads and that one late write are therefore
+    /// serialized by `medicalAnchorsLock`; `nonisolated(unsafe)` only opts the stored
+    /// property out of Swift's actor-isolation checking, the lock provides the real safety.
+    private nonisolated(unsafe) static var _medicalAnchors: [String] = MedicalAnchorLoader.builtInAnchors
+    private static let medicalAnchorsLock = NSLock()
+
+    /// Thread-safe snapshot of the anchor phrases. Read on the generation task while the
+    /// Kaggle download may still be writing on a startup task, so access is lock-guarded.
+    static var medicalAnchors: [String] {
+        medicalAnchorsLock.lock()
+        defer { medicalAnchorsLock.unlock() }
+        return _medicalAnchors
+    }
 
     static func updateMedicalAnchors(_ anchors: [String]) {
         guard !anchors.isEmpty else { return }
-        medicalAnchors = anchors
+        medicalAnchorsLock.lock()
+        _medicalAnchors = anchors
+        medicalAnchorsLock.unlock()
     }
 
     // MARK: - Input Rules
