@@ -65,17 +65,12 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     // MARK: - LLMServiceProtocol
 
     func stream(request: LLMRequest) -> AsyncStream<String> {
-        let prompt = buildPrompt(
-            system: request.systemPrompt,
-            history: request.conversationHistory,
-            user: request.userMessage
-        )
-        return generate(prompt: prompt)
+        return generate(request: request)
     }
 
     // MARK: - Private Generation
 
-    private func generate(prompt: String) -> AsyncStream<String> {
+    private func generate(request: LLMRequest) -> AsyncStream<String> {
         return AsyncStream<String>(bufferingPolicy: .unbounded) { continuation in
             let task = Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self = self else {
@@ -91,7 +86,16 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                 if !self.useMock, self.isModelAvailable, mlxReady,
                    let container = readyContainer {
                     do {
-                        let input = UserInput(prompt: prompt)
+                        // Build structured chat messages so container.prepare applies the model's
+                        // own chat template (e.g. Qwen's <|im_start|> format) via the tokenizer.
+                        // A hand-rolled "System:/User:" string bypasses that template and
+                        // measurably degrades output quality.
+                        let chat = Self.buildChat(
+                            system: request.systemPrompt,
+                            history: request.conversationHistory,
+                            user: request.userMessage
+                        )
+                        let input = UserInput(chat: chat)
                         let lmInput = try await container.prepare(input: input)
                         let params = GenerateParameters(maxTokens: 1024, temperature: 0.7, topP: 0.9)
                         let stream = try await container.generate(input: lmInput, parameters: params)
@@ -148,39 +152,31 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
         return chunks
     }
 
-    // MARK: - Prompt Builder
+#if canImport(MLXLLM)
+    // MARK: - Chat Builder
 
-    private func buildPrompt(system: String, history: [ChatMessage], user: String) -> String {
-        var lines: [String] = []
+    /// Assemble structured chat messages for MLX. `container.prepare` runs these through the
+    /// model's chat template, so role labels must NOT be pre-formatted into the text here.
+    private static func buildChat(system: String, history: [ChatMessage], user: String) -> [Chat.Message] {
+        var messages: [Chat.Message] = []
 
         let sys = system.trimmingCharacters(in: .whitespacesAndNewlines)
-
         if !sys.isEmpty {
-            lines.append("System: \(sys)")
+            messages.append(.system(sys))
         }
 
         for msg in history {
-            let normalized = msg.role
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-                .lowercased()
+            let content = msg.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !content.isEmpty else { continue }
 
-            let roleLabel: String
-
-            switch normalized {
-            case "user":
-                roleLabel = "User"
-            case "assistant":
-                roleLabel = "Assistant"
-            default:
-                roleLabel = normalized.capitalized
-            }
-
-            lines.append("\(roleLabel): \(msg.content)")
+            let role = msg.role.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            // Only user/assistant turns belong in history; anything else is coerced to user
+            // so the chat template never receives an unknown role.
+            messages.append(role == "assistant" ? .assistant(content) : .user(content))
         }
 
-        lines.append("User: \(user)")
-        lines.append("Assistant:")
-
-        return lines.joined(separator: "\n")
+        messages.append(.user(user))
+        return messages
     }
+#endif
 }
