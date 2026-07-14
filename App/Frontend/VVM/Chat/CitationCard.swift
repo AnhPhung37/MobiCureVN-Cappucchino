@@ -1,5 +1,5 @@
 //
-//  CitattionCard.swift
+//  CitationCard.swift
 //  MobiCureVN
 //
 //  Created by Anh Phung on 4/24/26.
