@@ -9,7 +9,6 @@ struct ChatSection: Identifiable, Sendable {
 enum ChatGrouper {
     static func group(_ items: [ChatItem], now: Date = Date(), calendar: Calendar = .current) -> [ChatSection] {
         let startOfToday = calendar.startOfDay(for: now)
-        let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: startOfToday) ?? now
         guard let startOfYesterday = calendar.date(byAdding: .day, value: -1, to: startOfToday),
               let startOf7Days = calendar.date(byAdding: .day, value: -7, to: startOfToday),
               let startOf30Days = calendar.date(byAdding: .day, value: -30, to: startOfToday) else {
@@ -24,7 +23,9 @@ enum ChatGrouper {
 
         for item in items {
             let d = item.date
-            if d >= startOfToday && d < startOfTomorrow {
+            // No upper bound on "today" so future-dated items (clock skew) still appear,
+            // matching ChatConversationGrouper rather than silently vanishing.
+            if d >= startOfToday {
                 today.append(item)
             } else if d >= startOfYesterday && d < startOfToday {
                 yesterday.append(item)
