@@ -24,7 +24,7 @@ enum ChatError: LocalizedError {
 }
 
 @MainActor
-class ChatViewModel: ObservableObject {
+final class ChatViewModel: ObservableObject {
 
     // MARK: - Published State
 
@@ -43,8 +43,6 @@ class ChatViewModel: ObservableObject {
 
     private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
-    private let citationRetriever = AppConfig.retriever   // shared SQLite connection
-    private let queryRefiner = QueryRefiner()
     @Published private(set) var currentConversationId: UUID = UUID()
 
     private var streamingTask: Task<Void, Never>?
@@ -132,9 +130,19 @@ class ChatViewModel: ObservableObject {
         let assistantIndex = appendAssistantPlaceholder()
         rebuildSections()
 
+        // Captures the sources retrieved during generation so citations can be attached
+        // without a second retrieval (the orchestrator already retrieved this context).
+        let sourcesBox = SourcesBox()
         streamingTask = Task {
-            let fullText = await streamResponse(for: text, assistantIndex: assistantIndex)
-            await finalizeResponse(fullText, originalQuery: text, assistantIndex: assistantIndex)
+            let fullText = await streamResponse(for: text, assistantIndex: assistantIndex, sourcesBox: sourcesBox)
+            // The orchestrator buffers and delivers the whole response at the end, so a
+            // cancel (Stop button / clear / switch) leaves fullText empty. Don't run the
+            // normal finalize — it would overwrite the bubble with an error and persist it.
+            guard !Task.isCancelled else {
+                handleCancelledGeneration(partialText: fullText, assistantIndex: assistantIndex)
+                return
+            }
+            await finalizeResponse(fullText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
         }
     }
 
@@ -157,42 +165,69 @@ class ChatViewModel: ObservableObject {
         return messages.count - 1
     }
 
-    private func streamResponse(for text: String, assistantIndex: Int) async -> String {
+    private func streamResponse(for text: String, assistantIndex: Int, sourcesBox: SourcesBox) async -> String {
         var fullText = ""
-        for await token in chatService.processQuery(text, history: Array(messages.dropLast())) {
+        let stream = chatService.processQuery(
+            text,
+            history: Array(messages.dropLast()),
+            onSourcesRetrieved: { sourcesBox.set($0) }
+        )
+        for await token in stream {
             guard !Task.isCancelled else { break }
             fullText += token
+            // The conversation can be cleared/switched mid-stream; never index past the end.
+            guard messages.indices.contains(assistantIndex) else { break }
             messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText)
             rebuildSections()
         }
         return fullText
     }
 
-    private func finalizeResponse(_ fullText: String, originalQuery: String, assistantIndex: Int) async {
+    private func finalizeResponse(_ fullText: String, sources: [MedicalSource], assistantIndex: Int) async {
+        guard messages.indices.contains(assistantIndex) else {
+            isLoading = false
+            return
+        }
+
         if fullText.isEmpty {
             messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.")
         } else {
             messageDates[assistantIndex] = Date()
-            let refinedForCitation = queryRefiner.refineQuery(originalQuery)
-            let retrieved = citationRetriever.retrieve(
-                query: refinedForCitation.baseQuery,
-                enrichedTerms: refinedForCitation.enrichedTerms,
-                topK: 5
-            )
-            print("CitationRetriever: query='\(refinedForCitation.baseQuery)' sources=\(retrieved.sources.count)")
             let assistantItem = ChatItem(
                 conversationId: currentConversationId,
                 role: "assistant",
                 content: fullText,
-                date: messageDates[assistantIndex]
+                date: messageDates[assistantIndex],
+                sources: sources
             )
             Task { try? await historyRepository.append(assistantItem) }
-            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: retrieved.sources)
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: sources)
         }
 
         rebuildSections()
         await refreshConversationHistory()
         isLoading = false
+    }
+
+    /// Tidy up after the user stops generation. Keeps any partial text that was produced;
+    /// otherwise removes the empty assistant placeholder so no blank bubble is left behind.
+    private func handleCancelledGeneration(partialText: String, assistantIndex: Int) {
+        defer { isLoading = false }
+        guard messages.indices.contains(assistantIndex) else { return }
+
+        if partialText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            // Only remove if this is still the empty placeholder we appended (the message
+            // list may have been swapped out by a conversation switch in the meantime).
+            let placeholder = messages[assistantIndex]
+            guard placeholder.role.lowercased() == "assistant", placeholder.content.isEmpty else { return }
+            messages.remove(at: assistantIndex)
+            if messageDates.indices.contains(assistantIndex) {
+                messageDates.remove(at: assistantIndex)
+            }
+        } else {
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: partialText)
+        }
+        rebuildSections()
     }
 
     func cancelStreaming() {
@@ -258,7 +293,7 @@ class ChatViewModel: ObservableObject {
 
     @MainActor
     private func applyLoadedHistory(_ items: [ChatItem]) {
-        self.messages = items.map { ChatMessage(role: $0.role, content: $0.content) }
+        self.messages = items.map { ChatMessage(role: $0.role, content: $0.content, sources: $0.sources) }
         self.messageDates = items.map { $0.date }
         self.rebuildSections()
     }
@@ -270,7 +305,22 @@ class ChatViewModel: ObservableObject {
         case .idle:                return nil
         case .validatingLanguage:  return "Đang kiểm tra ngôn ngữ..."
         case .translatingInput:    return "Đang dịch câu hỏi..."
-        case .generating:          return nil
+        case .generating:          return "Đang soạn câu trả lời..."
         }
+    }
+}
+
+/// Thread-safe holder that carries the sources retrieved on the (background) generation
+/// task back to this @MainActor view model once streaming completes.
+private final class SourcesBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: [MedicalSource] = []
+
+    func set(_ newValue: [MedicalSource]) {
+        lock.lock(); value = newValue; lock.unlock()
+    }
+
+    func get() -> [MedicalSource] {
+        lock.lock(); defer { lock.unlock() }; return value
     }
 }
