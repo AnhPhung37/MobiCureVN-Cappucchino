@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05775D6830062CC20004172E /* Jinja in Frameworks */ = {isa = PBXBuildFile; productRef = 05775D6730062CC20004172E /* Jinja */; };
 		A8D06FBA2FBE079100C33219 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A8D06FB92FBE079100C33219 /* ZIPFoundation */; };
 		EC8AFE1A2FB8139300AEED59 /* Hub in Frameworks */ = {isa = PBXBuildFile; productRef = EC8AFE192FB8139300AEED59 /* Hub */; };
 		EC8AFE202FB816BE00AEED59 /* Tokenizers in Frameworks */ = {isa = PBXBuildFile; productRef = EC8AFE1F2FB816BE00AEED59 /* Tokenizers */; };
@@ -88,6 +89,7 @@
 				EC8AFE2B2FB818CC00AEED59 /* IntegrationTestHelpers in Frameworks */,
 				EC8AFE202FB816BE00AEED59 /* Tokenizers in Frameworks */,
 				EC8AFE2D2FB818CC00AEED59 /* MLXEmbedders in Frameworks */,
+				05775D6830062CC20004172E /* Jinja in Frameworks */,
 				EC8AFE292FB818CC00AEED59 /* BenchmarkHelpers in Frameworks */,
 				EC8AFE1A2FB8139300AEED59 /* Hub in Frameworks */,
 				EC8AFE252FB8185100AEED59 /* HuggingFace in Frameworks */,
@@ -205,6 +207,7 @@
 				EC8AFE322FB818CC00AEED59 /* MLXLMCommon */,
 				EC8AFE342FB818CC00AEED59 /* MLXVLM */,
 				A8D06FB92FBE079100C33219 /* ZIPFoundation */,
+				05775D6730062CC20004172E /* Jinja */,
 			);
 			productName = MobiCureVN;
 			productReference = EC5467762F9BC6C800B07544 /* MobiCureVN.app */;
@@ -248,6 +251,7 @@
 				EC8AFE262FB8186F00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 				EC8AFE272FB818CC00AEED59 /* XCRemoteSwiftPackageReference "mlx-swift-lm" */,
 				A8D06FB82FBE079100C33219 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				05775D6630062CC10004172E /* XCRemoteSwiftPackageReference "swift-jinja" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EC5467772F9BC6C800B07544 /* Products */;
@@ -636,6 +640,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		05775D6630062CC10004172E /* XCRemoteSwiftPackageReference "swift-jinja" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huggingface/swift-jinja.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.3.6;
+			};
+		};
 		A8D06FB82FBE079100C33219 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
@@ -649,7 +661,7 @@
 			repositoryURL = "https://github.com/huggingface/swift-transformers.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.2;
+				minimumVersion = 1.3.3;
 			};
 			traits = (
 			);
@@ -683,6 +695,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		05775D6730062CC20004172E /* Jinja */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05775D6630062CC10004172E /* XCRemoteSwiftPackageReference "swift-jinja" */;
+			productName = Jinja;
+		};
 		A8D06FB92FBE079100C33219 /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A8D06FB82FBE079100C33219 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
