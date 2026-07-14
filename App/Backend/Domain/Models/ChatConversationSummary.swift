@@ -1,6 +1,6 @@
 import Foundation
 
-struct ChatConversationSummary: Identifiable, Sendable {
+nonisolated struct ChatConversationSummary: Identifiable, Sendable {
     let id: UUID
     let title: String
     let preview: String

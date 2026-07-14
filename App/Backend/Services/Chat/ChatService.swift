@@ -8,21 +8,30 @@ import Combine
 enum ChatProcessingState: Equatable {
     case idle
     case validatingLanguage
-    case translatingInput   // vi → en (for RAG retrieval only)
-    case generating         // LLM is running
+    case refiningInput      // LLM fixes typos/code-switching, same language
+    case translatingInput   // original language → en (Apple Translation)
+    case generating         // LLM is running (always in English)
+    case translatingOutput  // en → original language (Apple Translation)
 }
 
 // MARK: - ChatService
 
-// Top-level orchestrator: language validation → (optional translation) → LLM → stream.
+// Top-level orchestrator: language validation → LLM refine → translate → LLM → translate back → stream.
 // Wraps MedicalChatOrchestrator so the existing guardrail / RAG / LLM pipeline
 // is unchanged; language handling is layered on top.
 //
-// For English input:  the query goes straight to the orchestrator.
-// For Vietnamese / mixed input:
-//   1. Translate input vi → en  (one-shot, shows .translatingInput) — used only for RAG retrieval
-//   2. Pass original Vietnamese query to the LLM with a "respond in Vietnamese" instruction
-//   3. The LLM replies in Vietnamese directly (no post-translation step)
+// The LLM (a small on-device model) never generates non-English prose — it only ever sees
+// and produces English, plus small classification/refine/translate-fallback prompts. All
+// actual language conversion is done by Apple's Translation framework, which is far less
+// prone to leaking stray foreign words than asking a 3B model to write Vietnamese directly:
+//   1. Detect the input's language.
+//   2. LLM "refine" pass: fix typos and unify code-switching, staying in the same language.
+//   3. Emergency detection on the refined original-language text.
+//   4. Apple Translation: refined input → English (skipped if already English).
+//   5. Orchestrator always generates English.
+//   6. Apple Translation: English response → original language (skipped if already English).
+//   7. LLM validation pass: confirm the translated response is actually in the original
+//      language; if not, fall back to an LLM-driven translation of the English response.
 //
 // NOTE: MedicalChatOrchestrator buffers the full LLM output so the output guardrail can
 // validate/redact it before delivery — the response arrives as one chunk, not token-by-token.
@@ -34,15 +43,18 @@ final class ChatService: ObservableObject {
     private var orchestrator: MedicalChatOrchestrator
     private let languageValidator: LanguageValidationService
     private let translationService: TranslationService
+    private let emergencyDetector: EmergencyDetector
 
     init(
         orchestrator: MedicalChatOrchestrator,
         languageValidator: LanguageValidationService = LanguageValidationService(),
-        translationService: TranslationService
+        translationService: TranslationService,
+        emergencyDetector: EmergencyDetector = EmergencyDetector()
     ) {
         self.orchestrator = orchestrator
         self.languageValidator = languageValidator
         self.translationService = translationService
+        self.emergencyDetector = emergencyDetector
     }
 
     // Called when AppConfig swaps the underlying LLM service.
@@ -57,19 +69,7 @@ final class ChatService: ObservableObject {
         history: [ChatMessage],
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
-        // Language validation is synchronous — reject immediately if unsupported.
         processingState = .validatingLanguage
-        let detected = languageValidator.detect(text)
-
-        if case .unsupported = detected {
-            processingState = .idle
-            return AsyncStream { continuation in
-                continuation.yield(LanguageValidationService.unsupportedErrorMessage)
-                continuation.finish()
-            }
-        }
-
-        let needsTranslation = detected.requiresTranslation
 
         return AsyncStream<String> { [weak self] continuation in
             guard let self else { continuation.finish(); return }
@@ -77,22 +77,23 @@ final class ChatService: ObservableObject {
             let innerTask = Task { @MainActor [weak self] in
                 guard let self else { continuation.finish(); return }
 
+                let detected = await self.languageValidator.detect(text, using: AppConfig.llmService)
+
+                if case .unsupported = detected {
+                    self.processingState = .idle
+                    continuation.yield(LanguageValidationService.unsupportedErrorMessage)
+                    continuation.finish()
+                    return
+                }
+
                 do {
-                    if needsTranslation {
-                        try await self.runViToViPipeline(
-                            originalText: text,
-                            history: history,
-                            onSourcesRetrieved: onSourcesRetrieved,
-                            continuation: continuation
-                        )
-                    } else {
-                        try await self.runEnglishPipeline(
-                            text: text,
-                            history: history,
-                            onSourcesRetrieved: onSourcesRetrieved,
-                            continuation: continuation
-                        )
-                    }
+                    try await self.runPipeline(
+                        originalText: text,
+                        detectedLanguage: detected,
+                        history: history,
+                        onSourcesRetrieved: onSourcesRetrieved,
+                        continuation: continuation
+                    )
                 } catch {
                     let msg = "Lỗi xử lý: \(error.localizedDescription)\n" +
                               "Processing error: \(error.localizedDescription)"
@@ -110,53 +111,90 @@ final class ChatService: ObservableObject {
         }
     }
 
-    // MARK: - Pipeline Branches
+    // MARK: - Pipeline
 
-    // Vietnamese / mixed: translate vi→en for RAG only, then LLM responds in Vietnamese directly.
-    private func runViToViPipeline(
+    // Unified pipeline: LLM refine (same language) → translate to English (if needed) →
+    // orchestrator always in English → translate back to original language (if needed) →
+    // LLM validation with LLM-translate fallback on mismatch.
+    private func runPipeline(
         originalText: String,
+        detectedLanguage: DetectedLanguage,
         history: [ChatMessage],
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
         continuation: AsyncStream<String>.Continuation
     ) async throws {
-        // Step 1: vi → en translation used only for RAG document retrieval.
-        processingState = .translatingInput
-        let englishQuery = try await translationService.translateToEnglish(originalText)
+        // Step 1: LLM refine pass — fix typos and unify code-switching, same language.
+        processingState = .refiningInput
+        let refinedText = await languageValidator.refine(originalText, using: AppConfig.llmService)
 
         guard !Task.isCancelled else { return }
 
-        // Step 2: LLM receives the original Vietnamese query; system prompt instructs it
-        // to respond in Vietnamese. The English translation is passed as ragQuery so the
-        // retrieval layer can match English medical documents.
-        processingState = .generating
-        for await token in orchestrator.processQuery(
-            originalText,
-            conversationHistory: history,
-            ragQuery: englishQuery,
-            responseLanguage: .vietnamese,
-            onSourcesRetrieved: onSourcesRetrieved
-        ) {
-            guard !Task.isCancelled else { return }
-            continuation.yield(token)
+        // Step 2: Emergency Detection — a user describing a crisis (chest pain, "I want to
+        // die", etc.) must reach the emergency template before any translation or safety
+        // filter can interfere. Runs on the refined original-language text since
+        // EmergencyDetector's patterns cover both Vietnamese and English phrasing directly.
+        let emergency = emergencyDetector.detect(query: refinedText)
+        if emergency.isEmergency {
+            if let response = emergency.recommendation {
+                continuation.yield(response)
+            }
+            return
         }
-    }
 
-    // English: forward the orchestrator's (guardrail-validated) response.
-    private func runEnglishPipeline(
-        text: String,
-        history: [ChatMessage],
-        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
-        continuation: AsyncStream<String>.Continuation
-    ) async throws {
+        // Step 3: translate the refined input to English so the orchestrator only ever
+        // has to work in one language.
+        let englishQuery: String
+        if detectedLanguage.requiresTranslation {
+            processingState = .translatingInput
+            englishQuery = try await translationService.translateToEnglish(refinedText)
+        } else {
+            englishQuery = refinedText
+        }
+
+        guard !Task.isCancelled else { return }
+
+        // Step 4: orchestrator always generates English. The buffered response is
+        // delivered as a single item at the end (see class-level NOTE).
         processingState = .generating
+        var englishResponse = ""
         for await token in orchestrator.processQuery(
-            text,
+            englishQuery,
             conversationHistory: history,
-            responseLanguage: .english,
             onSourcesRetrieved: onSourcesRetrieved
         ) {
             guard !Task.isCancelled else { return }
-            continuation.yield(token)
+            englishResponse += token
         }
+
+        guard !Task.isCancelled else { return }
+
+        // Step 5: translate the English response back to the user's original language.
+        var finalResponse = englishResponse
+        if detectedLanguage.requiresTranslation {
+            processingState = .translatingOutput
+            finalResponse = try await translationService.translateToVietnamese(englishResponse)
+
+            guard !Task.isCancelled else { return }
+
+            // Step 6: LLM validation — confirm the translated text is actually Vietnamese.
+            // Apple Translation can occasionally echo the source back unchanged or drop a
+            // word; if validation fails, fall back to an LLM-driven translation instead of
+            // shipping a wrong-language response.
+            let isValid = await languageValidator.matches(
+                finalResponse,
+                expected: detectedLanguage,
+                using: AppConfig.llmService
+            )
+            if !isValid {
+                finalResponse = await languageValidator.translateAsFallback(
+                    englishResponse,
+                    to: detectedLanguage,
+                    using: AppConfig.llmService
+                )
+            }
+        }
+
+        guard !Task.isCancelled else { return }
+        continuation.yield(finalResponse)
     }
 }

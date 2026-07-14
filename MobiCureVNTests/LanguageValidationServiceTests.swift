@@ -11,58 +11,69 @@ import XCTest
 final class LanguageValidationServiceTests: XCTestCase {
 
     private var sut: LanguageValidationService!
+    private var llmService: MockLLMService!
 
     override func setUp() {
         super.setUp()
         sut = LanguageValidationService()
+        llmService = MockLLMService()
     }
 
     override func tearDown() {
         sut = nil
+        llmService = nil
         super.tearDown()
     }
 
     // MARK: - Edge Cases
 
-    func testEmptyStringDefaultsToEnglish() {
-        XCTAssertEqual(sut.detect(""), .english)
+    func testEmptyStringDefaultsToEnglish() async {
+        let result = await sut.detect("", using: llmService)
+        XCTAssertEqual(result, .english)
     }
 
-    func testWhitespaceOnlyDefaultsToEnglish() {
-        XCTAssertEqual(sut.detect("   \n\t  "), .english)
+    func testWhitespaceOnlyDefaultsToEnglish() async {
+        let result = await sut.detect("   \n\t  ", using: llmService)
+        XCTAssertEqual(result, .english)
     }
 
     // MARK: - Vietnamese Detection
 
-    func testVietnameseTextWithToneMarksDetected() {
-        let result = sut.detect("Tôi bị đau bụng sau khi phẫu thuật ruột")
+    func testVietnameseTextWithToneMarksDetected() async {
+        let result = await sut.detect("Tôi bị đau bụng sau khi phẫu thuật ruột", using: llmService)
         XCTAssertEqual(result, .vietnamese)
     }
 
-    func testVietnameseTextWithDiacriticsDetected() {
-        let result = sut.detect("Vết thương của tôi đang chảy dịch màu vàng")
+    func testVietnameseTextWithDiacriticsDetected() async {
+        let result = await sut.detect("Vết thương của tôi đang chảy dịch màu vàng", using: llmService)
         XCTAssertEqual(result, .vietnamese)
     }
 
-    func testVietnameseResultRequiresTranslation() {
-        let result = sut.detect("Tôi cần hỏi về thuốc uống sau mổ")
+    func testVietnameseWithoutDiacriticsDetected() async {
+        // Common real-world case: Vietnamese typed without accents on a mobile keyboard.
+        let result = await sut.detect("toi bi dau bung", using: llmService)
+        XCTAssertEqual(result, .vietnamese)
+    }
+
+    func testVietnameseResultRequiresTranslation() async {
+        let result = await sut.detect("Tôi cần hỏi về thuốc uống sau mổ", using: llmService)
         XCTAssertTrue(result.requiresTranslation)
     }
 
     // MARK: - English Detection
 
-    func testEnglishMedicalTextDetected() {
-        let result = sut.detect("What are the signs of infection in a surgical wound?")
+    func testEnglishMedicalTextDetected() async {
+        let result = await sut.detect("What are the signs of infection in a surgical wound?", using: llmService)
         XCTAssertEqual(result, .english)
     }
 
-    func testEnglishPostOpQueryDetected() {
-        let result = sut.detect("I have pain and nausea after my colorectal surgery yesterday")
+    func testEnglishPostOpQueryDetected() async {
+        let result = await sut.detect("I have pain and nausea after my colorectal surgery yesterday", using: llmService)
         XCTAssertEqual(result, .english)
     }
 
-    func testEnglishResultDoesNotRequireTranslation() {
-        let result = sut.detect("My recovery is going well but I have mild discomfort")
+    func testEnglishResultDoesNotRequireTranslation() async {
+        let result = await sut.detect("My recovery is going well but I have mild discomfort", using: llmService)
         XCTAssertFalse(result.requiresTranslation)
     }
 
@@ -107,6 +118,32 @@ final class LanguageValidationServiceTests: XCTestCase {
         XCTAssertNotEqual(DetectedLanguage.vietnamese, DetectedLanguage.english)
     }
 
+    // MARK: - Foreign Script Detection
+
+    func testDetectsChineseScriptLeak() {
+        XCTAssertTrue(sut.containsForeignScript("Tránh thức ăn 油腻 và khó tiêu hóa"))
+    }
+
+    func testDetectsJapaneseScript() {
+        XCTAssertTrue(sut.containsForeignScript("こんにちは"))
+    }
+
+    func testDetectsKoreanScript() {
+        XCTAssertTrue(sut.containsForeignScript("안녕하세요"))
+    }
+
+    func testDetectsThaiScript() {
+        XCTAssertTrue(sut.containsForeignScript("สวัสดี"))
+    }
+
+    func testPureVietnameseHasNoForeignScript() {
+        XCTAssertFalse(sut.containsForeignScript("Sau phẫu thuật, bạn nên ăn thức ăn dễ tiêu hóa."))
+    }
+
+    func testPureEnglishHasNoForeignScript() {
+        XCTAssertFalse(sut.containsForeignScript("You should eat easily digestible food after surgery."))
+    }
+
     // MARK: - Unsupported Error Message
 
     func testUnsupportedErrorMessageIsNotEmpty() {
@@ -118,5 +155,51 @@ final class LanguageValidationServiceTests: XCTestCase {
         // Should contain both Vietnamese and English guidance
         XCTAssertTrue(message.contains("Xin lỗi"))
         XCTAssertTrue(message.contains("Sorry"))
+    }
+
+    // MARK: - Refine
+
+    func testRefineReturnsNonEmptyResultForNonEmptyInput() async {
+        let result = await sut.refine("toi bi dau bung", using: llmService)
+        XCTAssertFalse(result.isEmpty)
+    }
+
+    func testRefineReturnsOriginalForEmptyInput() async {
+        let result = await sut.refine("", using: llmService)
+        XCTAssertEqual(result, "")
+    }
+
+    // MARK: - Matches
+
+    func testMatchesReturnsTrueForEmptyText() async {
+        let result = await sut.matches("", expected: .vietnamese, using: llmService)
+        XCTAssertTrue(result)
+    }
+
+    func testMatchesReturnsFalseForForeignScriptLeak() async {
+        let result = await sut.matches("Tránh thức ăn 油腻 và khó tiêu hóa", expected: .vietnamese, using: llmService)
+        XCTAssertFalse(result)
+    }
+
+    func testMatchesReturnsTrueForCorrectVietnamese() async {
+        let result = await sut.matches("Sau phẫu thuật, bạn nên ăn thức ăn dễ tiêu hóa.", expected: .vietnamese, using: llmService)
+        XCTAssertTrue(result)
+    }
+
+    func testMatchesReturnsTrueForCorrectEnglish() async {
+        let result = await sut.matches("You should eat easily digestible food after surgery.", expected: .english, using: llmService)
+        XCTAssertTrue(result)
+    }
+
+    // MARK: - Translate Fallback
+
+    func testTranslateAsFallbackReturnsNonEmptyResult() async {
+        let result = await sut.translateAsFallback("You should rest after surgery.", to: .vietnamese, using: llmService)
+        XCTAssertFalse(result.isEmpty)
+    }
+
+    func testTranslateAsFallbackReturnsOriginalForEmptyInput() async {
+        let result = await sut.translateAsFallback("", to: .vietnamese, using: llmService)
+        XCTAssertEqual(result, "")
     }
 }

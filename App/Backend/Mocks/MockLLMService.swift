@@ -9,7 +9,7 @@ import Foundation
 
 final class MockLLMService: LLMServiceProtocol {
 
-    func stream(request: LLMRequest) -> AsyncStream<String> {
+    nonisolated func stream(request: LLMRequest) -> AsyncStream<String> {
         AsyncStream { continuation in
             let task = Task {
                 let response = mockResponse(for: request.userMessage)
@@ -34,6 +34,10 @@ final class MockLLMService: LLMServiceProtocol {
 
     private func mockResponse(for query: String) -> String {
         let lower = query.lowercased()
+
+        if lower.contains("classify the language") {
+            return classifyLanguage(query)
+        }
 
         if lower.contains("nhiễm trùng") || lower.contains("infection") || lower.contains("mủ") {
             return """
@@ -80,5 +84,28 @@ final class MockLLMService: LLMServiceProtocol {
         bất kỳ triệu chứng nào. \
         Sức khỏe và sự an toàn của bạn là ưu tiên hàng đầu của chúng tôi.
         """
+    }
+
+    // Stand-in for the real model's language classification used by LanguageValidationService.
+    // Since there's no model in mock mode, use diacritics + a short list of common
+    // non-diacritic Vietnamese words as the signal, falling back to English otherwise.
+    private func classifyLanguage(_ prompt: String) -> String {
+        guard let range = prompt.range(of: "TEXT:") else { return "english" }
+        let text = String(prompt[range.upperBound...])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+
+        let vietnameseDiacritics = "àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ"
+        if text.contains(where: { vietnameseDiacritics.contains($0) }) {
+            return "vietnamese"
+        }
+
+        let commonVietnameseWords: Set<String> = ["toi", "la", "khong", "co", "bi", "dau", "va", "cua", "voi", "gi"]
+        let words = text.split { !$0.isLetter }.map(String.init)
+        if words.contains(where: commonVietnameseWords.contains) {
+            return "vietnamese"
+        }
+
+        return "english"
     }
 }

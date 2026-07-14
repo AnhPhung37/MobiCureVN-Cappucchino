@@ -28,7 +28,7 @@ final class LLMServiceTests: XCTestCase {
     }
 
     func testSystemPromptBecomesASystemRoleMessage() {
-        let messages = sut.buildChatMessages(
+        let messages = LLMService.buildChat(
             system: "Respond ONLY in Vietnamese.",
             history: [],
             user: "What should I eat for a cold?"
@@ -53,20 +53,20 @@ final class LLMServiceTests: XCTestCase {
             ChatMessage(role: "assistant", content: "Hello, how can I help?")
         ]
 
-        let messages = sut.buildChatMessages(system: "", history: history, user: "Follow up question")
+        let messages = LLMService.buildChat(system: "", history: history, user: "Follow up question")
 
         XCTAssertEqual(messages.map(\.role), [.user, .assistant, .user])
         XCTAssertEqual(messages.map(\.content), ["Hi", "Hello, how can I help?", "Follow up question"])
     }
 
     func testEmptySystemPromptProducesNoSystemMessage() {
-        let messages = sut.buildChatMessages(system: "   ", history: [], user: "Hello")
+        let messages = LLMService.buildChat(system: "   ", history: [], user: "Hello")
         XCTAssertTrue(messages.allSatisfy { $0.role != .system })
     }
 
     func testUserMessageIsAlwaysLastAndUserRole() {
         let history = [ChatMessage(role: "assistant", content: "Previous answer")]
-        let messages = sut.buildChatMessages(system: "sys", history: history, user: "Latest question")
+        let messages = LLMService.buildChat(system: "sys", history: history, user: "Latest question")
 
         XCTAssertEqual(messages.last?.role, .user)
         XCTAssertEqual(messages.last?.content, "Latest question")
