@@ -191,15 +191,15 @@ final class LanguageValidationServiceTests: XCTestCase {
         XCTAssertTrue(result)
     }
 
-    // MARK: - Translate Fallback
+    // MARK: - LLM Translate
 
-    func testTranslateAsFallbackReturnsNonEmptyResult() async {
-        let result = await sut.translateAsFallback("You should rest after surgery.", to: .vietnamese, using: llmService)
+    func testTranslateReturnsNonEmptyResult() async {
+        let result = await sut.translate("You should rest after surgery.", to: .vietnamese, using: llmService)
         XCTAssertFalse(result.isEmpty)
     }
 
-    func testTranslateAsFallbackReturnsOriginalForEmptyInput() async {
-        let result = await sut.translateAsFallback("", to: .vietnamese, using: llmService)
+    func testTranslateReturnsOriginalForEmptyInput() async {
+        let result = await sut.translate("", to: .vietnamese, using: llmService)
         XCTAssertEqual(result, "")
     }
 }

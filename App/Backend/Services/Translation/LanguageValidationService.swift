@@ -1,7 +1,7 @@
-import Foundation
+import NaturalLanguage
 
 // Result of language detection for a user-submitted string.
-nonisolated enum DetectedLanguage: Equatable {
+enum DetectedLanguage: Equatable {
     case vietnamese
     case english
     case mixed              // Vietnamese-English code-switching — treated as Vietnamese
@@ -125,12 +125,13 @@ nonisolated final class LanguageValidationService {
         }
     }
 
-    /// Last-resort translation via the LLM itself, used only when Apple's Translation
-    /// framework produced output that failed `matches` — e.g. it silently passed through
-    /// untranslated or dropped a foreign word. Not used as the primary translation path
-    /// since a small on-device LLM is more prone to leaking words than the dedicated
-    /// Translation framework; this only runs as a fallback.
-    func translateAsFallback(
+    /// Translates `text` into `targetLanguage` via the LLM. Primary path for converting the
+    /// English response back to the user's language: the LLM produces a noticeably more
+    /// natural, conversational tone than Apple's fairly literal Translation framework.
+    /// The trade-off is that a small on-device model can leak stray foreign-script words or
+    /// truncate long inputs, so callers MUST verify the result with `matches` (plus a length
+    /// sanity check) and fall back to Apple's Translation framework when verification fails.
+    func translate(
         _ text: String,
         to targetLanguage: DetectedLanguage,
         using llmService: LLMServiceProtocol
@@ -140,9 +141,10 @@ nonisolated final class LanguageValidationService {
 
         let targetName = targetLanguage.requiresTranslation ? "Vietnamese" : "English"
         let prompt = """
-        Translate the TEXT below into \(targetName). Do NOT use any other language in your \
-        translation. Keep the meaning and structure intact. Reply with ONLY the translated \
-        text, nothing else.
+        Translate the TEXT below into natural, conversational \(targetName), phrased the way \
+        a friendly medical assistant would say it. Keep every medical fact, term, and number \
+        accurate. Do NOT use any other language in your translation. Reply with ONLY the \
+        translated text, nothing else.
 
         TEXT: \(trimmed)
         """
