@@ -26,15 +26,13 @@ struct OutputGuardRailResult {
     let originalResponse: String
     let filteredResponse: String?
     let issues: [String]
-    let requiresEmergencyResponse: Bool
     let confidenceScore: Double
-    
-    init(status: GuardRailStatus, originalResponse: String, filteredResponse: String? = nil, issues: [String] = [], requiresEmergencyResponse: Bool = false, confidenceScore: Double = 1.0) {
+
+    init(status: GuardRailStatus, originalResponse: String, filteredResponse: String? = nil, issues: [String] = [], confidenceScore: Double = 1.0) {
         self.status = status
         self.originalResponse = originalResponse
         self.filteredResponse = filteredResponse
         self.issues = issues
-        self.requiresEmergencyResponse = requiresEmergencyResponse
         self.confidenceScore = confidenceScore
     }
 }
