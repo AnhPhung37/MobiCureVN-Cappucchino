@@ -147,11 +147,11 @@ struct GuardRailRules {
         "pressure in chest": .chestPain,
         
         // Difficulty breathing
-        "can't breathe": .difficulty_breathing,
-        "difficulty breathing": .difficulty_breathing,
-        "khó thở": .difficulty_breathing,
-        "thở không được": .difficulty_breathing,
-        "shortness of breath": .difficulty_breathing,
+        "can't breathe": .difficultyBreathing,
+        "difficulty breathing": .difficultyBreathing,
+        "khó thở": .difficultyBreathing,
+        "thở không được": .difficultyBreathing,
+        "shortness of breath": .difficultyBreathing,
         
         // Seizure
         "seizure": .seizure,
@@ -159,30 +159,30 @@ struct GuardRailRules {
         "convulsion": .seizure,
         
         // Suicidal ideation
-        "want to die": .suicidal_ideation,
-        "kill myself": .suicidal_ideation,
-        "muốn chết": .suicidal_ideation,
-        "tự tử": .suicidal_ideation,
-        "not worth living": .suicidal_ideation,
+        "want to die": .suicidalIdeation,
+        "kill myself": .suicidalIdeation,
+        "muốn chết": .suicidalIdeation,
+        "tự tử": .suicidalIdeation,
+        "not worth living": .suicidalIdeation,
         
         // Stroke symptoms
-        "face drooping": .stroke_symptom,
-        "arm weakness": .stroke_symptom,
-        "speech difficulty": .stroke_symptom,
-        "xệch mặt": .stroke_symptom,
-        "yếu tay": .stroke_symptom,
-        "nói không rõ": .stroke_symptom,
+        "face drooping": .strokeSymptom,
+        "arm weakness": .strokeSymptom,
+        "speech difficulty": .strokeSymptom,
+        "xệch mặt": .strokeSymptom,
+        "yếu tay": .strokeSymptom,
+        "nói không rõ": .strokeSymptom,
         
         // Severe bleeding
-        "heavy bleeding": .severe_bleeding,
-        "chảy máu nhiều": .severe_bleeding,
-        "can't stop bleeding": .severe_bleeding,
+        "heavy bleeding": .severeBleeding,
+        "chảy máu nhiều": .severeBleeding,
+        "can't stop bleeding": .severeBleeding,
         
         // Loss of consciousness
-        "lost consciousness": .loss_of_consciousness,
-        "fainting": .loss_of_consciousness,
-        "mất ý thức": .loss_of_consciousness,
-        "bất tỉnh": .loss_of_consciousness
+        "lost consciousness": .lossOfConsciousness,
+        "fainting": .lossOfConsciousness,
+        "mất ý thức": .lossOfConsciousness,
+        "bất tỉnh": .lossOfConsciousness
     ]
     
     // MARK: - PII Patterns
@@ -211,16 +211,16 @@ struct EmergencyResponses {
     static let templates: [EmergencySymptomType: String] = [
         .chestPain: "🚨 **EMERGENCY**: Chest pain can be a sign of a serious medical condition. CALL EMERGENCY SERVICES (119 in Vietnam) or visit the nearest emergency room immediately. Do not wait. This requires immediate professional medical evaluation.",
         
-        .difficulty_breathing: "🚨 **EMERGENCY**: Difficulty breathing is a medical emergency. CALL 119 or go to the nearest emergency room NOW. Do not delay. Difficulty breathing requires immediate medical attention.",
+        .difficultyBreathing: "🚨 **EMERGENCY**: Difficulty breathing is a medical emergency. CALL 119 or go to the nearest emergency room NOW. Do not delay. Difficulty breathing requires immediate medical attention.",
         
         .seizure: "🚨 **EMERGENCY**: Seizures are a medical emergency. CALL 119 immediately. Keep the person safe, do not restrain them. Emergency medical attention is required.",
         
-        .suicidal_ideation: "🚨 **CRISIS SUPPORT**: If you're having thoughts of suicide, please reach out for help immediately:\n\n**Vietnam Crisis Hotline**: 1925\n**International**: 988 (US), +44 (UK)\n\nTalk to someone you trust, or contact emergency services. Your life matters.",
+        .suicidalIdeation: "🚨 **CRISIS SUPPORT**: If you're having thoughts of suicide, please reach out for help immediately:\n\n**Vietnam Crisis Hotline**: 1925\n**International**: 988 (US), +44 (UK)\n\nTalk to someone you trust, or contact emergency services. Your life matters.",
         
-        .stroke_symptom: "🚨 **EMERGENCY**: Stroke symptoms require immediate emergency care. CALL 119 right away. Every minute counts. Do not wait.",
+        .strokeSymptom: "🚨 **EMERGENCY**: Stroke symptoms require immediate emergency care. CALL 119 right away. Every minute counts. Do not wait.",
         
-        .severe_bleeding: "🚨 **EMERGENCY**: Severe bleeding requires immediate emergency care. CALL 119 or go to the nearest emergency room NOW. Apply pressure to stop bleeding while waiting for help.",
+        .severeBleeding: "🚨 **EMERGENCY**: Severe bleeding requires immediate emergency care. CALL 119 or go to the nearest emergency room NOW. Apply pressure to stop bleeding while waiting for help.",
         
-        .loss_of_consciousness: "🚨 **EMERGENCY**: Loss of consciousness is a medical emergency. CALL 119 immediately. Ensure the person is in a safe position."
+        .lossOfConsciousness: "🚨 **EMERGENCY**: Loss of consciousness is a medical emergency. CALL 119 immediately. Ensure the person is in a safe position."
     ]
 }
