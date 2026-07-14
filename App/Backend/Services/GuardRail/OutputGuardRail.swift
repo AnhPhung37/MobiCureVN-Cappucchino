@@ -1,11 +1,12 @@
 import Foundation
 
-/// Output GuardRail: validates responses before streaming to user
-/// Checks:
-/// 1. Emergency detection (stop and redirect)
-/// 2. Hallucination/unsafe advice detection
-/// 3. Confidence threshold (only answer if confident + has citations)
-/// 4. Citation enforcement (medical advice MUST have source)
+/// Output GuardRail: validates the buffered LLM response before it is delivered to the user.
+/// Checks (in order):
+/// 1. Citation enforcement (medical advice MUST have a source)
+/// 2. Confidence threshold (only answer if retrieval was confident)
+/// 3. Hallucination / unsafe-advice detection
+/// 4. Unsafe dosage detection
+/// Emergency detection runs upstream in MedicalChatOrchestrator, not here.
 final class OutputGuardRail {
 
     // Compiled once at class load time — recreating NSRegularExpression per-call causes malloc errors under load
@@ -33,7 +34,12 @@ final class OutputGuardRail {
         // Emergency is already handled upstream in MedicalChatOrchestrator before the
         // LLM is ever called, so we skip it here to avoid a redundant check.
 
-        // Check 1: Citation Enforcement
+        // Check 1: Citation Enforcement.
+        // Medical advice must be grounded: either the response references its sources in-text,
+        // OR retrieved sources exist (the UI renders them as citation cards beneath the answer).
+        // Advice with neither is blocked and enhanced with an appended source list. The teeth
+        // of this check come from a broad `isMedicalAdvice` (below), so it fires on real advice
+        // rather than being skipped because the phrasing wasn't recognised.
         let hasCitations = responseMentionsCitations(response) || (retrievedContext?.sources.count ?? 0) > 0
         if !hasCitations && isMedicalAdvice(response) {
             issues.append("Medical advice without citations")
@@ -47,7 +53,7 @@ final class OutputGuardRail {
             )
         }
         
-        // Check 3: Confidence Threshold
+        // Check 2: Confidence Threshold
         let confidenceScore = retrievedContext?.confidenceScore ?? 0.5
         if confidenceScore < GuardRailRules.minMedicalConfidenceThreshold && isMedicalAdvice(response) {
             issues.append("Low confidence: \(String(format: "%.2f", confidenceScore)) < \(GuardRailRules.minMedicalConfidenceThreshold)")
@@ -61,7 +67,7 @@ final class OutputGuardRail {
             )
         }
         
-        // Check 4: Hallucination Detection
+        // Check 3: Hallucination Detection
         if let hallucinationIssue = detectHallucination(response) {
             issues.append(hallucinationIssue)
             let filteredResponse = removeHallucinatedClaims(response)
@@ -74,7 +80,7 @@ final class OutputGuardRail {
             )
         }
         
-        // Check 5: Unsafe Dosage Detection
+        // Check 4: Unsafe Dosage Detection
         if let unsafeDosageIssue = detectUnsafeDosage(response) {
             issues.append(unsafeDosageIssue)
             let filteredResponse = removeUnsafeDosage(response)
