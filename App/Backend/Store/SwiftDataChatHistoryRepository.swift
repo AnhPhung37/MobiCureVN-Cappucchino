@@ -16,6 +16,11 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         }
     }
 
+    private static func decodeSources(_ data: Data?) -> [MedicalSource] {
+        guard let data else { return [] }
+        return (try? JSONDecoder().decode([MedicalSource].self, from: data)) ?? []
+    }
+
     func loadConversations() async throws -> [ChatConversationSummary] {
         let descriptor = FetchDescriptor<ChatRecord>(sortBy: [SortDescriptor(\.date, order: .forward)])
         let records = try container.mainContext.fetch(descriptor)
@@ -38,8 +43,20 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         .sorted { $0.lastMessageDate > $1.lastMessageDate }
     }
 
-    func loadHistory() async throws -> [ChatItem] {
+    func loadHistory(conversationId: UUID) async throws -> [ChatItem] {
+        // Push the conversation filter into the fetch (SQLite) instead of fetching every
+        // record and filtering in memory. Legacy rows stored a nil conversationId, so when
+        // the caller asks for the legacy bucket we also match nil.
+        // Capture an optional so the predicate compares UUID? to UUID? (avoids optional/
+        // non-optional comparison ambiguity inside the #Predicate macro).
+        let target: UUID? = conversationId
+        let includeLegacyNil = (conversationId == Self.legacyConversationId)
+        let predicate = #Predicate<ChatRecord> { record in
+            record.conversationId == target || (includeLegacyNil && record.conversationId == nil)
+        }
+
         let descriptor = FetchDescriptor<ChatRecord>(
+            predicate: predicate,
             sortBy: [SortDescriptor(\.date, order: .forward)]
         )
         let records = try container.mainContext.fetch(descriptor)
@@ -49,36 +66,21 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
                 conversationId: record.conversationId ?? Self.legacyConversationId,
                 role: record.role,
                 content: record.content,
-                date: record.date
+                date: record.date,
+                sources: Self.decodeSources(record.sourcesData)
             )
         }
     }
 
-    func loadHistory(conversationId: UUID) async throws -> [ChatItem] {
-        let descriptor = FetchDescriptor<ChatRecord>(
-            sortBy: [SortDescriptor(\.date, order: .forward)]
-        )
-        let records = try container.mainContext.fetch(descriptor)
-        return records
-            .filter { ($0.conversationId ?? Self.legacyConversationId) == conversationId }
-            .map { record in
-                ChatItem(
-                    id: record.id,
-                    conversationId: record.conversationId ?? Self.legacyConversationId,
-                    role: record.role,
-                    content: record.content,
-                    date: record.date
-                )
-            }
-    }
-
     func append(_ item: ChatItem) async throws {
+        let sourcesData = item.sources.isEmpty ? nil : try? JSONEncoder().encode(item.sources)
         let record = ChatRecord(
             id: item.id,
             conversationId: item.conversationId,
             role: item.role,
             content: item.content,
-            date: item.date
+            date: item.date,
+            sourcesData: sourcesData
         )
         container.mainContext.insert(record)
         try container.mainContext.save()

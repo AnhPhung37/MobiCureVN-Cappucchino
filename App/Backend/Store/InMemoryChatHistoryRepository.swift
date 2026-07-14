@@ -20,10 +20,6 @@ actor InMemoryChatHistoryRepository: ChatHistoryRepository {
         .sorted { $0.lastMessageDate > $1.lastMessageDate }
     }
 
-    func loadHistory() async throws -> [ChatItem] {
-        return items.sorted { $0.date < $1.date }
-    }
-
     func loadHistory(conversationId: UUID) async throws -> [ChatItem] {
         items
             .filter { $0.conversationId == conversationId }
@@ -36,9 +32,5 @@ actor InMemoryChatHistoryRepository: ChatHistoryRepository {
 
     func deleteConversation(id: UUID) async throws {
         items.removeAll { $0.conversationId == id }
-    }
-
-    func clear() async throws {
-        items.removeAll()
     }
 }

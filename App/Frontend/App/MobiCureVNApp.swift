@@ -27,6 +27,13 @@ struct MobiCureVNApp: App {
             _ = NLEmbedding.sentenceEmbedding(for: .english)
         }
 
+        // Force the shared SQLite + CoreML query-embedder to initialize off the main thread.
+        // Otherwise the first access happens lazily inside ChatViewModel.init (@MainActor),
+        // opening the DB and loading the embedder model on the main thread → launch hitch.
+        Task(priority: .utility) {
+            _ = AppConfig.retriever
+        }
+
         Task(priority: .utility) {
             await AppConfig.initializeLLMService(model: AppConfig.selectedModel,
                                                  initializeRuntime: initializeRuntime)
