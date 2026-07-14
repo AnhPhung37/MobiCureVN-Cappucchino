@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class MockLLMService: LLMServiceProtocol {
+nonisolated final class MockLLMService: LLMServiceProtocol {
 
     nonisolated func stream(request: LLMRequest) -> AsyncStream<String> {
         AsyncStream { continuation in

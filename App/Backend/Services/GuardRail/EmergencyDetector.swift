@@ -15,7 +15,7 @@ final class EmergencyDetector {
             return (regex, symptomType)
         }
 
-    init() {}
+    nonisolated init() {}
 
     /// Detect emergency in user query
     func detect(query: String) -> EmergencyDetectionResult {

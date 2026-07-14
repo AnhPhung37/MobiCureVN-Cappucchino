@@ -128,10 +128,29 @@ final class SQLiteRetriever {
         let credibilityTier: Int
         let pageStart: Int
     }
-        
+
     private struct ScoredRow {
         let info: RowInfo
         let relevanceScore: Double
+    }
+
+    // "c.page_start" when the column exists, "0" otherwise — shared by every query that
+    // selects it, since older bundled databases may predate the column.
+    private var pageSelectSQL: String { hasPageStartColumn ? "c.page_start" : "0" }
+
+    // Reads the common chunk columns (0–6, always selected in this fixed order by every
+    // query below) into a RowInfo. Callers select their own trailing score/distance column.
+    private func rowInfo(from stmt: OpaquePointer?) -> RowInfo {
+        RowInfo(
+            chunkID: string(stmt, col: 0),
+            docID: string(stmt, col: 1),
+            text: string(stmt, col: 2),
+            section: string(stmt, col: 3),
+            sourceOrg: string(stmt, col: 4),
+            docType: string(stmt, col: 5),
+            credibilityTier: Int(sqlite3_column_int(stmt, 6)),
+            pageStart: intOrZero(stmt, col: 7)
+        )
     }
 
     private func runFTS(baseQuery: String, enrichedTerms: [String], limit: Int) -> [ScoredRow] {
@@ -142,7 +161,6 @@ final class SQLiteRetriever {
             return runFallbackSearch(baseQuery: baseQuery, enrichedTerms: enrichedTerms, limit: limit)
         }
 
-        let pageSelect = hasPageStartColumn ? "c.page_start" : "0"
         let sql = """
             SELECT
                 c.chunk_id,
@@ -152,7 +170,7 @@ final class SQLiteRetriever {
                 c.source_org,
                 c.doc_type,
                 c.credibility_tier,
-                \(pageSelect) AS page_start,
+                \(pageSelectSQL) AS page_start,
                 -fts.rank AS score
             FROM chunks_fts fts
             JOIN chunks c ON fts.rowid = c.rowid
@@ -166,7 +184,7 @@ final class SQLiteRetriever {
             print("SQLiteRetriever: prepare failed — \(errorMessage)")
             return []
         }
-        
+
         defer { sqlite3_finalize(stmt) }
 
         sqlite3_bind_text(stmt, 1, ftsQuery, -1, SQLITE_TRANSIENT)
@@ -174,32 +192,14 @@ final class SQLiteRetriever {
 
         var rawRows: [(RowInfo, Double)] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
-            let chunkID = string(stmt, col: 0)
-            let docID = string(stmt, col: 1)
-            let text = string(stmt, col: 2)
-            let section = string(stmt, col: 3)
-            let sourceOrg = string(stmt, col: 4)
-            let docType = string(stmt, col: 5)
-            let tier = Int(sqlite3_column_int(stmt, 6))
-            let pageStart = intOrZero(stmt, col: 7)
-            let score = sqlite3_column_double(stmt, 8)
-
-            rawRows.append((
-                RowInfo(
-                    chunkID: chunkID,
-                    docID: docID,
-                    text: text,
-                    section: section,
-                    sourceOrg: sourceOrg,
-                    docType: docType,
-                    credibilityTier: tier,
-                    pageStart: pageStart
-                ),
-                score
-            ))
+            rawRows.append((rowInfo(from: stmt), sqlite3_column_double(stmt, 8)))
         }
 
         return normalizeRows(rawRows)
+    }
+
+    private func matchCount(_ tokens: [String], in haystack: String) -> Int {
+        tokens.reduce(0) { $0 + (haystack.contains($1) ? 1 : 0) }
     }
 
     private func runFallbackSearch(baseQuery: String, enrichedTerms: [String], limit: Int) -> [ScoredRow] {
@@ -212,7 +212,6 @@ final class SQLiteRetriever {
         let conditions = tokens.map { _ in "LOWER(c.text) LIKE LOWER(?) OR LOWER(COALESCE(c.section, '')) LIKE LOWER(?)" }
             .joined(separator: " OR ")
 
-        let pageSelect = hasPageStartColumn ? "c.page_start" : "0"
         let sql = """
             SELECT
                 c.chunk_id,
@@ -222,7 +221,7 @@ final class SQLiteRetriever {
                 c.source_org,
                 c.doc_type,
                 c.credibility_tier,
-                \(pageSelect) AS page_start
+                \(pageSelectSQL) AS page_start
             FROM chunks c
             WHERE \(conditions)
             LIMIT 200
@@ -242,46 +241,27 @@ final class SQLiteRetriever {
             bindIndex += 1
         }
 
+        // Lowercased once here rather than per-row inside the match-count loop below.
+        let baseTokensLower = baseTokens.map { $0.lowercased() }
+        let enrichedTokensLower = enrichedTokens.map { $0.lowercased() }
+
         var rawRows: [(RowInfo, Double)] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
-            let chunkID = string(stmt, col: 0)
-            let docID = string(stmt, col: 1)
-            let text = string(stmt, col: 2)
-            let section = string(stmt, col: 3)
-            let sourceOrg = string(stmt, col: 4)
-            let docType = string(stmt, col: 5)
-            let tier = Int(sqlite3_column_int(stmt, 6))
-            let pageStart = intOrZero(stmt, col: 7)
-
-            let haystack = (text + " " + section).lowercased()
-            let baseMatches = baseTokens.reduce(0) { partial, token in
-                partial + (haystack.contains(token.lowercased()) ? 1 : 0)
-            }
-            let enrichedMatches = enrichedTokens.reduce(0) { partial, token in
-                partial + (haystack.contains(token.lowercased()) ? 1 : 0)
-            }
+            let info = rowInfo(from: stmt)
+            let haystack = (info.text + " " + info.section).lowercased()
+            let baseMatches = matchCount(baseTokensLower, in: haystack)
+            let enrichedMatches = matchCount(enrichedTokensLower, in: haystack)
             let score = Double(baseMatches * 2 + enrichedMatches)
 
-            rawRows.append((
-                RowInfo(
-                    chunkID: chunkID,
-                    docID: docID,
-                    text: text,
-                    section: section,
-                    sourceOrg: sourceOrg,
-                    docType: docType,
-                    credibilityTier: tier,
-                    pageStart: pageStart
-                ),
-                score
-            ))
+            rawRows.append((info, score))
         }
 
         let normalized = normalizeRows(rawRows)
-        return normalized
-            .sorted { $0.relevanceScore > $1.relevanceScore }
-            .prefix(limit)
-            .map { $0 }
+        return Array(
+            normalized
+                .sorted { $0.relevanceScore > $1.relevanceScore }
+                .prefix(limit)
+        )
     }
 
     private func runVectorSearch(query: String, limit: Int) -> [ScoredRow] {
@@ -289,7 +269,6 @@ final class SQLiteRetriever {
         guard hasVecIndex, let embedder = queryEmbedder else { return [] }
         guard let embedding = embedder.embed(query) else { return [] }
 
-        let pageSelect = hasPageStartColumn ? "c.page_start" : "0"
         let sql = """
             SELECT
                 c.chunk_id,
@@ -299,7 +278,7 @@ final class SQLiteRetriever {
                 c.source_org,
                 c.doc_type,
                 c.credibility_tier,
-                \(pageSelect) AS page_start,
+                \(pageSelectSQL) AS page_start,
                 v.distance
             FROM vec_chunks v
             JOIN chunks c ON v.rowid = c.rowid
@@ -323,29 +302,7 @@ final class SQLiteRetriever {
 
         var rawRows: [(RowInfo, Double)] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
-            let chunkID = string(stmt, col: 0)
-            let docID = string(stmt, col: 1)
-            let text = string(stmt, col: 2)
-            let section = string(stmt, col: 3)
-            let sourceOrg = string(stmt, col: 4)
-            let docType = string(stmt, col: 5)
-            let tier = Int(sqlite3_column_int(stmt, 6))
-            let pageStart = intOrZero(stmt, col: 7)
-            let distance = sqlite3_column_double(stmt, 8)
-
-            rawRows.append((
-                RowInfo(
-                    chunkID: chunkID,
-                    docID: docID,
-                    text: text,
-                    section: section,
-                    sourceOrg: sourceOrg,
-                    docType: docType,
-                    credibilityTier: tier,
-                    pageStart: pageStart
-                ),
-                -distance
-            ))
+            rawRows.append((rowInfo(from: stmt), -sqlite3_column_double(stmt, 8)))
         }
 
         return normalizeRows(rawRows)

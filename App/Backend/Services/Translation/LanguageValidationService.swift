@@ -1,7 +1,7 @@
-import NaturalLanguage
+import Foundation
 
 // Result of language detection for a user-submitted string.
-enum DetectedLanguage: Equatable {
+nonisolated enum DetectedLanguage: Equatable {
     case vietnamese
     case english
     case mixed              // Vietnamese-English code-switching — treated as Vietnamese

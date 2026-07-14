@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LLMRequest {
+nonisolated struct LLMRequest {
     let systemPrompt: String
     let userMessage: String
     let conversationHistory: [ChatMessage]

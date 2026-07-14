@@ -95,8 +95,7 @@ final class MedicalChatOrchestrator {
                 // Step 5: Final Output GuardRail Check
                 let outputResult = outputGuardRail.validate(
                     response: accumulatedResponse,
-                    retrievedContext: retrievedContext,
-                    originalQuery: userQuery
+                    retrievedContext: retrievedContext
                 )
 
                 switch outputResult.status {

@@ -27,20 +27,7 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         let grouped = Dictionary(grouping: records) { record -> UUID in
             record.conversationId ?? Self.legacyConversationId
         }
-
-        return grouped.map { conversationId, messages in
-            let sorted = messages.sorted { $0.date < $1.date }
-            let preview = sorted.last?.content ?? ""
-            let title = sorted.first(where: { $0.role.lowercased() == "user" })?.content ?? preview
-            return ChatConversationSummary(
-                id: conversationId,
-                title: title.isEmpty ? "Chat" : title,
-                preview: preview,
-                lastMessageDate: sorted.last?.date ?? Date(),
-                messageCount: sorted.count
-            )
-        }
-        .sorted { $0.lastMessageDate > $1.lastMessageDate }
+        return ChatConversationSummary.summarizing(grouped, date: \.date, role: \.role, content: \.content)
     }
 
     func loadHistory(conversationId: UUID) async throws -> [ChatItem] {
@@ -90,15 +77,6 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         let descriptor = FetchDescriptor<ChatRecord>()
         let records = try container.mainContext.fetch(descriptor)
         for record in records where (record.conversationId ?? Self.legacyConversationId) == id {
-            container.mainContext.delete(record)
-        }
-        try container.mainContext.save()
-    }
-
-    func clear() async throws {
-        let descriptor = FetchDescriptor<ChatRecord>()
-        let records = try container.mainContext.fetch(descriptor)
-        for record in records {
             container.mainContext.delete(record)
         }
         try container.mainContext.save()

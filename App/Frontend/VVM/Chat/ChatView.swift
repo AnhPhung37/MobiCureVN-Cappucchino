@@ -366,6 +366,7 @@ struct ChatView: View {
                     }
 
                 // Send / Stop button
+                let isSendDisabled = viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
                 Button {
                     if viewModel.isLoading {
                         viewModel.cancelStreaming()
@@ -378,16 +379,10 @@ struct ChatView: View {
                         .foregroundColor(.white)
                         .frame(width: 36, height: 36)
                         .background(
-                            Circle().fill(
-                                viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-                                ? Color(.tertiaryLabel)
-                                : Color.accentColor
-                            )
+                            Circle().fill(isSendDisabled ? Color(.tertiaryLabel) : Color.accentColor)
                         )
                 }
-                .disabled(
-                    viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-                )
+                .disabled(isSendDisabled)
                 .animation(.easeInOut(duration: 0.15), value: viewModel.isLoading)
             }
             .padding(.horizontal, 12)
@@ -445,16 +440,6 @@ struct ChatView: View {
 
     // MARK: - Toolbar Items
 
-    private var clearButton: some View {
-        Button {
-            viewModel.clearConversation()
-        } label: {
-            Image(systemName: "square.and.pencil")
-                .font(.system(size: 16))
-        }
-        .disabled(viewModel.messages.isEmpty)
-    }
-
     private var historyButton: some View {
         Button {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -481,13 +466,6 @@ struct ChatView: View {
         .disabled(viewModel.messages.isEmpty)
     }
 
-    private func formatConversationDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-
     private var statusBadge: some View {
         let status = viewModel.backendStatus
         return HStack(spacing: 4) {
@@ -500,7 +478,7 @@ struct ChatView: View {
                 .foregroundColor(Color(.secondaryLabel))
                 .lineLimit(1)
         }
-        .fixedSize() // ← move fixedSize here, to the HStack level
+        .fixedSize()
     }
 
     private func statusLabel(for status: LLMBackendStatus) -> String {

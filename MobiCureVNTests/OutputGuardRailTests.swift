@@ -26,8 +26,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.85, sourceCount: 1)
         let result = sut.validate(
             response: "You should rest and avoid heavy lifting after surgery.",
-            retrievedContext: context,
-            originalQuery: "How do I recover from surgery?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
     }
@@ -36,8 +35,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.8)
         let result = sut.validate(
             response: "According to clinical guidelines, you should rest for at least six weeks.",
-            retrievedContext: context,
-            originalQuery: "What should I do after surgery?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
     }
@@ -46,8 +44,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.8)
         let result = sut.validate(
             response: "Based on current research, you should avoid alcohol after surgery.",
-            retrievedContext: context,
-            originalQuery: "Can I drink after surgery?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
     }
@@ -56,8 +53,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.8)
         let result = sut.validate(
             response: "A study found that early mobilisation improves recovery outcomes.",
-            retrievedContext: context,
-            originalQuery: "Should I move around?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
     }
@@ -67,8 +63,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.2)
         let result = sut.validate(
             response: "Post-operative care involves monitoring the wound for signs of infection.",
-            retrievedContext: context,
-            originalQuery: "What is post-op care?"
+            retrievedContext: context
         )
         XCTAssertTrue(result.issues.isEmpty)
     }
@@ -78,8 +73,7 @@ final class OutputGuardRailTests: XCTestCase {
         let response = "Based on your recovery plan, you should walk short distances daily."
         let result = sut.validate(
             response: response,
-            retrievedContext: context,
-            originalQuery: "Can I exercise?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
         XCTAssertEqual(result.originalResponse, response)
@@ -92,8 +86,7 @@ final class OutputGuardRailTests: XCTestCase {
         let response = "This treatment will definitely cure your infection."
         let result = sut.validate(
             response: response,
-            retrievedContext: context,
-            originalQuery: "Will my infection heal?"
+            retrievedContext: context
         )
         XCTAssertEqual(result.originalResponse, response)
     }
@@ -104,8 +97,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.8, sourceCount: 0)
         let result = sut.validate(
             response: "You should take ibuprofen for the pain.",
-            retrievedContext: context,
-            originalQuery: "What should I take for pain?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
         XCTAssertFalse(result.issues.filter { $0.contains("citation") }.isEmpty)
@@ -115,8 +107,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.8, sourceCount: 1)
         let result = sut.validate(
             response: "You should use analgesics as directed.",
-            retrievedContext: context,
-            originalQuery: "How do I manage pain?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
     }
@@ -125,8 +116,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.8, sourceCount: 0)
         let result = sut.validate(
             response: "Try using compression bandages.",
-            retrievedContext: context,
-            originalQuery: "How do I manage my wound?"
+            retrievedContext: context
         )
         if case .blocked = result.status {
             let filtered = result.filteredResponse ?? ""
@@ -144,8 +134,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.3, sourceCount: 1)
         let result = sut.validate(
             response: "You should apply ice to reduce swelling.",
-            retrievedContext: context,
-            originalQuery: "How do I reduce swelling?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
     }
@@ -154,8 +143,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.3, sourceCount: 1)
         let result = sut.validate(
             response: "You should apply ice to reduce swelling.",
-            retrievedContext: context,
-            originalQuery: "How do I reduce swelling?"
+            retrievedContext: context
         )
         if case .blocked = result.status {
             XCTAssertTrue(result.filteredResponse?.contains("Limitation") ?? false,
@@ -167,8 +155,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "You should follow the prescribed treatment plan.",
-            retrievedContext: context,
-            originalQuery: "What should I do for recovery?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result)
     }
@@ -177,8 +164,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.75, sourceCount: 1)
         let result = sut.validate(
             response: "According to guidelines, rest is important.",
-            retrievedContext: context,
-            originalQuery: "Should I rest?"
+            retrievedContext: context
         )
         XCTAssertEqual(result.confidenceScore, 0.75, accuracy: 0.001)
     }
@@ -189,8 +175,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "This treatment will definitely cure your infection within a day.",
-            retrievedContext: context,
-            originalQuery: "Will my infection go away?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
         XCTAssertFalse(result.issues.filter { $0.contains("Hallucinated") }.isEmpty)
@@ -200,8 +185,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "This antibiotic is 100% effective against post-surgical infections.",
-            retrievedContext: context,
-            originalQuery: "Which antibiotic should I use?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
     }
@@ -210,8 +194,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "This miraculous remedy will heal your wound overnight.",
-            retrievedContext: context,
-            originalQuery: "How to heal faster?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
     }
@@ -220,8 +203,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "This is guaranteed to relieve your pain in one hour.",
-            retrievedContext: context,
-            originalQuery: "How to relieve pain fast?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
     }
@@ -230,8 +212,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "This treatment will definitely cure your condition.",
-            retrievedContext: context,
-            originalQuery: "Can this be cured?"
+            retrievedContext: context
         )
         XCTAssertTrue(
             result.filteredResponse?.contains("[removed") ?? false,
@@ -245,8 +226,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "Take ibuprofen 1000mg for pain relief.",
-            retrievedContext: context,
-            originalQuery: "How much ibuprofen?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
         XCTAssertFalse(result.issues.filter { $0.contains("dosage") }.isEmpty)
@@ -256,8 +236,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "You can take the maximum dose for faster recovery.",
-            retrievedContext: context,
-            originalQuery: "Can I take more medicine?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
     }
@@ -266,8 +245,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "Take all the pills if the pain persists.",
-            retrievedContext: context,
-            originalQuery: "What if the pain is severe?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result)
     }
@@ -276,8 +254,7 @@ final class OutputGuardRailTests: XCTestCase {
         let context = makeContext(confidence: 0.9, sourceCount: 1)
         let result = sut.validate(
             response: "Based on research, take ibuprofen 1000mg with food.",
-            retrievedContext: context,
-            originalQuery: "How do I take ibuprofen?"
+            retrievedContext: context
         )
         XCTAssertTrue(
             result.filteredResponse?.contains("[dosage information removed") ?? false,
@@ -292,7 +269,7 @@ final class OutputGuardRailTests: XCTestCase {
         let response = "Based on your treatment plan, you should follow the doctor's advice carefully."
         let start = Date()
         for _ in 0..<500 {
-            _ = sut.validate(response: response, retrievedContext: context, originalQuery: "What should I do?")
+            _ = sut.validate(response: response, retrievedContext: context)
         }
         let elapsed = Date().timeIntervalSince(start)
         XCTAssertLessThan(elapsed, 2.0, "500 allowed-path validations should complete within 2 seconds")
@@ -304,7 +281,7 @@ final class OutputGuardRailTests: XCTestCase {
         let response = "According to studies, rest is recommended for post-surgical recovery and wound healing."
         let start = Date()
         for _ in 0..<500 {
-            _ = sut.validate(response: response, retrievedContext: context, originalQuery: "How do I recover?")
+            _ = sut.validate(response: response, retrievedContext: context)
         }
         let elapsed = Date().timeIntervalSince(start)
         XCTAssertLessThan(elapsed, 2.0, "500 hallucination-scan validations should complete within 2 seconds")
