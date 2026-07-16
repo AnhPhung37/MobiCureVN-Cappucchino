@@ -6,6 +6,7 @@ struct ChatWorkspaceView: View {
     @StateObject private var viewModel: ChatViewModel
 
     @FocusState private var inputFocused: Bool
+    @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.light.rawValue
     @State private var isSidebarVisible = true
     @State private var isShowingAttachmentSheet = false
     @State private var isShowingCameraPicker = false
@@ -328,16 +329,25 @@ struct ChatWorkspaceView: View {
             HStack(spacing: 8) {
                 languageToggle
                 Button {
-                    // keep as a visual icon for now
+                    cycleAppearanceMode()
                 } label: {
-                    Image(systemName: "moon.stars")
+                    Image(systemName: appearanceMode.iconName)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 34, height: 34)
                         .background(Circle().fill(Color(.tertiarySystemBackground)))
                 }
+                .accessibilityLabel("Toggle appearance")
             }
         }
+    }
+
+    private func cycleAppearanceMode() {
+        appearanceModeRaw = appearanceMode.next.rawValue
+    }
+
+    private var appearanceMode: AppearanceMode {
+        AppearanceMode(rawValue: appearanceModeRaw) ?? .light
     }
 
     private var languageToggle: some View {
