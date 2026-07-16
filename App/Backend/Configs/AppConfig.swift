@@ -80,7 +80,10 @@ struct AppConfig {
 
     /// Register defaults once at app start so `bool(forKey:)` never silently returns false.
     static func registerDefaults() {
-        UserDefaults.standard.register(defaults: [useRealKey: true])
+        UserDefaults.standard.register(defaults: [
+            useRealKey: true,
+            AppearanceMode.storageKey: AppearanceMode.light.rawValue
+        ])
     }
 
     static var useRealLLM: Bool {

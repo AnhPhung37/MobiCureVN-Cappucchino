@@ -5,6 +5,7 @@
 //  Created by Anh Phung on 4/24/26.
 //
 
+import UIKit
 import SwiftUI
 
 struct MessageBubble: View {
@@ -22,12 +23,23 @@ struct MessageBubble: View {
                 // Responses are buffered (validated by the output guardrail before display),
                 // so without this the bubble would sit blank for the whole generation.
                 Group {
-                    if !isUser && message.content.isEmpty {
+                    if isUser {
+                        VStack(alignment: .leading, spacing: 10) {
+                            attachedImagesView
+
+                            if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                markdownText(message.content)
+                                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .textSelection(.enabled)
+                            }
+                        }
+                    } else if message.content.isEmpty {
                         TypingIndicator()
                     } else {
                         markdownText(message.content)
                             .font(.system(size: 16, weight: .regular, design: .rounded))
-                            .foregroundColor(isUser ? .white : Color(.label))
+                            .foregroundColor(Color(.label))
                             .textSelection(.enabled)
                     }
                 }
@@ -53,6 +65,36 @@ struct MessageBubble: View {
             Text(attributed)
         } else {
             Text(content)
+        }
+    }
+
+    @ViewBuilder
+    private var attachedImagesView: some View {
+        if !message.imageData.isEmpty {
+            let images = message.imageData.compactMap { UIImage(data: $0) }
+
+            if images.count == 1, let image = images.first {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: 240, maxHeight: 240)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipped()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(Array(images.enumerated()), id: \.offset) { _, image in
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .clipped()
+                        }
+                    }
+                }
+                .frame(maxWidth: 280, alignment: .leading)
+            }
         }
     }
 

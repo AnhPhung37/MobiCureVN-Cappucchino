@@ -7,6 +7,7 @@ struct ChatItem: Identifiable, Sendable {
     let content: String
     let date: Date
     let sources: [MedicalSource]
+    let imageData: [Data]
 
     init(
         id: UUID = UUID(),
@@ -14,7 +15,8 @@ struct ChatItem: Identifiable, Sendable {
         role: String,
         content: String,
         date: Date = Date(),
-        sources: [MedicalSource] = []
+        sources: [MedicalSource] = [],
+        imageData: [Data] = []
     ) {
         self.id = id
         self.conversationId = conversationId
@@ -22,5 +24,6 @@ struct ChatItem: Identifiable, Sendable {
         self.content = content
         self.date = date
         self.sources = sources
+        self.imageData = imageData
     }
 }
