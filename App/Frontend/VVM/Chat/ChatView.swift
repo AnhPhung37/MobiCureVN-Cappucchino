@@ -5,7 +5,9 @@
 //  Created by Anh Phung on 4/24/26.
 //
 
+import PhotosUI
 import SwiftUI
+import UIKit
 
 struct ChatView: View {
 
@@ -16,6 +18,12 @@ struct ChatView: View {
     @FocusState private var inputFocused: Bool
     @State private var scrollProxy: ScrollViewProxy? = nil
     @State private var isShowingHistorySidebar = false
+    @State private var isShowingAttachmentSheet = false
+    @State private var isShowingCameraPicker = false
+    @State private var isShowingPhotoPicker = false
+    @State private var photoPickerItem: PhotosPickerItem? = nil
+    @State private var attachedImage: UIImage? = nil
+    private let imageOnlyDraftText = "Image attached"
 
     init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -66,6 +74,28 @@ struct ChatView: View {
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }
+        }
+        .confirmationDialog("Attach image", isPresented: $isShowingAttachmentSheet, titleVisibility: .visible) {
+            Button("Take Photo") {
+                isShowingCameraPicker = true
+            }
+            Button("Upload image") {
+                isShowingPhotoPicker = true
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Choose how to add an image to your message.")
+        }
+        .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItem, matching: .images)
+        .onChange(of: photoPickerItem) { _, newItem in
+            guard let newItem else { return }
+            Task {
+                await loadPickedImage(from: newItem)
+            }
+        }
+        .sheet(isPresented: $isShowingCameraPicker) {
+            CameraImagePicker(image: $attachedImage)
+                .ignoresSafeArea()
         }
         // NOTE: .translationTask modifiers live on HomeView (the persistent TabView container)
         // so the TranslationSession stays valid regardless of which tab is active.
@@ -347,53 +377,167 @@ struct ChatView: View {
                 .padding(.top, 6)
             }
 
-            HStack(alignment: .bottom, spacing: 10) {
-                // Text field
-                TextField("Hỏi về quá trình hồi phục... / Ask about recovery...",
-                          text: $viewModel.inputText,
-                          axis: .vertical)
-                    .font(.system(size: 16))
-                    .lineLimit(1...5)
-                    .focused($inputFocused)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .onSubmit {
-                        viewModel.sendMessage()
-                    }
-
-                // Send / Stop button
-                Button {
-                    if viewModel.isLoading {
-                        viewModel.cancelStreaming()
-                    } else {
-                        viewModel.sendMessage()
-                    }
-                } label: {
-                    Image(systemName: viewModel.isLoading ? "stop.fill" : "arrow.up")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 36, height: 36)
-                        .background(
-                            Circle().fill(
-                                viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-                                ? Color(.tertiaryLabel)
-                                : Color.accentColor
-                            )
-                        )
+            VStack(spacing: 10) {
+                if let attachedImage {
+                    attachedImagePreview(image: attachedImage)
+                        .padding(.horizontal, 12)
+                        .padding(.top, 10)
                 }
-                .disabled(
-                    viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-                )
-                .animation(.easeInOut(duration: 0.15), value: viewModel.isLoading)
+
+                HStack(alignment: .bottom, spacing: 10) {
+                    Button {
+                        isShowingAttachmentSheet = true
+                    } label: {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.accentColor)
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Circle().fill(Color.accentColor.opacity(0.12))
+                            )
+                    }
+                    .accessibilityLabel("Attach image")
+
+                    // Text field
+                    TextField("Hỏi về quá trình hồi phục... / Ask about recovery...",
+                              text: $viewModel.inputText,
+                              axis: .vertical)
+                        .font(.system(size: 16))
+                        .lineLimit(1...5)
+                        .focused($inputFocused)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                .fill(Color(.secondarySystemBackground))
+                        )
+                        .onSubmit {
+                            submitCurrentMessage()
+                        }
+
+                    // Send / Stop button
+                    Button {
+                        if viewModel.isLoading {
+                            viewModel.cancelStreaming()
+                        } else {
+                            submitCurrentMessage()
+                        }
+                    } label: {
+                        Image(systemName: viewModel.isLoading ? "stop.fill" : "arrow.up")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Circle().fill(
+                                    viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
+                                    ? Color(.tertiaryLabel)
+                                    : Color.accentColor
+                                )
+                            )
+                    }
+                    .disabled(
+                        !canSubmitDraft
+                    )
+                    .animation(.easeInOut(duration: 0.15), value: viewModel.isLoading)
+                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 10)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
         }
         .background(Color(.systemBackground))
+    }
+
+    private func submitCurrentMessage() {
+        guard !viewModel.isLoading else {
+            viewModel.cancelStreaming()
+            return
+        }
+
+        let trimmed = viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let prompt = !trimmed.isEmpty ? trimmed : (attachedImage == nil ? "" : imageOnlyDraftText)
+        guard !prompt.isEmpty else { return }
+
+        let displayText = trimmed.isEmpty ? "" : trimmed
+        viewModel.sendMessage(
+            prompt: prompt,
+            displayContent: displayText,
+            attachedImageData: attachedImage?.jpegData(compressionQuality: 0.9)
+        )
+        clearAttachmentDraft()
+    }
+
+    private var canSubmitDraft: Bool {
+        viewModel.isLoading || !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || attachedImage != nil
+    }
+
+    private func clearAttachmentDraft() {
+        attachedImage = nil
+        photoPickerItem = nil
+        isShowingPhotoPicker = false
+        isShowingCameraPicker = false
+    }
+
+    private func loadPickedImage(from item: PhotosPickerItem) async {
+        defer {
+            Task { @MainActor in
+                photoPickerItem = nil
+            }
+        }
+
+        guard let data = try? await item.loadTransferable(type: Data.self),
+              let image = UIImage(data: data) else {
+            return
+        }
+
+        await MainActor.run {
+            attachedImage = image
+        }
+    }
+
+    @ViewBuilder
+    private func attachedImagePreview(image: UIImage) -> some View {
+        HStack(spacing: 12) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 54, height: 54)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.accentColor.opacity(0.2), lineWidth: 1)
+                )
+                .clipped()
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Image attached")
+                    .font(.system(size: 14, weight: .semibold))
+                Text("Add a question to send it with your message.")
+                    .font(.system(size: 12))
+                    .foregroundColor(Color(.secondaryLabel))
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 8)
+
+            Button {
+                attachedImage = nil
+                if viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines) == imageOnlyDraftText {
+                    viewModel.inputText = ""
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Color(.secondaryLabel))
+                    .frame(width: 28, height: 28)
+                    .background(Circle().fill(Color(.tertiarySystemBackground)))
+            }
+            .accessibilityLabel("Remove attached image")
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 
     // MARK: - Empty State
@@ -418,7 +562,7 @@ struct ChatView: View {
                 ForEach(suggestions, id: \.self) { suggestion in
                     Button {
                         viewModel.inputText = suggestion
-                        viewModel.sendMessage()
+                        submitCurrentMessage()
                     } label: {
                         Text(suggestion)
                             .font(.system(size: 14))
@@ -470,6 +614,7 @@ struct ChatView: View {
     private var newChatButton: some View {
         Button {
             viewModel.clearConversation()
+            clearAttachmentDraft()
             withAnimation(.easeInOut(duration: 0.2)) {
                 isShowingHistorySidebar = false
             }

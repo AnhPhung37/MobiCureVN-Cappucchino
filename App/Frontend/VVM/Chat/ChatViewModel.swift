@@ -122,11 +122,16 @@ final class ChatViewModel: ObservableObject {
 
     // MARK: - Actions
 
-    func sendMessage() {
-        let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+    func sendMessage(
+        prompt: String? = nil,
+        displayContent: String? = nil,
+        attachedImageData: Data? = nil
+    ) {
+        let text = (prompt ?? inputText).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isLoading else { return }
 
-        appendUserMessage(text)
+        let bubbleText = (displayContent ?? text).trimmingCharacters(in: .whitespacesAndNewlines)
+        appendUserMessage(bubbleText, imageData: attachedImageData)
         let assistantIndex = appendAssistantPlaceholder()
         rebuildSections()
 
@@ -146,8 +151,8 @@ final class ChatViewModel: ObservableObject {
         }
     }
 
-    private func appendUserMessage(_ text: String) {
-        let userMessage = ChatMessage(role: "user", content: text)
+    private func appendUserMessage(_ text: String, imageData: Data? = nil) {
+        let userMessage = ChatMessage(role: "user", content: text, imageData: imageData)
         messages.append(userMessage)
         messageDates.append(Date())
         inputText = ""

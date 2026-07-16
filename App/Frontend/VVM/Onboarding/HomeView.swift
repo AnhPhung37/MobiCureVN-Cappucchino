@@ -3,7 +3,7 @@ import Translation
 
 struct HomeView: View {
 
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1
     // Observed so the tab-bar UI can react to translation readiness if needed in future.
     @ObservedObject private var translationService = AppConfig.translationService
 
