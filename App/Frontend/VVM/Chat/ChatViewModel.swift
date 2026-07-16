@@ -111,7 +111,8 @@ final class ChatViewModel: ObservableObject {
                 role: $0.0.role,
                 content: $0.0.content,
                 date: $0.1,
-                sources: $0.0.sources
+                sources: $0.0.sources,
+                imageData: $0.0.imageData
             )
         }
     }
@@ -125,7 +126,7 @@ final class ChatViewModel: ObservableObject {
     func sendMessage(
         prompt: String? = nil,
         displayContent: String? = nil,
-        attachedImageData: Data? = nil
+        attachedImageData: [Data] = []
     ) {
         let text = (prompt ?? inputText).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isLoading else { return }
@@ -151,7 +152,7 @@ final class ChatViewModel: ObservableObject {
         }
     }
 
-    private func appendUserMessage(_ text: String, imageData: Data? = nil) {
+    private func appendUserMessage(_ text: String, imageData: [Data] = []) {
         let userMessage = ChatMessage(role: "user", content: text, imageData: imageData)
         messages.append(userMessage)
         messageDates.append(Date())
@@ -159,7 +160,13 @@ final class ChatViewModel: ObservableObject {
         errorMessage = nil
         isLoading = true
 
-        let userItem = ChatItem(conversationId: currentConversationId, role: userMessage.role, content: userMessage.content, date: Date())
+        let userItem = ChatItem(
+            conversationId: currentConversationId,
+            role: userMessage.role,
+            content: userMessage.content,
+            date: Date(),
+            imageData: imageData
+        )
         Task { try? await historyRepository.append(userItem) }
         Task { await refreshConversationHistory() }
     }
@@ -298,7 +305,7 @@ final class ChatViewModel: ObservableObject {
 
     @MainActor
     private func applyLoadedHistory(_ items: [ChatItem]) {
-        self.messages = items.map { ChatMessage(role: $0.role, content: $0.content, sources: $0.sources) }
+        self.messages = items.map { ChatMessage(role: $0.role, content: $0.content, sources: $0.sources, imageData: $0.imageData) }
         self.messageDates = items.map { $0.date }
         self.rebuildSections()
     }

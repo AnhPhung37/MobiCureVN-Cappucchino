@@ -11,13 +11,16 @@ final class ChatRecord {
     /// JSON-encoded `[MedicalSource]` for assistant messages. Optional so existing stores
     /// migrate without data loss; nil for user messages or answers without citations.
     var sourcesData: Data?
+    /// JSON-encoded `[Data]` for attached images.
+    var imageData: Data?
 
-    init(id: UUID = UUID(), conversationId: UUID? = nil, role: String, content: String, date: Date = Date(), sourcesData: Data? = nil) {
+    init(id: UUID = UUID(), conversationId: UUID? = nil, role: String, content: String, date: Date = Date(), sourcesData: Data? = nil, imageData: Data? = nil) {
         self.id = id
         self.conversationId = conversationId
         self.role = role
         self.content = content
         self.date = date
         self.sourcesData = sourcesData
+        self.imageData = imageData
     }
 }

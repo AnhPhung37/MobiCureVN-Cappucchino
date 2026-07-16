@@ -25,7 +25,7 @@ struct MessageBubble: View {
                 Group {
                     if isUser {
                         VStack(alignment: .leading, spacing: 10) {
-                            attachedImageView
+                            attachedImagesView
 
                             if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 markdownText(message.content)
@@ -69,15 +69,32 @@ struct MessageBubble: View {
     }
 
     @ViewBuilder
-    private var attachedImageView: some View {
-        if let imageData = message.imageData,
-           let image = UIImage(data: imageData) {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: 240, maxHeight: 240)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .clipped()
+    private var attachedImagesView: some View {
+        if !message.imageData.isEmpty {
+            let images = message.imageData.compactMap { UIImage(data: $0) }
+
+            if images.count == 1, let image = images.first {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: 240, maxHeight: 240)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipped()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(Array(images.enumerated()), id: \.offset) { _, image in
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .clipped()
+                        }
+                    }
+                }
+                .frame(maxWidth: 280, alignment: .leading)
+            }
         }
     }
 

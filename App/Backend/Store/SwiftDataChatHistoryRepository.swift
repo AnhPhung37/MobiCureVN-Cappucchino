@@ -21,6 +21,11 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         return (try? JSONDecoder().decode([MedicalSource].self, from: data)) ?? []
     }
 
+    private static func decodeImages(_ data: Data?) -> [Data] {
+        guard let data else { return [] }
+        return (try? JSONDecoder().decode([Data].self, from: data)) ?? []
+    }
+
     func loadConversations() async throws -> [ChatConversationSummary] {
         let descriptor = FetchDescriptor<ChatRecord>(sortBy: [SortDescriptor(\.date, order: .forward)])
         let records = try container.mainContext.fetch(descriptor)
@@ -67,20 +72,23 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
                 role: record.role,
                 content: record.content,
                 date: record.date,
-                sources: Self.decodeSources(record.sourcesData)
+                sources: Self.decodeSources(record.sourcesData),
+                imageData: Self.decodeImages(record.imageData)
             )
         }
     }
 
     func append(_ item: ChatItem) async throws {
         let sourcesData = item.sources.isEmpty ? nil : try? JSONEncoder().encode(item.sources)
+        let imageData = item.imageData.isEmpty ? nil : try? JSONEncoder().encode(item.imageData)
         let record = ChatRecord(
             id: item.id,
             conversationId: item.conversationId,
             role: item.role,
             content: item.content,
             date: item.date,
-            sourcesData: sourcesData
+            sourcesData: sourcesData,
+            imageData: imageData
         )
         container.mainContext.insert(record)
         try container.mainContext.save()

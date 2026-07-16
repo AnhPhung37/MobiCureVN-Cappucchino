@@ -21,8 +21,8 @@ struct ChatView: View {
     @State private var isShowingAttachmentSheet = false
     @State private var isShowingCameraPicker = false
     @State private var isShowingPhotoPicker = false
-    @State private var photoPickerItem: PhotosPickerItem? = nil
-    @State private var attachedImage: UIImage? = nil
+    @State private var photoPickerItems: [PhotosPickerItem] = []
+    @State private var attachedImages: [UIImage] = []
     private let imageOnlyDraftText = "Image attached"
 
     init(llmService: LLMServiceProtocol? = nil) {
@@ -86,15 +86,20 @@ struct ChatView: View {
         } message: {
             Text("Choose how to add an image to your message.")
         }
-        .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItem, matching: .images)
-        .onChange(of: photoPickerItem) { _, newItem in
-            guard let newItem else { return }
+        .photosPicker(
+            isPresented: $isShowingPhotoPicker,
+            selection: $photoPickerItems,
+            maxSelectionCount: 10,
+            matching: .images
+        )
+        .onChange(of: photoPickerItems) { _, newItems in
+            guard !newItems.isEmpty else { return }
             Task {
-                await loadPickedImage(from: newItem)
+                await loadPickedImages(from: newItems)
             }
         }
-        .sheet(isPresented: $isShowingCameraPicker) {
-            CameraImagePicker(image: $attachedImage)
+        .fullScreenCover(isPresented: $isShowingCameraPicker) {
+            CameraImagePicker(image: cameraCaptureBinding)
                 .ignoresSafeArea()
         }
         // NOTE: .translationTask modifiers live on HomeView (the persistent TabView container)
@@ -323,7 +328,7 @@ struct ChatView: View {
                                 .padding(.horizontal, 16)
                                 .padding(.top, 8)
                             ForEach(section.items) { item in
-                                MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources))
+                                MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData))
                                     .padding(.vertical, 4)
                             }
                         }
@@ -378,8 +383,8 @@ struct ChatView: View {
             }
 
             VStack(spacing: 10) {
-                if let attachedImage {
-                    attachedImagePreview(image: attachedImage)
+                if !attachedImages.isEmpty {
+                    attachedImagesPreview(images: attachedImages)
                         .padding(.horizontal, 12)
                         .padding(.top, 10)
                 }
@@ -454,84 +459,120 @@ struct ChatView: View {
         }
 
         let trimmed = viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let prompt = !trimmed.isEmpty ? trimmed : (attachedImage == nil ? "" : imageOnlyDraftText)
+        let prompt = !trimmed.isEmpty ? trimmed : (attachedImages.isEmpty ? "" : imageOnlyDraftText)
         guard !prompt.isEmpty else { return }
 
         let displayText = trimmed.isEmpty ? "" : trimmed
         viewModel.sendMessage(
             prompt: prompt,
             displayContent: displayText,
-            attachedImageData: attachedImage?.jpegData(compressionQuality: 0.9)
+            attachedImageData: attachedImages.compactMap { $0.jpegData(compressionQuality: 0.9) }
         )
         clearAttachmentDraft()
     }
 
     private var canSubmitDraft: Bool {
-        viewModel.isLoading || !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || attachedImage != nil
+        viewModel.isLoading || !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachedImages.isEmpty
     }
 
     private func clearAttachmentDraft() {
-        attachedImage = nil
-        photoPickerItem = nil
+        attachedImages = []
+        photoPickerItems = []
         isShowingPhotoPicker = false
         isShowingCameraPicker = false
     }
 
-    private func loadPickedImage(from item: PhotosPickerItem) async {
-        defer {
-            Task { @MainActor in
-                photoPickerItem = nil
+    private var cameraCaptureBinding: Binding<UIImage?> {
+        Binding(
+            get: { nil },
+            set: { newImage in
+                guard let newImage else { return }
+                attachedImages.append(newImage)
             }
-        }
+        )
+    }
 
-        guard let data = try? await item.loadTransferable(type: Data.self),
-              let image = UIImage(data: data) else {
-            return
+    private func loadPickedImages(from items: [PhotosPickerItem]) async {
+        let loadedImages = await withTaskGroup(of: UIImage?.self, returning: [UIImage].self) { group in
+            for item in items {
+                group.addTask {
+                    guard let data = try? await item.loadTransferable(type: Data.self),
+                          let image = UIImage(data: data) else {
+                        return nil
+                    }
+                    return image
+                }
+            }
+
+            var images: [UIImage] = []
+            for await image in group {
+                if let image { images.append(image) }
+            }
+            return images
         }
 
         await MainActor.run {
-            attachedImage = image
+            attachedImages.append(contentsOf: loadedImages)
+            photoPickerItems = []
         }
     }
 
     @ViewBuilder
-    private func attachedImagePreview(image: UIImage) -> some View {
-        HStack(spacing: 12) {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 54, height: 54)
-                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(Color.accentColor.opacity(0.2), lineWidth: 1)
-                )
-                .clipped()
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Image attached")
-                    .font(.system(size: 14, weight: .semibold))
-                Text("Add a question to send it with your message.")
-                    .font(.system(size: 12))
-                    .foregroundColor(Color(.secondaryLabel))
-                    .lineLimit(2)
-            }
-
-            Spacer(minLength: 8)
-
-            Button {
-                attachedImage = nil
-                if viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines) == imageOnlyDraftText {
-                    viewModel.inputText = ""
+    private func attachedImagesPreview(images: [UIImage]) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(images.count == 1 ? "1 image attached" : "\(images.count) images attached")
+                        .font(.system(size: 14, weight: .semibold))
+                    Text("Add a question to send them with your message.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(.secondaryLabel))
+                        .lineLimit(2)
                 }
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color(.secondaryLabel))
-                    .frame(width: 28, height: 28)
-                    .background(Circle().fill(Color(.tertiarySystemBackground)))
+
+                Spacer(minLength: 8)
+
+                Button {
+                    attachedImages = []
+                    photoPickerItems = []
+                    if viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines) == imageOnlyDraftText {
+                        viewModel.inputText = ""
+                    }
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color(.secondaryLabel))
+                        .frame(width: 28, height: 28)
+                        .background(Circle().fill(Color(.tertiarySystemBackground)))
+                }
+                .accessibilityLabel("Remove attached images")
             }
-            .accessibilityLabel("Remove attached image")
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                        ZStack(alignment: .topTrailing) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 72, height: 72)
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                                .clipped()
+
+                            Button {
+                                attachedImages.remove(at: index)
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .shadow(radius: 3)
+                            }
+                            .offset(x: 6, y: -6)
+                        }
+                    }
+                }
+                .padding(.trailing, 4)
+            }
         }
         .padding(12)
         .background(
