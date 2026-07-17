@@ -97,7 +97,8 @@ struct ChatWorkspaceView: View {
             emergencyFooter
                 .padding(16)
         }
-        .frame(width: width, height: .infinity)
+        .frame(width: width)
+        .frame(maxHeight: .infinity)
         .background(Color(.systemBackground))
         .overlay(alignment: .trailing) {
             Rectangle().fill(Color(.separator)).frame(width: 1)
