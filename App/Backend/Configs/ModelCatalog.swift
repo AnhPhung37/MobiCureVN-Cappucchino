@@ -42,6 +42,20 @@ nonisolated enum ModelCatalog: String, CaseIterable {
         }
     }
 
+    /// Compact name shown next to the picker in the top bar, where the full
+    /// displayName (with quantization/vision suffix) would not fit.
+    var shortName: String {
+        switch self {
+        case .qwen3_5_4B:    return "Qwen 3.5 4B"
+        case .qwen2_5_3B:    return "Qwen 2.5 3B"
+        case .llama3_2_3B:   return "Llama 3.2 3B"
+        case .phi3_5Mini:    return "Phi 3.5 Mini"
+        case .gemma3_1B:     return "Gemma 3 1B"
+        case .qwen2_5_VL_3B: return "Qwen 2.5 VL 3B"
+        case .qwen2_5_VL_7B: return "Qwen 2.5 VL 7B"
+        }
+    }
+
     var displayName: String {
         switch self {
         case .qwen3_5_4B:    return "Qwen 3.5 4B (4-bit, vision)"

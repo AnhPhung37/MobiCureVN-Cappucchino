@@ -392,11 +392,19 @@ struct ChatWorkspaceView: View {
             }
             .onAppear { refreshDownloadedModels() }
         } label: {
-            Image(systemName: "cpu")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color(.secondaryLabel))
-                .frame(width: 34, height: 34)
-                .background(Circle().fill(Color(.tertiarySystemBackground)))
+            // Show the active model's name inline so the user doesn't have to
+            // open the menu just to check which model is in use.
+            HStack(spacing: 6) {
+                Image(systemName: "cpu")
+                    .font(.system(size: 14, weight: .semibold))
+                Text(verbatim: selectedModel.shortName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .lineLimit(1)
+            }
+            .foregroundColor(Color(.secondaryLabel))
+            .padding(.horizontal, 12)
+            .frame(height: 34)
+            .background(Capsule().fill(Color(.tertiarySystemBackground)))
         }
         // Switching mid-download or mid-generation would race the in-flight task
         // against the swap; block it until the current one settles.

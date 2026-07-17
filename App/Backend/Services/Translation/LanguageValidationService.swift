@@ -66,7 +66,16 @@ nonisolated final class LanguageValidationService {
         for await token in stream {
             reply += token
         }
-        let normalized = reply.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let normalized = Self.stripThinking(reply)
+            .trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        print("LanguageValidation: detect reply='\(normalized.prefix(200))'")
+
+        // A failed or empty generation is a runtime problem, not a language problem —
+        // fail open so the pipeline continues and the real error (e.g. "[MLX error: …]")
+        // surfaces in chat instead of the misleading unsupported-language refusal.
+        if normalized.isEmpty || normalized.hasPrefix("[mlx error") {
+            return hasVietnamese ? .vietnamese : .english
+        }
 
         if normalized.contains("vietnamese") {
             return .vietnamese
@@ -159,6 +168,17 @@ nonisolated final class LanguageValidationService {
     }
 
     // MARK: - Private
+
+    // Removes a `<think>…</think>` reasoning preamble that Qwen 3-class models can emit
+    // even with enable_thinking off, so classification sees only the final answer. An
+    // unterminated block strips to empty, which routes into detect's fail-open path.
+    private static func stripThinking(_ reply: String) -> String {
+        reply.replacingOccurrences(
+            of: "(?s)<think>.*?(</think>|$)",
+            with: "",
+            options: .regularExpression
+        )
+    }
 
     // Matches characters that appear only in Vietnamese (tone marks + ă, đ, ơ, ư and their
     // combining forms). Used to distinguish "mixed" code-switched text from single-language
