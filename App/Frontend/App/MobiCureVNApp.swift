@@ -17,10 +17,7 @@ struct MobiCureVNApp: App {
         AppConfig.registerDefaults()
         AppConfig.observeMemoryWarnings()
 
-        let isSimulator = ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
-        let initializeRuntime = !isSimulator
-            && !ProcessInfo.processInfo.isiOSAppOnMac
-            && !ProcessInfo.processInfo.isMacCatalystApp
+        let initializeRuntime = AppConfig.shouldInitializeRuntime
 
         // Warm up NLEmbedding in the background so the CoreML model is loaded
         // before the user's first message, eliminating the cold-start penalty.

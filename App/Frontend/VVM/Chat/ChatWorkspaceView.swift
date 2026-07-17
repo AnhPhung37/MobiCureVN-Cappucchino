@@ -8,6 +8,7 @@ struct ChatWorkspaceView: View {
     @FocusState private var inputFocused: Bool
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.light.rawValue
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
+    @AppStorage(AppConfig.selectedModelStorageKey) private var selectedModelRaw = ModelCatalog.default.rawValue
     @State private var isSidebarVisible = true
     @State private var isShowingAttachmentSheet = false
     @State private var isShowingCameraPicker = false
@@ -329,6 +330,7 @@ struct ChatWorkspaceView: View {
             Spacer()
 
             HStack(spacing: 8) {
+                modelPicker
                 languageToggle
                 Button {
                     cycleAppearanceMode()
@@ -354,6 +356,46 @@ struct ChatWorkspaceView: View {
 
     private var appLanguage: AppLanguage {
         AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese
+    }
+
+    private var selectedModel: ModelCatalog {
+        ModelCatalog(rawValue: selectedModelRaw) ?? .default
+    }
+
+    private var modelPicker: some View {
+        Menu {
+            Section("Mô hình AI") {
+                ForEach(ModelCatalog.allCases, id: \.self) { model in
+                    Button {
+                        switchModel(to: model)
+                    } label: {
+                        if model == selectedModel {
+                            Label(model.displayName, systemImage: "checkmark")
+                        } else {
+                            Text(verbatim: model.displayName)
+                        }
+                    }
+                }
+            }
+            Section {
+                Text("Mô hình chưa có trên máy sẽ được tải xuống (2–4 GB).")
+            }
+        } label: {
+            Image(systemName: "cpu")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(Color(.secondaryLabel))
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(Color(.tertiarySystemBackground)))
+        }
+        // Switching mid-download or mid-generation would race the in-flight task
+        // against the swap; block it until the current one settles.
+        .disabled(viewModel.backendStatus == .loading || viewModel.isLoading)
+        .accessibilityLabel("Chọn mô hình AI")
+    }
+
+    private func switchModel(to model: ModelCatalog) {
+        guard model != selectedModel || viewModel.backendStatus == .unavailable else { return }
+        Task { await AppConfig.switchModel(to: model) }
     }
 
     private var languageToggle: some View {
@@ -430,6 +472,10 @@ struct ChatWorkspaceView: View {
                 .frame(width: 8, height: 8)
             Text(LocalizedStringKey(statusLabel(for: viewModel.backendStatus)))
                 .font(.system(size: 13, weight: .semibold))
+            if viewModel.backendStatus == .loading, viewModel.downloadProgress > 0 {
+                Text(verbatim: "\(Int(viewModel.downloadProgress * 100))%")
+                    .font(.system(size: 13, weight: .semibold))
+            }
         }
         .foregroundColor(Color(.secondaryLabel))
         .padding(.horizontal, 14)

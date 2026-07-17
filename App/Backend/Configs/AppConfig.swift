@@ -79,7 +79,8 @@ struct AppConfig {
     }
 
     private static let useRealKey = "UseRealLLM"
-    private static let selectedModelKey = "SelectedLLMModel"
+    /// Exposed (not private) so the model-picker UI can observe it via @AppStorage.
+    static let selectedModelStorageKey = "SelectedLLMModel"
 
     /// Register defaults once at app start so `bool(forKey:)` never silently returns false.
     static func registerDefaults() {
@@ -117,11 +118,35 @@ struct AppConfig {
 
     static var selectedModel: ModelCatalog {
         get {
-            guard let raw = UserDefaults.standard.string(forKey: selectedModelKey),
+            guard let raw = UserDefaults.standard.string(forKey: selectedModelStorageKey),
                   let model = ModelCatalog(rawValue: raw) else { return .default }
             return model
         }
-        set { UserDefaults.standard.set(newValue.rawValue, forKey: selectedModelKey) }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: selectedModelStorageKey) }
+    }
+
+    /// True on physical iOS devices, where the MLX runtime can actually load models.
+    /// Simulator and Mac (Catalyst / iOS-on-Mac) builds skip download and use placeholders.
+    static var shouldInitializeRuntime: Bool {
+        ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] == nil
+            && !ProcessInfo.processInfo.isiOSAppOnMac
+            && !ProcessInfo.processInfo.isMacCatalystApp
+    }
+
+    /// Switches the active on-device model: persists the selection, releases the current
+    /// MLX model (a second multi-GB model must never be resident alongside the first),
+    /// and downloads/loads the new one. Chat falls back to the mock service until the
+    /// new model is ready. No-op when the requested model is already selected and healthy.
+    static func switchModel(to model: ModelCatalog) async {
+        guard model != selectedModel || llmStatus == .unavailable else { return }
+        selectedModel = model
+
+        if let realService = llmService as? LLMService {
+            realService.unload()
+        }
+        llmService = MockLLMService()
+
+        await initializeLLMService(model: model, initializeRuntime: shouldInitializeRuntime)
     }
 
     private static func updateStatus(_ status: LLMBackendStatus) {
