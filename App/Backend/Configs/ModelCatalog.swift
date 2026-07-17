@@ -28,6 +28,20 @@ nonisolated enum ModelCatalog: String, CaseIterable {
         }
     }
 
+    /// Approximate on-disk size of the 4-bit weights, shown in the model picker so the
+    /// user knows how large the download is before selecting a model.
+    var approxDownloadSize: String {
+        switch self {
+        case .qwen3_5_4B:    return "~2.4 GB"
+        case .qwen2_5_3B:    return "~1.8 GB"
+        case .llama3_2_3B:   return "~1.8 GB"
+        case .phi3_5Mini:    return "~2.2 GB"
+        case .gemma3_1B:     return "~0.8 GB"
+        case .qwen2_5_VL_3B: return "~2.2 GB"
+        case .qwen2_5_VL_7B: return "~4.5 GB"
+        }
+    }
+
     var displayName: String {
         switch self {
         case .qwen3_5_4B:    return "Qwen 3.5 4B (4-bit, vision)"

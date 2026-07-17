@@ -16,6 +16,7 @@ struct ChatWorkspaceView: View {
     @State private var photoPickerItems: [PhotosPickerItem] = []
     @State private var attachedImages: [UIImage] = []
     @State private var searchText: String = ""
+    @State private var downloadedModels: Set<ModelCatalog> = []
 
     init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -53,6 +54,11 @@ struct ChatWorkspaceView: View {
                 }
             }
             .background(workspaceBackground)
+            // A status change to ready/unavailable means a download just finished (or
+            // failed) — re-scan disk so the picker's "downloaded" badges stay accurate.
+            .onChange(of: viewModel.backendStatus) { _, _ in
+                refreshDownloadedModels()
+            }
             .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItems, maxSelectionCount: 10, matching: .images)
             .onChange(of: photoPickerItems) { _, newItems in
                 guard !newItems.isEmpty else { return }
@@ -374,12 +380,17 @@ struct ChatWorkspaceView: View {
                         } else {
                             Text(verbatim: model.displayName)
                         }
+                        // Second Text renders as the menu item's subtitle: tells the
+                        // user whether selecting is instant or a multi-GB download.
+                        if downloadedModels.contains(model) {
+                            Text("Đã có trên máy · chuyển nhanh")
+                        } else {
+                            Text("Cần tải về (\(model.approxDownloadSize))")
+                        }
                     }
                 }
             }
-            Section {
-                Text("Mô hình chưa có trên máy sẽ được tải xuống (2–4 GB).")
-            }
+            .onAppear { refreshDownloadedModels() }
         } label: {
             Image(systemName: "cpu")
                 .font(.system(size: 14, weight: .semibold))
@@ -396,6 +407,17 @@ struct ChatWorkspaceView: View {
     private func switchModel(to model: ModelCatalog) {
         guard model != selectedModel || viewModel.backendStatus == .unavailable else { return }
         Task { await AppConfig.switchModel(to: model) }
+    }
+
+    /// Scans Application Support off the main thread for models already on disk.
+    /// Runs when the picker opens and after each download finishes.
+    private func refreshDownloadedModels() {
+        Task.detached(priority: .utility) {
+            let downloaded = Set(ModelCatalog.allCases.filter {
+                ModelManager.shared.isModelDownloaded(repoID: $0.repoID)
+            })
+            await MainActor.run { downloadedModels = downloaded }
+        }
     }
 
     private var languageToggle: some View {

@@ -264,6 +264,38 @@
         }
       }
     },
+    "Cần tải về (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requires download (%@)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cần tải về (%@)"
+          }
+        }
+      }
+    },
+    "Đã có trên máy · chuyển nhanh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On this device · fast switch"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã có trên máy · chuyển nhanh"
+          }
+        }
+      }
+    },
     "Đang mở" : {
       "localizations" : {
         "en" : {
@@ -546,22 +578,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mô hình AI"
-          }
-        }
-      }
-    },
-    "Mô hình chưa có trên máy sẽ được tải xuống (2–4 GB)." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Models not yet on this device will be downloaded (2–4 GB)."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mô hình chưa có trên máy sẽ được tải xuống (2–4 GB)."
           }
         }
       }

@@ -75,6 +75,16 @@ public final class ModelManager {
         }
     }
 
+    /// Whether a complete, valid copy of the model already exists locally. The model
+    /// picker uses this to tell the user if selecting a model loads from disk or
+    /// triggers a multi-GB download.
+    public func isModelDownloaded(repoID: String) -> Bool {
+        guard let directory = try? localModelDirectory(modelName: repoID, repoID: repoID) else {
+            return false
+        }
+        return isValidLocalModelDirectory(directory)
+    }
+
     private func isValidLocalModelDirectory(_ directory: URL) -> Bool {
         guard fileManager.fileExists(atPath: directory.path) else { return false }
 
