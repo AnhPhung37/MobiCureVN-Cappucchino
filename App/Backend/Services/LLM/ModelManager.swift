@@ -48,34 +48,31 @@ public final class ModelManager {
         return modelsRoot.appendingPathComponent(resolvedRepoID.replacingOccurrences(of: "/", with: "_"), isDirectory: true)
     }
 
-    private func containsFile(in directory: URL, named fileName: String) -> Bool {
+    private func directoryContains(_ directory: URL, where predicate: (URL) -> Bool) -> Bool {
         guard let enumerator = fileManager.enumerator(at: directory,
                                                       includingPropertiesForKeys: nil,
                                                       options: [.skipsHiddenFiles]) else {
             return false
         }
 
-        for case let fileURL as URL in enumerator {
-            if fileURL.lastPathComponent.lowercased() == fileName.lowercased() {
-                return true
-            }
+        for case let fileURL as URL in enumerator where predicate(fileURL) {
+            return true
         }
         return false
     }
 
-    private func containsAnyFile(withExtensions extensions: Set<String>, in directory: URL) -> Bool {
-        guard let enumerator = fileManager.enumerator(at: directory,
-                                                      includingPropertiesForKeys: nil,
-                                                      options: [.skipsHiddenFiles]) else {
-            return false
-        }
+    private func containsFile(in directory: URL, named fileName: String) -> Bool {
+        directoryContains(directory) { $0.lastPathComponent.lowercased() == fileName.lowercased() }
+    }
 
-        for case let fileURL as URL in enumerator {
-            if extensions.contains(fileURL.pathExtension.lowercased()) {
-                return true
-            }
+    private func containsAnyFile(withExtensions extensions: Set<String>, in directory: URL) -> Bool {
+        directoryContains(directory) { extensions.contains($0.pathExtension.lowercased()) }
+    }
+
+    private func applyAuth(_ token: String?, to request: inout URLRequest) {
+        if let token, !token.isEmpty {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        return false
     }
 
     private func isValidLocalModelDirectory(_ directory: URL) -> Bool {
@@ -88,11 +85,6 @@ public final class ModelManager {
         return hasConfig && hasTokenizer && hasWeights
     }
 
-    /// Ensure the model is downloaded, verified and extracted. Returns local folder URL containing model files.
-    /// - Parameters:
-    ///   - modelName: logical model name
-    ///   - archiveURL: optional archive URL to download a zip/tar archive; if nil, repoID is used when provided
-    ///   - expectedSHA256: optional lowercase hex SHA256 checksum to verify archive
     /// Ensure the model is downloaded, verified and extracted.
     /// - Parameters:
     ///   - modelName: logical model name
@@ -143,7 +135,7 @@ public final class ModelManager {
 
             // optional disk-space check
             let requiredMin = minFreeBytes ?? 500_000_000 // 500 MB
-            if let free = freeDiskSpace(at: support), free < requiredMin {
+            if let free = insufficientDiskSpace(at: support, requiredBytes: requiredMin) {
                 print("ModelManager: progress 0% - disk space check failed")
                 try? fileManager.removeItem(at: downloadDir)
                 throw ModelManagerError.validationFailed("Not enough free disk space: \(free) < \(requiredMin)")
@@ -186,9 +178,7 @@ public final class ModelManager {
             if Task.isCancelled { throw CancellationError() }
             do {
                 var request = URLRequest(url: archiveSource)
-                if let token = authToken, !token.isEmpty {
-                    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                }
+                applyAuth(authToken, to: &request)
 
                 let (localURL, response) = try await URLSession.shared.download(for: request)
                 if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
@@ -285,9 +275,7 @@ public final class ModelManager {
 
         let apiURL = URL(string: "https://huggingface.co/api/models/\(repoID.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? repoID)")!
         var request = URLRequest(url: apiURL)
-        if let token = authToken, !token.isEmpty {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
+        applyAuth(authToken, to: &request)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
@@ -325,9 +313,7 @@ public final class ModelManager {
             if Task.isCancelled { throw CancellationError() }
             let fileURL = URL(string: "https://huggingface.co/\(repoID)/resolve/main/\(filename.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? filename)")!
             var fileRequest = URLRequest(url: fileURL)
-            if let token = authToken, !token.isEmpty {
-                fileRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            }
+            applyAuth(authToken, to: &fileRequest)
 
             let (downloadedURL, response2) = try await URLSession.shared.download(for: fileRequest)
             if let http = response2 as? HTTPURLResponse, !(200...299).contains(http.statusCode) {

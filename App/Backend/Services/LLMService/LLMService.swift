@@ -1,6 +1,8 @@
 import Foundation
+import os
 
 #if canImport(MLXLLM)
+import MLX
 import MLXLLM
 import MLXLMCommon
 import MLXHuggingFace
@@ -8,14 +10,15 @@ import HuggingFace
 import Tokenizers
 #endif
 
-final class LLMService: @unchecked Sendable, LLMServiceProtocol {
+nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     private let modelPath: String
     private let useMock: Bool
     private let isModelAvailable: Bool
     private var mlxInitialized: Bool = false
     // Guards mlxInitialized/modelContainer: written by initializeModel and read by the
-    // detached generation task, potentially on different threads.
-    private let stateLock = NSLock()
+    // detached generation task, potentially on different threads. OSAllocatedUnfairLock
+    // (unlike NSLock) is safe to call from async contexts under Swift 6 strict concurrency.
+    private let stateLock = OSAllocatedUnfairLock()
 #if canImport(MLXLLM)
     private var modelContainer: ModelContainer?
 #endif
@@ -42,23 +45,37 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                 from: modelURL,
                 using: #huggingFaceTokenizerLoader()
             )
-            stateLock.lock()
-            modelContainer = container
-            mlxInitialized = true
-            stateLock.unlock()
+            stateLock.withLock {
+                modelContainer = container
+                mlxInitialized = true
+            }
+            // Cap Metal's buffer-reuse cache so it doesn't compete unbounded with the
+            // OS memory budget on iOS (jetsam will kill the app past its RAM limit).
+            MLX.Memory.cacheLimit = 512 * 1024 * 1024
             print("LLMService: MLX initialized at \(modelPath)")
             return true
         } catch {
             print("LLMService: MLX initialization failed — \(error)")
             print("LLMService: model path was: \(modelPath)")
-            stateLock.lock()
-            mlxInitialized = false
-            stateLock.unlock()
+            stateLock.withLock { mlxInitialized = false }
             return false
         }
 #else
         print("LLMService: MLXLLM not available in this build — add the MLX Swift packages to the target")
         return false
+#endif
+    }
+
+    /// Releases the loaded model and drops MLX's Metal buffer cache. Called on memory
+    /// pressure; the next `stream(request:)` call will return placeholder text until
+    /// `initializeModel()` is invoked again.
+    func unload() {
+#if canImport(MLXLLM)
+        stateLock.withLock {
+            modelContainer = nil
+            mlxInitialized = false
+        }
+        MLX.Memory.clearCache()
 #endif
     }
 
@@ -79,10 +96,9 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                 }
 
 #if canImport(MLXLLM)
-                self.stateLock.lock()
-                let mlxReady = self.mlxInitialized
-                let readyContainer = self.modelContainer
-                self.stateLock.unlock()
+                let (mlxReady, readyContainer) = self.stateLock.withLock {
+                    (self.mlxInitialized, self.modelContainer)
+                }
                 if !self.useMock, self.isModelAvailable, mlxReady,
                    let container = readyContainer {
                     do {
@@ -97,7 +113,10 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                         )
                         let input = UserInput(chat: chat)
                         let lmInput = try await container.prepare(input: input)
-                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.7, topP: 0.9)
+                        // Lower temperature/topP than default: this is a medical Q&A assistant where
+                        // deterministic, on-language output matters more than lexical variety. Higher
+                        // values let the small multilingual model drift into English/Chinese/Thai mid-reply.
+                        let params = GenerateParameters(maxTokens: 1024, temperature: 0.3, topP: 0.85)
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
                             if Task.isCancelled { break }
@@ -111,7 +130,7 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                     continuation.finish()
                     return
                 }
-#endif
+#endif // canImport(MLXLLM)
 
                 let reply: String
                 if !self.useMock && self.isModelAvailable {
@@ -157,7 +176,7 @@ final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 
     /// Assemble structured chat messages for MLX. `container.prepare` runs these through the
     /// model's chat template, so role labels must NOT be pre-formatted into the text here.
-    private static func buildChat(system: String, history: [ChatMessage], user: String) -> [Chat.Message] {
+    static func buildChat(system: String, history: [ChatMessage], user: String) -> [Chat.Message] {
         var messages: [Chat.Message] = []
 
         let sys = system.trimmingCharacters(in: .whitespacesAndNewlines)

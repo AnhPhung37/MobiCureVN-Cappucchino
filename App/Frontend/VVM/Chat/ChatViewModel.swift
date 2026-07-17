@@ -54,14 +54,14 @@ final class ChatViewModel: ObservableObject {
 
     init(
         llmService: LLMServiceProtocol? = nil,
-        historyRepository: ChatHistoryRepository = AppConfig.chatHistoryRepository
+        historyRepository: ChatHistoryRepository? = nil
     ) {
         let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.chatService = ChatService(
             orchestrator: orchestrator,
             translationService: AppConfig.translationService
         )
-        self.historyRepository = historyRepository
+        self.historyRepository = historyRepository ?? AppConfig.chatHistoryRepository
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
@@ -316,15 +316,17 @@ final class ChatViewModel: ObservableObject {
         switch processingState {
         case .idle:                return nil
         case .validatingLanguage:  return "Đang kiểm tra ngôn ngữ..."
+        case .refiningInput:       return "Đang xử lý câu hỏi..."
         case .translatingInput:    return "Đang dịch câu hỏi..."
         case .generating:          return "Đang soạn câu trả lời..."
+        case .translatingOutput:   return "Đang dịch câu trả lời..."
         }
     }
 }
 
 /// Thread-safe holder that carries the sources retrieved on the (background) generation
 /// task back to this @MainActor view model once streaming completes.
-private final class SourcesBox: @unchecked Sendable {
+private nonisolated final class SourcesBox: @unchecked Sendable {
     private let lock = NSLock()
     private var value: [MedicalSource] = []
 

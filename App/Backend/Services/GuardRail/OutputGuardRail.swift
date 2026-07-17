@@ -18,16 +18,14 @@ final class OutputGuardRail {
     }
 
     init() {}
-    
+
     /// Check LLM response against output safety rules
     /// Parameters:
     /// - response: raw LLM output
     /// - retrievedContext: context chunks + confidence score from retrieval
-    /// - originalQuery: user's query (for emergency detection)
     func validate(
         response: String,
-        retrievedContext: RetrievedContext?,
-        originalQuery: String
+        retrievedContext: RetrievedContext?
     ) -> OutputGuardRailResult {
         var issues: [String] = []
 

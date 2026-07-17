@@ -168,8 +168,7 @@ final class RAGCitationTests: XCTestCase {
     func testCitationDetected_AccordingTo() {
         let result = makeOutputGuardRail().validate(
             response: "According to clinical guidelines, you should rest for six weeks.",
-            retrievedContext: makeContextAboveThreshold(),
-            originalQuery: "What should I do?"
+            retrievedContext: makeContextAboveThreshold()
         )
         XCTAssertAllowed(result, "\"According to\" is a citation keyword — medical advice should pass")
     }
@@ -177,8 +176,7 @@ final class RAGCitationTests: XCTestCase {
     func testCitationDetected_Research() {
         let result = makeOutputGuardRail().validate(
             response: "Research shows that early mobilisation improves recovery.",
-            retrievedContext: makeContextAboveThreshold(),
-            originalQuery: "Should I move around?"
+            retrievedContext: makeContextAboveThreshold()
         )
         XCTAssertAllowed(result, "\"research\" is a citation keyword — should pass")
     }
@@ -186,8 +184,7 @@ final class RAGCitationTests: XCTestCase {
     func testCitationDetected_Study() {
         let result = makeOutputGuardRail().validate(
             response: "A study found that patients should use compression stockings.",
-            retrievedContext: makeContextAboveThreshold(),
-            originalQuery: "How do I prevent blood clots?"
+            retrievedContext: makeContextAboveThreshold()
         )
         XCTAssertAllowed(result, "\"study\" is a citation keyword — should pass")
     }
@@ -195,8 +192,7 @@ final class RAGCitationTests: XCTestCase {
     func testCitationDetected_BasedOn() {
         let result = makeOutputGuardRail().validate(
             response: "Based on available evidence, you should avoid NSAIDs after surgery.",
-            retrievedContext: makeContextAboveThreshold(),
-            originalQuery: "Should I take pain relievers?"
+            retrievedContext: makeContextAboveThreshold()
         )
         XCTAssertAllowed(result, "\"Based on\" is a citation keyword — should pass")
     }
@@ -206,8 +202,7 @@ final class RAGCitationTests: XCTestCase {
         let context = RetrievedContext(chunks: [], confidenceScore: 0.9, sources: [])
         let result = makeOutputGuardRail().validate(
             response: "You should take ibuprofen and avoid strenuous activity.",
-            retrievedContext: context,
-            originalQuery: "What should I do for pain?"
+            retrievedContext: context
         )
         XCTAssertBlocked(result, "Medical advice without any citation or source must be blocked")
     }
@@ -220,8 +215,7 @@ final class RAGCitationTests: XCTestCase {
         )
         let result = makeOutputGuardRail().validate(
             response: "You should start walking short distances each day.",
-            retrievedContext: context,
-            originalQuery: "When can I exercise?"
+            retrievedContext: context
         )
         XCTAssertAllowed(result, "Retrieved sources satisfy citation requirement even without inline citation text")
     }
@@ -238,8 +232,7 @@ final class RAGCitationTests: XCTestCase {
         for _ in 0..<1_000 {
             _ = guardrail.validate(
                 response: "Based on clinical research, you should follow your treatment plan.",
-                retrievedContext: context,
-                originalQuery: "What is my treatment plan?"
+                retrievedContext: context
             )
         }
         let elapsed = Date().timeIntervalSince(start)

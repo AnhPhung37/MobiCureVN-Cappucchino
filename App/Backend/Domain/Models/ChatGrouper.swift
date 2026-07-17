@@ -27,13 +27,13 @@ enum ChatGrouper {
             // matching ChatConversationGrouper rather than silently vanishing.
             if d >= startOfToday {
                 today.append(item)
-            } else if d >= startOfYesterday && d < startOfToday {
+            } else if d >= startOfYesterday {
                 yesterday.append(item)
-            } else if d >= startOf7Days && d < startOfYesterday {
+            } else if d >= startOf7Days {
                 last7Days.append(item)
-            } else if d >= startOf30Days && d < startOf7Days {
+            } else if d >= startOf30Days {
                 last1Month.append(item)
-            } else if d < startOf30Days {
+            } else {
                 older.append(item)
             }
         }

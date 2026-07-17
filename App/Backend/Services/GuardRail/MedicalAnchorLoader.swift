@@ -121,7 +121,10 @@ actor MedicalAnchorLoader {
     // MARK: - ZIP Extraction
 
     private func extractDatFile(from zipURL: URL) throws -> String {
-        guard let archive = Archive(url: zipURL, accessMode: .read) else {
+        let archive: Archive
+        do {
+            archive = try Archive(url: zipURL, accessMode: .read)
+        } catch {
             throw LoaderError.zipOpenFailed
         }
         guard let entry = archive.first(where: {

@@ -1,139 +1,114 @@
 import Foundation
 
-/// MedicalChatOrchestrator: full pipeline orchestration
-/// User Query → Input GuardRail → Prompt Refiner → RAG Retriever → 
+/// MedicalChatOrchestrator: full pipeline orchestration (English-only)
+/// English Query → Input GuardRail → RAG Retriever →
 /// LLM Generation → Output GuardRail → Response
+///
+/// Emergency detection and language conversion live one layer up in ChatService,
+/// which runs on the user's original-language text before this orchestrator is invoked.
 final class MedicalChatOrchestrator {
     
     private let inputGuardRail: InputGuardRail
     private let outputGuardRail: OutputGuardRail
     private let ragService: RAGService
     private let llmService: LLMServiceProtocol
-    private let emergencyDetector: EmergencyDetector
-    
+
     init(
         llmService: LLMServiceProtocol,
         inputGuardRail: InputGuardRail = InputGuardRail(),
         outputGuardRail: OutputGuardRail = OutputGuardRail(),
-        ragService: RAGService = RAGService(),
-        emergencyDetector: EmergencyDetector = EmergencyDetector()
+        ragService: RAGService = RAGService()
     ) {
         self.llmService = llmService
         self.inputGuardRail = inputGuardRail
         self.outputGuardRail = outputGuardRail
         self.ragService = ragService
-        self.emergencyDetector = emergencyDetector
     }
-    
+
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
-    /// - Parameters:
-    ///   - userQuery: The query in its original language (Vietnamese or English).
-    ///   - ragQuery: Optional English translation used exclusively for RAG retrieval.
-    ///     Pass this when the user typed in Vietnamese so the retrieval hits English docs.
-    ///   - responseLanguage: Language the LLM should reply in. Matches the user's input language.
+    /// - Parameter userQuery: The query in English. ChatService runs emergency detection on
+    ///   the original-language text and translates it to English before calling this, then
+    ///   translates the (always-English) response back afterward — this orchestrator only
+    ///   ever sees/generates English.
     func processQuery(
         _ userQuery: String,
         conversationHistory: [ChatMessage],
-        ragQuery: String? = nil,
-        responseLanguage: DetectedLanguage = .english,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
             let task = Task {
-                do {
-                    // Step 1: Emergency Detection FIRST — a user describing a crisis
-                    // (chest pain, "I want to die", etc.) must reach the emergency template
-                    // before any domain/safety filter can reject them.
-                    let emergency = emergencyDetector.detect(query: userQuery)
-                    if emergency.isEmergency {
-                        if let response = emergency.recommendation {
-                            continuation.yield(response)
-                        }
-                        continuation.finish()
-                        return
+                // Step 1: Input GuardRail — dangerous/injection/PII checks, plus semantic
+                // relevance. userQuery is always English by this point.
+                let inputResult = inputGuardRail.validate(
+                    query: userQuery,
+                    englishQuery: userQuery
+                )
+                switch inputResult.status {
+                case .blocked(let reason):
+                    continuation.yield("❌ \(reason)\n\n")
+                    if let violation = inputResult.violations.first {
+                        continuation.yield("Reason: \(violation)")
                     }
+                    continuation.finish()
+                    return
+                case .allowed:
+                    break
+                }
 
-                    // Step 2: Input GuardRail — original-language query for
-                    // dangerous/injection/PII checks, English translation (ragQuery)
-                    // for semantic relevance so NLEmbedding runs in a single language space.
-                    let inputResult = inputGuardRail.validate(
-                        query: userQuery,
-                        englishQuery: ragQuery
-                    )
-                    switch inputResult.status {
-                    case .blocked(let reason):
-                        continuation.yield("❌ \(reason)\n\n")
-                        if let violation = inputResult.violations.first {
-                            continuation.yield("Reason: \(violation)")
-                        }
-                        continuation.finish()
-                        return
-                    case .allowed:
-                        break
-                    }
+                let sanitizedQuery = inputResult.sanitizedQuery ?? userQuery
 
-                    let sanitizedQuery = inputResult.sanitizedQuery ?? userQuery
+                // Step 2: RAG Pipeline — sanitizedQuery is always English by this point.
+                let retrievedContext = await ragService.process(userQuery: sanitizedQuery)
+                // Surface retrieved sources so the UI can show citations without a
+                // second, redundant retrieval pass.
+                onSourcesRetrieved?(retrievedContext.sources)
 
-                    // Step 3: RAG Pipeline — use English query for retrieval when available
-                    // so Vietnamese input still matches the English medical documents.
-                    let retrievalQuery = ragQuery ?? sanitizedQuery
-                    let retrievedContext = await ragService.process(userQuery: retrievalQuery)
-                    // Surface retrieved sources so the UI can show citations without a
-                    // second, redundant retrieval pass.
-                    onSourcesRetrieved?(retrievedContext.sources)
+                // Step 3: Build enriched prompt with retrieved context
+                let enrichedPrompt = buildEnrichedPrompt(
+                    userQuery: sanitizedQuery,
+                    context: retrievedContext,
+                    history: conversationHistory
+                )
 
-                    // Step 4: Build enriched prompt with retrieved context
-                    let enrichedPrompt = buildEnrichedPrompt(
-                        userQuery: sanitizedQuery,
-                        context: retrievedContext,
-                        history: conversationHistory,
-                        responseLanguage: responseLanguage
-                    )
-                    
-                    // Step 5: Generate the full response, buffering it. We do NOT stream
-                    // tokens live: the output guardrail can only redact unsafe/hallucinated
-                    // content if the user hasn't already seen it.
-                    // Use the budget-trimmed history from EnrichedPrompt, not the raw
-                    // conversationHistory, so the prompt stays within the model's sweet spot.
-                    var accumulatedResponse = ""
-                    for await token in llmService.stream(request: LLMRequest(
+                // Step 4: Generate LLM response. This is buffered rather than streamed live
+                // because outputGuardRail.validate (Step 5) inspects the COMPLETE response —
+                // hallucination detection, unsafe dosage detection, and citation enforcement
+                // all need the full text and can replace it outright. There is no safe way to
+                // show tokens before that check runs.
+                //
+                // The LLM only ever generates English here — ChatService handles translating
+                // the user's original-language input to English beforehand and the English
+                // response back afterward, so there's no language-matching/retry step needed
+                // at this layer.
+                // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
+                // so the total prompt length stays within the model's sweet spot.
+                let accumulatedResponse = await Self.accumulate(
+                    stream: llmService.stream(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
                         conversationHistory: enrichedPrompt.history
-                    )) {
-                        if Task.isCancelled { break }
-                        accumulatedResponse += token
-                    }
+                    ))
+                )
 
-                    guard !Task.isCancelled else {
-                        continuation.finish()
-                        return
-                    }
-                    
-                    print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
+                print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
 
-                    // Step 6: Final Output GuardRail Check
-                    let outputResult = outputGuardRail.validate(
-                        response: accumulatedResponse,
-                        retrievedContext: retrievedContext,
-                        originalQuery: userQuery
-                    )
-                    
-                    switch outputResult.status {
-                    case .blocked:
-                        // Emit the filtered/validated text. The raw response was buffered,
-                        // never shown, so unsafe content does not reach the user.
-                        continuation.yield(outputResult.filteredResponse ?? accumulatedResponse)
-                    case .allowed:
-                        continuation.yield(accumulatedResponse)
+                // Step 5: Final Output GuardRail Check
+                let outputResult = outputGuardRail.validate(
+                    response: accumulatedResponse,
+                    retrievedContext: retrievedContext
+                )
+
+                switch outputResult.status {
+                case .blocked:
+                    if let filtered = outputResult.filteredResponse {
+                        continuation.yield(filtered)
+                        continuation.yield("\n\n⚠️ [Response filtered for safety]")
                     }
-                    
-                    continuation.finish()
-                    
-                } catch {
-                    continuation.yield("Error: \(error.localizedDescription)")
-                    continuation.finish()
+                case .allowed:
+                    continuation.yield(accumulatedResponse)
                 }
+
+                continuation.finish()
             }
 
             // Propagate consumer cancellation (e.g. user taps Stop) down to the LLM so
@@ -143,6 +118,15 @@ final class MedicalChatOrchestrator {
     }
     
     // MARK: - Private Helpers
+
+    /// Drains an LLM token stream into a single string.
+    private static func accumulate(stream: AsyncStream<String>) async -> String {
+        var result = ""
+        for await token in stream {
+            result += token
+        }
+        return result
+    }
 
     private struct EnrichedPrompt {
         let systemPrompt: String
@@ -161,12 +145,9 @@ final class MedicalChatOrchestrator {
     private func buildEnrichedPrompt(
         userQuery: String,
         context: RetrievedContext,
-        history: [ChatMessage],
-        responseLanguage: DetectedLanguage = .english
+        history: [ChatMessage]
     ) -> EnrichedPrompt {
-        let languageInstruction = responseLanguage.requiresTranslation
-            ? "Respond ONLY in Vietnamese (Tiếng Việt). Do NOT use English, Chinese, or any other language under any circumstances. Even if the retrieved context is written in English, your entire response MUST be in Vietnamese only."
-            : "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
+        let languageInstruction = "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
 
         // Apply token budget to RAG chunks so the system prompt stays compact.
         let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
@@ -184,6 +165,8 @@ final class MedicalChatOrchestrator {
         """ : ""
 
         let systemPrompt = """
+        LANGUAGE: \(languageInstruction)
+
         You are a medical informational assistant. Your role is to provide educational health information only.
 
         IMPORTANT CONSTRAINTS:
@@ -204,6 +187,8 @@ final class MedicalChatOrchestrator {
         \(formatSources(context.sources))
 
         Confidence Score: \(String(format: "%.0f%%", context.confidenceScore * 100))
+
+        REMINDER — \(languageInstruction)
         """
 
         // Cap history to the most recent N turns so the prompt stays short.

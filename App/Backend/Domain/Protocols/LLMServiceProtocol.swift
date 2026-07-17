@@ -8,5 +8,5 @@
 import Foundation
 
 protocol LLMServiceProtocol {
-    func stream(request: LLMRequest) -> AsyncStream<String>
+    nonisolated func stream(request: LLMRequest) -> AsyncStream<String>
 }

@@ -211,14 +211,15 @@ telemetry · second input modality / full multimodal fusion.
 
 ## 7. Personal Notes — Additional Issues (2026-07-02)
 
-### 7.1 OOM — App Quits Unexpectedly (Critical)
+### 7.1 OOM — App Quits Unexpectedly (Critical) — ✅ Fixed
 
-The app crashes under memory pressure when running on-device. Root causes are already identified but not yet fixed:
+The app crashed under memory pressure when running on-device. Fixed; see [`Docs/OOM-Memory-Management.md`](Docs/OOM-Memory-Management.md) for the full writeup (root causes, the fix, what was investigated but didn't need changing, and future optimization ideas).
 
-- **Unbounded stream buffer** (`LLMService.swift:72`, issue #5 above): `AsyncStream(bufferingPolicy: .unbounded)` lets token backpressure accumulate indefinitely in RAM.
-- **No MLX GPU cache limit** (issue from §3.5): no `MLX.GPU.set(cacheLimit:)` call means the MLX metal cache grows freely. On a 6–8 GB device this competes with the OS.
-- **Sequential model file downloads** (`ModelManager.swift:315`, issue #9): large model files held in memory during download before being written to disk.
-- **Fix priority**: add `MLX.GPU.set(cacheLimit:)` in `AppConfig` during model init; cap stream buffer to `.bufferingNewest(N)`; add a `didReceiveMemoryWarning` hook that clears the KV cache.
+Summary of the fix:
+- **Unbounded stream buffer** (`LLMService.swift`, issue #5 above): `.unbounded` → `.bufferingNewest(512)`.
+- **No MLX Metal cache limit** (issue from §3.5): added `MLX.Memory.cacheLimit = 512 * 1024 * 1024` after model load. Note: `MLX.GPU.set(cacheLimit:)` (as originally proposed) is deprecated in the pinned mlx-swift version — `MLX.Memory.cacheLimit` is the current API.
+- **Model file downloads** (`ModelManager.swift:315`, issue #9): investigated — already streams to disk via `URLSession.download(for:)`, no change needed.
+- **Memory-pressure hook**: added `LLMService.unload()` + `AppConfig.observeMemoryWarnings()` subscribing to `UIApplication.didReceiveMemoryWarningNotification`, releasing the model and force-clearing the MLX cache on pressure.
 
 ### 7.2 Citation Card Still Uses Mock Data
 
@@ -247,3 +248,33 @@ The current retrieval is FTS5 BM25 + vector KNN + RRF, which is structurally cor
   - Relax the AND clause to OR + BM25 scoring; the RRF fusion already handles noise from over-retrieval.
   - Consider LLM-based query rewriting (the model rewrites the patient's question into a retrieval-optimised form) as a stretch goal — the LLM is already on-device, so latency cost is just one extra short generation step.
   - Expand the corpus to 1,500+ chunks (see Phase 2 in `bugCheck.md`) to reduce the "no context found" fallback rate.
+
+### 7.5 No CI/CD (Process Gap)
+
+There is no `.github/workflows` directory and no automated build/test gate of any kind. Every merge so far (RAG fixes, translation fixes, guardrails) went in without CI validation — the team has been relying entirely on manual local testing before merge.
+
+- **Risk**: a broken build or a regression in `MobiCureVNTests`/`MobiCureVNUITests` can land on `main` unnoticed until someone runs Xcode locally.
+- **Recommended minimum**: a GitHub Actions workflow that runs `xcodebuild test` on PR against `main` (macOS runner, no signing needed for simulator tests). Even this alone would have caught regressions earlier in the RAG/translation fix history.
+- **Stretch**: add a build step for `Pipeline/` (lint + a smoke run of `Pipeline/eval/run_eval.py` against the checked-in `qrels.jsonl`) so pipeline changes are also gated.
+
+### 7.6 Dependency Pinning Is Inconsistent
+
+- **SPM packages float on minimum versions.** `project.pbxproj` pins `swift-transformers`, `swift-huggingface`, `mlx-swift`, `mlx-swift-lm`, and `ZIPFoundation` via `upToNextMajorVersion` *minimums* (e.g. `≥ 1.3.2`), and **`Package.resolved` is gitignored**, not committed. Two people building the same commit on different days can silently resolve different minor/patch versions of `mlx-swift` — risky given how fast MLX's API surface moves, and it makes "it works on my machine" bugs hard to reproduce.
+  - **Fix**: commit `Package.resolved` so builds are reproducible; bump deliberately via PR when needed.
+- **`Pipeline/requirements.txt` pins every dependency exactly (`==`) except one**: `sqlite-vec` is listed with no version pin at all — notable because it's the exact package underlying the vector index that this document spends several sections discussing bugs in. An unpinned upgrade of `sqlite-vec` could silently change index behavior or file format compatibility with the bundled `vectorstore.db`.
+  - **Fix**: pin `sqlite-vec` to the version actually used to build the currently-bundled `vectorstore.db`.
+
+### 7.7 Repo Hygiene / Workspace Ownership
+
+- **`build.log` (46KB) is committed at repo root** — a stray build artifact that should be removed and added to `.gitignore`.
+- **Two competing Python workspaces exist for RAG corpus prep**: `Pipeline/` (has `requirements.txt`, `build_index.py`, `eval/` — clearly the active one) and `DocumentsChunking/` (a second, mostly-empty folder whose only substantial content is a 1.1GB uncommitted `.venv`). It's unclear whether `DocumentsChunking/` is abandoned, superseded, or still in use by someone.
+  - **Fix**: confirm with whoever created `DocumentsChunking/` whether it's still needed; if not, delete it. If it serves a distinct purpose, document that purpose and move any unique logic into `Pipeline/`.
+- **`README.md` is 2 lines** (title + "Capstone 2026") — no setup instructions, no architecture overview, no pointer to `bugCheck.md`/`nextStep.md`. Anyone new to the repo (new teammate, marker, future maintainer) has no entry point.
+  - **Fix**: add a short README with build/run instructions for the Xcode project and the `Pipeline/` scripts, plus a link to these two roadmap docs.
+
+### 7.8 Service-Locator Globals Instead of Real DI
+
+`AppConfig` (`App/Backend/Configs/AppConfig.swift`) exposes `static var llmService`, `static var orchestrator`, `static let retriever`, `static let chatHistoryRepository` as process-wide mutable globals, with `didSet` triggering `NotificationCenter` broadcasts and orchestrator reconstruction. Protocols exist (`LLMServiceProtocol`, `ChatHistoryRepository`, `ProfileRepository`) but nothing is actually constructor-injected at a single composition root — this is a service-locator pattern wearing DI's clothes.
+
+- **Consequence already observed**: `ChatViewModel` (UI layer) reaches directly into `AppConfig.retriever` to run its own second retrieval (see issue #2/#8) instead of going through `MedicalChatOrchestrator` — the global makes it too easy to bypass the intended layering.
+- This is listed as a Phase 4 cleanup item in §5 above ("remove direct `AppConfig` globals"); flagging it here explicitly as its own finding since it's the root enabler of the layering violation in #2, not just unrelated tech debt.

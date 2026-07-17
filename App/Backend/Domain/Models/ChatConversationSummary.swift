@@ -1,6 +1,6 @@
 import Foundation
 
-struct ChatConversationSummary: Identifiable, Sendable {
+nonisolated struct ChatConversationSummary: Identifiable, Sendable {
     let id: UUID
     let title: String
     let preview: String
@@ -13,6 +13,30 @@ struct ChatConversationSummary: Identifiable, Sendable {
         self.preview = preview
         self.lastMessageDate = lastMessageDate
         self.messageCount = messageCount
+    }
+
+    // Shared by SwiftDataChatHistoryRepository and InMemoryChatHistoryRepository so both
+    // build conversation summaries — sorted newest-first — the same way regardless of the
+    // underlying storage's message type.
+    static func summarizing<Message>(
+        _ grouped: [UUID: [Message]],
+        date: (Message) -> Date,
+        role: (Message) -> String,
+        content: (Message) -> String
+    ) -> [ChatConversationSummary] {
+        grouped.map { conversationId, messages in
+            let sorted = messages.sorted { date($0) < date($1) }
+            let preview = sorted.last.map(content) ?? ""
+            let title = sorted.first(where: { role($0).lowercased() == "user" }).map(content) ?? preview
+            return ChatConversationSummary(
+                id: conversationId,
+                title: title.isEmpty ? "Chat" : title,
+                preview: preview,
+                lastMessageDate: sorted.last.map(date) ?? Date(),
+                messageCount: sorted.count
+            )
+        }
+        .sorted { $0.lastMessageDate > $1.lastMessageDate }
     }
 }
 

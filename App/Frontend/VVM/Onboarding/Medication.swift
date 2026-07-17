@@ -107,9 +107,7 @@ final class MedicationStore: NSObject, ObservableObject, UNUserNotificationCente
     // MARK: - Notifications
     func requestPermission() {
         let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            // handle if needed
-        }
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
     }
 
     private func setupNotificationCategories() {
@@ -139,10 +137,7 @@ final class MedicationStore: NSObject, ObservableObject, UNUserNotificationCente
             let id = "med_\(med.id.uuidString)_\(time)"
             let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
 
-            center.add(request) { error in
-                // handle error optionally
-            }
-
+            center.add(request) { _ in }
         }
     }
 
@@ -247,7 +242,7 @@ final class MedicationStore: NSObject, ObservableObject, UNUserNotificationCente
         return true
     }
 
-    private func scheduledDate(for day: Date, timeString: String) -> Date? {
+    func scheduledDate(for day: Date, timeString: String) -> Date? {
         let parts = timeString.split(separator: ":").map { Int($0) ?? 0 }
         var comps = Calendar.current.dateComponents([.year, .month, .day], from: day)
         comps.hour = parts.count > 0 ? parts[0] : 0

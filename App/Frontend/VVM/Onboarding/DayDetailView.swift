@@ -36,8 +36,7 @@ struct DayDetailView: View {
                                         if let dose = med.dose { Text(dose).font(.caption) }
                                     }
                                     Spacer()
-                                    // compute scheduled date for this time
-                                    if let scheduled = scheduledDate(for: date, timeString: timeStr) {
+                                    if let scheduled = store.scheduledDate(for: date, timeString: timeStr) {
                                         if store.isTaken(medicationId: med.id, scheduledAt: scheduled) {
                                             Text("Taken").foregroundColor(.green)
                                         } else {
@@ -69,14 +68,6 @@ struct DayDetailView: View {
                 }
             }
         }
-    }
-
-    private func scheduledDate(for day: Date, timeString: String) -> Date? {
-        let parts = timeString.split(separator: ":").map { Int($0) ?? 0 }
-        var comps = Calendar.current.dateComponents([.year, .month, .day], from: day)
-        comps.hour = parts.count > 0 ? parts[0] : 0
-        comps.minute = parts.count > 1 ? parts[1] : 0
-        return Calendar.current.date(from: comps)
     }
 }
 
