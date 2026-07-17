@@ -466,7 +466,7 @@ struct ChatView: View {
         viewModel.sendMessage(
             prompt: prompt,
             displayContent: displayText,
-            attachedImageData: attachedImages.compactMap { $0.jpegData(compressionQuality: 0.9) }
+            attachedImageData: attachedImages.compactMap { $0.attachmentJPEGData() }
         )
         clearAttachmentDraft()
     }

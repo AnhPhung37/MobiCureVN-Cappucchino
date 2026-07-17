@@ -30,8 +30,12 @@ final class MedicalChatOrchestrator {
     ///   the original-language text and translates it to English before calling this, then
     ///   translates the (always-English) response back afterward — this orchestrator only
     ///   ever sees/generates English.
+    /// - Parameter images: images attached to this user turn. Text guardrails and RAG run on
+    ///   the query text only; the images ride along into the LLM request (multimodal chat
+    ///   convention) and are used when the loaded model supports vision.
     func processQuery(
         _ userQuery: String,
+        images: [Data] = [],
         conversationHistory: [ChatMessage],
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
@@ -86,7 +90,8 @@ final class MedicalChatOrchestrator {
                     stream: llmService.stream(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
-                        conversationHistory: enrichedPrompt.history
+                        conversationHistory: enrichedPrompt.history,
+                        images: images
                     ))
                 )
 

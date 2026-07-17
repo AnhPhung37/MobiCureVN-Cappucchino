@@ -140,7 +140,12 @@ final class ChatViewModel: ObservableObject {
         // without a second retrieval (the orchestrator already retrieved this context).
         let sourcesBox = SourcesBox()
         streamingTask = Task {
-            let fullText = await streamResponse(for: text, assistantIndex: assistantIndex, sourcesBox: sourcesBox)
+            let fullText = await streamResponse(
+                for: text,
+                images: attachedImageData,
+                assistantIndex: assistantIndex,
+                sourcesBox: sourcesBox
+            )
             // The orchestrator buffers and delivers the whole response at the end, so a
             // cancel (Stop button / clear / switch) leaves fullText empty. Don't run the
             // normal finalize — it would overwrite the bubble with an error and persist it.
@@ -177,11 +182,15 @@ final class ChatViewModel: ObservableObject {
         return messages.count - 1
     }
 
-    private func streamResponse(for text: String, assistantIndex: Int, sourcesBox: SourcesBox) async -> String {
+    private func streamResponse(for text: String, images: [Data], assistantIndex: Int, sourcesBox: SourcesBox) async -> String {
         var fullText = ""
+        // dropLast(2) excludes the assistant placeholder AND the just-appended user message:
+        // the current turn travels separately as `text` + `images`, so leaving it in history
+        // would send the user's message to the LLM twice.
         let stream = chatService.processQuery(
             text,
-            history: Array(messages.dropLast()),
+            images: images,
+            history: Array(messages.dropLast(2)),
             onSourcesRetrieved: { sourcesBox.set($0) }
         )
         for await token in stream {

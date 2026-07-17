@@ -65,8 +65,12 @@ final class ChatService: ObservableObject {
 
     // MARK: - Main Pipeline
 
+    /// - Parameter images: encoded images attached to this user turn. They bypass the
+    ///   text-only language steps (refine/translate) untouched and are handed to the
+    ///   orchestrator alongside the English query, per the multimodal chat convention.
     func processQuery(
         _ text: String,
+        images: [Data] = [],
         history: [ChatMessage],
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
@@ -90,6 +94,7 @@ final class ChatService: ObservableObject {
                 do {
                     try await self.runPipeline(
                         originalText: text,
+                        images: images,
                         detectedLanguage: detected,
                         history: history,
                         onSourcesRetrieved: onSourcesRetrieved,
@@ -119,6 +124,7 @@ final class ChatService: ObservableObject {
     // LLM validation with LLM-translate fallback on mismatch.
     private func runPipeline(
         originalText: String,
+        images: [Data],
         detectedLanguage: DetectedLanguage,
         history: [ChatMessage],
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
@@ -160,6 +166,7 @@ final class ChatService: ObservableObject {
         var englishResponse = ""
         for await token in orchestrator.processQuery(
             englishQuery,
+            images: images,
             conversationHistory: history,
             onSourcesRetrieved: onSourcesRetrieved
         ) {

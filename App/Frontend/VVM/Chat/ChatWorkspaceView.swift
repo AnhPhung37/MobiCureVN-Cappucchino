@@ -632,7 +632,7 @@ struct ChatWorkspaceView: View {
         viewModel.sendMessage(
             prompt: prompt,
             displayContent: trimmed,
-            attachedImageData: attachedImages.compactMap { $0.jpegData(compressionQuality: 0.9) }
+            attachedImageData: attachedImages.compactMap { $0.attachmentJPEGData() }
         )
         clearDraftAttachments()
     }
