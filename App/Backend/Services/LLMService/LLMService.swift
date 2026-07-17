@@ -39,11 +39,13 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
         self.isVisionModel = Self.detectVisionModel(at: modelPath)
     }
 
-    /// model_type values registered by MLXVLM's VLMModelFactory. Text-only exports use
-    /// distinct types (e.g. Gemma 3's text-only repos are "gemma3_text"), so this set is
-    /// safe to match exactly.
+    /// model_type values registered by MLXVLM's VLMModelFactory (mlx-swift-lm 3.31.3,
+    /// VLMModelFactory.swift). Text-only exports use distinct types (e.g. Gemma 3's
+    /// text-only repos are "gemma3_text"), so this set is safe to match exactly.
     private static let visionModelTypes: Set<String> = [
-        "qwen2_vl", "qwen2_5_vl", "qwen3_vl", "gemma3", "paligemma", "idefics3", "smolvlm", "llava"
+        "fastvlm", "gemma3", "gemma4", "glm_ocr", "idefics3", "lfm2_vl", "llava_qwen2",
+        "mistral3", "paligemma", "pixtral", "qwen2_vl", "qwen2_5_vl", "qwen3_vl",
+        "qwen3_5", "qwen3_5_moe", "smolvlm"
     ]
 
     private static func detectVisionModel(at path: String) -> Bool {
@@ -158,7 +160,11 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                             // their chat would make prepare() throw, so drop them up front.
                             images: self.isVisionModel ? request.images : []
                         )
-                        var input = UserInput(chat: chat)
+                        // Qwen 3+ hybrid-reasoning templates default to thinking mode, which
+                        // would burn the token budget on a <think> preamble and leak it into
+                        // the chat. Explicitly disable it; templates without the variable
+                        // (Qwen 2.5, Llama, Phi, Gemma) simply ignore it.
+                        var input = UserInput(chat: chat, additionalContext: ["enable_thinking": false])
                         // Bound the vision prefill cost: a full-resolution photo expands into
                         // thousands of image tokens on a 3B VLM. 512px is plenty for wound /
                         // medication-label photos and keeps prefill in the seconds range.

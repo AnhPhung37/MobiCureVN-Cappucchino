@@ -16,9 +16,9 @@ enum ChatError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .streamFailed:
-            return "Không thể kết nối. Vui lòng thử lại."
+            return "Không thể kết nối. Vui lòng thử lại.".localized(for: .current)
         case .emptyResponse:
-            return "Không nhận được phản hồi. Vui lòng thử lại."
+            return "Không nhận được phản hồi. Vui lòng thử lại.".localized(for: .current)
         }
     }
 }
@@ -211,7 +211,7 @@ final class ChatViewModel: ObservableObject {
         }
 
         if fullText.isEmpty {
-            messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.")
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.".localized(for: .current))
         } else {
             messageDates[assistantIndex] = Date()
             let assistantItem = ChatItem(
@@ -284,7 +284,7 @@ final class ChatViewModel: ObservableObject {
             await refreshConversationHistory()
         } catch {
             await MainActor.run {
-                self.errorMessage = "Không thể xoá cuộc trò chuyện này."
+                self.errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
             }
         }
     }

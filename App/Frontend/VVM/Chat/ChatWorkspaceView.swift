@@ -7,6 +7,7 @@ struct ChatWorkspaceView: View {
 
     @FocusState private var inputFocused: Bool
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.light.rawValue
+    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     @State private var isSidebarVisible = true
     @State private var isShowingAttachmentSheet = false
     @State private var isShowingCameraPicker = false
@@ -137,7 +138,7 @@ struct ChatWorkspaceView: View {
         .font(.system(size: 13, weight: .medium))
     }
 
-    private func statusRow(icon: String, text: String, color: Color) -> some View {
+    private func statusRow(icon: String, text: LocalizedStringKey, color: Color) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
@@ -188,7 +189,7 @@ struct ChatWorkspaceView: View {
                 } else {
                     ForEach(filteredConversationSections) { section in
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(section.title)
+                            Text(LocalizedStringKey(section.title))
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(Color(.secondaryLabel))
                                 .padding(.horizontal, 8)
@@ -203,7 +204,7 @@ struct ChatWorkspaceView: View {
                                                 .font(.system(size: 14, weight: .semibold))
                                                 .foregroundColor(Color(.label))
                                                 .lineLimit(1)
-                                            Text(conversation.preview.isEmpty ? "No preview" : conversation.preview)
+                                            (conversation.preview.isEmpty ? Text("No preview") : Text(conversation.preview))
                                                 .font(.system(size: 12))
                                                 .foregroundColor(Color(.secondaryLabel))
                                                 .lineLimit(2)
@@ -351,25 +352,30 @@ struct ChatWorkspaceView: View {
         AppearanceMode(rawValue: appearanceModeRaw) ?? .light
     }
 
+    private var appLanguage: AppLanguage {
+        AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese
+    }
+
     private var languageToggle: some View {
         HStack(spacing: 0) {
-            Button(action: {}) {
-                Text("VI")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Capsule().fill(Color.blue))
-            }
-            Button(action: {}) {
-                Text("EN")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(Color(.secondaryLabel))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-            }
+            languageButton("VI", language: .vietnamese)
+            languageButton("EN", language: .english)
         }
         .background(Capsule().fill(Color(.secondarySystemBackground)))
+    }
+
+    private func languageButton(_ label: String, language: AppLanguage) -> some View {
+        let isSelected = appLanguage == language
+        return Button {
+            appLanguageRaw = language.rawValue
+        } label: {
+            Text(verbatim: label)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(isSelected ? .white : Color(.secondaryLabel))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(isSelected ? Capsule().fill(Color.blue) : nil)
+        }
     }
 
     private func tagPill(_ text: String, color: Color) -> some View {
@@ -422,7 +428,7 @@ struct ChatWorkspaceView: View {
             Circle()
                 .fill(statusColor(for: viewModel.backendStatus))
                 .frame(width: 8, height: 8)
-            Text(statusLabel(for: viewModel.backendStatus))
+            Text(LocalizedStringKey(statusLabel(for: viewModel.backendStatus)))
                 .font(.system(size: 13, weight: .semibold))
         }
         .foregroundColor(Color(.secondaryLabel))
@@ -457,7 +463,7 @@ struct ChatWorkspaceView: View {
         .padding(.top, 10)
     }
 
-    private func infoChip(text: String) -> some View {
+    private func infoChip(text: LocalizedStringKey) -> some View {
         HStack(spacing: 6) {
             Image(systemName: "checkmark.circle.fill")
             Text(text)
@@ -475,7 +481,9 @@ struct ChatWorkspaceView: View {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
                 ForEach(quickQuestions) { question in
                     Button {
-                        viewModel.inputText = question.prompt
+                        // Resolve the prompt in the selected UI language so the question
+                        // sent to the model matches what the user sees on the card.
+                        viewModel.inputText = question.prompt.localized(for: appLanguage)
                         submitCurrentMessage()
                     } label: {
                         quickQuestionCard(question)
@@ -501,10 +509,10 @@ struct ChatWorkspaceView: View {
                 Spacer()
             }
 
-            Text(question.title)
+            Text(LocalizedStringKey(question.title))
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(Color(.label))
-            Text(question.prompt)
+            Text(LocalizedStringKey(question.prompt))
                 .font(.system(size: 13))
                 .foregroundColor(Color(.secondaryLabel))
                 .multilineTextAlignment(.leading)
@@ -523,7 +531,8 @@ struct ChatWorkspaceView: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(viewModel.sections) { section in
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(section.title.uppercased())
+                    Text(LocalizedStringKey(section.title))
+                        .textCase(.uppercase)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -749,6 +758,7 @@ struct ChatWorkspaceView: View {
     private func relativeDate(_ date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
+        formatter.locale = appLanguage.locale
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
