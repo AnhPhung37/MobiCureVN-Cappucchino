@@ -44,6 +44,15 @@ struct AppConfig {
         }
     }()
 
+    static let woundLogRepository: WoundLogRepository = {
+        do {
+            return try SwiftDataWoundLogRepository()
+        } catch {
+            assertionFailure("Failed to create SwiftData wound log repository: \(error)")
+            return InMemoryWoundLogRepository()
+        }
+    }()
+
     /// Shared SQLiteRetriever — opening a SQLite connection is expensive; reuse one instance
     /// across the RAGService (inside MedicalChatOrchestrator) and ChatViewModel citation lookup.
     static let retriever = SQLiteRetriever()

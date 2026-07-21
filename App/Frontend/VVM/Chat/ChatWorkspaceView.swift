@@ -279,6 +279,10 @@ struct ChatWorkspaceView: View {
                     VStack(spacing: 18) {
                         workspaceHeader
 
+                        if viewModel.backendStatus == .loading && viewModel.isFirstTimeModelSetup {
+                            firstTimeModelSetupNotice
+                        }
+
                         if viewModel.messages.isEmpty {
                             emptyHero
                             quickQuestionSection
@@ -516,6 +520,23 @@ struct ChatWorkspaceView: View {
         .overlay(
             Capsule().strokeBorder(Color.green.opacity(0.18), lineWidth: 1)
         )
+    }
+
+    private var firstTimeModelSetupNotice: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "info.circle")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.accentColor)
+            Text(LocalizedStringKey("Lần đầu tải model có thể mất vài phút, tuỳ theo tốc độ mạng và thiết bị. Các lần sau sẽ nhanh hơn nhiều."))
+                .font(.system(size: 12))
+                .foregroundColor(Color(.secondaryLabel))
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12).fill(Color.accentColor.opacity(0.08))
+        )
+        .transition(.opacity)
     }
 
     private var emptyHero: some View {
