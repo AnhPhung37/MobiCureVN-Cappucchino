@@ -98,8 +98,9 @@ final class InputGuardRail {
     private func checkMedicalRelevance(_ query: String) -> Bool {
         let lower = query.lowercased()
 
-        // Fast path: exact keyword / intent-pattern matching.
-        // Covers the vast majority of medical queries with negligible CPU cost.
+        // Fast path: keyword / intent substring matching. Diacritics are deliberately kept
+        // (no folding) — folding short Vietnamese syllables would over-match non-medical text
+        // and disable the filter (see GuardRailRules.medicalKeywords).
         if GuardRailRules.medicalKeywords.contains(where: { lower.contains($0) }) { return true }
         if GuardRailRules.patientIntentPatterns.contains(where: { lower.contains($0) }) { return true }
 
@@ -115,30 +116,30 @@ final class InputGuardRail {
 
         return false
     }
-    
-    /// Rule Group 2: Check for dangerous/harmful requests
+
+    /// Rule Group 2: Check for dangerous/harmful requests.
+    /// Matches on both the canonical and the compact (de-spaced) form so evasion via
+    /// diacritics, punctuation, or spacing ("t.ự t.ử", "tu tu") is still caught.
     private func checkDangerousRequests(_ query: String) -> String? {
-        let lower = query.lowercased()
-        
-        for pattern in GuardRailRules.dangerousPatterns {
-            if lower.contains(pattern.lowercased()) {
-                return "Dangerous request detected: \(pattern)"
-            }
+        let canonical = GuardRailNormalizer.canonical(query)
+        let compact = GuardRailNormalizer.compact(query)
+        if let raw = GuardRailNormalizer.firstBlocklistMatch(canonicalText: canonical,
+                                                             compactText: compact,
+                                                             patterns: GuardRailRules.dangerousBlocklist) {
+            return "Dangerous request detected: \(raw)"
         }
-        
         return nil
     }
-    
-    /// Rule Group 3: Detect prompt injection / jailbreak attempts
+
+    /// Rule Group 3: Detect prompt injection / jailbreak attempts.
     private func checkPromptInjection(_ query: String) -> String? {
-        let lower = query.lowercased()
-        
-        for pattern in GuardRailRules.injectionPatterns {
-            if lower.contains(pattern.lowercased()) {
-                return "Potential injection: \(pattern)"
-            }
+        let canonical = GuardRailNormalizer.canonical(query)
+        let compact = GuardRailNormalizer.compact(query)
+        if let raw = GuardRailNormalizer.firstBlocklistMatch(canonicalText: canonical,
+                                                             compactText: compact,
+                                                             patterns: GuardRailRules.injectionBlocklist) {
+            return "Potential injection: \(raw)"
         }
-        
         return nil
     }
     

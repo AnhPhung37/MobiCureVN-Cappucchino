@@ -31,124 +31,52 @@ struct GuardRailRules {
     }
 
     // MARK: - Input Rules
+    //
+    // The plaintext keyword/phrase lists below are loaded from the bundled
+    // `GuardRailRules.json` (via `GuardRailRuleStore`), with a compiled-in fallback in
+    // `GuardRailRuleSet.builtIn`. Matching goes through `GuardRailNormalizer`, so it is
+    // insensitive to case, diacritics, width, punctuation, and spacing — list patterns in
+    // their natural form. Pre-normalised variants are cached here so the fold runs once at
+    // launch rather than per query.
 
-    /// Rule Group 1: Domain Filter — only medical queries
-    static let medicalKeywords = Set([
-        // Vietnamese medical terms
-        "triệu chứng", "bệnh", "đau", "viêm", "nhiễm", "phẫu thuật", "mổ", "vết",
-        "mủ", "sốt", "chảy máu", "buồn nôn", "nôn", "tiêu chảy", "táo bón",
-        "huyết áp", "tim", "phổi", "gan", "thận", "dạ dày", "ruột",
-        "thuốc", "liều", "điều trị", "khỏe", "sức khỏe", "bác sĩ", "y tế",
-        "hồi phục", "vận động", "ăn uống", "sinh hoạt", "hạn chế",
+    /// Rule Group 1: Domain Filter — only medical queries. Matched with lowercased substring
+    /// (see InputGuardRail): diacritic folding is intentionally NOT applied here because short
+    /// Vietnamese syllables (e.g. "ăn" → "an") would then match ubiquitous non-medical words
+    /// like "an toàn" and effectively disable the filter. Evasion resistance is reserved for
+    /// the blocklists below, where it matters.
+    static let medicalKeywords = Set(GuardRailRuleStore.current.medicalKeywords)
 
-        // Vietnamese nutrition/lifestyle terms patients commonly ask
-        "ăn", "uống", "thức ăn", "thực phẩm", "dinh dưỡng", "bữa ăn",
-        "calo", "cân nặng", "vitamin", "nước", "rau", "trái cây",
-        "chất đạm", "chất béo", "tinh bột", "chế độ ăn", "tránh ăn",
-        "nên ăn", "không nên ăn", "kiêng", "bổ sung",
+    /// Rule Group 2: Hard-block dangerous requests.
+    static let dangerousPatterns = GuardRailRuleStore.current.dangerousPatterns
 
-        // English medical terms
-        "symptom", "disease", "pain", "infection", "inflammation", "surgery", "surgical",
-        "wound", "incision", "scar", "fever", "bleeding", "nausea", "vomit", "diarrhea", "constipation",
-        "blood pressure", "heart", "lung", "liver", "kidney", "stomach", "intestine",
-        "medicine", "drug", "dose", "treatment", "recovery", "exercise", "diet",
-        "physician", "doctor", "health", "medical", "postoperative", "post-op", "healing",
+    /// Pre-normalised blocklist for dangerous requests: (raw, canonical, compact).
+    /// The compact (de-spaced) form catches character-spacing evasion ("t ự t ử").
+    static let dangerousBlocklist: [(raw: String, canonical: String, compact: String)] =
+        dangerousPatterns.map { ($0, GuardRailNormalizer.canonical($0), GuardRailNormalizer.compact($0)) }
 
-        // English nutrition/lifestyle terms patients commonly ask
-        "eat", "food", "drink", "meal", "nutrition", "nutrient", "vitamin", "mineral",
-        "calorie", "weight", "hydration", "water", "fruit", "vegetable", "protein",
-        "carbohydrate", "fiber", "supplement", "appetite", "avoid eating", "should eat",
-        "what to eat", "foods to", "dietary",
-        
-        // Stoma / colorectal / urology — core domain terms for this app
-        "stoma", "colostomy", "ileostomy", "urostomy", "ostomy",
-        "bowel", "colon", "colorectal", "rectal", "rectum",
-        "cancer", "tumor", "malignant", "carcinoma",
-        "catheter", "catheterization", "urinary", "urine", "diversion",
-        "stent", "colonic", "reversal", "pouch", "bag", "output",
-        "continent", "incontinent", "appliance", "wafer", "flange",
-        "peristomal", "stomal", "effluent"
-    ])
-    
-    /// Rule Group 2: Hard-block dangerous requests
-    static let dangerousPatterns = [
-        // Suicide/self-harm (Vietnamese)
-        "tự tử", "cách để chết", "cách chết", "cách tự sát", "uống thuốc để chết",
-        "treo cổ", "đâm thương", "cắt cổ tay", "tước đoạt mạng sống",
-        
-        // Poison/toxic (Vietnamese)
-        "thuốc độc", "chất độc", "cách để độc", "đánh độc", "cách độc người",
-        
-        // Illegal synthesis (Vietnamese + English)
-        "làm malware", "viết virus", "hướng dẫn bom", "cách làm bom",
-        "synthesis bomb", "make cocaine", "produce fentanyl", "drug synthesis",
-        
-        // Self-harm (English)
-        "how to commit suicide", "how to kill myself", "methods of self-harm",
-        "lethal dose", "overdose amount"
-    ]
-    
-    /// Rule Group 1b: Patient intent patterns — health-related phrasing even without explicit medical vocab.
-    /// Covers lifestyle/diet questions patients ask without using clinical language.
-    static let patientIntentPatterns = [
-        // English — permission/safety questions
-        "can i have", "can i eat", "can i drink", "can i take", "can i use",
-        "should i eat", "should i drink", "should i take", "should i avoid",
-        "is it okay to", "is it safe to", "is it okay if", "is it ok to",
-        "is it good for", "is it bad for", "is it healthy",
-        "what can i eat", "what should i eat", "what to eat", "what to drink",
-        "what foods", "what food", "foods to avoid", "foods to eat",
-        "good for my", "bad for my", "safe for me",
+    /// Rule Group 1b: Patient intent patterns — health-related phrasing without explicit
+    /// medical vocab (lifestyle/diet questions patients ask in plain language).
+    static let patientIntentPatterns = GuardRailRuleStore.current.patientIntentPatterns
 
-        // Vietnamese — common patient phrasing
-        "tôi có thể ăn", "tôi có thể uống", "có được ăn", "có nên ăn",
-        "có được uống", "có nên uống", "nên ăn gì", "nên uống gì",
-        "ăn gì tốt", "uống gì tốt", "có hại không", "có tốt không",
-        "có được dùng", "tôi nên ăn", "tôi nên uống", "kiêng gì",
-        "có ảnh hưởng không", "có tốt cho", "có hại cho"
-    ]
+    /// Rule Group 3: Prompt injection / jailbreak patterns.
+    /// (The overly-broad "act as a" was removed — it false-blocked benign phrasing like
+    /// "can the nurse act as a caregiver"; "act as dan" is retained.)
+    static let injectionPatterns = GuardRailRuleStore.current.injectionPatterns
 
-    /// Rule Group 3: Prompt injection / jailbreak patterns
-    static let injectionPatterns = [
-        "ignore previous instruction",
-        "you are no longer",
-        "show system prompt",
-        "show me the prompt",
-        "reveal instructions",
-        "act as dan",
-        "act as a",
-        "forget your role",
-        "break character",
-        "bypass safety",
-        "deactivate safeguard",
-        "disable guardrail"
-    ]
-    
+    /// Pre-normalised blocklist for injection attempts: (raw, canonical, compact).
+    static let injectionBlocklist: [(raw: String, canonical: String, compact: String)] =
+        injectionPatterns.map { ($0, GuardRailNormalizer.canonical($0), GuardRailNormalizer.compact($0)) }
+
     // MARK: - Output Rules
-    
-    /// Confidence threshold for medical advice (0.0 - 1.0)
-    static let minMedicalConfidenceThreshold: Double = 0.65
-    
-    /// Patterns indicating hallucinated advice
-    static let hallucinationIndicators = [
-        "definitely cure",
-        "100% effective",
-        "take \\d+ pill",
-        "inject \\d+ mg",
-        "will definitely",
-        "guaranteed to",
-        "miraculous",
-        "instant relief"
-    ]
-    
-    /// Unsafe dosage patterns to flag
-    static let unsafeDosagePatterns = [
-        "ibuprofen.*1000", // > 1000mg
-        "paracetamol.*5000", // > 5000mg
-        "aspirin.*2000", // > 2000mg
-        "take all",
-        "maximum dose"
-    ]
+
+    /// Confidence threshold for medical advice (0.0 - 1.0).
+    static let minMedicalConfidenceThreshold: Double = GuardRailRuleStore.current.minMedicalConfidenceThreshold
+
+    /// Regex patterns indicating hallucinated advice (matched with NSRegularExpression).
+    static let hallucinationIndicators = GuardRailRuleStore.current.hallucinationIndicators
+
+    /// Regex patterns for unsafe dosage (matched with NSRegularExpression).
+    static let unsafeDosagePatterns = GuardRailRuleStore.current.unsafeDosagePatterns
     
     // MARK: - Emergency Symptoms
     
