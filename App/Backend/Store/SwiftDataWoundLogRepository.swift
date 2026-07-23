@@ -71,6 +71,9 @@ final class SwiftDataWoundLogRepository: WoundLogRepository {
         let descriptor = FetchDescriptor<WoundLogRecord>(predicate: predicate)
         let records = try container.mainContext.fetch(descriptor)
         for record in records {
+            // Remove the backing photo file alongside the record so deleting a log entry
+            // doesn't leave an orphaned image in Application Support.
+            WoundPhotoStore.delete(at: record.imageReference)
             container.mainContext.delete(record)
         }
         try container.mainContext.save()

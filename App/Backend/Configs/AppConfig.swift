@@ -57,6 +57,31 @@ struct AppConfig {
     /// across the RAGService (inside MedicalChatOrchestrator) and ChatViewModel citation lookup.
     static let retriever = SQLiteRetriever()
 
+    /// Shared session-fact store. A `MedicalChatOrchestrator` is recreated on every model swap
+    /// (see `ChatViewModel.bindLLMStatusUpdates`); if each carried its own fact store, remembered
+    /// facts would be lost on a mid-conversation model switch. Sharing one instance keeps a
+    /// conversation's facts stable across swaps and — because facts are keyed by conversationId —
+    /// lets the Profile screen read the very facts being injected into the live system prompt.
+    static let sessionFactStore = SessionFactStore()
+
+    /// Stable, device-local patient identity used to scope wound-log entries.
+    ///
+    /// This is a single-user app today — there is no real per-patient profile identity yet
+    /// (`PatientProfile.id` is regenerated on every fetch). Rather than block the wound log on
+    /// that, we persist one UUID in `UserDefaults` on first access and reuse it for the life of
+    /// the install, so a patient's photo history stays coherent across launches. When real
+    /// profiles land, migrate existing entries from this id to the profile id.
+    private static let localPatientIDKey = "AppConfigLocalPatientID"
+    static var localPatientID: UUID = {
+        let defaults = UserDefaults.standard
+        if let stored = defaults.string(forKey: localPatientIDKey), let id = UUID(uuidString: stored) {
+            return id
+        }
+        let id = UUID()
+        defaults.set(id.uuidString, forKey: localPatientIDKey)
+        return id
+    }()
+
     private(set) static var llmStatus: LLMBackendStatus = .mock {
         didSet {
             NotificationCenter.default.post(name: llmStatusDidChange,

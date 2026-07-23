@@ -25,7 +25,9 @@ enum ChatProcessingState: Equatable {
 // Apple's Translation framework; on the way out, the LLM translates the English response
 // itself (noticeably more natural tone than Apple's literal output), verified by a
 // validation pass with Apple Translation as the fallback when the LLM leaks or truncates:
-//   1. Detect the input's language.
+//   1. Detect the input's language AND run the "refine" pass concurrently — both consume
+//      only the original text and are independent, so they run via `async let` in parallel
+//      to shave one LLM round-trip off a Vietnamese turn's latency.
 //   2. LLM "refine" pass: fix typos and unify code-switching, staying in the same language.
 //   3. Emergency detection on the refined original-language text.
 //   4. Apple Translation: refined input → English (skipped if already English).
@@ -72,6 +74,7 @@ final class ChatService: ObservableObject {
         _ text: String,
         images: [Data] = [],
         history: [ChatMessage],
+        conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
         processingState = .validatingLanguage
@@ -82,21 +85,35 @@ final class ChatService: ObservableObject {
             let innerTask = Task { @MainActor [weak self] in
                 guard let self else { continuation.finish(); return }
 
-                let detected = await self.languageValidator.detect(text, using: AppConfig.llmService)
+                // detect and refine both consume only the original text and are independent,
+                // so run them concurrently to remove one LLM round-trip from the critical
+                // path. Both are nonisolated LLM calls; the `async let` bindings start them
+                // immediately and we await both below. The UI shows "validating language"
+                // for the duration of this combined step (see processingState note below).
+                let llmService = AppConfig.llmService
+                async let detectedResult = self.languageValidator.detect(text, using: llmService)
+                async let refinedResult = self.languageValidator.refine(text, using: llmService)
+
+                let detected = await detectedResult
 
                 if case .unsupported = detected {
+                    // Discard the concurrently-running refine result; we're bailing out.
+                    _ = await refinedResult
                     self.processingState = .idle
                     continuation.yield(LanguageValidationService.unsupportedErrorMessage)
                     continuation.finish()
                     return
                 }
 
+                let refinedText = await refinedResult
+
                 do {
                     try await self.runPipeline(
-                        originalText: text,
+                        refinedText: refinedText,
                         images: images,
                         detectedLanguage: detected,
                         history: history,
+                        conversationId: conversationId,
                         onSourcesRetrieved: onSourcesRetrieved,
                         continuation: continuation
                     )
@@ -123,16 +140,18 @@ final class ChatService: ObservableObject {
     // orchestrator always in English → translate back to original language (if needed) →
     // LLM validation with LLM-translate fallback on mismatch.
     private func runPipeline(
-        originalText: String,
+        refinedText: String,
         images: [Data],
         detectedLanguage: DetectedLanguage,
         history: [ChatMessage],
+        conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
         continuation: AsyncStream<String>.Continuation
     ) async throws {
-        // Step 1: LLM refine pass — fix typos and unify code-switching, same language.
+        // Step 1: LLM refine — fix typos and unify code-switching, same language. This now
+        // runs concurrently with detect (in processQuery) and is already complete here; we
+        // still surface the .refiningInput state so the UI status label is unchanged.
         processingState = .refiningInput
-        let refinedText = await languageValidator.refine(originalText, using: AppConfig.llmService)
 
         guard !Task.isCancelled else { return }
 
@@ -168,6 +187,7 @@ final class ChatService: ObservableObject {
             englishQuery,
             images: images,
             conversationHistory: history,
+            conversationId: conversationId,
             onSourcesRetrieved: onSourcesRetrieved
         ) {
             guard !Task.isCancelled else { return }

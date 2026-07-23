@@ -12,17 +12,23 @@ final class MedicalChatOrchestrator {
     private let outputGuardRail: OutputGuardRail
     private let ragService: RAGService
     private let llmService: LLMServiceProtocol
+    private let factStore: SessionFactStore
+    private let factExtractor: SessionFactExtractor
 
     init(
         llmService: LLMServiceProtocol,
         inputGuardRail: InputGuardRail = InputGuardRail(),
         outputGuardRail: OutputGuardRail = OutputGuardRail(),
-        ragService: RAGService = RAGService()
+        ragService: RAGService = RAGService(),
+        factStore: SessionFactStore = AppConfig.sessionFactStore,
+        factExtractor: SessionFactExtractor = SessionFactExtractor()
     ) {
         self.llmService = llmService
         self.inputGuardRail = inputGuardRail
         self.outputGuardRail = outputGuardRail
         self.ragService = ragService
+        self.factStore = factStore
+        self.factExtractor = factExtractor
     }
 
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
@@ -37,6 +43,7 @@ final class MedicalChatOrchestrator {
         _ userQuery: String,
         images: [Data] = [],
         conversationHistory: [ChatMessage],
+        conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
@@ -67,11 +74,16 @@ final class MedicalChatOrchestrator {
                 // second, redundant retrieval pass.
                 onSourcesRetrieved?(retrievedContext.sources)
 
-                // Step 3: Build enriched prompt with retrieved context
+                // Step 3: Build enriched prompt with retrieved context, plus any facts the
+                // user has stated earlier this session. Injecting the facts here (rather than
+                // relying on the trimmed history) is what lets an early-mentioned detail — a
+                // name, an allergy — survive after it scrolls out of the short history window.
+                let rememberedFacts = await factStore.promptBlock(for: conversationId)
                 let enrichedPrompt = buildEnrichedPrompt(
                     userQuery: sanitizedQuery,
                     context: retrievedContext,
-                    history: conversationHistory
+                    history: conversationHistory,
+                    rememberedFacts: rememberedFacts
                 )
 
                 // Step 4: Generate LLM response. This is buffered rather than streamed live
@@ -113,6 +125,15 @@ final class MedicalChatOrchestrator {
                     continuation.yield(accumulatedResponse)
                 }
 
+                // Step 6: Extract durable facts the user stated this turn and merge them into
+                // the session store, so they're available to inject on later turns. Runs after
+                // the response is delivered so it never delays the answer the user is waiting
+                // on; a failed extraction just yields no new facts (fail-closed).
+                if !Task.isCancelled {
+                    let newFacts = await factExtractor.extract(from: sanitizedQuery, using: llmService)
+                    await factStore.merge(newFacts, into: conversationId)
+                }
+
                 continuation.finish()
             }
 
@@ -150,12 +171,21 @@ final class MedicalChatOrchestrator {
     private func buildEnrichedPrompt(
         userQuery: String,
         context: RetrievedContext,
-        history: [ChatMessage]
+        history: [ChatMessage],
+        rememberedFacts: String? = nil
     ) -> EnrichedPrompt {
         let languageInstruction = "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
 
         // Apply token budget to RAG chunks so the system prompt stays compact.
         let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+
+        // Facts the user has stated earlier this session (name, allergies, wound location, …).
+        // Injected so they survive past the short history window; omitted entirely when empty.
+        let memorySection = (rememberedFacts?.isEmpty == false) ? """
+
+        Known facts about this patient (stated earlier in this conversation — use them, and do NOT ask for information already listed here):
+        \(rememberedFacts!)
+        """ : ""
 
         let noContextFound = budgetedChunks.isEmpty
         let noContextInstruction = noContextFound ? """
@@ -183,7 +213,7 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)\(memorySection)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))

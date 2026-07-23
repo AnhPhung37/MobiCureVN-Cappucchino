@@ -17,6 +17,7 @@ struct ChatWorkspaceView: View {
     @State private var attachedImages: [UIImage] = []
     @State private var searchText: String = ""
     @State private var downloadedModels: Set<ModelCatalog> = []
+    @State private var isShowingProfile = false
 
     init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -74,6 +75,16 @@ struct ChatWorkspaceView: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Choose how to add an image to your message.")
+            }
+            .sheet(isPresented: $isShowingProfile) {
+                // Pass the active conversation so Profile shows the facts remembered for THIS
+                // conversation — the same block injected into the live system prompt.
+                ProfileView(
+                    viewModel: ProfileViewModel(
+                        repository: MockProfileRepository(),
+                        conversationId: viewModel.currentConversationId
+                    )
+                )
             }
         }
     }
@@ -352,8 +363,26 @@ struct ChatWorkspaceView: View {
                         .background(Circle().fill(Color(.tertiarySystemBackground)))
                 }
                 .accessibilityLabel("Toggle appearance")
+
+                profileButton
             }
         }
+    }
+
+    /// Avatar entry point to the patient's Profile — medical record, uploaded wound photos, and
+    /// what the assistant remembers this conversation. Presented as a sheet so it overlays the
+    /// chat without losing the conversation's place.
+    private var profileButton: some View {
+        Button {
+            isShowingProfile = true
+        } label: {
+            Image(systemName: "person.crop.circle.fill")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.blue)
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(Color.blue.opacity(0.12)))
+        }
+        .accessibilityLabel("Hồ sơ")
     }
 
     private func cycleAppearanceMode() {

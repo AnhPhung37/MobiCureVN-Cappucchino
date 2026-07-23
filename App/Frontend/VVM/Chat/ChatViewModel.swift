@@ -188,7 +188,10 @@ final class ChatViewModel: ObservableObject {
         let sourcesBox = SourcesBox()
         streamingTask = Task {
             processingState = .generating
-            let findings = await WoundAnalysisService.analyzeWound(images: attachedImageData)
+            // analyzeWound also persists a structured WoundLogEntry (parsed findings + saved
+            // photo) to AppConfig.woundLogRepository as a side effect; here we only need the
+            // findings text to drive the chat pipeline below.
+            let findings = await WoundAnalysisService.analyzeWound(images: attachedImageData).findings
             guard !Task.isCancelled else {
                 handleCancelledGeneration(partialText: "", assistantIndex: assistantIndex)
                 return
@@ -250,6 +253,7 @@ final class ChatViewModel: ObservableObject {
             text,
             images: images,
             history: Array(messages.dropLast(2)),
+            conversationId: currentConversationId,
             onSourcesRetrieved: { sourcesBox.set($0) }
         )
         for await token in stream {
