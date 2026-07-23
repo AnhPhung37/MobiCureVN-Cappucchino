@@ -176,6 +176,7 @@ final class ChatService: ObservableObject {
         } else {
             englishQuery = refinedText
         }
+        print("ChatService: englishQuery='\(englishQuery)'")
 
         guard !Task.isCancelled else { return }
 

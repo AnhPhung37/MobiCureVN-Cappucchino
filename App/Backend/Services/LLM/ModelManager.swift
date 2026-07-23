@@ -7,7 +7,11 @@ import ZIPFoundation
 /// Robust download-on-first-run ModelManager.
 /// - Downloads a zip from a configured URL, verifies SHA256 (if provided), and extracts into Application Support.
 /// - Uses an atomic install pattern: download -> verify -> unpack into temp -> move into models folder.
-public final class ModelManager {
+// Networking + file I/O only — nothing here touches UI state, so it must not inherit the
+// project's default main-actor isolation. Staying nonisolated lets the concurrent download
+// task group run its file moves off the main thread (and silences the Swift 6 isolation
+// warnings that main-actor inheritance would otherwise raise for those off-actor closures).
+nonisolated public final class ModelManager {
     public static let shared = ModelManager()
     private init() {}
 
@@ -83,6 +87,13 @@ public final class ModelManager {
             return false
         }
         return isValidLocalModelDirectory(directory)
+    }
+
+    /// On-disk location of a model's files. Callers use this to load a model that
+    /// `isModelDownloaded(repoID:)` has already confirmed is present, without re-running the
+    /// download path. The URL is returned regardless of whether the directory exists yet.
+    public func localModelURL(repoID: String) throws -> URL {
+        try localModelDirectory(modelName: repoID, repoID: repoID)
     }
 
     private func isValidLocalModelDirectory(_ directory: URL) -> Bool {
@@ -318,34 +329,209 @@ public final class ModelManager {
 
         try fileManager.createDirectory(at: modelDir, withIntermediateDirectories: true, attributes: nil)
 
-        let total = Double(downloadableFiles.count)
-        for (index, filename) in downloadableFiles.enumerated() {
-            if Task.isCancelled { throw CancellationError() }
-            let fileURL = URL(string: "https://huggingface.co/\(repoID)/resolve/main/\(filename.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? filename)")!
-            var fileRequest = URLRequest(url: fileURL)
-            applyAuth(authToken, to: &fileRequest)
+        // Weight each file's progress contribution by its byte size (falling back to an equal
+        // split when HF omits sizes) so the reported fraction tracks real bytes, not file count.
+        // Otherwise the multi-GB weights file is just "1 of N" and the UI sits frozen for minutes.
+        let sizeByFilename: [String: Int64] = (modelInfo.siblings ?? []).reduce(into: [:]) { acc, sibling in
+            if let size = sibling.size { acc[sibling.rfilename] = Int64(size) }
+        }
+        let knownTotalBytes = downloadableFiles.reduce(Int64(0)) { $0 + (sizeByFilename[$1] ?? 0) }
+        let useByteWeighting = knownTotalBytes > 0
+        let totalUnits: Double = useByteWeighting ? Double(knownTotalBytes) : Double(downloadableFiles.count)
 
-            let (downloadedURL, response2) = try await URLSession.shared.download(for: fileRequest)
-            if let http = response2 as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
-                throw ModelManagerError.httpError(code: http.statusCode)
+        // Download files concurrently rather than one-at-a-time. An MLX repo is a few large
+        // weight shards plus many tiny JSON/tokenizer files; serializing them means each
+        // request's round-trip latency stacks. A bounded group overlaps them without opening
+        // an unbounded number of sockets (which would thrash memory and starve each transfer
+        // of bandwidth). Progress from all in-flight files is summed through a shared,
+        // lock-guarded tracker so the reported fraction still moves smoothly and monotonically.
+        let progressTracker = DownloadProgressTracker(totalUnits: totalUnits, onProgress: progress)
+        let maxConcurrent = 4
+
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            var iterator = downloadableFiles.enumerated().makeIterator()
+            var running = 0
+
+            func addTask(index: Int, filename: String) {
+                let fileUnits: Double = useByteWeighting ? Double(sizeByFilename[filename] ?? 0) : 1
+                group.addTask {
+                    try Task.checkCancellation()
+                    let fileURL = URL(string: "https://huggingface.co/\(repoID)/resolve/main/\(filename.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? filename)")!
+                    var fileRequest = URLRequest(url: fileURL)
+                    self.applyAuth(authToken, to: &fileRequest)
+
+                    let (downloadedURL, response2) = try await self.downloadWithProgress(request: fileRequest) { fileFraction in
+                        progressTracker.report(filename: filename, fileUnits: fileUnits, fileFraction: fileFraction)
+                    }
+                    if let http = response2 as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+                        throw ModelManagerError.httpError(code: http.statusCode)
+                    }
+
+                    let destination = modelDir.appendingPathComponent(filename)
+                    let destinationDir = destination.deletingLastPathComponent()
+                    try self.fileManager.createDirectory(at: destinationDir, withIntermediateDirectories: true, attributes: nil)
+                    if self.fileManager.fileExists(atPath: destination.path) {
+                        try? self.fileManager.removeItem(at: destination)
+                    }
+                    try self.fileManager.moveItem(at: downloadedURL, to: destination)
+
+                    progressTracker.complete(filename: filename, fileUnits: fileUnits)
+                    print("ModelManager: downloaded \(filename) [\(index + 1)/\(downloadableFiles.count)]")
+                }
             }
 
-            let destination = modelDir.appendingPathComponent(filename)
-            let destinationDir = destination.deletingLastPathComponent()
-            try fileManager.createDirectory(at: destinationDir, withIntermediateDirectories: true, attributes: nil)
-            if fileManager.fileExists(atPath: destination.path) {
-                try? fileManager.removeItem(at: destination)
+            // Prime the group up to the concurrency cap, then refill one task each time one
+            // finishes — so at most `maxConcurrent` transfers are ever in flight.
+            while running < maxConcurrent, let (index, filename) = iterator.next() {
+                addTask(index: index, filename: filename)
+                running += 1
             }
-            try fileManager.moveItem(at: downloadedURL, to: destination)
-
-            let percent = Double(index + 1) / total
-            print("ModelManager: downloaded \(filename) [\(index + 1)/\(downloadableFiles.count)]")
-            progress?(percent)
+            while running > 0 {
+                try await group.next()
+                running -= 1
+                if let (index, filename) = iterator.next() {
+                    addTask(index: index, filename: filename)
+                    running += 1
+                }
+            }
         }
 
         print("ModelManager: installed community repo files at \(modelDir.path)")
         progress?(1.0)
         try? fileManager.removeItem(at: downloadDir)
+    }
+
+    /// Thread-safe aggregator for concurrent per-file download progress. Each in-flight file
+    /// reports its own 0...1 fraction; this sums the byte-weighted contributions across all
+    /// files into a single overall fraction. Guarded by a lock because the download tasks run
+    /// on different threads and report simultaneously. Reports are clamped to be monotonic so
+    /// the bar never jumps backward when one file's callback lands after another's.
+    private final class DownloadProgressTracker: @unchecked Sendable {
+        private let totalUnits: Double
+        private let onProgress: ((Double) -> Void)?
+        private let lock = NSLock()
+        private var completedUnits: Double = 0
+        private var inFlight: [String: Double] = [:]  // filename -> byte-units done so far
+        private var lastReported: Double = -1
+
+        init(totalUnits: Double, onProgress: ((Double) -> Void)?) {
+            self.totalUnits = totalUnits
+            self.onProgress = onProgress
+        }
+
+        func report(filename: String, fileUnits: Double, fileFraction: Double) {
+            emit { self.inFlight[filename] = fileUnits * min(max(fileFraction, 0), 1) }
+        }
+
+        func complete(filename: String, fileUnits: Double) {
+            emit {
+                self.inFlight[filename] = nil
+                self.completedUnits += fileUnits
+            }
+        }
+
+        private func emit(_ mutate: () -> Void) {
+            guard let onProgress, totalUnits > 0 else { return }
+            let overall: Double = {
+                lock.lock(); defer { lock.unlock() }
+                mutate()
+                let raw = (completedUnits + inFlight.values.reduce(0, +)) / totalUnits
+                let clamped = min(max(raw, 0), 1)
+                guard clamped > lastReported else { return -1 }
+                lastReported = clamped
+                return clamped
+            }()
+            if overall >= 0 { onProgress(overall) }
+        }
+    }
+
+    /// Downloads a request while reporting real byte-level progress (0.0...1.0 of this file).
+    /// Mirrors `URLSession.download(for:)`'s return shape: (temp file URL, response). A
+    /// `URLSessionDownloadTask` streams the body to disk in the networking layer — no bytes
+    /// are held in memory — and its delegate reports progress as data arrives, so the caller
+    /// sees movement within a multi-GB weights file instead of a single jump at completion.
+    /// Progress stays silent when the server omits Content-Length; the file still completes.
+    private func downloadWithProgress(request: URLRequest,
+                                      onProgress: @escaping (Double) -> Void) async throws -> (URL, URLResponse) {
+        let delegate = ProgressDownloadDelegate(onProgress: onProgress)
+        // Bridge the delegate callback (temp file is deleted the moment the delegate returns)
+        // into async/await by copying the file out synchronously inside the delegate.
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                delegate.continuation = continuation
+                let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+                let task = session.downloadTask(with: request)
+                delegate.task = task
+                task.resume()
+            }
+        } onCancel: {
+            delegate.task?.cancel()
+        }
+    }
+
+    /// Delegate that forwards download progress and hands the finished temp file back through a
+    /// continuation. It moves the file to its own temp URL inside `didFinishDownloadingTo`
+    /// because the URL provided there is deleted as soon as the delegate method returns.
+    // @unchecked Sendable: URLSession serializes all delegate callbacks for a given task onto
+    // its delegate queue, so the mutable members (lastReported/continuation/didResume) are
+    // never touched concurrently despite not being lock-guarded.
+    private final class ProgressDownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
+        private let onProgress: (Double) -> Void
+        private var lastReported: Double = -1
+        var continuation: CheckedContinuation<(URL, URLResponse), Error>?
+        weak var task: URLSessionDownloadTask?
+        private var didResume = false
+
+        init(onProgress: @escaping (Double) -> Void) {
+            self.onProgress = onProgress
+        }
+
+        func urlSession(_ session: URLSession,
+                        downloadTask: URLSessionDownloadTask,
+                        didWriteData bytesWritten: Int64,
+                        totalBytesWritten: Int64,
+                        totalBytesExpectedToWrite: Int64) {
+            guard totalBytesExpectedToWrite > 0 else { return }
+            let fraction = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+            // Throttle to ~1% steps so the callback doesn't flood.
+            if fraction - lastReported >= 0.01 {
+                lastReported = fraction
+                onProgress(min(fraction, 1))
+            }
+        }
+
+        func urlSession(_ session: URLSession,
+                        downloadTask: URLSessionDownloadTask,
+                        didFinishDownloadingTo location: URL) {
+            let response = downloadTask.response ?? URLResponse()
+            let destination = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            do {
+                try FileManager.default.moveItem(at: location, to: destination)
+                resume(returning: (destination, response))
+            } catch {
+                resume(throwing: error)
+            }
+        }
+
+        func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+            // Only surfaces failures; success is delivered from didFinishDownloadingTo.
+            if let error { resume(throwing: error) }
+            session.invalidateAndCancel()
+        }
+
+        private func resume(returning value: (URL, URLResponse)) {
+            guard !didResume else { return }
+            didResume = true
+            continuation?.resume(returning: value)
+            continuation = nil
+        }
+
+        private func resume(throwing error: Error) {
+            guard !didResume else { return }
+            didResume = true
+            continuation?.resume(throwing: error)
+            continuation = nil
+        }
     }
 
     /// Whether there is enough free space at `url` for an estimated download of `requiredBytes`.

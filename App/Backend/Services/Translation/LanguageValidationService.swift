@@ -189,6 +189,8 @@ nonisolated final class LanguageValidationService {
         }
         let corrected = reply.trimmingCharacters(in: .whitespacesAndNewlines)
 
+        print("LanguageValidation: refine in='\(trimmed)' out='\(corrected)'")
+
         // Guard against a degenerate refine (empty, or so much shorter it likely dropped
         // content) — fall back to the original text rather than lose meaning.
         guard !corrected.isEmpty, corrected.count > trimmed.count / 2 else { return text }

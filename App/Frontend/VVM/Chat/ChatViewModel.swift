@@ -34,6 +34,10 @@ final class ChatViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var backendStatus: LLMBackendStatus = .mock
     @Published var downloadProgress: Double = 0
+    /// Per-model background-download progress (0...1), keyed by model. Non-empty while one or
+    /// more models are downloading in parallel; drives the picker's per-row "downloading… %"
+    /// state so the user can still pick an already-downloaded model meanwhile.
+    @Published private(set) var downloadingModels: [ModelCatalog: Double] = [:]
     /// True when the currently loading model has no valid files on disk yet, i.e. this
     /// `.loading` run is a real first-time download+install rather than a quick reload of
     /// weights already cached from a previous launch. Drives the "first load can take a
@@ -70,6 +74,7 @@ final class ChatViewModel: ObservableObject {
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
+        downloadingModels = AppConfig.modelDownloadProgress
         isFirstTimeModelSetup = !ModelManager.shared.isModelDownloaded(repoID: AppConfig.selectedModel.repoID)
         bindLLMStatusUpdates()
 
@@ -103,6 +108,14 @@ final class ChatViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 self?.downloadProgress = value
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: AppConfig.modelDownloadsDidChange)
+            .compactMap { $0.userInfo?[AppConfig.modelDownloadsUserInfoKey] as? [ModelCatalog: Double] }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] progress in
+                self?.downloadingModels = progress
             }
             .store(in: &cancellables)
 

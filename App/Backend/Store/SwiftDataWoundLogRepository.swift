@@ -10,7 +10,10 @@ final class SwiftDataWoundLogRepository: WoundLogRepository {
         if let container {
             self.container = container
         } else {
-            self.container = try ModelContainer(for: WoundLogRecord.self)
+            // Full schema: this store is shared with ChatRecord. Opening a container over only
+            // WoundLogRecord would create a store missing the chat table (and vice versa),
+            // producing `no such table` I/O errors. Prefer AppConfig.modelContainer at call sites.
+            self.container = try ModelContainer(for: ChatRecord.self, WoundLogRecord.self)
         }
     }
 

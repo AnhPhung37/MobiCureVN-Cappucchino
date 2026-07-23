@@ -60,6 +60,11 @@ struct ChatWorkspaceView: View {
             .onChange(of: viewModel.backendStatus) { _, _ in
                 refreshDownloadedModels()
             }
+            // A background download for a non-active model finishes without touching
+            // backendStatus; when its key leaves the map, re-scan so its "on device" badge appears.
+            .onChange(of: viewModel.downloadingModels) { _, _ in
+                refreshDownloadedModels()
+            }
             .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItems, maxSelectionCount: 10, matching: .images)
             .onChange(of: photoPickerItems) { _, newItems in
                 guard !newItems.isEmpty else { return }
@@ -413,14 +418,21 @@ struct ChatWorkspaceView: View {
                         } else {
                             Text(verbatim: model.displayName)
                         }
-                        // Second Text renders as the menu item's subtitle: tells the
-                        // user whether selecting is instant or a multi-GB download.
-                        if downloadedModels.contains(model) {
+                        // Second Text renders as the menu item's subtitle: tells the user the
+                        // state of this model — downloading (with %), on-disk (instant switch),
+                        // or not yet fetched (size of the download it would trigger).
+                        if let progress = viewModel.downloadingModels[model] {
+                            Text("Đang tải về · \(Int(progress * 100))%")
+                        } else if downloadedModels.contains(model) {
                             Text("Đã có trên máy · chuyển nhanh")
                         } else {
                             Text("Cần tải về (\(model.approxDownloadSize))")
                         }
                     }
+                    // A model still downloading can't be used yet — but every other row
+                    // (including already-downloaded ones) stays tappable so the user can
+                    // switch to a ready model while this one keeps downloading.
+                    .disabled(viewModel.downloadingModels[model] != nil && model != selectedModel)
                 }
             }
             .onAppear { refreshDownloadedModels() }
@@ -439,13 +451,17 @@ struct ChatWorkspaceView: View {
             .frame(height: 34)
             .background(Capsule().fill(Color(.tertiarySystemBackground)))
         }
-        // Switching mid-download or mid-generation would race the in-flight task
-        // against the swap; block it until the current one settles.
-        .disabled(viewModel.backendStatus == .loading || viewModel.isLoading)
+        // The menu stays open during background downloads — the user can switch to any
+        // already-downloaded model while another downloads. Only block during active
+        // generation, where swapping the resident model would race the in-flight stream.
+        .disabled(viewModel.isLoading)
         .accessibilityLabel("Chọn mô hình AI")
     }
 
     private func switchModel(to model: ModelCatalog) {
+        // Allow re-selecting the current model only when it's unavailable (retry) — otherwise
+        // a no-op. AppConfig.switchModel decides whether this is an instant load (already on
+        // disk) or a background download, and keeps the current model active meanwhile.
         guard model != selectedModel || viewModel.backendStatus == .unavailable else { return }
         Task { await AppConfig.switchModel(to: model) }
     }
