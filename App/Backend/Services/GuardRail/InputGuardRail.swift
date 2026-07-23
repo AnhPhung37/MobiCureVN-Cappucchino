@@ -1,17 +1,19 @@
 import Foundation
-import NaturalLanguage
 
-/// Input GuardRail: validates queries before they reach LLM
-/// Rule Group 1: Domain filter (medical-only)
-/// Rule Group 2: Dangerous requests (self-harm, violence, illegal)
-/// Rule Group 3: Prompt injection/jailbreak
+/// Input GuardRail: validates queries before they reach LLM.
+///
+/// Deliberately does NOT gate on topic/medical-relevance. Real patient conversations are
+/// full of benign non-clinical turns — "I'm John, I'm 26", "thanks, that helps", "is that
+/// normal after a week?" — and hard-blocking those made the assistant feel mechanical and
+/// broke the session-memory feature (the fact extractor never saw self-introductions the
+/// gate rejected). Steering genuinely off-topic questions back to health is now the LLM's
+/// job via the system prompt (see MedicalChatOrchestrator), which handles it as a warm
+/// redirect rather than an error. This layer keeps only the checks that must be enforced
+/// deterministically before the model runs:
+/// Rule Group 2: Dangerous requests (self-harm, violence, illegal) → hard block
+/// Rule Group 3: Prompt injection/jailbreak → hard block
 /// Rule Group 4: PII detection + masking
 final class InputGuardRail {
-
-    // Loaded once — sentence embedding initialisation is expensive
-    private static let sentenceEmbedding = NLEmbedding.sentenceEmbedding(for: .english)
-    // Cosine distance below this → query is semantically close to a medical anchor
-    private static let similarityThreshold: NLDistance = 0.45
 
     // Precompiled once — recreating NSRegularExpression per query is wasteful (and can
     // fail under load). Mirrors the precompilation already done in OutputGuardRail.
@@ -26,9 +28,10 @@ final class InputGuardRail {
     /// Check input query against all guardrails.
     /// - Parameters:
     ///   - query: Original user query (any language). Used for dangerous/injection/PII checks.
-    ///   - englishQuery: English translation of the query. When provided, used for semantic
-    ///     relevance so Vietnamese input is correctly compared against English anchor phrases.
+    ///   - englishQuery: Accepted for source-compatibility with callers; no longer used for
+    ///     gating now that topic-relevance is handled downstream by the LLM (see the type doc).
     func validate(query: String, englishQuery: String? = nil) -> InputGuardRailResult {
+        _ = englishQuery
         var violations: [String] = []
         var sanitizedQuery = query
 
@@ -52,7 +55,7 @@ final class InputGuardRail {
             )
         }
 
-        // Rule Group 4: PII Detection + Masking (before medical check)
+        // Rule Group 4: PII Detection + Masking
         sanitizedQuery = maskPII(sanitizedQuery)
         let piiIssues = detectPII(query)
         if !piiIssues.isEmpty {
@@ -60,20 +63,10 @@ final class InputGuardRail {
             print("InputGuardRail: PII detected and masked: \(piiIssues)")
         }
 
-        // Rule Group 1: Domain filter — semantic relevance using NLEmbedding.
-        // Use the English translation when available so Vietnamese queries are compared
-        // against English anchor phrases in the same embedding space.
-        let queryForRelevance = englishQuery ?? query
-        if !checkMedicalRelevance(queryForRelevance) {
-            violations.append("Query not medical-related")
-            return InputGuardRailResult(
-                status: .blocked(reason: "This question is not medical-related. Please ask medical questions."),
-                originalQuery: query,
-                sanitizedQuery: sanitizedQuery,
-                violations: violations
-            )
-        }
-
+        // NOTE: No topic/medical-relevance gate here by design. Benign conversational turns
+        // (self-introductions, greetings, follow-ups, lifestyle questions) must pass through
+        // so the assistant feels natural and session-memory fact extraction can see them.
+        // Off-topic queries are redirected conversationally by the LLM, not blocked here.
         return InputGuardRailResult(
             status: .allowed,
             originalQuery: query,
@@ -83,39 +76,7 @@ final class InputGuardRail {
     }
     
     // MARK: - Private Checkers
-    
-    // Cap how many anchor phrases the expensive NLEmbedding path checks per query.
-    // Keyword matching already covers the common cases; the embedding is a safety net
-    // for edge-case phrasing, so 50 anchors is more than sufficient.
-    private static let maxAnchorsForEmbedding = 50
 
-    /// Rule Group 1: Semantic medical relevance check.
-    ///
-    /// Order (fast → slow):
-    ///  1. Keyword / intent-pattern match — O(n) string contains, sub-millisecond.
-    ///  2. NLEmbedding cosine distance — only if keywords miss, capped at the first
-    ///     `maxAnchorsForEmbedding` anchors to bound per-query latency.
-    private func checkMedicalRelevance(_ query: String) -> Bool {
-        let lower = query.lowercased()
-
-        // Fast path: exact keyword / intent-pattern matching.
-        // Covers the vast majority of medical queries with negligible CPU cost.
-        if GuardRailRules.medicalKeywords.contains(where: { lower.contains($0) }) { return true }
-        if GuardRailRules.patientIntentPatterns.contains(where: { lower.contains($0) }) { return true }
-
-        // Slow path: semantic similarity for edge-case phrasing not caught by keywords.
-        // Limited to the first N anchors so worst-case latency stays bounded.
-        if let embedding = Self.sentenceEmbedding {
-            let anchorsToCheck = GuardRailRules.medicalAnchors.prefix(Self.maxAnchorsForEmbedding)
-            let isNearAnchor = anchorsToCheck.contains { anchor in
-                embedding.distance(between: lower, and: anchor) < Self.similarityThreshold
-            }
-            if isNearAnchor { return true }
-        }
-
-        return false
-    }
-    
     /// Rule Group 2: Check for dangerous/harmful requests
     private func checkDangerousRequests(_ query: String) -> String? {
         let lower = query.lowercased()

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import NaturalLanguage
 
 @main
 struct MobiCureVNApp: App {
@@ -19,12 +18,6 @@ struct MobiCureVNApp: App {
 
         let initializeRuntime = AppConfig.shouldInitializeRuntime
 
-        // Warm up NLEmbedding in the background so the CoreML model is loaded
-        // before the user's first message, eliminating the cold-start penalty.
-        Task(priority: .background) {
-            _ = NLEmbedding.sentenceEmbedding(for: .english)
-        }
-
         // Force the shared SQLite + CoreML query-embedder to initialize off the main thread.
         // Otherwise the first access happens lazily inside ChatViewModel.init (@MainActor),
         // opening the DB and loading the embedder model on the main thread → launch hitch.
@@ -35,10 +28,6 @@ struct MobiCureVNApp: App {
         Task(priority: .utility) {
             await AppConfig.initializeLLMService(model: AppConfig.selectedModel,
                                                  initializeRuntime: initializeRuntime)
-        }
-
-        Task(priority: .utility) {
-            await AppConfig.initializeMedicalAnchors()
         }
     }
 
