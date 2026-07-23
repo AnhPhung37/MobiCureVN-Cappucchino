@@ -49,6 +49,7 @@ Procedure When Catheter Is Available
 13. Lubricate the catheter with a small amount of water soluble lubricant. Gently insert the catheter tip no more than 2–3 inches (5.0–7.5 cm) into the stoma (never force – if resistance is detected, rotate catheter until it slides in; Faller & Lawrence, 1994; Hampton & Bryant, 1992).
 14. Hold catheter in position until urine begins to drip. Collect approximately 5–10 mls.
 of urine before removing catheter. Collecting a sufficient amount of urine may take
+5–15 minutes.
 15. Clean and dry the stoma and peristomal skin.
 16. Apply pouching system.
 17. Discard supplies according to institution policy.
@@ -166,6 +167,7 @@ Please give these instructions to the person collecting the urine specimen.
 
 Note
 This entire procedure may take 20-30 minutes. Collecting a sufficient amount of urine may take
+5–15 minutes.
 
 - Cleansing solution. Follow institution policy (e.g., betadine or soap/water) • Sterile 4x4 gauze • Sterile specimen container • Sterile and clean gloves • Soft paper towels
 

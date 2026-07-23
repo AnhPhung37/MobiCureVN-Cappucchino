@@ -1,5 +1,6 @@
+# Colorectal Cancer Fact Sheet for Health Care Professionals
 
-### Colorectal Cancer in the US [ 1, 2]
+## Colorectal Cancer in the US [ 1, 2]
 
 Colorectal cancer is the third most common cancer in men and in women, excluding skin cancer. It is also the secondleading cause of cancer-related deaths in US men and women combined.
 
@@ -106,3 +107,4 @@ Models used for illustrative purposes only.
 
 Colorectal Cancer in the US:
 
+2026 estimates [ 1]

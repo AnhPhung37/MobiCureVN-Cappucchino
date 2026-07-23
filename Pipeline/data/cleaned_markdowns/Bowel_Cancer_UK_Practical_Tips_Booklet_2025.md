@@ -1,3 +1,4 @@
+# Work
 
 As soon as you’re diagnosed with cancer, you’re protected from discrimination at work by the Equality Act 2010. In Northern Ireland, you’re protected by the Disability Discrimination Act 1995.
 
@@ -29,10 +30,15 @@ If you think you’ve been treated unfairly at work, you should speak to your em
 ACAS (the Advisory, Conciliation and Arbitration Service), Citizens
 Advice or your union, if you have one.
 
+4 Practical tips Practical tips 5
+
+## Money
+
 You may be worried about money, for example, if you’re unable to work or you have extra costs, like prescriptions or travel to hospital. You can get help with some costs and you might be able to get some benefits or grants.
 
 Support with managing money
 Some people find it hard to get information about what help they can get with money and have had problems claiming benefits. If you need some help, call Macmillan Cancer Support on
+0808 808 0000. They can help with questions about benefits and insurance and can send you booklets with detailed information.
 
 If you have a local Maggie’s cancer support centre, you can speak to a
 Benefits Advisor in person who will help you find and apply for financial support available to you.
@@ -74,6 +80,8 @@ You may be able to get free prescriptions even if you’re having private treatm
 If you have a permanent stoma you’ll have free prescriptions for life.
 You’ll need to apply for a medical exemption certificate. Ask your GP, hospital doctor or specialist nurse for more information.
 
+8 Practical tips Practical tips 9
+
 Bills
 If you claim certain benefits, you may be able to get a discount or money back for council tax or utility bills. Contact your local council or utility supplier for more information.
 
@@ -85,7 +93,7 @@ Support Officer.
 You can ask your energy provider to join the Priority Services Register.
 This is a service that means vulnerable people, including people with long-term medical conditions, are listed as a priority in a power cut.
 
-# Transport
+## Transport
 
 Transport to and from appointments
 Travelling to hospital often for treatment, tests and appointments can be expensive.
@@ -109,6 +117,11 @@ If you have problems moving around, or if you’ve been told your cancer can’t
 The badge is registered to you, so you can use it if you’re driving, or if you’re a passenger in a car.
 
 If you have specific medical conditions or get certain benefits, you may already qualify for a blue badge. You can apply for a blue badge at gov.uk A blue badge lasts
+3 years. You’ll need to reapply for a new one before it expires.
+
+10 Practical tips Practical tips 11
+
+## Travel
 
 Speak to your healthcare team if you’re planning to travel during your treatment. They can tell you how your treatment might affect your plans.
 
@@ -136,6 +149,8 @@ Assistance team to find out more.
 You can find contact details for them on the airline’s website.
 
 Your stoma care nurse specialist can offer helpful tips for travelling with a stoma. Colostomy UK offers more information about travelling with a stoma.
+
+12 Practical tips Practical tips 13
 
 It’s important to tell your insurer about any medical conditions and answer all their questions accurately. If you don’t mention something, then need to make a claim, they may refuse to pay out.
 Always tell your insurer if your health or medication changes in the time between buying the policy and travelling.

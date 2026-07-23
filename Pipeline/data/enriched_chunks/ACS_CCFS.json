@@ -1,14 +1,14 @@
 {
   "doc_id": "ACS_CCFS",
   "source_file": "ACS_Colorectal_Cancer_Fact_Sheet.md",
-  "chunk_count": 15,
+  "chunk_count": 17,
   "chunks": [
     {
       "chunk_id": "ACS_CCFS_c001",
       "doc_id": "ACS_CCFS",
-      "text": "\n",
-      "token_count": 1,
-      "section": null,
+      "text": "# Colorectal Cancer Fact Sheet for Health Care Professionals\n\n## Colorectal Cancer in the US [ 1, 2]\n\nColorectal cancer is the third most common cancer in men and in women, excluding skin cancer. It is also the secondleading cause of cancer-related deaths in US men and women combined.\n\nColorectal cancer incidence has declined since the mid-1980s, in part from increased screening among adults ages 50 and older. However, rates are continuing to increase in people younger than age 55 for reasons that are not well understood.\n",
+      "token_count": 115,
+      "section": "Colorectal Cancer Fact Sheet for Health Care Professionals",
       "page_start": null,
       "doc_type": "guideline",
       "source_org": "ACS",
@@ -16,17 +16,6 @@
     },
     {
       "chunk_id": "ACS_CCFS_c002",
-      "doc_id": "ACS_CCFS",
-      "text": "### Colorectal Cancer in the US [ 1, 2]\n\nColorectal cancer is the third most common cancer in men and in women, excluding skin cancer. It is also the secondleading cause of cancer-related deaths in US men and women combined.\n\nColorectal cancer incidence has declined since the mid-1980s, in part from increased screening among adults ages 50 and older. However, rates are continuing to increase in people younger than age 55 for reasons that are not well understood.\n",
-      "token_count": 101,
-      "section": "Colorectal Cancer in the US",
-      "page_start": null,
-      "doc_type": "guideline",
-      "source_org": "ACS",
-      "credibility_tier": 1
-    },
-    {
-      "chunk_id": "ACS_CCFS_c003",
       "doc_id": "ACS_CCFS",
       "text": "### Types of Colorectal Cancer [ 3]\n\nMost colorectal cancers start as polyps, which might or might not develop into cancer. However, the risk for colorectal cancer increases if a polyp is larger than 1 cm, if more than three polyps are found, or if a polyp shows dysplasia.\n\nMost colorectal cancers are adenocarcinomas. Some subtypes of adenocarcinomas, such as signet ring cell or mucinous, may have a worse prognosis.\n",
       "token_count": 95,
@@ -37,7 +26,7 @@
       "credibility_tier": 1
     },
     {
-      "chunk_id": "ACS_CCFS_c004",
+      "chunk_id": "ACS_CCFS_c003",
       "doc_id": "ACS_CCFS",
       "text": "### Risk Factors [ 1, 2, 3]\n\nMore than 54% of colorectal cancers in the US are attributable to potentially modifiable risk factors. Modifiable risk factors include excess body weight; physical inactivity; long-term smoking; high consumption of red or processed meat; low intake of calcium; very low intake of fruits, vegetables, and whole grains; and heavy alcohol consumption.\n\nPersonal, hereditary, and medical risk factors include:\n\n- Age: Rates in younger adults have increased in recent years, but colorectal cancer is more common after age 50.\n- Personal or family history: Colorectal cancer risk is higher among individuals with a personal or family history of the disease.\n- Race and ethnicity: For colorectal cancer, Alaska Natives, American Indians, and African Americans have the highest incidence and mortality rates in the US. Ashkenazi Jews have one of the highest risks in the world.\n- Hereditary syndromes: About 5% of people who develop colorectal cancer have inherited gene mutations, such as Lynch syndrome (hereditary non-polyposis colorectal cancer [HNPCC]), and familial adenomatous polyposis (FAP).\n- Personal history of inflammatory bowel disease\n- Type 2 diabetes\n",
       "token_count": 252,
@@ -48,7 +37,7 @@
       "credibility_tier": 1
     },
     {
-      "chunk_id": "ACS_CCFS_c005",
+      "chunk_id": "ACS_CCFS_c004",
       "doc_id": "ACS_CCFS",
       "text": "### Screening and Detection [ 1, 2, 3]\n\nThe American Cancer Society recommends the following for people at average risk for colorectal cancer.\n\nRegular screening should start at age 45 . People who are in good health should continue regular colorectal cancer screening through the age of 75 .\n\nFor people ages 76 through 85, the decision to be screened should be based on patient preference, life expectancy, overall health, and prior screening history.\n\nPeople over 85 should no longer get colorectal cancer screening.\n\nPeople at high risk based on family and/or personal history or other factors may need to start screening before age 45, get more frequent screening, or get specific tests. Screening can be done either with a stool-based test or a visual exam, like a colonoscopy.\n",
       "token_count": 162,
@@ -59,11 +48,22 @@
       "credibility_tier": 1
     },
     {
+      "chunk_id": "ACS_CCFS_c005",
+      "doc_id": "ACS_CCFS",
+      "text": "### Stool-based tests\n\n- Highly sensitive fecal immunochemical test (FIT)* every year, or\n- Highly sensitive guaiac-based fecal occult blood test (gFOBT)* every year, or\n- Multi-targeted stool DNA test (MT-sDNA) every 3 years*\n",
+      "token_count": 66,
+      "section": "Stool-based tests",
+      "page_start": null,
+      "doc_type": "guideline",
+      "source_org": "ACS",
+      "credibility_tier": 1
+    },
+    {
       "chunk_id": "ACS_CCFS_c006",
       "doc_id": "ACS_CCFS",
-      "text": "### Stool-based tests\n\n- Highly sensitive fecal immunochemical test (FIT)* every year, or\n- Highly sensitive guaiac-based fecal occult blood test (gFOBT)* every year, or\n- Multi-targeted stool DNA test (MT-sDNA) every 3 years*\n### Visual exams of the colon and rectum\n\n- Colonoscopy every 10 years, or\n- CT colonography (virtual colonoscopy)* every 5 years, or\n- Sigmoidoscopy (FSIG)* every 5 years\n\n_*If a person chooses to be screened with a test other than colonoscopy, any_\n_abnormal test result should be followed up with a timely colonoscopy._\n\n",
-      "token_count": 150,
-      "section": "Stool-based tests",
+      "text": "### Visual exams of the colon and rectum\n\n- Colonoscopy every 10 years, or\n- CT colonography (virtual colonoscopy)* every 5 years, or\n- Sigmoidoscopy (FSIG)* every 5 years\n\n_*If a person chooses to be screened with a test other than colonoscopy, any_\n_abnormal test result should be followed up with a timely colonoscopy._\n\n",
+      "token_count": 84,
+      "section": "Visual exams of the colon and rectum",
       "page_start": null,
       "doc_type": "guideline",
       "source_org": "ACS",
@@ -105,8 +105,8 @@
     {
       "chunk_id": "ACS_CCFS_c010",
       "doc_id": "ACS_CCFS",
-      "text": "\n1. American Cancer Society. _Cancer Facts & Figures 2026_ . Atlanta: American Cancer [Society; 2026. Available at https://www.cancer.org/research/cancer-facts-statistics/all-](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html) [cancer-facts-figures/2026-cancer-facts-figures.html on January 13, 2026.](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)\n2. American Cancer Society. _Colorectal Cancer Facts & Figures 2023-2025_ . Atlanta:\n[American Cancer Society; 2023. Accessed at https://www.cancer.org/content/dam/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf) [cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf) [colorectal-cancer-facts-and-figures-2023.pdf on January 13, 2026.](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)",
-      "token_count": 405,
+      "text": "\n1. American Cancer Society. _Cancer Facts & Figures 2026_ . Atlanta: American Cancer [Society; 2026. Available at https://www.cancer.org/research/cancer-facts-statistics/all-](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html) [cancer-facts-figures/2026-cancer-facts-figures.html on January 13, 2026.](https://www.cancer.org/research/cancer-facts-statistics/all-cancer-facts-figures/2026-cancer-facts-figures.html)",
+      "token_count": 146,
       "section": "Treatment",
       "page_start": null,
       "doc_type": "guideline",
@@ -116,8 +116,8 @@
     {
       "chunk_id": "ACS_CCFS_c011",
       "doc_id": "ACS_CCFS",
-      "text": "\n\nNew cases:\n\n- 108,860 cases of colon cancer\n- 49,990 cases of rectal cancer\n\nDeaths:\n\n- 55,230 from colon and rectal cancers combined\n\n5-year relative survival rate for localized stage (colon cancer): 91%\n\n5-year relative survival rate for all stages combined (colon cancer): 63%\n\n5-year relative survival rate for localized stage (rectal cancer): 90%\n\n5-year relative survival rate for all stages combined (rectal cancer): 67%\n\n",
-      "token_count": 114,
+      "text": "\n2. American Cancer Society. _Colorectal Cancer Facts & Figures 2023-2025_ . Atlanta:\n[American Cancer Society; 2023. Accessed at https://www.cancer.org/content/dam/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf) [cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf) [colorectal-cancer-facts-and-figures-2023.pdf on January 13, 2026.](https://www.cancer.org/content/dam/cancer-org/research/cancer-facts-and-statistics/colorectal-cancer-facts-and-figures/colorectal-cancer-facts-and-figures-2023.pdf)\n",
+      "token_count": 260,
       "section": "Treatment",
       "page_start": null,
       "doc_type": "guideline",
@@ -127,9 +127,9 @@
     {
       "chunk_id": "ACS_CCFS_c012",
       "doc_id": "ACS_CCFS",
-      "text": "### Quality of Life [ 3, 4, 5]\n\nThe most common concerns people with colorectal cancer have include chronic diarrhea, cramping, urgency, or stool incontinence; pain; fatigue; peripheral neuropathy; change in body image; managing daily activities if they have an ostomy; problems with intimacy or sexual dysfunction; or emotional distress. Younger men and women might be concerned about fertility.\n\nA cancer diagnosis can profoundly impact quality of life. Clinicians should assess for any physical, social, psychological, spiritual, and financial issues. Integrating palliative care can help manage symptoms, address issues, and improve quality of life. It can be offered at any time, from diagnosis until the end of life. Throughout a person’s cancer journey, it’s very important for clinicians to share information and coordinate care to ensure ongoing surveillance.\n",
-      "token_count": 171,
-      "section": "Quality of Life",
+      "text": "\nNew cases:\n\n- 108,860 cases of colon cancer\n- 49,990 cases of rectal cancer\n\nDeaths:\n\n- 55,230 from colon and rectal cancers combined\n\n5-year relative survival rate for localized stage (colon cancer): 91%\n\n5-year relative survival rate for all stages combined (colon cancer): 63%\n\n5-year relative survival rate for localized stage (rectal cancer): 90%\n\n5-year relative survival rate for all stages combined (rectal cancer): 67%\n\n",
+      "token_count": 113,
+      "section": "Treatment",
       "page_start": null,
       "doc_type": "guideline",
       "source_org": "ACS",
@@ -137,6 +137,28 @@
     },
     {
       "chunk_id": "ACS_CCFS_c013",
+      "doc_id": "ACS_CCFS",
+      "text": "### Quality of Life [ 3, 4, 5]\n\nThe most common concerns people with colorectal cancer have include chronic diarrhea, cramping, urgency, or stool incontinence; pain; fatigue; peripheral neuropathy; change in body image; managing daily activities if they have an ostomy; problems with intimacy or sexual dysfunction; or emotional distress. Younger men and women might be concerned about fertility.\n",
+      "token_count": 81,
+      "section": "Quality of Life",
+      "page_start": null,
+      "doc_type": "guideline",
+      "source_org": "ACS",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "ACS_CCFS_c014",
+      "doc_id": "ACS_CCFS",
+      "text": "\nA cancer diagnosis can profoundly impact quality of life. Clinicians should assess for any physical, social, psychological, spiritual, and financial issues. Integrating palliative care can help manage symptoms, address issues, and improve quality of life. It can be offered at any time, from diagnosis until the end of life. Throughout a person’s cancer journey, it’s very important for clinicians to share information and coordinate care to ensure ongoing surveillance.\n",
+      "token_count": 90,
+      "section": "Quality of Life",
+      "page_start": null,
+      "doc_type": "guideline",
+      "source_org": "ACS",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "ACS_CCFS_c015",
       "doc_id": "ACS_CCFS",
       "text": "\n3. American Cancer Society. Colorectal Cancer. Cancer.org. Updated January 29, 2024.\n[Accessed at https://www.cancer.org/cancer/colon-rectal-cancer.html on January 13, 2026.](https://www.cancer.org/cancer/colon-rectal-cancer.html)\n\n4. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology [(NCCN Guidelines®), Colon Cancer, Version 5.2025. Accessed at https://www.nccn.org](https://www.nccn.org) on January 13, 2026.",
       "token_count": 132,
@@ -147,7 +169,7 @@
       "credibility_tier": 1
     },
     {
-      "chunk_id": "ACS_CCFS_c014",
+      "chunk_id": "ACS_CCFS_c016",
       "doc_id": "ACS_CCFS",
       "text": "\n5. National Comprehensive Cancer Network, Clinical Practice Guidelines in Oncology [(NCCN Guidelines®), Rectal Cancer, Version 4.2025. Accessed at https://www.nccn.org](https://www.nccn.org) on January 13, 2026.",
       "token_count": 61,
@@ -158,10 +180,10 @@
       "credibility_tier": 1
     },
     {
-      "chunk_id": "ACS_CCFS_c015",
+      "chunk_id": "ACS_CCFS_c017",
       "doc_id": "ACS_CCFS",
-      "text": "\n\n©2026, American Cancer Society, Inc.\n\nNo.300203 Rev. 1/26\nModels used for illustrative purposes only.\n\nColorectal Cancer in the US:\n\n",
-      "token_count": 41,
+      "text": "\n\n©2026, American Cancer Society, Inc.\n\nNo.300203 Rev. 1/26\nModels used for illustrative purposes only.\n\nColorectal Cancer in the US:\n\n2026 estimates [ 1]\n",
+      "token_count": 49,
       "section": "Quality of Life",
       "page_start": null,
       "doc_type": "guideline",

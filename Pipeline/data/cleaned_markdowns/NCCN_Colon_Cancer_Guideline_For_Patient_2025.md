@@ -1,6 +1,14 @@
 ## 1 About colon cancer
 
+5 What is the colon?
+
+6 What are polyps?
+
+7 What can you do to get the best care?
+
 Colon Cancer, 2025 4
+
+1 About colon cancer » What is the colon?
 
 Colon cancer is common and treatable. Many cancers that start in the colon can be cured, especially when found early.
 
@@ -23,6 +31,8 @@ While these cancers are similar, their treatment is different. The focus of this
 
 For information on rectal cancer treatment, see the _NCCN Guidelines for Patients: Rectal_
 _Cancer_ at [NCCN.org/patientguidelines and on](https://www.nccn.org/patientguidelines) [the NCCN Patient Guides for Cancer](https://www.nccn.org/guidelines/nccn-mobile-app) app.
+
+1 About colon cancer » What are polyps?
 
 #### What are polyps?
 
@@ -49,6 +59,8 @@ Treatment for polyps with cancer and all stages of colon cancer
 
 Survivorship
 
+1 About colon cancer » What can you do to get the best care?
+
 ##### What can you do to get the best care?
 
 Advocate for yourself. You’re more likely to get the care you want by asking questions and making shared decisions with your care team.
@@ -72,7 +84,31 @@ Use this book as your guide to find the information you need to make important d
 
 ## 2 Testing for colon cancer
 
+9 Colonoscopy
+
+10 Mismatch repair testing
+
+11 Family health history
+
+11 _PIK3CA_ testing
+
+11 _DPYD_ testing
+
+12 Blood tests
+
+13 Imaging
+
+14 Fertility and family planning
+
+14 Clinical trials
+
+16 Key points
+
+16 Questions to ask
+
 Colon Cancer, 2025 8
+
+2 Testing for colon cancer » Colonoscopy
 
 This chapter describes the testing and care needed to create your treatment plan. All colon cancers should be tested for mutations (changes) in genes that fix damaged DNA, called mismatch repair (MMR) genes.
 
@@ -90,6 +126,8 @@ If they see any polyps or lesions, they will remove them during the procedure us
 
 The diagnosis and other findings will be included in a document called a pathology report. Ask your provider for a copy.
 
+2 Testing for colon cancer » Mismatch repair testing
+
 It's common to have another colonoscopy after colon cancer is diagnosed to thoroughly examine the colon and look for other possible areas of cancer. This is called a diagnostic colonoscopy.
 
 For more information on screening colonoscopy and what to expect, see the _NCCN Guidelines for Patients:_
@@ -105,6 +143,8 @@ Testing involves analyzing a piece of the colon tumor in a lab. Depending on the
 Tumors that don’t have either of these changes are called mismatch repair proficient (pMMR) or microsatellite stable (MSS).
 
 Colon Cancer, 2025 10
+
+2 Testing for colon cancer » Family health history » _PIK3CA_ testing » _DPYD_ testing
 
 ##### Family health history
 
@@ -136,6 +176,8 @@ Cancers with a _PIK3CA_ mutation tend to grow quickly and return after treatment
 Capecitabine and fluorouracil (5-FU) are chemotherapy medicines called fluoropyrimidines. They are often used to treat colorectal cancer. Your body uses a special enzyme (protein) called DPD to break down these medicines so they can work properly and safely.
 
 Around 1 in 15 people inherit a difference in the gene involved in making DPD, the _DPYD_ gene. This is called DPD deficiency. In these people, fluoropyrimidines can build up and
+
+2 Testing for colon cancer » Blood tests cause severe and sometimes life-threating side effects, referred to as fluoropyrimidine toxicity.
 
 Signs and symptoms include mouth sores, abdominal pain, blood in the stool, nausea, vomiting, and diarrhea. The skin on the palms of your hands and soles of your feet may start peeling and become red, swollen, or numb.
 Other possible side effects include shortness of breath and hair loss.
@@ -169,6 +211,8 @@ Chemistry profile
 
 Also known as a comprehensive metabolic panel, this group of tests provides information about how well your kidneys, liver, and other organs are working.
 
+2 Testing for colon cancer » Imaging
+
 ###### Imaging
 
 Imaging tests can show areas of cancer inside the body. A radiologist interprets the images and conveys the results to your oncologist.
@@ -192,6 +236,8 @@ MRI
 Magnetic resonance imaging (MRI) isn't often used to plan treatment for colon cancer. Your provider may order an MRI to get a better look at the liver or rectum, or if the CT scan results are unclear.
 
 Getting an MRI is much like getting a CT scan, but doesn't involve x-rays. It also takes longer to complete and may cause your body to feel warm. Some imaging centers use a medication to slow the movement of your bowels. If MRI is planned, ask your care team what to expect.
+
+2 Testing for colon cancer » Fertility and family planning » Clinical trials
 
 ###### Fertility and family planning
 
@@ -227,6 +273,8 @@ If found to be safe and effective in a clinical trial, a drug, device, or treatm
 Administration (FDA).
 
 Everyone with cancer should carefully consider all of the treatment options available for their cancer type, including standard treatments and clinical trials. Talk to your doctor about whether a clinical trial may make sense for you.
+
+2 Testing for colon cancer » Clinical trials
 
 Phases
 
@@ -269,6 +317,8 @@ Will I get a placebo?
 
 Placebos (inactive versions of real medicines) are almost never used alone in cancer clinical trials. It is common to receive either a placebo with a standard treatment, or a new drug with a standard treatment. You will be informed, verbally and in writing, if a placebo is part of a clinical trial before you enroll.
 
+2 Testing for colon cancer » Key points » Questions to ask
+
 Are clinical trials free?
 
 There is no fee to enroll in a clinical trial. The study sponsor pays for research-related costs, including the study drug. But you may need to pay for other services, like transportation or childcare, due to extra appointments. During the trial, you will continue to receive standard cancer care. This care is often covered by insurance.
@@ -295,7 +345,23 @@ Colon Cancer, 2025 16
 
 ## 3 Treatment for non-metastatic cancer
 
+18 Polyps with cancer
+
+19 Invasive cancer
+
+21 Staging
+
+23 Chemotherapy after surgery
+
+24 Surveillance
+
+25 Key points
+
+25 Questions to ask
+
 Colon Cancer, 2025 17
+
+3 Treatment for non-metastatic cancer » Polyps with cancer
 
 Colon cancer often forms in polyps on the lining of the colon, but can also form as flat areas of abnormal cells (a lesion). This chapter explains treatment for cancer that hasn't spread to areas far from the colon.
 
@@ -320,6 +386,8 @@ Most polyps can be removed during a colonoscopy, using a minor endoscopic proced
 
 Before deciding whether resection is needed after a polypectomy, your provider will review the results of testing with you and discuss your options.
 
+3 Treatment for non-metastatic cancer » Invasive cancer
+
 #### Invasive cancer
 
 For cancers not found early enough to be removed by polypectomy, colectomy (colon surgery) is often needed. Surgery is only an option if the colon tumor can be completely removed. If you can’t have surgery first, see page 22.
@@ -338,6 +406,8 @@ They also test the removed lymph nodes for cancer. These results are used to ass
 If the two healthy ends of the remaining colon can't be safely reconnected after the cancer is removed, a colostomy may be performed. A colostomy connects a part of the colon to an opening in the abdomen (a stoma) that allows stool to pass through. For colon cancer surgery, a colostomy is often reversed with another operation. This depends on several factors and may require a long wait time to allow the colon to heal.
 
 Colon Cancer, 2025 19
+
+3 Treatment for non-metastatic cancer » Invasive cancer
 
 At the time of colectomy, some people may also have a procedure called a colostomy. This is done in cases where it may not be safe to reconnect the remaining sections of colon. In a colostomy, the remaining upper part of the colon is attached to an opening on the surface of the abdomen. This opening is called a stoma.
 
@@ -365,6 +435,8 @@ Your care team will give you information on:
 
 ¬ Organs pushing through tissues or muscles weakened by surgery (hernia)
 
+3 Treatment for non-metastatic cancer » Staging
+
 ##### Staging
 
 The stage describes the extent of cancer in the body. The American Joint Committee on
@@ -377,6 +449,7 @@ In the AJCC system, the following key pieces of information about the cancer are
 - M: Whether the cancer has spread to areas or organs outside the colon (metastasized)
 
 The T, N, and M scores are combined to assign the cancer one of the following stages:
+0, I (1), II (2), III (3), or IV (4).
 
 Stage 0
 
@@ -400,6 +473,8 @@ Stage 4
 
 The cancer has spread to areas outside the colon and nearby lymph nodes. Colon cancer spreads most often to the liver and/or lungs.
 
+3 Treatment for non-metastatic cancer » Staging
+
 If you can’t have surgery first
 
 If you can’t have surgery first, because of where the tumor is located or other reasons, systemic therapy (chemotherapy or immunotherapy) is given first. Systemic therapy may also be given first for advanced cancers, or cancer that has spread to lymph nodes.
@@ -418,6 +493,8 @@ _Effects: Immune Checkpoint Inhibitors_ at [NCCN.org/patientguidelines and on th
 
 Colon Cancer, 2025 22
 
+3 Treatment for non-metastatic cancer » Chemotherapy after surgery
+
 ###### Chemotherapy after surgery
 
 Depending on the cancer stage, you may have chemotherapy after surgery to kill any cancer cells left in the body. This is called adjuvant chemotherapy. After chemotherapy (if needed), surveillance begins.
@@ -429,6 +506,7 @@ You don’t need chemotherapy. Observation is recommended.
 Stage 2
 
 Either observation or treatment with adjuvant therapy may be recommended for stage
+2 cancers. The decision is based on the features of the cancer, including the sub-stage, mismatch repair status, and any risk factors.
 
 Stage 3
 
@@ -440,6 +518,7 @@ MSI-H tumors, an immunotherapy drug called atezolizumab (Tecentriq) may be given
 Colon Cancer, 2025 23
 
 Other recommended regimens for all stage
+3 cancers include capecitabine and 5-FU.
 Chemotherapy is typically given for 3 to 6 months. The length of treatment depends on the regimen and whether the cancer is at high risk of recurrence.
 
 If immunotherapy is planned, see the _NCCN_
@@ -453,6 +532,8 @@ In cancers with this biomarker, aspirin may work better at preventing recurrence
 Taking aspirin for 3 years after treatment is recommended for all pMMR/MSS cancers with a _PIK3CA_ mutation.
 
 For dMMR/MSI-H or _POLE_ -mutated cancers with a _PIK3CA_ mutation, taking aspirin for 3 years is recommended only for stage 2 and stage 3 cancers.
+
+3 Treatment for non-metastatic cancer » Surveillance
 
 ###### Surveillance
 
@@ -473,6 +554,8 @@ For more information, see _Chapter 5:_
 _Survivorship_ .
 
 Colon Cancer, 2025 24
+
+3 Treatment for non-metastatic cancer » Key points » Questions to ask
 
 ###### Key points
 
@@ -502,7 +585,27 @@ NCCN Guidelines for Patients better for everyone!
 
 ## 4 Treatment for metastatic cancer
 
+27 Biomarker testing
+
+27 Local therapies
+
+30 Stage 4 cancer in the liver or lungs
+
+33 Stage 4 cancer in the abdomen
+
+33 Supportive care
+
+34 Surveillance
+
+35 Distant recurrence
+
+37 Key points
+
+37 Questions to ask
+
 Colon Cancer, 2025 26
+
+4 Treatment for metastatic cancer » Biomarker testing » Local therapies
 
 Colon cancer spreads most often to the liver, sometimes to the lungs, and less often to the abdomen or other areas. Cancer that has metastasized by the time it is diagnosed is stage 4.
 
@@ -538,6 +641,8 @@ Surgery to remove liver or lung tumors is called resection. If surgery isn't exp
 If a liver resection is needed, your liver may need to be enlarged first. This is done using a minimally invasive procedure called portal vein embolization. An interventional radiologist inserts a catheter into certain veins in the liver.
 This blocks the blood vessel to the liver tumor, causing the healthy part of the liver to grow.
 
+4 Treatment for metastatic cancer » Local therapies
+
 Ablation
 
 Image-guided thermal ablation is the use of energy to destroy small liver or lung tumors.
@@ -572,6 +677,8 @@ Hepatic arterial infusion chemotherapy (HAIC) is chemotherapy given directly to 
 
 HAIC should only be performed by medical oncologists at treatment centers with experience in this method.
 
+4 Treatment for metastatic cancer » Local therapies
+
 Stereotactic body radiation therapy
 
 Stereotactic body radiation therapy (SBRT) is a highly specialized type of external beam radiation therapy (EBRT). It may be used to treat colon cancer that has spread to the liver, lungs, or bone.
@@ -585,6 +692,8 @@ I am a stage III colon cancer survivor. I would recommend
 ## “taking it one day at a time, 1 hour
 if necessary. Get a second opinion to feel confident in your treatment plan. Lastly, connect with others who have been where you are.
 Peer support (whether patient or caregiver) as you navigate your cancer journey is invaluable.”
+
+4 Treatment for metastatic cancer » Stage 4 cancer in the liver or lungs
 
 ### Stage 4 cancer in the liver or lungs
 
@@ -623,6 +732,8 @@ In some cases, observation or a short course of chemotherapy may be possible.
 
 If the tumors don’t become resectable during first-line therapy, systemic therapy is typically continued. The goal is to slow the growth and spread of the cancer.
 
+4 Treatment for metastatic cancer » Stage 4 cancer in the liver or lungs
+
 If the cancer progresses, your provider may suggest changing regimens. The choice will depend on regimens you’ve already had and your general health. Another important factor is whether the tumor has any actionable biomarkers. Regimens targeting specific biomarkers are listed in Guide 4.
 
 If the cancer progresses through all available regimens, recommended options if you are eligible include:
@@ -635,6 +746,8 @@ These targeted therapies are tablets that can be taken by mouth. The targeted th
 
 Colon Cancer, 2025 31
 
+4 Treatment for metastatic cancer » Stage 4 cancer in the liver or lungs dMMR/MSI-H or POLE/POLD1mutated cancer
+
 The preferred treatment approach for resectable stage 4 dMMR/MSI-H or _POLE/_
 _POLD1_ -mutated cancers is immunotherapy followed by surgery. Immunotherapy is only recommended if you haven’t had treatment with a checkpoint inhibitor.
 
@@ -646,6 +759,8 @@ If all areas of cancer cannot be removed with surgery and/or local therapies, st
 If you are a candidate and haven’t had immunotherapy, treatment with a checkpoint inhibitor is recommended. Your provider will check the extent of the cancer every 2 to 3 months. Surgery may become possible. Or, you may continue immunotherapy or switch to a different systemic therapy.
 
 Colon Cancer, 2025 32
+
+4 Treatment for metastatic cancer » Stage 4 cancer in the abdomen » Supportive care
 
 Stage 4 cancer in the abdomen
 
@@ -677,6 +792,8 @@ Palliative care specialists are part of supportive care. They help to ensure tha
 Palliative care isn't the same as hospice care.
 Palliative care seeks to ensure that you are as comfortable as possible while continuing to treat the cancer with an intent to cure you.
 
+4 Treatment for metastatic cancer » Surveillance
+
 ###### Surveillance
 
 Surveillance after treatment for stage 4 colon cancer includes:
@@ -699,6 +816,8 @@ be respectful of their feelings and ensure you’re communicating your research/
 I had something on my list that he might not want asked or answered.”
 
 Colon Cancer, 2025 34
+
+4 Treatment for metastatic cancer » Distant recurrence
 
 ### Distant recurrence
 
@@ -732,6 +851,8 @@ Observation is preferred for those who have already had treatment with oxaliplat
 
 A second option is 2 to 3 months of chemotherapy first, followed by resection (and/or treatment with local therapies). More chemotherapy may follow.
 
+4 Treatment for metastatic cancer » Distant recurrence
+
 If you haven’t received chemotherapy, resection (and/or treatment with local therapies) is often performed first, followed by chemotherapy. Either FOLFOX or CAPEOX is preferred for chemotherapy. Capecitabine and
 5-FU/leucovorin are also options if needed.
 
@@ -762,6 +883,8 @@ If you have received checkpoint inhibitor immunotherapy, one recommended option 
 A second option is 2 to 3 months of chemotherapy first, followed by resection.
 More chemotherapy may follow.
 
+4 Treatment for metastatic cancer » Key points » Questions to ask
+
 ##### Key points
 
 - If not already done, all metastatic cancers should be tested for biomarkers (features) including dMMR/MSI-H, _RAS_ and _BRAF_ mutations, and HER2 amplification.
@@ -784,7 +907,19 @@ Colon Cancer, 2025 37
 
 ## 5 Survivorship
 
+39 Help with side effects
+
+41 Healthy habits
+
+42 Paying for care
+
+42 More information
+
+42 Key points
+
 Colon Cancer, 2025 38
+
+5 Survivorship » Help with side effects
 
 Survivorship begins on the day you learn you have colon cancer.
 
@@ -829,6 +964,8 @@ Chemotherapy can damage the sensory nerves. This is known as neuropathy. The dam
 
 Acupuncture and heat may relieve symptoms of neuropathy. If you have painful nerve damage, a drug called duloxetine (Cymbalta) may help. Neuropathic pain is often described as a shooting or burning pain.
 
+5 Survivorship » Help with side effects
+
 Healthy habits for cancer survivors
 
 Follow your primary care provider’s recommendations for screening for other cancers based on your age and risk level.
@@ -846,6 +983,8 @@ Maintain a healthy weight. Tracking your weight, diet, calories, and activity le
 Stop using tobacco. Ask your care team about options to help you quit. Counseling and medication are often options.
 
 Colon Cancer, 2025 40
+
+5 Survivorship » Healthy habits
 
 Ask your care team about your options for preventing or managing neuropathy.
 
@@ -867,6 +1006,8 @@ A low glycemic load (GL) diet may help prevent the return of colon cancer. Low G
 Aspirin
 
 Talk to your provider about the possible risks and benefits of long-term aspirin therapy to help prevent the return of colorectal cancers.
+
+5 Survivorship » Paying for care » More Information » Key points
 
 ##### Paying for care
 

@@ -15,6 +15,8 @@ Guide, which shows how much of each food type to include in your diet. Remember,
 You may hear about diets that claim to help people with cancer by cutting out types of food, such as dairy.
 There is often no evidence that these work and some can be harmful.
 
+4 Eating well with and beyond bowel cancer
+
 Tips for following a balanced diet
 
 Eat at least five portions of vegetables and fruit each day
@@ -57,6 +59,8 @@ Avoid acidic or spiced foods
 
 Speak to your GP or healthcare team if you’re still not eating or drinking enough. They may refer you to a dietitian or give you treatment to help you get the nutrients you need
 
+6 Eating well with and beyond bowel cancer
+
 ## After treatment
 
 The following pages suggest how you can include the important food groups in your diet when you’re recovering from bowel cancer treatment.
@@ -91,6 +95,8 @@ Handful of grapes One banana One pepper
 
 One cereal bowl of spinach Three heaped tablespoons of beans, peas or lentils
 
+8 Eating well with and beyond bowel cancer
+
 #### Starchy carbohydrates
 
 Starchy carbohydrates are a good source of energy. You should eat some carbohydrate every day. You can get starchy carbohydrate from foods like bread, pasta, cereals, rice and grains and starchy vegetables, such as potatoes and sweet potatoes.
@@ -116,6 +122,8 @@ Other plant-based foods, such as beans, peas and pulses can make diarrhoea and w
 
 Chickpeas or beans Eggs Tinned fish
 
+10 Eating well with and beyond bowel cancer
+
 While meat is a good source of protein and iron, eating a lot of red meat may increase the risk of bowel cancer. Red meat includes beef, pork, lamb, venison and goat. Eat no more than three portions a week.
 This is about 350g–500g of cooked meat a week.
 
@@ -133,6 +141,8 @@ Dairy foods are important sources of protein, calcium and vitamins.
 Examples include milk, cheese, yoghurt and butter. Eat some dairy foods each day and choose lower-fat, unsweetened varieties. If you’re trying to gain weight, you could choose full-fat dairy foods.
 
 If you eat non-dairy alternatives, look for unsweetened options with added calcium. Other sources of calcium include dried fruit, nuts and leafy green vegetables.
+
+12 Eating well with and beyond bowel cancer
 
 #### Fat
 
@@ -167,6 +177,8 @@ Fermentable fibre feeds the good bacteria in your gut. Good sources of fermentab
 
 Fibre-rich foods often contain more than one of these types of fibre.
 
+14 Eating well with and beyond bowel cancer
+
 #### Adding fibre to your diet
 
 Increase fibre gradually to avoid wind, bloating and stomach cramps.
@@ -194,6 +206,8 @@ You may be worried about how you can eat enough vegetables and fruit if you are 
 You could try foods containing soluble fibre, which is easier to digest, such as:
 fleshy parts of vegetables, such as cucumber, peppers and tomatoes, with the skin and seeds removed well-cooked vegetables that are lower in fibre, such as courgettes, squash, carrots, parsnips, swede and sweet potatoes lower-fibre fruits such as banana, melon, seedless grapes, and peeled fruits such as apple, pear and peach tinned fruit in juice (rather than syrup) with no skin, pith or seeds frozen berries that have been defrosted and sieved fruit juices – only have one serving each day, as fruit juice is high in sugar
 
+16 Eating well with and beyond bowel cancer
+
 ## Eating with a low appetite
 
 Bowel cancer and its treatment can affect how much you’re able to eat and drink.
@@ -220,6 +234,8 @@ Use herbs, spices, pickles and sauces, flavoured olive oils, lemon and lime juic
 Pre-prepared foods that can be chilled or frozen can be useful if you don’t have time to cook or if you aren’t able to cook for yourself.
 Make sure they’re reheated properly before eating
 
+18 Eating well with and beyond bowel cancer
+
 Make large meals that you can eat in smaller portions, such as soup, dhal or lasagne. This allows you to go back for more if you want to
 
 If you find that you get full quickly, don’t drink anything for half an hour before a meal. Only have small sips during your meal, unless you need fluids to help you swallow.
@@ -229,7 +245,9 @@ If you don’t feel like eating, you could try energy-rich drinks, like smoothie
 
 You may also find these tips helpful if you’re struggling to gain weight.
 
-#### What causes weight loss?
+## Gaining weight safely
+
+### What causes weight loss?
 
 Some people lose weight when affected by bowel cancer or its treatment. There may be several possible reasons for your weight loss, such as the cancer itself or the side effects of treatment.
 
@@ -261,6 +279,8 @@ If you’re overweight, it’s important to speak to your healthcare team before
 Following a healthy, balanced diet and eating less can help you lose weight. Regular physical activity also helps. If possible, aim for at least 30 minutes of physical activity, five days a week. If you find this difficult, you could try going for gentle walks and avoiding sitting for long periods of time.
 
 Gradually build up the amount of activity you do and ask for help from your GP or healthcare team if you need it.
+
+20 Eating well with and beyond bowel cancer
 
 ### Tips to help you lose weight
 
@@ -300,6 +320,8 @@ It can continue for several months or years after cancer treatment for some peop
 
 Preparing meals can be challenging when you have cancer-related fatigue. The tips below can help you cope with fatigue.
 
+22 Eating well with and beyond bowel cancer
+
 #### Tips for coping with fatigue
 
 Try to eat and drink a wide variety of fresh food and fluids to make sure you get all the nutrients you need
@@ -319,6 +341,7 @@ Take any prescribed painkillers just before going to sleep if you find that you 
 Eating well with and beyond bowel cancer 23
 
 Boost your iron intake. Good sources of iron include dried apricots, green vegetables, beans and breakfast cereals with added iron and wholegrains. Red meat also contains iron but you should limit how much you eat. Read page
+11 for information about red meat
 
 Be as active as you can. Physical activity can help to reduce fatigue and help you cope with treatment
 
@@ -340,6 +363,8 @@ It might take a little while to find which types of food you can and can’t eat
 
 If you have your stoma reversed, it can take months for your bowel symptoms to settle down. You may have more frequent or more urgent bowel motions, constipation or loose, runny poo (diarrhoea). You can read about how diet can help with diarrhoea and constipation on pages 28 and 32.
 
+24 Eating well with and beyond bowel cancer
+
 Your healthcare team can offer support and treatment for bowel problems after stoma reversal surgery.
 
 ### Colostomy
@@ -359,6 +384,7 @@ For the first few days after surgery, make sure vegetables are well cooked. You 
 Daily gentle physical activity such as walking is also important.
 
 If you have constipation, make sure you’re eating regular meals to keep your stoma working. Food that is spicy or high in fibre can help to relieve constipation. If you want to eat more fibre, introduce it to your diet gradually and make sure you’re drinking enough fluids. Read pages
+14 and 32 for more information on fibre and constipation.
 
 Contact your stoma care specialist nurse or call 111 if there are any signs that your colostomy isn’t working properly, such as:
 watery poo or not passing many poos stomach cramps and bloating feeling or being sick (nausea or vomiting) a swollen colostomy
@@ -377,6 +403,8 @@ After six to eight weeks, you should be able to start eating more types of food.
 
 You can eat vegetables and fruit as part of a healthy, balanced diet.
 Try fruit and vegetables that can be cooked until they’re soft, such as boiled carrots or stewed apples. To start with, you could try taking off the skin and removing the seeds or eating tinned vegetables and fruit in natural juice or water. Chewing vegetables and fruit well can help avoid blockages.
+
+26 Eating well with and beyond bowel cancer
 
 Eating lots of small, hard foods like raisins, nuts and sweetcorn can sometimes block the ileostomy. You can help prevent this by eating small amounts of these foods and chewing them well. You could try crushing nuts or creaming sweetcorn.
 
@@ -413,6 +441,8 @@ Other possible causes include your diet, medicines such as antibiotics, and infe
 
 Some people may have symptoms of diarrhoea when they have constipation. This may seem confusing and you may wonder why your doctor is treating your diarrhoea with laxatives. But if your poo is blocking your bowel, runny poo can leak through and can look like diarrhoea. Your doctor will work with you to find out what is causing your diarrhoea so you can get the right treatment. You can read more about constipation on page 32.
 
+28 Eating well with and beyond bowel cancer
+
 Avoiding dehydration
 
 When you have diarrhoea, you need to drink enough fluids to avoid getting dehydrated. Take regular small sips and aim for at least six to eight glasses of fluids a day. Avoid sugary or fizzy drinks and drinks that contain caffeine, such as tea and coffee, as these can irritate the bowel and make diarrhoea worse.
@@ -440,6 +470,8 @@ You should not take probiotics during chemotherapy or if you have low levels of 
 Eating well with and beyond bowel cancer 29
 
 Suggestions for food and drink to try and what to avoid if you ~~have diarrhoea~~
+
+30 Eating well with and beyond bowel cancer
 
 Diarrhoea medicines
 
@@ -475,6 +507,8 @@ What causes constipation?
 
 Many things can cause constipation, including:
 bowel surgery medicines, such as opioid painkillers other illnesses, such as diabetes, thyroid problems or depression not eating enough fibre not drinking enough fluids lack of movement and physical activity
+
+32 Eating well with and beyond bowel cancer
 
 What should I eat and drink?
 
@@ -524,6 +558,8 @@ Not putting off going to the toilet
 
 Firmly massaging your stomach area in a clockwise movement can help get your bowel moving and can ease bloating and wind
 
+34 Eating well with and beyond bowel cancer
+
 Where can I get more help?
 
 Your GP or healthcare team can give you medicine to help with constipation. They may give you stool softeners for hard poo that is difficult to pass or laxatives for a slow bowel habit. Only take these under medical guidance.
@@ -556,6 +592,8 @@ Eating well with and beyond bowel cancer 35
 Food and drinks that can cause wind in some people include:
 peas, beans and lentils some vegetables, including broccoli, cabbage, cauliflower,
 Brussels sprouts, onions, asparagus, cucumbers, garlic, leeks, mushrooms and sweetcorn fructose, a sugar found naturally in fruit and also in some processed foods sorbitol and mannitol, which are sweeteners found in sugar-free sweets, chewing gum and some chocolate fatty foods, such as fried foods, creamy sauces and cakes fruit juices, if you drink more than one glass a day sparkling water and fizzy drinks wine and beer
+
+36 Eating well with and beyond bowel cancer
 
 How can diet help?
 
@@ -602,10 +640,15 @@ Eat more wholegrains, vegetables, fruit and beans
 Limit red meat and avoid processed meat
 
 Avoid alcohol if possible. If you do drink alcohol, drink no more than
+14 units a week and spread it out over the week, with at least two alcohol-free days a week
 
 Making healthy lifestyle choices is good for your overall health and can prevent or reduce other health problems, such as diabetes and heart disease.
 
-#### Do I need to see a specialist?
+38 Eating well with and beyond bowel cancer
+
+## Getting professional support
+
+### Do I need to see a specialist?
 
 Ask to see a dietitian if you have:
 diabetes a long-term health condition that affects what you can eat, such as high cholesterol, high blood pressure, gall stones, diverticulitis, coeliac disease or inflammatory bowel disease food allergies or sensitivities unintended weight loss side effects of treatment that affect your ability to eat, such as sickness, diarrhoea, fatigue or mouth sores low anterior resection syndrome (LARS)– this is a long-term bowel condition that some people may experience after some types of rectal cancer surgery. For more information about LARS, visit [bowelcanceruk.org.uk](https://www.bowelcanceruk.org.uk/about-bowel-cancer/living-with-and-beyond-bowel-cancer/change-in-bowel-habit-after-treatment/)
@@ -641,6 +684,8 @@ If your healthcare team have advised you to follow a low-fibre diet, you could t
 Tell your healthcare team if you’re taking any food supplements. It’s important not to take any vitamins or supplements during cancer treatment unless your healthcare team has recommended them
 
 Our food and symptoms diary may help you find out which foods are causing any bowel symptoms – see page 41
+
+40 Eating well with and beyond bowel cancer
 
 ## Food and symptoms diary
 
@@ -682,3 +727,4 @@ Protein Needed by the body for growth and repair and to keep muscles and bones h
 
 Vitamins A type of nutrient that your body needs in small amounts to stay healthy
 
+42 Eating well with and beyond bowel cancer

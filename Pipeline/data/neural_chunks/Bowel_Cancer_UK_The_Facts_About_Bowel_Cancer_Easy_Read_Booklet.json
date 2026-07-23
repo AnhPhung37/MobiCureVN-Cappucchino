@@ -1,6 +1,6 @@
 {
   "source_file": "Bowel_Cancer_UK_The_Facts_About_Bowel_Cancer_Easy_Read_Booklet.md",
-  "source_path": "cleaned_markdowns/Bowel_Cancer_UK_The_Facts_About_Bowel_Cancer_Easy_Read_Booklet.md",
+  "source_path": "/Users/quannguyen/MobiCureVN-Cappucchino/Pipeline/data/cleaned_markdowns/Bowel_Cancer_UK_The_Facts_About_Bowel_Cancer_Easy_Read_Booklet.md",
   "chunker": "NeuralChunker",
   "model": "mirth/chonky_modernbert_base_1",
   "chunk_count": 8,

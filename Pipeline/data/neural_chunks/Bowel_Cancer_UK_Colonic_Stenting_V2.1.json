@@ -1,6 +1,6 @@
 {
   "source_file": "Bowel_Cancer_UK_Colonic_Stenting_V2.1.md",
-  "source_path": "cleaned_markdowns/Bowel_Cancer_UK_Colonic_Stenting_V2.1.md",
+  "source_path": "/Users/quannguyen/MobiCureVN-Cappucchino/Pipeline/data/cleaned_markdowns/Bowel_Cancer_UK_Colonic_Stenting_V2.1.md",
   "chunker": "NeuralChunker",
   "model": "mirth/chonky_modernbert_base_1",
   "chunk_count": 12,

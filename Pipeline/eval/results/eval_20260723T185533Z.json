@@ -1,0 +1,3602 @@
+{
+  "config": {
+    "registry_path": "../data/registry.csv",
+    "embed": {
+      "model_name": "BAAI/bge-small-en-v1.5",
+      "embed_dim": 384,
+      "batch_size": 64,
+      "normalize": true
+    },
+    "retrieval": {
+      "mode": "hybrid",
+      "candidate_multiplier": 3,
+      "rrf_k": 60,
+      "min_token_length": 3
+    },
+    "evaluation": {
+      "queries_path": "./data/queries.jsonl",
+      "qrels_path": "./data/qrels.jsonl",
+      "top_k": 5,
+      "seed": 42,
+      "results_dir": "./results"
+    },
+    "answerer": {
+      "type": "none"
+    },
+    "experiments": [
+      {
+        "name": "neural",
+        "source_chunks_dir": "../data/neural_chunks",
+        "enriched_output_dir": "./outputs/enriched_neural",
+        "index_db_path": "./outputs/vectorstore_neural.db"
+      }
+    ]
+  },
+  "experiments": [
+    {
+      "experiment": "neural",
+      "metrics": {
+        "recall@k": 0.18660287081339713,
+        "mrr": 0.0967304625199362,
+        "ndcg@k": 0.11930295196316586,
+        "answer_similarity": 0.0,
+        "faithfulness": 0.0
+      },
+      "per_query": [
+        {
+          "query_id": "q001",
+          "question": "What are the most common signs and symptoms of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c007",
+            "CCA_UBC_2023_c003",
+            "CA_UBCB_c007",
+            "GMC_CPI_2024_c007",
+            "NCCN_CCSP_2024_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q002",
+          "question": "At what age should average-risk adults start colorectal cancer screening?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c016",
+            "NCCN_CCSP_2024_c005",
+            "ACS_CCFS_c004",
+            "CWA_CCGSF_2022_c009",
+            "NCCN_CCSP_2024_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q003",
+          "question": "Which screening tests are recommended for colorectal cancer detection?",
+          "retrieved_chunk_ids": [
+            "ACS_CRCS_c014",
+            "ACS_CCFS_c004",
+            "NCCN_CCSP_2024_c009",
+            "NCCN_CCSP_2024_c002",
+            "CWA_CCGSF_2022_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q004",
+          "question": "What lifestyle factors increase the risk of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CRCS_c004",
+            "ACS_CCFS_c003",
+            "BCUK_TFABCERB_c007",
+            "NCCN_DPYD_2025_c056",
+            "CCA_UBC_2023_c003"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q005",
+          "question": "How can colorectal cancer be prevented?",
+          "retrieved_chunk_ids": [
+            "CA_UBCB_c027",
+            "NICE_NG151_c002",
+            "KCL_BCDD_2024_c007",
+            "NICE_NG151_c026",
+            "ACS_CRCS_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q006",
+          "question": "What are the main treatment options for colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c002",
+            "NCCN_RCP_2026_c019",
+            "CA_UBCB_c015",
+            "NCCN_RCP_2026_c011",
+            "NICE_NG151_c024"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q007",
+          "question": "What foods are recommended before bowel cancer surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c009",
+            "BCUK_EW_2023_c016",
+            "BCUK_EW_2023_c001",
+            "CA_UBCB_c017",
+            "CCA_UBC_2023_c012"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q008",
+          "question": "How can patients manage low appetite during bowel cancer treatment?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c001",
+            "BCUK_EW_2023_c005",
+            "NICE_NG151_c002",
+            "NICE_NG151_c023",
+            "UOAA_NOPG_2024_c091"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q009",
+          "question": "Why is fibre important for bowel health?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c005",
+            "BCUK_EW_2023_c002",
+            "BCUK_EW_2023_c003",
+            "BCUK_EW_2023_c004",
+            "BCUK_EW_2023_c017"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q010",
+          "question": "What are examples of soluble fibre foods?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c005",
+            "BCUK_EW_2023_c016",
+            "RM_SRPI_c007",
+            "BCUK_EW_2023_c003",
+            "BCUK_EW_2023_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q011",
+          "question": "What advice is given for following a low-fibre diet?",
+          "retrieved_chunk_ids": [
+            "OUH_DAACS_c007",
+            "UOAA_LWAJP_2024_c011",
+            "BCUK_EW_2023_c001",
+            "UOAA_NOPG_2024_c127",
+            "NHS_SWBH_RH_2023_c006"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q012",
+          "question": "How much red meat is recommended per week for bowel cancer prevention?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c015",
+            "BCUK_EW_2023_c007",
+            "BCUK_EW_2023_c014",
+            "BCUK_EW_2023_c004",
+            "NCCN_CCP_2026_c016"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q013",
+          "question": "Why should processed meat be avoided?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c015",
+            "BCUK_EW_2023_c004",
+            "BCUK_EW_2023_c007",
+            "BCUK_TFABCERB_c008",
+            "NCCN_CCSP_2024_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q014",
+          "question": "What are common causes of weight loss in bowel cancer patients?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c091",
+            "UOAA_NOPG_2024_c092",
+            "ACS_CCFS_c007",
+            "UOAA_LWAC_2024_c024",
+            "BCUK_EW_2023_c005"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q015",
+          "question": "What strategies can help patients cope with cancer-related fatigue?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c006",
+            "BCUK_EW_2023_c007",
+            "ACS_CRCS_c008",
+            "ACS_CRCS_c009",
+            "KCL_BCDD_2024_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q016",
+          "question": "What dietary advice is recommended for people with a stoma?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c013",
+            "UOAA_NOPG_2024_c127",
+            "NHS_SM_LARS_2024_c008",
+            "CA_UBCB_c019",
+            "NICE_NG151_c023"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q017",
+          "question": "What is ctDNA testing and how is it used in colon cancer management?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c010",
+            "NCCN_CCGFP_2025_c003",
+            "NCCN_DPYD_2025_c009",
+            "NCCN_RCP_2026_c009",
+            "NCCN_DPYD_2025_c029"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q018",
+          "question": "What surveillance is recommended for stage 1 colon cancer after treatment?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCP_2026_c008",
+            "NCCN_CCGFP_2025_c008",
+            "NCCN_CCP_2026_c013",
+            "NCCN_RCP_2026_c009"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q019",
+          "question": "What is low anterior resection syndrome (LARS) and what causes it?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c025",
+            "NICE_NG151_c023",
+            "BCUK_ASR_2024_c014",
+            "NCCN_RCP_2026_c021",
+            "BCUK_EW_2023_c016"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q020",
+          "question": "What biomarkers should be tested in metastatic colon cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c011",
+            "NCCN_CCP_2026_c019",
+            "NCCN_CCP_2026_c004",
+            "NCCN_RCP_2026_c005",
+            "NCCN_CCGFP_2025_c015"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q021",
+          "question": "What does mismatch repair deficiency (dMMR) mean and why does it matter for treatment?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCGFP_2025_c014",
+            "NCCN_CCP_2026_c019",
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCGFP_2025_c005",
+            "NCCN_CCP_2026_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q022",
+          "question": "What are the phases of clinical trials and what does each phase test?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCGFP_2025_c004",
+            "NCCN_RCP_2026_c016",
+            "NCCN_CCP_2026_c015",
+            "NCCN_DPYD_2025_c115",
+            "NCCN_DPYD_2025_c021"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q023",
+          "question": "What is chemotherapy-induced neuropathy and how can it be managed?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c002",
+            "NCCN_DPYD_2025_c319",
+            "ACS_CCFS_c013",
+            "BCUK_PTS_2025_c006",
+            "NCCN_CCP_2026_c015"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q024",
+          "question": "How long after stoma formation is stoma reversal surgery typically performed?",
+          "retrieved_chunk_ids": [
+            "NHS_GJ_CPI_c003",
+            "BCUK_ASR_2024_c006",
+            "UOAA_NOPG_2024_c026",
+            "NHS_STHK_RHC_c004",
+            "RM_SRPI_c003"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q025",
+          "question": "What bowel changes should patients expect after stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c001",
+            "BCUK_ASR_2024_c013",
+            "RM_SRPI_c005",
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q026",
+          "question": "What diet is recommended after stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c001",
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c017",
+            "BCUK_ASR_2024_c013",
+            "BCUK_ASR_2024_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q027",
+          "question": "What are the possible risks of having a colonic stent fitted?",
+          "retrieved_chunk_ids": [
+            "BCUK_CS_V2.1_2023_c001",
+            "BCUK_CS_V2.1_2023_c007",
+            "BCUK_CS_V2.1_2023_c006",
+            "BCUK_CS_V2.1_2023_c012",
+            "BCUK_CS_V2.1_2023_c004"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q028",
+          "question": "What symptoms after colonic stenting should prompt urgent contact with a specialist nurse?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c014",
+            "RM_SRPI_c004",
+            "BCUK_CS_V2.1_2023_c003",
+            "UOAA_NOPG_2024_c134",
+            "BCUK_CS_V2.1_2023_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q029",
+          "question": "What diet is recommended in the days after a colonic stent is fitted?",
+          "retrieved_chunk_ids": [
+            "BCUK_CS_V2.1_2023_c001",
+            "BCUK_CS_V2.1_2023_c011",
+            "BCUK_CS_V2.1_2023_c006",
+            "BCUK_CS_V2.1_2023_c004",
+            "CCA_UBC_2023_c007"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q030",
+          "question": "What is the recommended method for collecting a urine specimen from a urostomy stoma?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c002",
+            "WOCN_COUS_2018_c012",
+            "WOCN_COUS_2018_c011",
+            "WOCN_COUS_2018_c004",
+            "WOCN_COUS_2018_c013"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q031",
+          "question": "What should clinicians consider before giving antibiotics for urinary infection in urostomy patients?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c009",
+            "WOCN_COUS_2018_c013",
+            "WOCN_COUS_2018_c001",
+            "RM_ARBS_c005",
+            "UOAA_NOPG_2024_c133"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q035",
+          "question": "What are the main symptoms of bowel cancer that patients should watch for?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c091",
+            "UOAA_NOPG_2024_c134",
+            "NHS_STHK_RHC_c023",
+            "CCA_UBC_2023_c003",
+            "RM_ARBS_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q036",
+          "question": "At what age is bowel cancer screening offered in England, Scotland, and Wales?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c009",
+            "BCUK_TFABCERB_c006",
+            "BCUK_PTS_2025_c003",
+            "KCL_BCDD_2024_c016",
+            "KCL_BCDD_2024_c006"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q037",
+          "question": "What legal workplace protections apply when a person is diagnosed with cancer in the UK?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c002",
+            "UOAA_NOPG_2024_c155",
+            "BCUK_PTS_2025_c001",
+            "UOAA_NOPG_2024_c138",
+            "GMC_CPI_2024_c007"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q038",
+          "question": "Can people with a stoma travel by plane, and what documents help at airport security?",
+          "retrieved_chunk_ids": [
+            "NHS_GJ_CPI_c023",
+            "BCUK_PTS_2025_c008",
+            "UOAA_NOPG_2024_c141",
+            "UOAA_LWAC_2024_c001",
+            "UOAA_LWAI_2022_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q039",
+          "question": "What are the different types of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c002",
+            "UOAA_NOPG_2024_c147",
+            "CCA_UBC_2023_c012",
+            "GMC_CPI_2024_c005",
+            "NCCN_CCGFP_2025_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q040",
+          "question": "Which hereditary syndromes increase the risk of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c003",
+            "NCCN_CCSP_2024_c017",
+            "NCCN_CCSP_2024_c015",
+            "NCCN_CCSP_2024_c016",
+            "NCCN_CCSP_2024_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q041",
+          "question": "What quality of life issues do colorectal cancer survivors commonly experience?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c019",
+            "NCCN_CCGFP_2025_c011",
+            "ACS_CCFS_c014",
+            "NCCN_DPYD_2025_c119",
+            "NCCN_DPYD_2025_c321"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q042",
+          "question": "What are the survival statistics for colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "ACS_CRCS_c011",
+            "ACS_CCFS_c011",
+            "ACS_CRCS_c015",
+            "KCL_BCDD_2024_c002",
+            "KCL_BCDD_2024_c034"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q043",
+          "question": "What pelvic floor exercises are recommended after stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c014",
+            "UOAA_LWAJP_2024_c012",
+            "NHS_SM_LARS_2024_c006",
+            "RM_SRPI_c010"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q044",
+          "question": "What are the surgical risks of stoma reversal?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c001",
+            "RM_SRPI_c002",
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c003",
+            "BCUK_ASR_2024_c009"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q045",
+          "question": "What physical restrictions should patients follow after stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c001",
+            "BCUK_ASR_2024_c007",
+            "UOAA_NOPG_2024_c118",
+            "BCUK_ASR_2024_c002",
+            "BCUK_ASR_2024_c003"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q046",
+          "question": "What emotional impact can having a stoma have and how can patients cope?",
+          "retrieved_chunk_ids": [
+            "NHS_GJ_CPI_c004",
+            "CA_UBCB_c019",
+            "CCA_UBC_2023_c013",
+            "NHS_GJ_CPI_c027",
+            "CCA_UBC_2023_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q047",
+          "question": "When can patients resume sexual activity after stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "UHCW_GHACS_c008",
+            "UOAA_LWAJP_2024_c017",
+            "NHS_SWBH_RH_2023_c016",
+            "UOAA_NOPG_2024_c148",
+            "RM_ARBS_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q048",
+          "question": "What is a colonic stent and why is it used?",
+          "retrieved_chunk_ids": [
+            "BCUK_CS_V2.1_2023_c001",
+            "BCUK_CS_V2.1_2023_c002",
+            "BCUK_CS_V2.1_2023_c003",
+            "NICE_NG151_c026",
+            "NICE_NG151_c003"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q049",
+          "question": "How long does the colonic stent fitting procedure take?",
+          "retrieved_chunk_ids": [
+            "BCUK_CS_V2.1_2023_c007",
+            "BCUK_CS_V2.1_2023_c005",
+            "BCUK_CS_V2.1_2023_c004",
+            "BCUK_CS_V2.1_2023_c006",
+            "BCUK_CS_V2.1_2023_c001"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q050",
+          "question": "How might bowel habits change after a colonic stent is fitted?",
+          "retrieved_chunk_ids": [
+            "BCUK_CS_V2.1_2023_c009",
+            "BCUK_CS_V2.1_2023_c006",
+            "BCUK_CS_V2.1_2023_c004",
+            "BCUK_CS_V2.1_2023_c001",
+            "BCUK_CS_V2.1_2023_c007"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q051",
+          "question": "What are the alternatives to colonic stenting for bowel obstruction?",
+          "retrieved_chunk_ids": [
+            "BCUK_CS_V2.1_2023_c002",
+            "NICE_NG151_c003",
+            "NCCN_DPYD_2025_c044",
+            "BCUK_CS_V2.1_2023_c007",
+            "BCUK_CS_V2.1_2023_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q052",
+          "question": "What are the key principles of a balanced diet for bowel cancer patients?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c001",
+            "RM_ARBS_c012",
+            "NHS_SWBH_RH_2023_c008",
+            "UHCW_GHACS_c005",
+            "BCUK_EW_2023_c016"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q053",
+          "question": "What role does protein play in recovery from bowel cancer treatment?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c001",
+            "UOAA_NOPG_2024_c147",
+            "NCCN_CCP_2026_c002",
+            "UOAA_NOPG_2024_c017",
+            "CA_UBCB_c020"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q054",
+          "question": "Which foods are most likely to cause wind or gas with a stoma?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c013",
+            "CCA_UBC_2023_c012",
+            "CCA_UBC_2023_c013",
+            "NHS_GJ_CPI_c015",
+            "UOAA_NOPG_2024_c128"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q055",
+          "question": "What dietary changes help manage constipation after bowel cancer treatment?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c013",
+            "BCUK_EW_2023_c010",
+            "CA_UBCB_c019",
+            "NHS_SM_LARS_2024_c008",
+            "BCUK_EW_2023_c013"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q056",
+          "question": "What dietary advice helps manage diarrhoea after bowel cancer treatment?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c013",
+            "CCA_UBC_2023_c011",
+            "NHS_WSH_LH_c009",
+            "NICE_NG151_c023",
+            "CA_UBCB_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q057",
+          "question": "What dietary advice is given specifically for people with a colostomy?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c127",
+            "NHS_SM_LARS_2024_c008",
+            "UHCW_GHACS_c005",
+            "UOAA_LWAC_2024_c001",
+            "CCA_UBC_2023_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q058",
+          "question": "What dietary advice is given specifically for people with an ileostomy?",
+          "retrieved_chunk_ids": [
+            "UOAA_LWAJP_2024_c010",
+            "UOAA_NOPG_2024_c127",
+            "NHS_SM_LARS_2024_c008",
+            "CCA_UBC_2023_c013",
+            "UHCW_GHACS_c005"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q059",
+          "question": "How can bowel cancer patients gain weight if they are losing too much?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c005",
+            "UOAA_NOPG_2024_c042",
+            "UOAA_NOPG_2024_c023",
+            "BCUK_EW_2023_c004",
+            "UOAA_NOPG_2024_c087"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q060",
+          "question": "Are vitamin and mineral supplements recommended for bowel cancer patients?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c017",
+            "UOAA_NOPG_2024_c132",
+            "BCUK_EW_2023_c004",
+            "NCCN_DPYD_2025_c167",
+            "UOAA_NOPG_2024_c092"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q061",
+          "question": "What dietary habits may help reduce the risk of bowel cancer recurrence?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_LH_c010",
+            "CCA_UBC_2023_c003",
+            "CA_UBCB_c007",
+            "OUH_DAACS_c007",
+            "BCUK_EW_2023_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q062",
+          "question": "What reasonable adjustments can employers make for employees returning to work after cancer?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c001",
+            "UOAA_NOPG_2024_c153",
+            "UOAA_LWAC_2024_c014",
+            "UOAA_LWAI_2022_c013",
+            "CA_UBCB_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q063",
+          "question": "What financial benefits may be available to people with bowel cancer in the UK?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c002",
+            "CA_UBCB_c020",
+            "ASCO_TMCRC_2022_c015",
+            "NCCN_CCGFP_2025_c011",
+            "NCCN_RCP_2026_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q064",
+          "question": "Are cancer patients entitled to free prescriptions in the UK?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c003",
+            "BCUK_PTS_2025_c002",
+            "NHS_GJ_CPI_c020",
+            "UHCW_GHACS_c002",
+            "UOAA_NOPG_2024_c060"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q065",
+          "question": "Can bowel cancer patients apply for a Blue Badge parking permit?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c007",
+            "CWA_CCGSF_2022_c001",
+            "NCCN_DPYD_2025_c309",
+            "NCCN_DPYD_2025_c235",
+            "KCL_BCDD_2024_c024"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q066",
+          "question": "What help is available with transport costs for cancer patients in the UK?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c005",
+            "WOCN_COUS_2018_c008",
+            "NCCN_CCP_2026_c017",
+            "BCUK_PTS_2025_c002",
+            "NCCN_RCP_2026_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q067",
+          "question": "What travel insurance considerations are there for stoma patients?",
+          "retrieved_chunk_ids": [
+            "BCUK_PTS_2025_c009",
+            "BCUK_PTS_2025_c008",
+            "WOCN_BOSC_2024_c006",
+            "UOAA_NOPG_2024_c012",
+            "NHS_GJ_CPI_c023"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q068",
+          "question": "How does the large bowel work normally?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c011",
+            "CCA_UBC_2023_c002",
+            "BCUK_CS_V2.1_2023_c007",
+            "CA_UBCB_c005",
+            "NHS_SM_LARS_2024_c012"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q069",
+          "question": "What factors are known to increase the risk of bowel cancer?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c002",
+            "BCUK_TFABCERB_c007",
+            "KCL_BCDD_2024_c015",
+            "CCA_UBC_2023_c003",
+            "ACS_CCFS_c003"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q070",
+          "question": "Why does early detection of bowel cancer matter?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "CWA_CCGSF_2022_c003",
+            "KCL_BCDD_2024_c014",
+            "NICE_NG151_c007",
+            "CA_UBCB_c024"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q071",
+          "question": "How frequently should people participate in bowel cancer screening?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c015",
+            "ACS_CCFS_c004",
+            "KCL_BCDD_2024_c007",
+            "KCL_BCDD_2024_c009",
+            "KCL_BCDD_2024_c016"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q072",
+          "question": "What are colorectal polyps and how do they become cancerous?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c003",
+            "NCCN_CCSP_2024_c002",
+            "NCCN_CCGFP_2025_c001",
+            "NCCN_CCP_2026_c002",
+            "NCCN_RCP_2026_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q073",
+          "question": "How is colorectal cancer staged using the TNM system?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c024",
+            "CA_UBCB_c011",
+            "NCCN_DPYD_2025_c181",
+            "NCCN_DPYD_2025_c122",
+            "CCA_UBC_2023_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q074",
+          "question": "What is DPYD deficiency and why does it matter before starting chemotherapy?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c005",
+            "NCCN_CCP_2026_c018",
+            "NCCN_CCGFP_2025_c013",
+            "NCCN_CCGFP_2025_c002",
+            "NCCN_CCP_2026_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q075",
+          "question": "What fertility preservation options should be discussed before colorectal cancer treatment?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCGFP_2025_c005",
+            "NCCN_RCP_2026_c004",
+            "NCCN_CCGFP_2025_c004",
+            "NCCN_CCP_2026_c003",
+            "CA_UBCB_c023"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q076",
+          "question": "What is a colectomy and when is it recommended for colon cancer?",
+          "retrieved_chunk_ids": [
+            "CWA_CCGSF_2022_c012",
+            "NHS_STHK_RHC_c002",
+            "NCCN_CCP_2026_c014",
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCP_2026_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q077",
+          "question": "What adjuvant chemotherapy is recommended after surgery for stage III colon cancer?",
+          "retrieved_chunk_ids": [
+            "CWA_CCGSF_2022_c016",
+            "NCCN_DPYD_2025_c117",
+            "NCCN_DPYD_2025_c116",
+            "NCCN_CCP_2026_c008",
+            "NCCN_CCP_2026_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q078",
+          "question": "What surveillance is recommended after treatment for stage I colon cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCP_2026_c008",
+            "NCCN_CCGFP_2025_c008",
+            "NCCN_CCP_2026_c013",
+            "NCCN_RCP_2026_c009"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q079",
+          "question": "What are the treatment options for liver metastases from colon cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_DPYD_2025_c071",
+            "NCCN_CCP_2026_c011",
+            "NCCN_CCP_2026_c014",
+            "NCCN_DPYD_2025_c030",
+            "NCCN_CCGFP_2025_c009"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.2,
+          "ndcg@k": 0.38685280723454163,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q083",
+          "question": "What bowel changes can occur after colon surgery and how long do they last?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c002",
+            "CA_UBCB_c019",
+            "NICE_NG151_c002",
+            "CA_UBCB_c006",
+            "CA_UBCB_c005"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q084",
+          "question": "How can patients manage chemotherapy-induced peripheral neuropathy?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c013",
+            "BCUK_PTS_2025_c006",
+            "NICE_NG151_c002",
+            "NCCN_DPYD_2025_c319",
+            "NCCN_DPYD_2025_c119"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q085",
+          "question": "What is financial toxicity in cancer care and how can patients get help?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCGFP_2025_c011",
+            "NCCN_RCP_2026_c019",
+            "BCUK_PTS_2025_c002",
+            "CCA_UBC_2023_c014",
+            "NCCN_CCP_2026_c016"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q086",
+          "question": "What is a low glycaemic load diet and how might it benefit colorectal cancer survivors?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c016",
+            "NCCN_CCGFP_2025_c011",
+            "NCCN_RCP_2026_c019",
+            "NICE_NG151_c002",
+            "ACS_CCFS_c008"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q087",
+          "question": "Which immunotherapy drugs are used for dMMR metastatic colon cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCP_2026_c014",
+            "NCCN_CCGFP_2025_c009",
+            "NCCN_DPYD_2025_c080",
+            "NCCN_CCP_2026_c013"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q088",
+          "question": "How often should a urostomy pouch be changed?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c002",
+            "UOAA_NOPG_2024_c103",
+            "WOCN_COUS_2018_c013",
+            "UOAA_NOPG_2024_c005",
+            "UOAA_NOPG_2024_c052"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q089",
+          "question": "What is the best time of day to change a urostomy pouch?",
+          "retrieved_chunk_ids": [
+            "WOCN_BOSC_2024_c010",
+            "UOAA_NOPG_2024_c052",
+            "UOAA_NOPG_2024_c096",
+            "UOAA_NOPG_2024_c074",
+            "UOAA_NOPG_2024_c043"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q093",
+          "question": "Why is preoperative nurse education important for patients undergoing urostomy surgery?",
+          "retrieved_chunk_ids": [
+            "NCPD_NCFPAUS_c001",
+            "NCPD_NCFPAUS_c004",
+            "NCPD_NCFPAUS_c003",
+            "NCPD_NCFPAUS_c005",
+            "UOAA_NOPG_2024_c095"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q094",
+          "question": "Why should urine not be collected directly from an existing urostomy pouch for culture?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c002",
+            "WOCN_COUS_2018_c013",
+            "WOCN_COUS_2018_c011",
+            "UOAA_NOPG_2024_c104",
+            "UOAA_NOPG_2024_c096"
+          ],
+          "recall@k": 1.0,
+          "mrr": 1.0,
+          "ndcg@k": 1.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q095",
+          "question": "How should a clean-catch urine specimen be collected from a urostomy stoma?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c002",
+            "WOCN_COUS_2018_c013",
+            "WOCN_COUS_2018_c012",
+            "WOCN_COUS_2018_c011",
+            "WOCN_COUS_2018_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q096",
+          "question": "What are the signs and symptoms of a urinary tract infection in a urostomy patient?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c133",
+            "WOCN_COUS_2018_c013",
+            "UOAA_NOPG_2024_c107",
+            "UOAA_NOPG_2024_c127",
+            "UOAA_NOPG_2024_c134"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q097",
+          "question": "How long can a urine specimen be stored at room temperature before it must be processed?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c011",
+            "WOCN_COUS_2018_c002",
+            "UOAA_NOPG_2024_c013",
+            "WOCN_COUS_2018_c013",
+            "WOCN_COUS_2018_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q098",
+          "question": "What special considerations apply when collecting urine from a urostomy that has stents in place?",
+          "retrieved_chunk_ids": [
+            "WOCN_COUS_2018_c002",
+            "UOAA_NOPG_2024_c104",
+            "WOCN_COUS_2018_c012",
+            "UOAA_NOPG_2024_c096",
+            "WOCN_COUS_2018_c007"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.2,
+          "ndcg@k": 0.38685280723454163,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q099",
+          "question": "When should colorectal cancer screening begin for people at average risk?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c005",
+            "CWA_CCGSF_2022_c009",
+            "NCCN_CCSP_2024_c015",
+            "ACS_CCFS_c004",
+            "NCCN_CCSP_2024_c016"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q100",
+          "question": "What colorectal cancer screening tests are available and how do they differ?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c002",
+            "NCCN_CCSP_2024_c010",
+            "NCCN_CCSP_2024_c015",
+            "ACS_CRCS_c009",
+            "CA_UBCB_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q101",
+          "question": "What screening is recommended for people at high risk of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "CWA_CCGSF_2022_c009",
+            "ACS_CCFS_c004",
+            "NCCN_CCSP_2024_c014",
+            "NCCN_CCSP_2024_c016",
+            "NCCN_CCSP_2024_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q102",
+          "question": "What are the benefits of regular colorectal cancer screening?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c008",
+            "NCCN_CCSP_2024_c005",
+            "ACS_CCFS_c004",
+            "ACS_CRCS_c010",
+            "ACS_CRCS_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q103",
+          "question": "What is the first-line treatment approach for metastatic colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c013",
+            "NCCN_RCP_2026_c011",
+            "NCCN_DPYD_2025_c282",
+            "NCCN_DPYD_2025_c149",
+            "NCCN_CCP_2026_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q104",
+          "question": "What is the role of bevacizumab in treating metastatic colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "CWA_CCGSF_2022_c020",
+            "ASCO_TMCRC_2022_c018",
+            "NCCN_DPYD_2025_c300",
+            "NCCN_DPYD_2025_c296",
+            "NCCN_DPYD_2025_c259"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q105",
+          "question": "What treatment options are available when first-line therapy fails in metastatic colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c013",
+            "CWA_CCGSF_2022_c020",
+            "NCCN_CCP_2026_c014",
+            "NICE_NG151_c017",
+            "NCCN_DPYD_2025_c297"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q106",
+          "question": "Why is RAS mutation testing important in metastatic colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c015",
+            "NCCN_DPYD_2025_c060",
+            "NCCN_DPYD_2025_c061",
+            "NICE_NG151_c027",
+            "NCCN_CCP_2026_c011"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q107",
+          "question": "What staging workup is recommended for newly diagnosed colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c002",
+            "ACS_CRCS_c012",
+            "CWA_CCGSF_2022_c010",
+            "NCCN_DPYD_2025_c152",
+            "NCCN_DPYD_2025_c121"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q108",
+          "question": "What is the recommended treatment for stage II colon cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCGFP_2025_c008",
+            "NCCN_CCP_2026_c013",
+            "NCCN_CCP_2026_c002",
+            "NCCN_CCP_2026_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q109",
+          "question": "What perioperative chemotherapy is recommended for locally advanced rectal cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c009",
+            "NCCN_RCP_2026_c011",
+            "NCCN_RCP_2026_c010",
+            "CWA_CCGSF_2022_c015",
+            "NICE_NG151_c010"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q110",
+          "question": "What follow-up is recommended after curative resection of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "CWA_CCGSF_2022_c020",
+            "NCCN_DPYD_2025_c151",
+            "NICE_NG151_c019",
+            "NICE_NG151_c026"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q111",
+          "question": "What is bowel cancer and how does it develop?",
+          "retrieved_chunk_ids": [
+            "CA_UBCB_c004",
+            "CA_UBCB_c005",
+            "NHS_SM_LARS_2024_c012",
+            "UOAA_LWAJP_2024_c001",
+            "CA_UBCB_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q112",
+          "question": "How is bowel cancer diagnosed?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c014",
+            "KCL_BCDD_2024_c016",
+            "CA_UBCB_c004",
+            "BCUK_EW_2023_c017",
+            "CA_UBCB_c011"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q113",
+          "question": "What types of surgery are performed for bowel cancer?",
+          "retrieved_chunk_ids": [
+            "RM_ARBS_c002",
+            "UOAA_LWAI_2022_c004",
+            "UOAA_NOPG_2024_c002",
+            "UOAA_NOPG_2024_c110",
+            "NHS_STHK_RHC_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q114",
+          "question": "What does life look like after treatment for bowel cancer?",
+          "retrieved_chunk_ids": [
+            "UOAA_LWAC_2024_c001",
+            "CCA_UBC_2023_c013",
+            "UOAA_LWAI_2022_c001",
+            "CA_UBCB_c019",
+            "NHS_SM_LARS_2024_c012"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q115",
+          "question": "What are the main risk factors for bowel cancer?",
+          "retrieved_chunk_ids": [
+            "BCUK_TFABCERB_c007",
+            "CCA_UBC_2023_c003",
+            "UOAA_LWAJP_2024_c006",
+            "NHS_STHK_RHC_c028",
+            "CA_UBCB_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q116",
+          "question": "What tests are used to diagnose bowel cancer?",
+          "retrieved_chunk_ids": [
+            "CA_UBCB_c010",
+            "CCA_UBC_2023_c003",
+            "CA_UBCB_c007",
+            "CCA_UBC_2023_c004",
+            "NCCN_CCSP_2024_c006"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.25,
+          "ndcg@k": 0.43067655807339306,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q117",
+          "question": "What are the different types of surgery available for bowel cancer?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c012",
+            "UOAA_NOPG_2024_c147",
+            "CA_UBCB_c017",
+            "NCPD_NCFPAUS_c004",
+            "NHS_WSH_RH_c012"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q118",
+          "question": "What support services are available for bowel cancer patients?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c014",
+            "CA_UBCB_c020",
+            "UHCW_GHACS_c013",
+            "NCCN_CCP_2026_c017",
+            "CA_UBCB_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q119",
+          "question": "How is colorectal cancer staged in clinical practice?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c027",
+            "NICE_NG151_c012",
+            "NICE_NG151_c026",
+            "NICE_NG151_c014",
+            "CA_UBCB_c027"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q120",
+          "question": "What is the role of a multidisciplinary team in colorectal cancer care?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCGFP_2025_c001",
+            "CA_UBCB_c022",
+            "CCA_UBC_2023_c014",
+            "NCCN_CCP_2026_c002",
+            "CWA_CCGSF_2022_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q121",
+          "question": "What adjuvant treatment is recommended after surgery for colon cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c014",
+            "CWA_CCGSF_2022_c016",
+            "CWA_CCGSF_2022_c017",
+            "NCCN_CCP_2026_c013",
+            "NCCN_CCGFP_2025_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q122",
+          "question": "What surveillance is recommended after colorectal cancer treatment?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c009",
+            "NCCN_CCP_2026_c009",
+            "NICE_NG151_c026",
+            "NCCN_CCP_2026_c013",
+            "NCCN_CCP_2026_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q123",
+          "question": "What is colorectal cancer and how is it classified?",
+          "retrieved_chunk_ids": [
+            "NHS_SWBH_RH_2023_c006",
+            "NHS_WSH_RH_c006",
+            "KCL_BCDD_2024_c017",
+            "NCCN_DPYD_2025_c126",
+            "CA_UBCB_c023"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q124",
+          "question": "What are the warning symptoms of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c003",
+            "GMC_CPI_2024_c007",
+            "GMC_CPI_2024_c008",
+            "UOAA_NOPG_2024_c091",
+            "CA_UBCB_c017"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q125",
+          "question": "What treatment options are available for colorectal cancer patients?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c014",
+            "NCCN_CCP_2026_c017",
+            "ACS_CCFS_c009",
+            "NCCN_RCP_2026_c002",
+            "UOAA_LWAJP_2024_c022"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q126",
+          "question": "What support is available for patients with colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c001",
+            "NCCN_CCP_2026_c017",
+            "NCCN_CCP_2026_c001",
+            "NCCN_RCP_2026_c002",
+            "CCA_UBC_2023_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q127",
+          "question": "What health inequalities exist in bowel cancer outcomes?",
+          "retrieved_chunk_ids": [
+            "ASCO_TMCRC_2022_c014",
+            "BCUK_ASR_2024_c009",
+            "NCA_CSFU_2024_c003",
+            "UOAA_NOPG_2024_c093",
+            "NHS_SWBH_RH_2023_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q128",
+          "question": "How do bowel cancer outcomes differ for people with learning disabilities?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c016",
+            "KCL_BCDD_2024_c001",
+            "KCL_BCDD_2024_c015",
+            "KCL_BCDD_2024_c013",
+            "KCL_BCDD_2024_c006"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q129",
+          "question": "What are the barriers to bowel cancer screening in vulnerable populations?",
+          "retrieved_chunk_ids": [
+            "KCL_BCDD_2024_c016",
+            "KCL_BCDD_2024_c015",
+            "ACS_CRCS_c009",
+            "KCL_BCDD_2024_c006",
+            "KCL_BCDD_2024_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q130",
+          "question": "What changes are recommended to improve equity in bowel cancer care?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c010",
+            "NHS_WSH_LH_c009",
+            "NICE_NG151_c002",
+            "NHS_SM_LARS_2024_c012",
+            "CA_UBCB_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q131",
+          "question": "How is colon cancer diagnosed according to current NCCN guidelines?",
+          "retrieved_chunk_ids": [
+            "NCCN_DPYD_2025_c121",
+            "NCCN_DPYD_2025_c029",
+            "NCCN_CCP_2026_c002",
+            "NCCN_CCP_2026_c001",
+            "NCCN_DPYD_2025_c202"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q132",
+          "question": "What is the recommended treatment for stage II colon cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCP_2026_c009",
+            "NCCN_CCGFP_2025_c008",
+            "NCCN_CCP_2026_c013",
+            "NCCN_CCP_2026_c002",
+            "NCCN_CCP_2026_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q133",
+          "question": "What follow-up care is recommended after colon cancer treatment?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "NCCN_CCGFP_2025_c001",
+            "NCCN_CCP_2026_c013",
+            "NCCN_DPYD_2025_c151",
+            "NCCN_CCP_2026_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q134",
+          "question": "How does hereditary colorectal cancer influence treatment decisions?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c001",
+            "ACS_CCFS_c003",
+            "NCA_CSFU_2024_c003",
+            "NCCN_CCSP_2024_c015",
+            "NCCN_CCP_2026_c010"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q135",
+          "question": "What is DPYD deficiency and which chemotherapy drugs does it affect?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c005",
+            "NCCN_DPYD_2025_c127",
+            "NCCN_DPYD_2025_c128",
+            "NCCN_CCP_2026_c018",
+            "NCCN_CCGFP_2025_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q136",
+          "question": "How should DPYD testing be performed before fluoropyrimidine chemotherapy?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c005",
+            "NCCN_DPYD_2025_c026",
+            "NCCN_DPYD_2025_c128",
+            "NCCN_DPYD_2025_c127",
+            "NCCN_CCGFP_2025_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q137",
+          "question": "What dose adjustments are recommended for patients with DPYD variants?",
+          "retrieved_chunk_ids": [
+            "NCCN_DPYD_2025_c026",
+            "NCCN_DPYD_2025_c127",
+            "NCCN_DPYD_2025_c128",
+            "NCCN_DPYD_2025_c126",
+            "NCCN_DPYD_2025_c266"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q138",
+          "question": "Which patients should undergo DPYD testing before chemotherapy?",
+          "retrieved_chunk_ids": [
+            "NCCN_DPYD_2025_c128",
+            "NCCN_DPYD_2025_c026",
+            "NCCN_RCP_2026_c005",
+            "NCCN_DPYD_2025_c127",
+            "NCCN_DPYD_2025_c149"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q139",
+          "question": "What are NCCN recommendations for average-risk colorectal cancer screening?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c001",
+            "NCCN_CCSP_2024_c005",
+            "NCCN_CCGFP_2025_c001",
+            "NCCN_CCSP_2024_c007",
+            "NCCN_CCSP_2024_c016"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q140",
+          "question": "How does family history of colorectal cancer affect screening recommendations?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c015",
+            "CWA_CCGSF_2022_c009",
+            "KCL_BCDD_2024_c007",
+            "NCCN_CCSP_2024_c013",
+            "ACS_CRCS_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q141",
+          "question": "What colorectal cancer screening is recommended for people with Lynch syndrome?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c015",
+            "NICE_NG151_c001",
+            "KCL_BCDD_2024_c007",
+            "NICE_NG151_c026",
+            "NCCN_CCGFP_2025_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q142",
+          "question": "How do colonoscopy and stool tests compare for colorectal cancer screening?",
+          "retrieved_chunk_ids": [
+            "NCCN_CCSP_2024_c010",
+            "NCCN_CCSP_2024_c009",
+            "NCCN_CCSP_2024_c016",
+            "NCCN_CCSP_2024_c006",
+            "NCCN_CCSP_2024_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q143",
+          "question": "How is rectal cancer staged and what investigations are needed?",
+          "retrieved_chunk_ids": [
+            "NCCN_RCP_2026_c009",
+            "NCCN_DPYD_2025_c059",
+            "NCCN_RCP_2026_c017",
+            "NCCN_RCP_2026_c007",
+            "NCCN_RCP_2026_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.2,
+          "ndcg@k": 0.38685280723454163,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q144",
+          "question": "What is total neoadjuvant therapy for rectal cancer?",
+          "retrieved_chunk_ids": [
+            "NCCN_DPYD_2025_c110",
+            "NCCN_RCP_2026_c011",
+            "CWA_CCGSF_2022_c016",
+            "CWA_CCGSF_2022_c017",
+            "NICE_NG151_c009"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q145",
+          "question": "When is a permanent colostomy required for rectal cancer?",
+          "retrieved_chunk_ids": [
+            "CWA_CCGSF_2022_c014",
+            "UOAA_NOPG_2024_c002",
+            "NHS_STHK_RHC_c004",
+            "NHS_GJ_CPI_c003",
+            "NHS_GJ_CPI_c010"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q146",
+          "question": "What follow-up is recommended after treatment for rectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "NCCN_RCP_2026_c009",
+            "NCCN_RCP_2026_c002",
+            "NCCN_RCP_2026_c011",
+            "CWA_CCGSF_2022_c017"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q147",
+          "question": "What is a colostomy and how does it function?",
+          "retrieved_chunk_ids": [
+            "UOAA_LWAC_2024_c006",
+            "UOAA_LWAC_2024_c007",
+            "UOAA_LWAC_2024_c001",
+            "NHS_SM_LARS_2024_c012",
+            "UOAA_NOPG_2024_c127"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q148",
+          "question": "How should a colostomy bag be emptied and changed?",
+          "retrieved_chunk_ids": [
+            "NHS_GJ_CPI_c010",
+            "CA_UBCB_c015",
+            "CCA_UBC_2023_c010",
+            "NHS_GJ_CPI_c024",
+            "UOAA_NOPG_2024_c074"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q149",
+          "question": "What dietary advice is given to people with a new colostomy?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c127",
+            "UOAA_NOPG_2024_c060",
+            "NICE_NG151_c023",
+            "NHS_SM_LARS_2024_c008",
+            "CCA_UBC_2023_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q150",
+          "question": "When can patients with a colostomy return to normal daily activities?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c153",
+            "NHS_SWBH_RH_2023_c016",
+            "OUH_DAACS_c002",
+            "NHS_STHK_RHC_c016",
+            "UHCW_GHACS_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q151",
+          "question": "What is a right hemicolectomy and when is it performed?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_SWBH_RH_2023_c001",
+            "NHS_SWBH_RH_2023_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q152",
+          "question": "What should patients expect during recovery from a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_SWBH_RH_2023_c001",
+            "NHS_WSH_RH_c001",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_STHK_RHC_c003",
+            "UOAA_LWAJP_2024_c014"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.25,
+          "ndcg@k": 0.43067655807339306,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q153",
+          "question": "What dietary advice should patients follow after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c127",
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "GMC_CPI_2024_c003",
+            "NHS_SWBH_RH_2023_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q154",
+          "question": "What symptoms after a right hemicolectomy should prompt urgent medical attention?",
+          "retrieved_chunk_ids": [
+            "GMC_CPI_2024_c008",
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "BCUK_ASR_2024_c013",
+            "BCUK_ASR_2024_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q155",
+          "question": "How long is the typical hospital stay after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c003",
+            "NHS_SWBH_RH_2023_c002",
+            "NHS_STHK_RHC_c003",
+            "NHS_STHK_RHC_c016",
+            "RM_SRPI_c003"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q156",
+          "question": "How should patients care for their wound at home after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_STHK_RHC_c003",
+            "NHS_WSH_LH_c013",
+            "NHS_WSH_RH_c014",
+            "OUH_DAACS_c004",
+            "BCUK_ASR_2024_c010"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q157",
+          "question": "What activities should be avoided after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_SWBH_RH_2023_c001",
+            "NHS_WSH_RH_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q158",
+          "question": "When can patients return to work after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_STHK_RHC_c003",
+            "NHS_WSH_RH_c001",
+            "NHS_SWBH_RH_2023_c002",
+            "OUH_DAACS_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q159",
+          "question": "What treatments are available for low anterior resection syndrome?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c025",
+            "NICE_NG151_c023",
+            "BCUK_ASR_2024_c014",
+            "NCCN_RCP_2026_c021",
+            "NCCN_RCP_2026_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q160",
+          "question": "How does bowel retraining help manage LARS symptoms?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c023",
+            "BCUK_CS_V2.1_2023_c002",
+            "CCA_UBC_2023_c002",
+            "UOAA_NOPG_2024_c091",
+            "CCA_UBC_2023_c010"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q161",
+          "question": "What dietary changes can help manage symptoms of LARS?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c023",
+            "CCA_UBC_2023_c013",
+            "CCA_UBC_2023_c010",
+            "NHS_SM_LARS_2024_c008",
+            "UOAA_NOPG_2024_c091"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q162",
+          "question": "What is the impact of LARS on quality of life and when should patients seek help?",
+          "retrieved_chunk_ids": [
+            "ACS_CCFS_c014",
+            "NICE_NG151_c027",
+            "UOAA_NOPG_2024_c127",
+            "NICE_NG151_c002",
+            "NICE_NG151_c023"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q163",
+          "question": "What is a left hemicolectomy and which part of the bowel is removed?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_LH_c002",
+            "NHS_STHK_RHC_c003",
+            "NHS_WSH_LH_c001",
+            "CA_UBCB_c024",
+            "NHS_WSH_RH_c002"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q164",
+          "question": "What is the typical recovery timeline after a left hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_LH_c001",
+            "NHS_WSH_LH_c002",
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "UOAA_NOPG_2024_c096"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q165",
+          "question": "What dietary advice should be followed after a left hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_LH_c001",
+            "NHS_WSH_LH_c002",
+            "UOAA_NOPG_2024_c127",
+            "NHS_SM_LARS_2024_c008",
+            "UOAA_NOPG_2024_c133"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q166",
+          "question": "What signs of complications should patients watch for after a left hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_LH_c001",
+            "NHS_WSH_RH_c001",
+            "NHS_WSH_LH_c002",
+            "NHS_SWBH_RH_2023_c001",
+            "NHS_SWBH_RH_2023_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q167",
+          "question": "What preparation is required before a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_SWBH_RH_2023_c001",
+            "RM_ARBS_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q168",
+          "question": "How is pain managed after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_STHK_RHC_c003",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c001",
+            "OUH_DAACS_c003"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q169",
+          "question": "What bowel changes can occur after a right hemicolectomy?",
+          "retrieved_chunk_ids": [
+            "NHS_STHK_RHC_c003",
+            "NHS_WSH_RH_c001",
+            "NHS_WSH_RH_c002",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_SWBH_RH_2023_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q170",
+          "question": "What are the long-term outcomes after a right hemicolectomy for cancer?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c001",
+            "NHS_STHK_RHC_c003",
+            "NCCN_DPYD_2025_c226",
+            "NHS_SWBH_RH_2023_c019",
+            "NHS_SWBH_RH_2023_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q171",
+          "question": "What does NICE recommend for the diagnosis of colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c001",
+            "NICE_NG151_c014",
+            "NICE_NG151_c017",
+            "NICE_NG151_c015",
+            "NICE_NG151_c012"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q172",
+          "question": "What does NICE guidance say about surgery for colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c001",
+            "NICE_NG151_c014",
+            "NICE_NG151_c012",
+            "NICE_NG151_c021",
+            "NICE_NG151_c017"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q173",
+          "question": "What are NICE recommendations on adjuvant chemotherapy for colorectal cancer?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c014",
+            "NICE_NG151_c012",
+            "NICE_NG151_c001",
+            "NICE_NG151_c017",
+            "NICE_NG151_c016"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q174",
+          "question": "What does NICE say about follow-up after colorectal cancer treatment?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "NICE_NG151_c001",
+            "NCCN_RCP_2026_c005",
+            "NCCN_CCP_2026_c004",
+            "NICE_NG151_c012"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.2,
+          "ndcg@k": 0.38685280723454163,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q175",
+          "question": "What is stratified follow-up for colorectal cancer and why is it used?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "GMC_CPI_2024_c002",
+            "NCA_CSFU_2024_c001",
+            "NICE_NG151_c026",
+            "GMC_CPI_2024_c001"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.3333333333333333,
+          "ndcg@k": 0.5,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q176",
+          "question": "Which colorectal cancer patients are eligible for self-managed or remote follow-up?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "NCCN_DPYD_2025_c151",
+            "NCA_CSFU_2024_c011",
+            "NCA_CSFU_2024_c003",
+            "NCA_CSFU_2024_c015"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.25,
+          "ndcg@k": 0.43067655807339306,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q177",
+          "question": "What symptoms should prompt urgent re-referral after colorectal cancer treatment?",
+          "retrieved_chunk_ids": [
+            "GMC_CPI_2024_c008",
+            "WOCN_COUS_2018_c009",
+            "BCUK_ASR_2024_c014",
+            "BCUK_ASR_2024_c013",
+            "OUH_DAACS_c016"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q178",
+          "question": "How frequently should CEA be checked during colorectal cancer follow-up?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c022",
+            "NCCN_DPYD_2025_c151",
+            "CA_UBCB_c023",
+            "GMC_CPI_2024_c005",
+            "NCCN_CCGFP_2025_c003"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q179",
+          "question": "What activity levels are safe when discharged home after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "NHS_STHK_RHC_c016",
+            "UOAA_NOPG_2024_c097",
+            "NHS_SWBH_RH_2023_c014",
+            "UHCW_GHACS_c008",
+            "NHS_WSH_RH_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q180",
+          "question": "How should patients care for their wound at home after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_LH_c013",
+            "NHS_WSH_RH_c014",
+            "UHCW_GHACS_c002",
+            "BCUK_ASR_2024_c010",
+            "NCPD_NCFPAUS_c003"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q181",
+          "question": "What dietary advice should patients follow on discharge after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "OUH_DAACS_c001",
+            "NHS_WSH_LH_c013",
+            "NHS_WSH_RH_c014",
+            "UOAA_NOPG_2024_c127",
+            "NHS_WSH_LH_c015"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q182",
+          "question": "What symptoms after colorectal surgery should prompt an emergency call?",
+          "retrieved_chunk_ids": [
+            "GMC_CPI_2024_c008",
+            "WOCN_COUS_2018_c009",
+            "OUH_DAACS_c001",
+            "UOAA_NOPG_2024_c129",
+            "CWA_CCGSF_2022_c022"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q183",
+          "question": "What is an anterior resection and what does the surgery involve?",
+          "retrieved_chunk_ids": [
+            "RM_ARBS_c002",
+            "RM_ARBS_c001",
+            "NICE_NG151_c025",
+            "NHS_SWBH_RH_2023_c001",
+            "NICE_NG151_c023"
+          ],
+          "recall@k": 1.0,
+          "mrr": 0.5,
+          "ndcg@k": 0.6309297535714575,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q184",
+          "question": "How should patients manage bowel changes after an anterior resection?",
+          "retrieved_chunk_ids": [
+            "NICE_NG151_c023",
+            "NICE_NG151_c025",
+            "NICE_NG151_c002",
+            "RM_ARBS_c001",
+            "BCUK_ASR_2024_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q185",
+          "question": "What activity restrictions should patients follow after anterior resection surgery?",
+          "retrieved_chunk_ids": [
+            "RM_ARBS_c001",
+            "NICE_NG151_c025",
+            "NCCN_RCP_2026_c009",
+            "NICE_NG151_c023",
+            "NICE_NG151_c024"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q186",
+          "question": "What complications should be watched for after anterior resection surgery?",
+          "retrieved_chunk_ids": [
+            "RM_ARBS_c001",
+            "NICE_NG151_c025",
+            "RM_ARBS_c002",
+            "NICE_NG151_c023",
+            "BCUK_ASR_2024_c014"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q187",
+          "question": "What happens during stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "RM_SRPI_c003",
+            "BCUK_ASR_2024_c003",
+            "BCUK_ASR_2024_c001",
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c009"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q188",
+          "question": "How should patients prepare for stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "RM_SRPI_c002",
+            "CWA_CCGSF_2022_c011",
+            "BCUK_ASR_2024_c007",
+            "RM_SRPI_c001",
+            "NHS_GJ_CPI_c004"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q189",
+          "question": "What are the risks associated with stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c001",
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c003",
+            "BCUK_ASR_2024_c009",
+            "BCUK_ASR_2024_c002"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q190",
+          "question": "What can patients expect during recovery from stoma reversal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_ASR_2024_c001",
+            "BCUK_ASR_2024_c007",
+            "BCUK_ASR_2024_c003",
+            "RM_SRPI_c003",
+            "BCUK_ASR_2024_c009"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q191",
+          "question": "What should patients expect when going home after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "NHS_STHK_RHC_c016",
+            "OUH_DAACS_c001",
+            "RM_ARBS_c011",
+            "NCPD_NCFPAUS_c004",
+            "UOAA_NOPG_2024_c073"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q192",
+          "question": "What medications should patients take on discharge after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "OUH_DAACS_c001",
+            "OUH_DAACS_c003",
+            "NHS_WSH_LH_c013",
+            "NHS_WSH_RH_c014",
+            "UHCW_GHACS_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q193",
+          "question": "What eating and drinking advice should patients follow after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "BCUK_EW_2023_c001",
+            "NHS_SWBH_RH_2023_c011",
+            "BCUK_ASR_2024_c007",
+            "BCUK_EW_2023_c016",
+            "BCUK_EW_2023_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q194",
+          "question": "When will patients have their follow-up appointments after colorectal surgery?",
+          "retrieved_chunk_ids": [
+            "UHCW_GHACS_c009",
+            "NCA_CSFU_2024_c017",
+            "NICE_NG151_c022",
+            "GMC_CPI_2024_c003",
+            "GMC_CPI_2024_c011"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q195",
+          "question": "How do you empty and change a colostomy pouch?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c049",
+            "UOAA_NOPG_2024_c047",
+            "UOAA_NOPG_2024_c128",
+            "UOAA_LWAC_2024_c010",
+            "UOAA_NOPG_2024_c056"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q196",
+          "question": "What dietary changes are important when living with a colostomy?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c013",
+            "UOAA_NOPG_2024_c127",
+            "UOAA_NOPG_2024_c047",
+            "NHS_GJ_CPI_c008",
+            "UOAA_NOPG_2024_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q197",
+          "question": "Can people with a colostomy exercise or go swimming?",
+          "retrieved_chunk_ids": [
+            "UOAA_LWAOB_2023_c011",
+            "UOAA_LWAC_2024_c016",
+            "NHS_GJ_CPI_c021",
+            "UOAA_NOPG_2024_c017",
+            "UOAA_LWAC_2024_c012"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q198",
+          "question": "How can people adjust emotionally to living with a colostomy?",
+          "retrieved_chunk_ids": [
+            "NHS_SM_LARS_2024_c003",
+            "UOAA_NOPG_2024_c148",
+            "UOAA_LWAC_2024_c014",
+            "UOAA_LWAC_2024_c001",
+            "UOAA_NOPG_2024_c047"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q199",
+          "question": "What is a J-pouch and how does it work?",
+          "retrieved_chunk_ids": [
+            "NHS_SM_LARS_2024_c012",
+            "UOAA_NOPG_2024_c017",
+            "CA_UBCB_c023",
+            "UOAA_NOPG_2024_c139",
+            "UOAA_LWAC_2024_c001"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q200",
+          "question": "What dietary restrictions should be followed after J-pouch surgery?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c123",
+            "RM_ARBS_c008",
+            "UOAA_NOPG_2024_c127",
+            "UOAA_NOPG_2024_c133",
+            "NHS_GJ_CPI_c020"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q201",
+          "question": "How many bowel movements per day is normal for someone with a J-pouch?",
+          "retrieved_chunk_ids": [
+            "NHS_WSH_RH_c011",
+            "UOAA_NOPG_2024_c026",
+            "NHS_WSH_LH_c010",
+            "UOAA_NOPG_2024_c049",
+            "RM_ARBS_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q202",
+          "question": "What long-term complications can occur with a J-pouch and how are they managed?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c091",
+            "UOAA_NOPG_2024_c125",
+            "UOAA_NOPG_2024_c092",
+            "UOAA_LWAJP_2024_c001",
+            "NHS_SWBH_RH_2023_c005"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q203",
+          "question": "How should an ileostomy stoma be cared for?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c033",
+            "BCUK_EW_2023_c008",
+            "UOAA_NOPG_2024_c129",
+            "UOAA_LWAC_2024_c022",
+            "NHS_SWBH_RH_2023_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q204",
+          "question": "What foods should people with an ileostomy avoid or limit?",
+          "retrieved_chunk_ids": [
+            "CCA_UBC_2023_c012",
+            "BCUK_EW_2023_c008",
+            "UOAA_NOPG_2024_c127",
+            "UOAA_LWAI_2022_c008",
+            "CCA_UBC_2023_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q205",
+          "question": "How can dehydration be managed and prevented with an ileostomy?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c129",
+            "UOAA_NOPG_2024_c091",
+            "UOAA_NOPG_2024_c133",
+            "NHS_WSH_LH_c008",
+            "BCUK_EW_2023_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q206",
+          "question": "How can living with an ileostomy affect intimacy and relationships?",
+          "retrieved_chunk_ids": [
+            "UOAA_LWAI_2022_c013",
+            "UOAA_LWAC_2024_c015",
+            "CA_UBCB_c028",
+            "UOAA_LWAI_2022_c001",
+            "CA_UBCB_c019"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q207",
+          "question": "What are the different types of ostomy?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c147",
+            "UOAA_NOPG_2024_c094",
+            "UOAA_LWAC_2024_c001",
+            "UOAA_LWAI_2022_c001",
+            "UOAA_NOPG_2024_c089"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q208",
+          "question": "How should a person choose the right ostomy pouching system?",
+          "retrieved_chunk_ids": [
+            "WOCN_BOSC_2024_c004",
+            "UOAA_NOPG_2024_c138",
+            "WOCN_BOSC_2024_c010",
+            "UOAA_NOPG_2024_c106",
+            "UOAA_NOPG_2024_c042"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q209",
+          "question": "How should the skin around an ostomy stoma be cared for?",
+          "retrieved_chunk_ids": [
+            "NCPD_NCFPAUS_c005",
+            "UOAA_NOPG_2024_c082",
+            "UOAA_NOPG_2024_c054",
+            "UOAA_NOPG_2024_c107",
+            "UOAA_LWAI_2022_c007"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q210",
+          "question": "When can people with an ostomy return to work and daily activities?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c153",
+            "NHS_STHK_RHC_c016",
+            "NHS_SWBH_RH_2023_c016",
+            "UOAA_LWAC_2024_c014",
+            "ACS_CCFS_c013"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q211",
+          "question": "What should new ostomy patients expect in the first weeks after surgery?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c127",
+            "UOAA_NOPG_2024_c073",
+            "UOAA_LWAJP_2024_c022",
+            "NCPD_NCFPAUS_c004",
+            "RM_ARBS_c011"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q212",
+          "question": "How can common ostomy problems such as leaks and skin irritation be resolved?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c083",
+            "UOAA_NOPG_2024_c054",
+            "UOAA_NOPG_2024_c035",
+            "UOAA_LWAJP_2024_c015",
+            "UOAA_NOPG_2024_c039"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q213",
+          "question": "When should a new ostomy patient contact their stoma nurse?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c057",
+            "NCPD_NCFPAUS_c005",
+            "UOAA_NOPG_2024_c020",
+            "NHS_GJ_CPI_c030",
+            "BCUK_PTS_2025_c008"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q214",
+          "question": "What resources are available to support new ostomy patients?",
+          "retrieved_chunk_ids": [
+            "UOAA_LWAJP_2024_c022",
+            "UOAA_NOPG_2024_c087",
+            "UOAA_NOPG_2024_c107",
+            "UOAA_LWAI_2022_c002",
+            "NCCN_CCP_2026_c017"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q215",
+          "question": "How can peristomal skin breakdown be prevented?",
+          "retrieved_chunk_ids": [
+            "WOCN_BOSC_2024_c027",
+            "UOAA_NOPG_2024_c039",
+            "WOCN_BOSC_2024_c030",
+            "UOAA_NOPG_2024_c121",
+            "UOAA_NOPG_2024_c044"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q216",
+          "question": "What skin protection products are recommended for ostomy care?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c097",
+            "WOCN_BOSC_2024_c005",
+            "UOAA_NOPG_2024_c040",
+            "UOAA_NOPG_2024_c043",
+            "UOAA_NOPG_2024_c103"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q217",
+          "question": "How should peristomal skin irritation or rash be treated?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c083",
+            "UOAA_NOPG_2024_c054",
+            "UOAA_LWAC_2024_c013",
+            "UOAA_LWAI_2022_c009",
+            "UOAA_NOPG_2024_c035"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        },
+        {
+          "query_id": "q218",
+          "question": "When should a patient seek professional help for an ostomy skin problem?",
+          "retrieved_chunk_ids": [
+            "UOAA_NOPG_2024_c054",
+            "UOAA_LWAC_2024_c001",
+            "UOAA_NOPG_2024_c047",
+            "UOAA_LWAI_2022_c001",
+            "UOAA_NOPG_2024_c078"
+          ],
+          "recall@k": 0.0,
+          "mrr": 0.0,
+          "ndcg@k": 0.0,
+          "answer": null,
+          "answer_similarity": null,
+          "faithfulness": null
+        }
+      ]
+    }
+  ]
+}

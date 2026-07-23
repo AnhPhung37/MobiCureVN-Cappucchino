@@ -54,11 +54,12 @@ final class SQLiteRetriever {
 
         let candidateLimit = max(topK * 3, topK)
         let rows = runFTS(baseQuery: query, enrichedTerms: enrichedTerms, limit: candidateLimit)
-        // Only pay for on-device embedding when FTS came back thin. A full FTS candidate set
-        // rarely benefits from the vector pass, and embedding dominates per-query latency.
-        let vectorRows = rows.count >= candidateLimit
-            ? []
-            : runVectorSearch(query: query, limit: candidateLimit)
+        // Always run the vector pass and RRF-fuse it. Natural-language questions produce a
+        // broad OR-of-terms FTS query that saturates the candidate budget on virtually every
+        // query, so the old "skip vector when FTS is full" rule meant the vector signal was
+        // never used. Golden-set eval (Pipeline/eval): always-fuse lifts recall@5 0.187→0.249
+        // and doc-hit@5 0.689→0.766. The cost is one on-device embedding per query.
+        let vectorRows = runVectorSearch(query: query, limit: candidateLimit)
         let mergedRows = mergeRows(ftsRows: rows, vectorRows: vectorRows)
         let dedupedRows = dedupeRowsByContent(mergedRows)
         let finalRows = Array(dedupedRows.prefix(topK))
@@ -104,6 +105,17 @@ final class SQLiteRetriever {
         return enrichedClause
     }
 
+    // Common English stopwords >= 3 chars that survive the length filter and dilute BM25
+    // ranking when OR-joined into the FTS query. Dropping them sharpens keyword scoring;
+    // in golden-set eval this lifts MRR/nDCG back toward the pure-vector baseline.
+    private static let ftsStopwords: Set<String> = [
+        "the", "and", "are", "for", "can", "you", "how", "does", "did", "with", "what",
+        "your", "why", "who", "was", "were", "has", "have", "had", "will", "would",
+        "should", "could", "that", "this", "these", "those", "there", "their", "them",
+        "then", "than", "from", "into", "out", "off", "not", "but", "any", "all", "some",
+        "get", "got", "may", "might", "must", "about", "when", "which", "where", "whom",
+    ]
+
     private func tokenizeForFTS(_ text: String) -> [String] {
         let forbidden = CharacterSet.alphanumerics.union(.whitespaces).inverted
         var seen = Set<String>()
@@ -112,6 +124,7 @@ final class SQLiteRetriever {
             .compactMap { token -> String? in
                 let cleaned = token.components(separatedBy: forbidden).joined()
                 guard cleaned.count >= 3 else { return nil }  // drop stop words: "a", "is", "I"
+                guard !Self.ftsStopwords.contains(cleaned.lowercased()) else { return nil }
                 let prefixed = "\(cleaned)*"
                 return seen.insert(prefixed).inserted ? prefixed : nil
             }

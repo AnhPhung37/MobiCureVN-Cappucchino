@@ -1,0 +1,437 @@
+{
+  "doc_id": "KCL_BCDD_2024",
+  "source_file": "KCL_LeDeR_2024_Bowel_Cancer_Deep_Dive.md",
+  "chunk_count": 43,
+  "chunks": [
+    {
+      "chunk_id": "KCL_BCDD_2024_c001",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "LeDeR 2024 BOWEL CANCER Bowel cancer in people with a learning disability: an international comparison and discussion of lowering the age of screening based on LeDeR data\n\nWhite, A; Roberts, C; Ding, J; Sheehan, R; Sanger, E; Chauhan, U; Strydom, A. (2024) A LeDeR Deep Dive report Learning from Lives and Deaths - People with a learning disability and autistic people (LeDeR) report for 2022 (LeDeR 2022) Autism and learning disability partnership King's College London University of Central Lancashire\n\nThe Institute of Psychiatry,\nPsychology and Neuroscience (IoPPN)\nKing's College London\n\n16 De Crespigny Park\n\nLondon\nSE5 8AF\nUnited Kingdom\n\nSchool of Medicine and Dentistry,\n\nFaculty of Health and Biomedical\n\nSciences,\nUniversity of Central Lancashire\n\nUniversity of Central Lancashire\n\nPreston\nPR1 2HE\nUnited Kingdom\n\n###### www.kcl.ac.uk/research/leder\n\n### KEY POINTS\n\n15% of adults with a learning disability who died from bowel cancer in the LeDeR data died younger than 50 years . Of those who died under 50 years, the vast majority died between the ages of 40 and 49 years. People with a learning disability often have health conditions that are known risk factors for bowel cancer. Uptake rates for bowel cancer screening are around 10% lower for people with a learning disability than for the general population. Several comparable countries, including the US, Japan, and Austria, have lowered the age of screening for bowel cancer for the general population to 45 or 40 years . This report could find no international evidence of a specific bowel cancer screening programme which offered earlier screening for people with a learning disability in line with other groups which are also known to be at high risk of bowel cancer. . This report recommends considering lowering the age of screening for people with a learning disability to 40 years.\n\n#### Introduction\n\nPeople with a learning disability account for at least 1.5% of the population in Western countries [(Cuypers et al., 2022). People with a learning disability are now living longer lives and, likely](https://acsjournals.onlinelibrary.wiley.com/doi/10.1002/cncr.34030) because of this, the incidence of cancer for people with a learning disability is therefore also [increasing (Havas et al., 2022;](https://doi.org/10.1002/1878-0261.13302) [Willis et al., 2018;](https://karger.com/ocl/article-abstract/95/6/323/240854/Colorectal-Cancer-in-People-with-Intellectual?redirectedFrom=fulltext) [White et al., 2023). For some cancers, such as](https://www.kcl.ac.uk/research/leder) bowel cancer, some studies suggest that the onset age may be earlier for people with a learning [disability than for people in the general population (Satgé et al., 2023a). In this deep dive we](https://jgo.amegroups.org/article/view/74648/html) summarise international screening policies for bowel cancer and use data from the LeDeR programme to explore whether the bowel cancer screening age in England is appropriate for people with a learning disability.\n\nThe data in this report comes from the Learning from Lives and Deaths (LeDeR) is a service improvement programme for people with a learning disability and autistic people, funded by NHS\nEngland. LeDeR is an England-wide national database of reported deaths of people with a learning disability and autistic adults (more information about LeDeR can be found on their [website here or at www.leder.nhs.uk/about). It is however not mandatory to report to LeDeR.](https://leder.nhs.uk/about)\nThe data only represent those who have been reported to LeDeR and therefore there are limitations to generalising the data.\n\n",
+      "token_count": 894,
+      "section": "www.kcl.ac.uk/research/leder",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c002",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "Incidence of bowel cancer in people under the age of 50 years\n\nBowel cancer, also known as colorectal cancer, refers to cancer that is located anywhere in the large bowel, including the colon and rectum. The incidence of bowel cancer increases with age and most newly diagnosed people from the general population are aged over 60 years old [(Cancer Research UK, 2022). In the UK the 5-year survival rate for stage I of diagnosis (where the](https://www.cancerresearchuk.org/health-professional/cancer-statistics/mortality/age#heading-One) cancer is small and has not spread) is 85%, and for stage IV (where the cancer is metastatic and has spread to at least one other organ) is 10%. To tackle this, many countries, including England, [have initiated government organised/public bowel cancer screening programs (Shekleton and](https://pubmed.ncbi.nlm.nih.gov/38261693/) [Okocha, 2024).](https://pubmed.ncbi.nlm.nih.gov/38261693/)\n\nKnown risk factors for bowel cancer are low physical activity, obesity, dietary factors (high salt and red meat consumption), active and passive smoking, and the presence of chronic bowel [issues (such as Inflammatory Bowel Disease (IBD) (Lewandowska et al., 2022). People with a](https://journals.sagepub.com/doi/10.1177/10732748211056692) learning disability often have several of these risk factors for bowel cancer, particularly being [overweight, a lack of physical activity, a lack of exercise, and poor diet (Willis et al., 2018).](https://karger.com/ocl/article-abstract/95/6/323/240854/Colorectal-Cancer-in-People-with-Intellectual?redirectedFrom=fulltext)",
+      "token_count": 400,
+      "section": "www.kcl.ac.uk/research/leder",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c003",
+      "doc_id": "KCL_BCDD_2024",
+      "text": " [1] In the UK the term “learning disability” is used whilst internationally the term “intellectual disability” is used more often. The term\n“intellectual disability” in this report is interchangeable with that of “learning disability”. NHS England defines a learning disability as a person who might have some difficulty understanding complicated information, learning some skills, and looking after themselves or living alone.\n",
+      "token_count": 80,
+      "section": "www.kcl.ac.uk/research/leder",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c004",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "[[2]According to Cancer Research UK (Cancer Research UK, N.D) the stages of cancer diagnosis are:](https://www.cancerresearchuk.org/about-cancer/what-is-cancer/stages-of-cancer)\nStage I—the cancer is small and has not spread.\nStage II—the cancer has grown but has not spread.\nStage III—the cancer is larger and may have spread to the surrounding tissues and/or the lymph nodes.\nStage IV—the cancer has spread from where it started to at least one other body organ, known as ‘secondary’ or ‘metastatic’ cancer.\n",
+      "token_count": 136,
+      "section": "www.kcl.ac.uk/research/leder",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c005",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n##### 1\n\nIncidence rates of bowel cancer vary globally, however the highest rates are in Europe (30.4 per [100,000) and Oceania (29.8 per 100,000) (Sawicki et al., 2021). Bowel cancer is the 2nd most](https://www.mdpi.com/2072-6694/13/9/2025) common cause of death from cancer in the general population in the UK, accounting for 10% of all cancer deaths between 2017 and 2019. Thirteen percent of deaths from cancer in people aged\n24 to 49 years in the general UK population between 2017 and 2019 were from bowel cancer.\nRoughly 45% of all bowel cancer deaths in the UK are in females and 55% in males. Bowel cancer mortality is related to age, with an increase of age resulting in greater mortality. In the general population around 58% of all bowel cancer deaths are in people aged over 75 years. This [increases steadily from around the age of 40 years (Cancer Research UK, 2021;](https://www.cancerresearchuk.org/health-professional/cancer-statistics/mortality/age#heading-One) [ONS, 2024).](https://www.nomisweb.co.uk/)",
+      "token_count": 268,
+      "section": "1",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c006",
+      "doc_id": "KCL_BCDD_2024",
+      "text": " [Sawicki et al., (2021) found that the risk globally of people aged 50 to 64 years developing](https://www.mdpi.com/2072-6694/13/9/2025) colorectal cancer is 30 times greater than for people aged 25 to 45 years, with the average age of diagnosis being 68 years old for men and 72 years for women. However, there has been a noted increase in incidence rates in those aged 25 to 49 years in both the US and Europe. Evidence suggests that the incidence of bowel cancer in the general population is increasing and is [predicted to increase further in coming years. Santucci et al., (2024) compared general](https://linkinghub.elsevier.com/retrieve/pii/S0923753423051104) population data from France, the UK, Poland, Spain, and Germany, and found that deaths of people aged 25 to 49 years from bowel cancer are forecast to rise in 2024 compared to 20152019, apart from in France. In the UK this was estimated to be an increase of 39% for women and\n26% for men. This increased rate is much larger than the second biggest increase, Germany, which is expected to increase by 7.2% for women with no increase for men. Between 2004 and\n2016, incidence rates of colorectal cancers increased by 7.9% per year for people aged 20 to 49 [years in Europe (Vuik et al., 2019). Virostko et al., (2019) found that, in the US between 2004 and](https://gut.bmj.com/content/68/10/1820)\n2015, bowel cancer incidence for those under the age of 50 years increased from 10.0% to 12.2% and is expected to continue to increase. In addition, younger adults under the age of 50 years who were diagnosed with bowel cancer were diagnosed at a later stage (and therefore with poorer prognosis) than those over 50 years (51.6% at stage 3 or 4 under the age of 50 years [compared to 40% of those over the age of 50 years). Siegel et al., (2023) found that in 2023 the](https://acsjournals.onlinelibrary.wiley.com/doi/10.3322/caac.21772) incidence rate for people under 50 years in the US had increased to 12.7%.\n[Rawla et al., (2019) noted that, whilst incidence rates of colorectal cancer are increasing](https://www.termedia.pl/Epidemiology-of-colorectal-cancer-incidence-mortality-survival-and-risk-factors,41,34580,0,1.html) worldwide, advancements in early detection and treatment options have reduced the mortality rate of colorectal cancers in developed nations. For the general UK population, whilst incidence rates are expected to increase, bowel cancer mortality rates are projected to decrease in the coming years to around 22 per 100,000 in 2040. This is following a pattern of decreasing mortality per 100,000 noted since the early 1990s, where rates were around 43 per 100,000, and is a result of better screening access and uptake, allowing for earlier diagnosis, and the [development of better treatments (Cancer Research UK, 2021).](https://www.cancerresearchuk.org/health-professional/cancer-statistics/mortality/age#heading-One)\n\n###### 2\n\n###### Bowel cancer for adults with a learning disability\n\nAll cancers represented 14.6% of deaths for people with a learning disability in the 2022 LeDeR [report (White et al., 2023). Cancers of the digestive organs (International Statistical Classification](https://www.kcl.ac.uk/research/leder) of Diseases and Related Health Problems - 10th version (ICD-10) codes C18 – C21) represent the largest cause of cancer deaths for people with a learning disability in England, at 35.9% of all cancer deaths in 2022. Of these, cancers of the colon and rectum (bowel cancer) accounted for\n15.8% of deaths from cancer. This compares to 10% of the general population between 2017 and [2019 (White et al., 2022; White et al., 2023). By comparison, a retrospective analysis of the 1,096](https://www.kcl.ac.uk/research/leder) people (all ages) with a learning disability who were reported to the LeDeR programme and who died from cancer between 1st January 2017 and 31st December 2019, found that 43% died between the ages of 18 to 59 years. Cancers of the digestive organs accounted for 45% of underlying causes of death for male adults (over 18 years) with a learning disability and 51% of female adults, whilst these account for 32% of adult males (aged 20+) and 37% of adult females in the general population during the same period. In addition, 45% of those bowel cancers were [stage IV when diagnosed, whilst 66% were either stage III or IV (Heslop et al., 2022). This lower](https://bmjopen.bmj.com/content/12/3/e056974) [average age has been found elsewhere too, with Satgé et al., (2023a) finding that the average](https://jgo.amegroups.org/article/view/74648/html) onset age for bowel cancer in people with a learning disability in Japan was 48.3 years, compared to 71.3 years for the general population.\n\nThe uptake of bowel cancer screening in England in people with a learning disability has been increasing for those aged 60 to 74 years from 43.3% of eligible people in 2020-21, to 50.3% in [2021-22 (NHS [National Health Service] Digital, 2024). This is lower than the uptake of screening](https://digital.nhs.uk/data-and-information/publications/statistical/health-and-care-of-people-with-learning-disabilities) [in the general UK population, which was around 62.7% in 2020 and 66.8% in 2021 (Shekelton and](https://www.ncbi.nlm.nih.gov/books/NBK599509/) [Okocha, 2024). Lower screening rates for people with a learning disability compared to the](https://www.ncbi.nlm.nih.gov/books/NBK599509/) [general population have been found in other countries too. Satgé et al. (2023b) found that](https://bmccancer.biomedcentral.com/articles/10.1186/s12885-023-11313-3) people with a learning disability were less likely than the general population to receive a fecal immunochemical test (FIT) than those in the general population with data from Canada and\nFrance showing that FIT screening is offered 29% less frequently for people with a learning [disability. The severity of the learning disability may also be a factor to consider. Kellen et al.,](https://pubmed.ncbi.nlm.nih.gov/31474187/) [(2020) found that adults with a learning disability living in Belgium reported a lower uptake for](https://pubmed.ncbi.nlm.nih.gov/31474187/) bowel cancer screening via FIT than the general population. The general Flemish population uptake was 51.5%, compared to 23.6% for adults with a mild learning disability, 30.2% for those with a moderate learning disability, and 35.1% for those with a severe learning disability.\n\n###### 3\n\n###### Current screening programme in England\n[England operates an organised national screening programme using the FIT. For the general](https://www.gov.uk/government/collections/nhs-bowel-cancer-screening-bcsp-programme) population, free kits are sent to the person's home with linked instructions. At the time of writing (2024) everyone aged 60 years to 74 years is invited for free bowel cancer screening checks. In [July 2020 the UKs National Screening Committee (UK NSC) recommended that screening for](https://view-health-screening-recommendations.service.gov.uk/bowel-cancer/#:~:text=Screening%20for%20this%20condition%20is%20recommended.%20Screening%20for,in%20the%20UK%20using%20the%20faecal-immunochemical%20test%20%28FIT%29) bowel cancer should be offered every 2 years to men and women between the ages of 50 years and 74 years, using the FIT. This was to be reduced from 60 years and changes began to be implemented from April 2021 which are due to be in place across England by 2025. Only a limited [group of people in high-risk groups, principally those with Lynch syndrome3, may be invited for a](https://www.nhs.uk/conditions/bowel-cancer-screening/) form of bowel cancer screening when younger than 50 years (for people with Lynch syndrome this typically is a colonoscopy). At present, NHS England’s bowel cancer screening programme does not categorise people with a learning disability as at-risk and requiring earlier screening than the general population.\n[3] People with Lynch syndrome may be invited for a colonoscopy instead of a FIT.\n\n###### 4\n\n#### International policy comparison\n[The most used screening tool globally is the FIT, with a few countries using colonoscopy (Shaukat](https://www.nature.com/articles/s41575-022-00612-y) [and Levin, 2022). Uptake rates of bowel cancer screening around the world vary considerably,](https://www.nature.com/articles/s41575-022-00612-y) with countries where a national colorectal cancer screening programme (CRC) is in place reporting general population uptakes ranging from 19.9% (Croatia) to 90.1% (Uruguay) [(Schreuders et al. 2015).](https://gut.bmj.com/content/64/10/1637)\n\nMost countries where an organised CRC programme is in place begin screening at the age of 50 years, with the upper age limit varying between 64 years (Malta and Norway) and no age limit (examples include Jordan, South Korea, and Uruguay). For organised CRC programmes the most [common screening age globally is 50 to 74 years (Emile et al, 2022). Below we compare the](https://linkinghub.elsevier.com/retrieve/pii/S0002961022002124) screening programmes and policies of 5 countries or regions comparable to England (the US, EU,\nAustralia, Southeast Asia, and Scotland).\n",
+      "token_count": 2303,
+      "section": "2",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c007",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n##### United States of America (USA)\n[The US Centre for Disease Control and Prevention (CDC) and the US Preventative Services Task](https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/colorectal-cancer-screening) [Force currently recommend that screening for colorectal cancers begin in the general population](https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/colorectal-cancer-screening) [at the age of 45 through to 75 years (Knudsen et al., 2021). This is accompanied by](https://pubmed.ncbi.nlm.nih.gov/34097370/) recommendations that certain at-risk people begin screening younger than 45 years. These are:\n\nThose with inflammatory bowel diseases such as Crohn’s disease or ulcerative colitis.\nPeople with a personal family history of colorectal cancer or polyps.\nThose with a genetic syndrome such as familial adenomatous polyposis or Lynch syndrome.\n\nOf note is a recommendation by the US Multi-Society Task Force which suggested that consideration should be given to Black adults aged 40 years and above (or 10 years be the age at diagnosis of a family member, whichever is earlier).\n\nThe US uses mainly opportunistic cancer screening, meaning screening is delivered outside of an organised screening programme usually through a fee-for-service. Many proposed initiatives aim [to increase uptake rather than develop organised approaches (Cusumano & Folasade, 2020). The](https://link.springer.com/article/10.1007/s11606-020-05728-y)\nUS does not operate a federal country wide free at the point of access healthcare system as in\nEngland, and each state is responsible for its own healthcare. Screening programmes between states therefore vary. Some states have established their own organised screening programmes, [such as in California (Selby et al., 2022), whilst others opt for opportunistic programmes. Of note](https://linkinghub.elsevier.com/retrieve/pii/S1542356520313720) however is that colonoscopy is still the most common screening method in the US, with FIT being [second (Cusumano & Folasade, 2020). Colonoscopy has been found to often have lower uptake](https://link.springer.com/article/10.1007/s11606-020-05728-y) [of screening participant compared to FIT (Pilonis et al., 2021). FIT is however available in many](https://linkinghub.elsevier.com/retrieve/pii/S0016508520355311) [States (Selby et al., 2022).](https://linkinghub.elsevier.com/retrieve/pii/S1542356520313720)\n\n###### 5\n[The US National Cancer Institute has 22 Colorectal Cancer Screening Evidence-Based Programs](https://ebccp.cancercontrol.cancer.gov/topicPrograms.do?topicId=102265&choice=default) that support a range of populations and ages (mostly starting at age 40 years) to improve access to screenings. States such as Florida, Texas, and New York have implemented specific targeted programs for at-risk and marginalised groups of people, which includes people from poorer economic backgrounds and those who are racially marginalised. There is however no recommendations or programmes for early screening for people with a learning disability.\n",
+      "token_count": 737,
+      "section": "United States of America (USA)",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c008",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### European Union (EU)\n\nEuropean Union guidelines for the screening of colorectal cancers were first developed in 2010 [(von Karsa et al., 2012). By 2015 all but three EU countries had already implemented organised](https://www.thieme-connect.de/products/ejournals/abstract/10.1055/s-0032-1309822) [screening programmes, although some had opportunistic programmes in place (Schreuders et al.,](https://gut.bmj.com/content/64/10/1637) [2015). The European Commission Initiative on Colorectal Cancer (ECICC) working group suggests](https://gut.bmj.com/content/64/10/1637) that for asymptomatic adults with an average risk of colorectal cancer, screening should occur between the ages of 50 through 69 years. This recommendation relates to all screening tests. In\n2021, the European Council announced support for EU member states to ensure that 90% of the [EU population can access breast, cervical, and colorectal cancer screenings by 2025. Quantitative](https://data.consilium.europa.eu/doc/document/ST-14770-2022-INIT/en/pdf) [FIT is considered the preferred screening test.](https://data.consilium.europa.eu/doc/document/ST-14770-2022-INIT/en/pdf)\n\nThroughout Europe, the most common age of screening for the general population is 50-69 years. However, some countries have opted to recommend screening earlier or later. Examples [include Austria (Gartlehner et al., 2023) which has suggested 40 to 80 years for the general](https://link.springer.com/article/10.1007/s00508-023-02209-0) population, and Ireland, which offers free screening between the ages of 60 and 69 years only.\nTable 1 details the current bowel cancer screening programmes in EU and associated countries [(Ferlizza et al., 2021;](https://www.mdpi.com/2072-6694/13/5/1101) [Burra et al., 2022).](https://onlinelibrary.wiley.com/doi/10.1002/ueg2.12230)\n\nAs with the US, early screening is recommended for people at high risk (such as those who have family history), however implementation of this varies throughout Europe, with the EU guidelines stating “For asymptomatic adults aged 50 to 69 years with an average risk of colorectal cancer, the ECICC working group recommends screening for colorectal cancer in the context of an [organised population-based screening programme.” (European Commission, n.d.).](https://cancer-screening-and-care.jrc.ec.europa.eu/en/ecicc/european-colorectal-cancer-guidelines)\n\nTo our knowledge no EU country currently offers or recommends specific targeted early screening for people with a learning disability.\n\n###### 6\n\nTable 1 : Bowel cancer screening programmes in the EU and associated European countries.\n\n|Country|Organised or opportunistic<br>screening programme|Age range (years)|\n|---|---|---|\n|Austria|Both|40-80|\n|Belgium – Flanders|Organised|56-74|\n|Belgium –<br>Wallonia/Brussels|Organised|50-74|\n|Bulgaria|n/a|n/a|\n|Croatia|Organised|50-74|\n|Cyprus|Organised|50-69|\n|Czech Republic|Organised|50+ (no limit)|\n|Denmark|Organised|50-74|\n|Estonia|Organised|60-69|\n|Finland|Organised|60-69|\n|France|Organised|50-74|\n|Germany|Opportunistic|55-74|\n|Greece|Opportunistic|50-70|\n|Hungary|Organised|50-70|\n|Iceland|Organised|Pilot phase|\n|Ireland|Organised|60-69|\n|Italy|Organised|50-69|\n|Latvia|Opportunistic|50-74|\n|Lithuania|Organised|50-74|\n|Luxembourg|Organised|55-74|\n|Malta|Organised|60-64|\n|Netherlands|Organised|55-75|\n|Norway|Organised|50-64|\n|Poland|Organised|55-64|\n|Portugal|Organised|50-70|\n|Romania|n/a|n/a|\n|Slovakia|Organised|50-74|\n|Slovenia|Organised|50-74|\n|Spain|Organised|50-69|\n|Sweden|Organised|60-69|\n|Switzerland|Opportunistic|50+ (no limit)|\n\n###### 7\n\n###### Australia\n[The National Bowel Cancer Screening program (NBCSP) of Australia currently recommends](https://www.health.gov.au/our-work/national-bowel-cancer-screening-program) [screening between the ages of 50 through to 74 years. However, both the Cancer Council](https://www.cancer.org.au/media-releases/2023/updated-guidelines-on-eligibility-for-colorectal-cancer-screening-to-reduce-the-impact-of-bowel-cancer) [Australia (CCA) and, through endorsement of the CCA guidelines, the National Health and](https://www.cancer.org.au/media-releases/2023/updated-guidelines-on-eligibility-for-colorectal-cancer-screening-to-reduce-the-impact-of-bowel-cancer)\nMedical Research Council (NHMRC), the Australian Federal Government’s medical research [funding agency, have from 2023 recommended screening age be lowered to 45 years (Kirby,](http://10.0.3.248/S1470-2045(23)00570-3) [2023).](http://10.0.3.248/S1470-2045(23)00570-3) [In 2022, Bowel Cancer Australia called on the federal government to expand the eligible age](https://www.bowelcanceraustralia.org/screening) group, currently 50 to 74 years for the National Bowel Cancer Screening Program, where people receive free home testing kits in the mail every two years, from 40 to 84.\n\nAustralia recommends screening for people with a family history and for certain genetic [conditions (such as Lynch’s syndrome) (Parkin et al., 2018). Australia does not recommend or](https://www1.racgp.org.au/ajgp/2018/december/colorectal-cancer-screening-in-australia) offer early or specific screening programmes for people with a learning disability.\n\n###### Southeast Asia\n\nBowel cancer is the most common cancer and the second cause of deaths from cancers in Japan [(Satgé et al., 2023;](https://bmccancer.biomedcentral.com/articles/10.1186/s12885-023-11313-3) [Ueno et al., 2023), and it is the second highest incidence of new malignant](https://jgo.amegroups.org/article/view/76993/html) [tumours in China (Yang et al., 2023). Since 1992, Japan has offered public screening guidelines for](http://article.cjcrcn.org/en/article/doi/10.21147/j.issn.1000-9604.2023.06.05?viewType=HTML) [colorectal cancer the general population from the age of 40 years, with no upper age limit (Saito](https://onlinelibrary.wiley.com/doi/10.1111/den.13972) [et al., 2021). China operates organised screening programmes in numerous urban Chinese cities,](https://onlinelibrary.wiley.com/doi/10.1111/den.13972) however there is no nationwide screening programme that covers all suitable populations in [China (Cao et al., 2021). The age of screening varies throughout China, with Beijing conducting an](https://pubmed.ncbi.nlm.nih.gov/33684533/) [organised screening approach using FIT for residents aged between 40 and 69 years (Zhang et al.,](https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-023-16564-0) [2023). Other cities do target between 40 and 74 years (Chen et al., 2022).](https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-023-16564-0)\n\nIn Japan, as in other countries across Asia (South Korea, Taiwan, and Hong Kong) there have been increasing trends of young (under the age of 50 years) bowel cancer, and this has been seen in both men and women in the general population. Increases in diagnoses of bowel cancer in people under the age of 50 years have been noted to be increasing between 3.9% (in males in\nTaiwan) and 10.1% per year (in males in Japan). Increases have been recorded in Japan, South [Korea, Taiwan, and Hong Kong regions (Sung et al., 2019).](https://journals.lww.com/ajg/abstract/2019/02000/increasing_trend_in_young_onset_colorectal_cancer.25.aspx)\n\nIn Asia, 5 countries in addition to Japan operate organised colorectal screening programmes [(Wee et al., 2024). Table 2 lists the countries in Southeast Asia with an organised screening](https://bmchealthservres.biomedcentral.com/articles/10.1186/s12913-023-10327-8) programme for colorectal cancer screening.\n\n###### 8\n\nTable 2 : Southeast Asian country with organised screening programme for colorectal cancer.\n\n|Country|Screening age (years) for colorectal cancer|\n|---|---|\n|South Korea|50+ (no age limit)|\n|Thailand|50 - 70|\n|China*|40 - 74|\n|Singapore|50+ (no age limit)|\n|Taiwan|50-74|\n|Malaysia**|50+ (no age limit)|\n\n*Operates an organised screening programme in urban centres only.\n**Currently an opportunistic approach to screening but has implemented policy to move to an organised screening programme.\n\nTo the best of our knowledge no country with an organised approach to screening in Asia offers an early or specific screening programme for people with a learning disability.\n",
+      "token_count": 2373,
+      "section": "European Union (EU)",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c009",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### Scotland\n[The Scottish Bowel Screening Programme currently recommends that all adults aged between 50](https://www.nss.nhs.scot/specialist-healthcare/screening-programmes/bowel-screening/) and 74 years receive a FIT test every 2 years. Those aged over 74 years can still obtain a free [screening, but this will be by request (Shekleton & Okocha, 2024). Scotland was the first country](https://pubmed.ncbi.nlm.nih.gov/38261693/) in the world to fully roll out a bowel screening programme, starting in June 2007 and completing [the roll out by December 2009 for those aged 50 through 74 years. Clark et al. (2020) found that,](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7509976/) for people aged 50-74 years incidence of colorectal cancer peaked at 156.5 cases per 100,000 in\n2010 (after the completion of the screening programme roll out) but fell to 123.9 cases per\n100,000 by 2017. For those under 50 years, however, there has been a rise from 5.3 cases per\n100,000 to 6.8 cases per 100,000.\n[Bowel Cancer UK worked alongside the Scottish government between 2018 to January 2019, to](https://www.bowelcanceruk.org.uk/news-and-blogs/this-is-bowel-cancer-blog/tackling-bowel-screening-inequalities/) provide training sessions across 11 health board areas in Scotland. To deliver a training programme to health care professionals with the aim to overcome to the barriers to bowel cancer screening in people with learning disabilities. As with the other countries and regions detailed above, further screening recommendations are given to people with a family history or [those who have a genetic condition such as Lynch’s syndrome (Shekleton & Okocha, 2024).](https://pubmed.ncbi.nlm.nih.gov/38261693/)\nHowever, Scotland does not currently designate people with a learning disability as requiring early or specific screening programmes.\n\n###### 9\n\n#### International summary\n\nInternationally there is a wide variance in age ranges and screening programme types in place for bowel cancer screening. Whilst most countries operate organised screening programmes between the ages of 50 and 69 years, some, especially those in Asia, operate beyond that. There are calls in some countries to decrease the screening age to 45 or 40 years. In some countries there are policies in place to encourage or enact this, although these remain in the minority.\n\nWe could find no evidence of people with a learning disability being offered specifically tailored screening earlier than the general population anywhere, however there is evidence of specific healthcare authorities, such as NHS England, offering guidance to inform people with a learning disability about the risk of bowel cancer, and to encourage participation in screening programmes.\n\nTable 3 : Summary of international comparisons of screening programmes\n\n|Country/Region|Current Screening Age (years)|Proposals for altered age<br>from national advisory<br>bodies?|Specific or early<br>interventions for<br>people with a<br>learning<br>disability?|\n|---|---|---|---|\n|USA|45- 75|Yes – 40 – 75|No|\n|EU|Varies per country. Austria alone<br>offers below the age of 50 years<br>(45). The average screening age<br>in the EU is 50-69.|No EU-wide proposal.<br>Proposals vary depending<br>on the country.|No|\n|Australia|50-74|Yes – 45 — 74|No|\n|South East Asia*|40 — no upper limit in Japan.<br>40 – 74 in China.  50 and no<br>upper age limit in South Korea,<br>Singapore, and Malaysia. Age<br>limit of 70 in Thailand and 74 in<br>Taiwan.|Proposals vary by country|No|\n|Scotland|50-74|No|No|\n|England|– 74**|Yes — 50- 74|No|\n\n- Only those countries in South East Asia with an organised screening system. **The national screening programme in England is in the process of rolling out bowel cancer screening to people from the age of 50. This aims to be completed by 2025.\n",
+      "token_count": 943,
+      "section": "Scotland",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c010",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n##### 10\n\n#### Bowel cancer deaths reported to LeDeR\n\n##### Demographics of people who died from bowel cancer\n\nFrom 2017 to 2022 there were 283 deaths of people with a learning disability with available information about age, sex and ethnicity that were notified to LeDeR with a completed LeDeR review with an underlying cause of death listed as ICD-10 codes from C18-C21 (see appendix 1 for full detailed list). More males than females died from bowel cancer in the LeDeR data, and the same was seen in those who died under the age of 50 years, except for the years 2018 and 2022.\nOverall, 59% of deaths due to bowel cancer were for males and 41% for females in the LeDeR data between 2018 and 2022. For the general population between 2017 and 2022, 55% of all deaths are recorded in males, 45% in females. For those under the age of 49, 53% were male and 47% were female in the LeDeR data, similar to the 54% were male and 46% female in the general [population (Cancer Research UK, 2022).](https://www.cancerresearchuk.org/health-professional/cancer-statistics/mortality/age#heading-One)\n\nTable 4 : Sex of the people who died from bowel cancer in both the LeDeR data and in the general population\n\n|Sex|Overall adults with a<br>learning disability|Overall general<br>population|Adults with a<br>learning disability<br>Under 49 years|General population<br>under 49 years|\n|---|---|---|---|---|\n|Male|59%|55%|53%|54%|\n|Female|41%|45%|47%|46%|\n\nMost deaths reported to LeDeR from bowel cancers were in people denoted as white ethnicity, with less than 3% of people who died being recorded as any other ethnicity. Due to the small number of people from ethnic minorities in the LeDeR data, a comparison could not be made to the general population based on ethnicity. Potential limitations with the LeDeR data and ethnicity [are discussed in the annual LeDeR report (White et al., 2023).](https://www.kcl.ac.uk/research/leder)\n",
+      "token_count": 491,
+      "section": "10",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c011",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 11\n\n###### Age at death\n\nOf the 283 deaths, the median age at death was 62 years. For the general population, data shows that 58% of all deaths for people with underlying ICD-10 codes of C18-C21 were in people aged [75 years or older (Office of National Statistics [ONS], 2024). The median age at death for all](https://www.nomisweb.co.uk/) people with a learning disability reported to LeDeR in 2022 was 60.2 years (White et al, 2023).\n\nThe age range of deaths of people with a learning disability with an underlying cause of death listed as ICD-10 codes of C18-C21 in the LeDeR data from 2017 to 2022 all years is 8 to 90 years.\nIn total, 15.14% of these deaths were of people who died under the age of 50 years (see figure\n1). 70.77% of deaths were of people between the ages of 50 and 74 years, which is the current\nNHS England bowel cancer screening programme target age. The median age at death of those whose deaths occurred under the age of 50 years was 42 years. In all years other than 2018, more than 13% of LeDeR reported bowel cancer deaths occurred in people under the age of 50 years. For the general population between 2017 and 2022, 4.3% of deaths for people who died from an underlying ICD-10 code of C18-C21 occurred in people under the age of 50 years (see figure 2). Of those that died under 50 years in the general population, 65% died between the [ages of 40-49 years, with 44% of those between the ages of 45-49 years (ONS, 2024). Table 5](https://www.nomisweb.co.uk/) details the LeDeR data in contrast to the general population data by age at death.\n\nFigure 1 : Percentage of all bowel cancer deaths between\n2017 and 2022 for people with a learning disability by age group\n\n5 to 29 30 to 39 40 to 49\n\n50 to 59 60 to 69 70 to 79\n\n80+\n\nFigure 2 : Percentage of all bowel cancer deaths between\n2017 and 2022 the general population\n\n5 to 29 30 to 39 40 to 49\n\n50 to 59 60 to 69 70 to 79\n\n80+\n\n40 to 49\n\n80+\n5.3%\n\n30 to 39\n\n3.5%\n\n50 to 59\n\n27.6%\n\n2.9%\n\n80+\n43.5%\n\n60 to 69\n\n16.2%\n\n50 to 59\n\n27.8%\n\n32.7%\n",
+      "token_count": 580,
+      "section": "11",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c012",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 12\n\nTable 5 : LeDeR bowel cancer age of death data compared to the general population bowel cancer age of death data.\n\n|Year of<br>Death|Total<br>number<br>(n)|Median<br>Age at<br>death<br>(LeDeR)|N who<br>died ≤49<br>years|Median age at<br>death of those who<br>died ≤49 years<br>(LeDeR)|% who<br>died ≤49<br>years<br>(LeDeR)|% who died<br>≤49 years<br>(ONS, 2024)<br>data)|\n|---|---|---|---|---|---|---|\n|2017|32|60.5|<5|43|*|4.30|\n|2018|51|62|5|42|7.81|4.43|\n|2019|58|58.5|12|40|15.51|4.36|\n|2020|45|60|9|43.5|26.47|4.18|\n|2021|50|65.5|7|37|14|4.16|\n|2022|47|66|7|44|14.89|4.57|\n|TOTAL|283|62|40|42|15.68**|4.34|\n",
+      "token_count": 303,
+      "section": "12",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c013",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 13\n\n*redacted due to small numbers.\n** excluding 2017\n\nFigure 3 shows the percentage of reported grouped ages at death for people with a learning disability in England whose deaths were notified to LeDeR and received a LeDeR review who died from bowel cancer, in contrast to the general population. Of note is that bowel cancer deaths increase with age for both people with a learning disability and the general population.\nHowever, as the median age at death for people with a learning disability in England is 62 years, there is a notable and expected decrease in reported deaths for those over 69 years [compared to the general population (White et al., 2023).](https://www.kcl.ac.uk/research/leder)\n\nFigure 3 : The total reported grouped ages of death from bowel cancer for people with a learning disability in England whose deaths were notified to LeDeR and received a LeDeR review between\n2017 and 2022, compared to the general population.\n\nLeDeR data General population\n\n50%\n\n40%\n\n30%\n\n20%\n\n10%\n\n0%\n5 to 29 30 to 39 40 to 49 50 to 59 60 to 69 70 to 79 80+\n\nAge groups\n\nFigure 4 shows the percentage of deaths of people from bowel cancer out of all deaths reported to LeDeR compared to the general population. For both data, there is an increase in the percentage of deaths up until the ages of 50-69 years, after which a gradual decrease is seen. The deaths from bowel cancer as a percentage of overall deaths is lower for people with a learning disability than in the general population, and over three times lower for the ages of 50-69 years.\nThere is also a notable spike in the percentage of deaths for the general population for those aged 30 to 39 years which is not seen in the LeDeR data. This is further illustrated in Figure 6 which shows the relative percentage of bowel cancer deaths in contrast to overall cancer deaths, by age group. Again, a spike is notable for the general population for those aged 30 to 39 years.\nAlso of note is that the percentage of deaths from bowel cancer for people with a learning disability remains almost 10% greater than that of the general population between the ages of\n40-69 years before becoming closer in size from 80+ years.\n\nFigure 4 : The percentage of death from bowel cancer for people with a learning disability in\nEngland whose deaths were notified to LeDeR and received a LeDeR review between 2017 and\n2022 compared to the general population\n\nLeDeR data General population\n\n4%\n\n3%\n\n2%\n\n1%\n\n0%\n5 to 29 30 to 39 40 to 49 50 to 59 60 to 69 70 to 79 80+\n\nAge groups\n",
+      "token_count": 591,
+      "section": "13",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c014",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 14\n\n###### Limitations of the LeDeR data\n\nIt is believed that the number of people from ethnic minorities that are reported to LeDeR is lower than the actual number of deaths per year. As such, LeDeR likely has fewer representative data on people from people with ethnic minorities. Please see the 2023 Race and Health [Observatory report (Umpleby et al., 2023) for further discussion on the limitations of ethnicity](https://clok.uclan.ac.uk/48247/) data in LeDeR.\n\nLeDeR is a mortality database that collects the cause of death of people with a learning disability and autistic adults. In the case of cancer, it does not routinely record the stage of diagnosis of the cancer or whether the cancer was diagnosed through routine screening. As such, the LeDeR data cannot be used to infer whether earlier screening would have impacted upon the stage of diagnosis. However, screening programmes have been shown to diagnose bowel cancer at an earlier stage, and those who die younger than the age of the screening programmes often are [diagnosed with bowel cancer at a more advanced stage than those of screening age (Virostko et](https://acsjournals.onlinelibrary.wiley.com/doi/10.1002/cncr.32347) [al., 2019).](https://acsjournals.onlinelibrary.wiley.com/doi/10.1002/cncr.32347)\n\nFinally, LeDeR does not record whether someone was offered early screening for bowel cancer or not. It may be the case that some of the people who died were offered early screening. This would not be routine and is not part of the current or planned screening programme, but we cannot rule this out.\n",
+      "token_count": 371,
+      "section": "14",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c015",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 15\n\n#### Summary\n\nAt the time of writing, only a few countries offer bowel cancer screening programmes for people under the age of 50 years and we could find no evidence globally of people with a learning disability specifically being offered early screening. However, there are increasing calls in some countries for the age of screening for the general population to be lowered to at least 45 years, with some discussion for decreasing to 40 years in specific countries (notably the US and\nAustralia). Most countries operate screening programmes with an upper age limit although some countries, notably those in Asia, have no limit.\n\nThe LeDeR data shows that around 15% of deaths from bowel cancer for people with a learning disability occur under the age of 50 years, which is at least three times higher than the general population. In essence, these are deaths that occur not only below the current screening age, but also below the new target screening age of 50 years. Published research suggests that soon the incidence rate of bowel cancer for those in the general population under the age of 50 years will increase in the UK, and already between 4-5% of deaths from bowel cancer in the general population occur in people under the age of 50 years. When younger people are diagnosed in both the LeDeR data and the general population, they tend to be at a more advanced stage of the disease than those over 50 years. This is likely due to the lack of early screening which helps detect bowel cancer at earlier stages. Most bowel cancer deaths of people under the age of 50 years occur over the age of 40 years. Very few deaths in the LeDeR data or data from the general population were of people under the age of 40 years. This was also seen in the general population data.\n\nDue to the presence of known increased risk factors for bowel cancer in people with a learning disability (such as mobility issues, dietary issues, and obesity) this group of people are at greater [risk of bowel cancer than the general population (Willis et al., 2018). Due to these risk factors, it is](https://karger.com/ocl/article-abstract/95/6/323/240854/Colorectal-Cancer-in-People-with-Intellectual?redirectedFrom=fulltext) plausible that people with a learning disability should therefore be considered at higher risk for bowel cancer at younger ages, and also potentially have more advanced disease at diagnosis. It is our view that, due to the significant number of deaths under the current screening age, as well as the projected increase in the incidence of bowel cancer rates, further discussion is required about reducing the age of screening to 40 years.\n\nInternational policies, notably in the US and Australia are increasingly moving toward a screening age of 45 years. Other countries, primarily in Asia but also Austria, have already begun screening at the age of 40 years. With projections suggesting an increase in bowel cancer incidence rates for people under the age of 50 years in much of the Western world, including in England, decreasing the screening age for the people with a learning disability to 40 years in England should also be considered. This is even more compelling when consideration of the more likely presence of risk factors for bowel cancer for people with a learning disability.\n\n##### 16\n\nScreening programmes have been shown to be effective in reducing mortality rates from bowel [cancer. Lew et al., (2017) estimate that, through a long-term evaluation modelling study of data](https://www.thelancet.com/journals/lanpub/article/PIIS2468-2667(17)30105-6/fulltext) from the Australian NBCSP, with current participation rates of 40% the screening programme is expected to prevent 92,200 bowel cancer cases and 59,000 deaths in the general population between 2015 and 2040. If the participation rate was increased to 50% this would save an additional 16,800 deaths. With 60% participation rate this would be 24,800 deaths.\n\nConsideration should therefore also be given to how to increase the rate of FIT screening uptake for adults with a learning disability, which is lower than the rate in the general population.\n[Deroche et al., (2017) found that if screening of people aged 50-75 years was routinely](https://linkinghub.elsevier.com/retrieve/pii/S0749379717300119) conducted, approximately 60% of US general population deaths from colorectal cancer could have been prevented. They noted however that adherence to changing recommendations, such as a decreased age of screening or more frequent screenings, was lower for adults with a learning disability (34.32%) compared to those without a learning disability (48.48%) and that changing recommendations need to be paired with adapted outreach and accessibility considerations. As many people with a learning disability receive support such as social care arrangements, the lower screening rate may suggest better awareness is needed of the importance of bowel cancer screening for both people with a learning disability and their carers. Easy-read materials have been produced to guide people with a learning disability about what to expect from bowel cancer screening. It is crucial that other reasonable adjustments, such as easy-read letters or text reminders, are provided to ensure people with a learning disability can access bowel cancer screening.",
+      "token_count": 1082,
+      "section": "15",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c016",
+      "doc_id": "KCL_BCDD_2024",
+      "text": " In sum, evidence shows that regular screening can help diagnose bowel cancer earlier, resulting in improved treatment outcomes. Evidence also shows that a sizeable number of people with a learning disability, and also from the general population, are dying from bowel cancer earlier than the current screening age recommendation or the proposed decreased age of bowel screening in England.\n\n#### Recommendations\n\nDue to the increased risk factors and significant percentage of deaths from bowel cancer in people with a learning disability under the age of 50 years, screening for bowel cancer should be offered from the age of 40 years. Lowering the age to 40 years should also be considered to prevent late-stage presentations.\n\nConsider further approaches to improve screening uptake for people with a learning disability, including the removal of barriers to access, and increasing awareness amongst carers and family members.\n\nFurther research is required about the potential uptake of screening for people with a learning disability aged under 50 years, and how this may impact the stage of diagnosis and the access to treatment.\n",
+      "token_count": 205,
+      "section": "Recommendations",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c017",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n##### 17\n\n###### Appendix\n\n1 . ICD-10 codes C18-C21\n\nC18 Malignant neoplasm of colon\nC18.0 Caecum\nIleocecal valve\nC18.1 Appendix\nC18.2 Ascending colon\nC18.3 Hepatic flexure\nC18.4 Transverse colon\nC18.5 Splenic flexure\nC18.6 Descending colon\nC18.7 Sigmoid colon Sigmoid (flexure) Excl.: rectosigmoid junction (C19)\nC18.8 Overlapping lesion of colon\nC18.9 Colon, unspecified Large intestine NOS\nC19 Malignant neoplasm of rectosigmoid junction\nIncl.: Colon with rectum, Rectosigmoid (colon)\nC20 Malignant neoplasm of rectum\nIncl.: Rectal ampullaC21 Malignant neoplasm of anus and anal canal\nC21.0 Anus, unspecified\nExcl.:anal:\nmargin (C43.5, C44.5) skin (C43.5, C44.5) perianal skin (C43.5, C44.5)\nC21.1 Anal canal\nAnal sphincter\nC21.2 Cloacogenic zone\nC21.8 Overlapping lesion of rectum, anus and anal canal\nAnorectal junction\nAnorectum\nMalignant neoplasm of rectum, anus and anal canal whose point of origin cannot be classified to any one of the categories C20-C21.2\n",
+      "token_count": 344,
+      "section": "17",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c018",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 18\n\n#### References\n\nBurra, P., Bretthauer, M., Buti Ferret, M., Dugic, A., Fracasso, P., Leja, M., Matysiak Budnik, T.,\nMichl, P., Ricciardiello, L., Seufferlein, T., van Leerdam, M., & Botos, A. (2022). Digestive cancer screening across Europe. United European gastroenterology journal, 10(4), 435–437.\nhttps://doi.org/10.1002/ueg2.12230\n\nCancer research UK (not dated) stages of cancer.\nAvailable: https://www.cancerresearchuk.org/about-cancer/what-is-cancer/stages-of-cancer\n\nCancer Research UK. (2021) https://www.cancerresearchuk.org/health-professional/cancerstatistics/mortality/age#heading-One, Accessed February 2024.\n\nCao, M., Li, H., Sun, D., He, S., Yu, Y., Li, J., Chen, H., Shi, J., Ren, J., Li, N., & Chen, W. (2021).\nCancer screening in China: The current status, challenges, and suggestions. Cancer letters, 506,\n120–127. https://doi.org/10.1016/j.canlet.2021.02.017",
+      "token_count": 314,
+      "section": "18",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c019",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nClark GR, Anderson AS, Godfrey TG, Strachan JA, Fraser CG, Steele RJ. Variation in changes in the incidence of colorectal cancer by age and association with screening uptake: an observational study. BMJ Open. 2020 Sep 22;10(9):e037925. Doi: 10.1136/bmjopen-2020-037925. PMID:\n32963068; PMCID: PMC7509976.\n\nCusumano, V. T., & Folade, M. P. (2020). Making FIT Count: Maximizing Appropriate Use of the\nFecal Immunochemical Test for Colorectal Cancer Screening Programs. Journal of general internal medicine, 35(6), 1870–1874. https://doi.org/10.1007/s11606-020-05728-y\n\nCuypers, M., Schalk, B. W. M., Boonman, A. J. N., Naaldenberg, J., & Leusink, G. L. (2022). Cancerrelated mortality among people with intellectual disabilities: A nationwide population-based cohort study. Cancer, 128(6), 1267–1274. https://doi.org/10.1002/cncr.34030",
+      "token_count": 273,
+      "section": "18",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c020",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nDeroche, C. B., McDermott, S. W., Mann, J. R., & Hardin, J. W. (2017). Colorectal Cancer Screening\nAdherence in Selected Disabilities Over 10 Years. American journal of preventive medicine, 52(6),\n735–741. https://doi.org/10.1016/j.amepre.2017.01.005\n\nEbell, M. H., Thai, T. N., & Royalty, K. J. (2018). Cancer screening recommendations: an international comparison of high income countries. Public health reviews, 39, 7.\n[https://doi.org/10.1186/s40985-018-0080-0](https://doi.org/10.1186/s40985-018-0080-0)\n\nEmile, S. H., Barsom, S. H., & Wexner, S. D. (2022). An updated review of the methods, guidelines of, and controversies on screening for colorectal cancer. American journal of surgery, 224(1 Pt B), [339–347. https://doi.org/10.1016/j.amjsurg.2022.03.034](https://doi.org/10.1016/j.amjsurg.2022.03.034)\n",
+      "token_count": 287,
+      "section": "18",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c021",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n##### 19\n\nEuropean Commission. (n.d.). European colorectal cancer guidelines. European Commission\nInitiative on Colorectal Cancer. Retrieved April 5, 2024, from https://cancer-screening-andcare.jrc.ec.europa.eu/en/ecicc/european-colorectal-cancer-guidelines?\ntopic=283&usertype=282&updatef2=0\n\nFerlizza, E., Solmi, R., Sgarzi, M., Ricciardiello, L., & Lauriola, M. (2021). The Roadmap of\nColorectal Cancer Screening. Cancers, 13(5), 1101. https://doi.org/10.3390/cancers13051101\n\nGartlehner, G., Schernhammer, E., Lax, S. F., Preusser, M., Bachler, H., Titzer, H., Kletecka-Pulker,\nM., Turnher, H., & Siebert, U. (2023). Screening for colorectal cancer : A recommendation statement of the Austrian National Committee for Cancer Screening. Wiener klinische\nWochenschrift, 135(17-18), 447–455. https://doi.org/10.1007/s00508-023-02209-0\n",
+      "token_count": 291,
+      "section": "19",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c022",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\nHashiguchi, Y., Muro, K., Saito, Y., Ito, Y., Ajioka, Y., Hamaguchi, T., Hasegawa, K., Hotta, K., Ishida,\nH., Ishiguro, M., Ishihara, S., Kanemitsu, Y., Kinugasa, Y., Murofushi, K., Nakajima, T. E., Oka, S.,\nTanaka, T., Taniguchi, H., Tsuji, A., Uehara, K., … Japanese Society for Cancer of the Colon and\nRectum (2020). Japanese Society for Cancer of the Colon and Rectum (JSCCR) guidelines 2019 for the treatment of colorectal cancer. International journal of clinical oncology, 25(1), 1–42.\nhttps://doi.org/10.1007/s10147-019-01485-z",
+      "token_count": 196,
+      "section": "19",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c023",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nHavas, A., Yin, S., & Adams, P. D. (2022). The role of aging in cancer. Molecular oncology, 16(18), [3213–3219. https://doi.org/10.1002/1878-0261.13302](https://doi.org/10.1002/1878-0261.13302)\n\nHeslop, P., Cook, A., Sullivan, B., Calkin, R., Pollard, J., & Byrne, V. (2022). Cancer in deceased adults with intellectual disabilities: English population-based study using linked data from three [sources. BMJ open, 12(3), e056974. https://doi.org/10.1136/bmjopen-2021-056974](https://doi.org/10.1136/bmjopen-2021-056974)\n\nKellen, E., Nuyens, C., Molleman, C., & Hoeck, S. (2020). Uptake of cancer screening among adults with disabilities in Flanders (Belgium). Journal of medical screening, 27(1), 48–51.\n[https://doi.org/10.1177/0969141319870221](https://doi/)\n\nKnudsen, A. B., Rutter, C. M., Peterse, E. F. P., Lietz, A. P., Seguin, C. L., Meester, R. G. S., Perdue,\nL. A., Lin, J. S., Siegel, R. L., Doria-Rose, V. P., Feuer, E. J., Zauber, A. G., Kuntz, K. M., & LansdorpVogelaar, I. (2021). Colorectal Cancer Screening: An Updated Decision Analysis for the U.S.\nPreventive Services Task Force. Agency for Healthcare Research and Quality (US).\n\nKoh B, Tan DJH, Ng CH, et al. Patterns in Cancer Incidence Among People Younger Than 50 Years in the US, 2010 to 2019. JAMA Netw Open. 2023;6(8):e2328171.\nDoi:10.1001/jamanetworkopen.2023.28171\n",
+      "token_count": 503,
+      "section": "19",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c024",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 20\n\nLew, J. B., St John, D. J. B., Xu, X. M., Greuter, M. J. E., Caruana, M., Cenin, D. R., He, E., Saville, M.,\nGrogan, P., Coupé, V. M. H., & Canfell, K. (2017). Long-term evaluation of benefits, harms, and cost-effectiveness of the National Bowel Cancer Screening Program in Australia: a modelling [study. The Lancet. Public health, 2(7), e331–e340. https://doi.org/10.1016/S2468-](https://doi.org/10.1016/S2468-2667(17)30105-6) [2667(17)30105-6](https://doi.org/10.1016/S2468-2667(17)30105-6)\n\nLewandowska, A., Rudzki, G., Lewandowski, T., Stryjkowska-Góra, A., & Rudzki, S. (2022). Risk\nFactors for the Diagnosis of Colorectal Cancer. Cancer control : journal of the Moffitt Cancer\nCenter, 29, 10732748211056692. https://doi.org/10.1177/10732748211056692\n\nNational Health Service (2023) Health and Care of People with Learning Disabilities https://digital.nhs.uk/data-and-information/publications/statistical/health-and-care-of-peoplewith-learning-disabilities\n\nNHS Digital (2024) Health and Care of People with Learning Disabilities: Experimental Statistics:\n2017 to 2018 to 2021-2022.\n\nOffice of National Statistics (2024) retrieved from https://www.nomisweb.co.uk/\n\nOuellette-Kuntz, H., Cobigo, V., Balogh, R., Wilton, A., & Lunsky, Y. (2015). The uptake of secondary prevention by adults with intellectual and developmental disabilities. Journal of applied research in intellectual disabilities : JARID, 28(1), 43–54.\nhttps://doi.org/10.1111/jar.12133\n\nParkin, C. J., Bell, S. W., & Mirbagheri, N. (2018). Colorectal cancer screening in Australia: An update. Australian journal of general practice, 47(12), 859–863. https://doi.org/10.31128/AJGP01-18-4472\n\nPeterse, E. F. P., Meester, R. G. S., Siegel, R. L., Chen, J. C., Dwyer, A., Ahnen, D. J., Smith, R. A.,\nZauber, A. G., & Lansdorp-Vogelaar, I. (2018). The impact of the rising colorectal cancer incidence in young adults on the optimal age to start screening: Microsimulation analysis I to inform the\nAmerican Cancer Society colorectal cancer screening guideline. Cancer, 124(14), 2964–2973.\nhttps://doi.org/10.1002/cncr.31543",
+      "token_count": 702,
+      "section": "20",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c025",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nPilonis, N. D., Bugajski, M., Wieszczy, P., Rupinski, M., Pisera, M., Pawlak, E., Regula, J., &\nKaminski, M. F. (2021). Participation in Competing Strategies for Colorectal Cancer Screening: A\nRandomized Health Services Study (PICCOLINO Study). Gastroenterology, 160(4), 1097–1105.\nhttps://doi.org/10.1053/j.gastro.2020.11.049\n\nRawla, P., Sunkara, T., & Barsouk, A. (2019). Epidemiology of colorectal cancer: incidence, mortality, survival, and risk factors. Przeglad gastroenterologiczny, 14(2), 89–103.\nhttps://doi.org/10.5114/pg.2018.81072\n",
+      "token_count": 200,
+      "section": "20",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c026",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n###### 21\n\nRex DK, Boland CR, Dominitz JA, et al. Colorectal cancer screening: recommendations for physicians and patients from the U.S. Multi-Society Task Force on Colorectal Cancer. Gastrointest\nEndosc. 2017;86(1):18-33. Medline:28600070 doi:10.1016/j.gie.2017.04.003",
+      "token_count": 88,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c027",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nSaito, Y., Oka, S., Kawamura, T., Shimoda, R., Sekiguchi, M., Tamai, N., Hotta, K., Matsuda, T.,\nMisawa, M., Tanaka, S., Iriguchi, Y., Nozaki, R., Yamamoto, H., Yoshida, M., Fujimoto, K., & Inoue,\nH. (2021). Colonoscopy screening and surveillance guidelines. Digestive endoscopy : official journal of the Japan Gastroenterological Endoscopy Society, 33(4), 486–519.\nhttps://doi.org/10.1111/den.13972\n\nSantucci, C., Mignozzi, S., Malvezzi, M., Boffetta, P., Collatuzzo, G., Levi, F., La Vecchia, C., &\nNegri, E. (2024). European cancer mortality predictions for the year 2024 with focus on colorectal cancer. Annals of oncology : official journal of the European Society for Medical Oncology, 35(3),\n308–316. https://doi.org/10.1016/j.annonc.2023.12.003",
+      "token_count": 262,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c028",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nSatgé, D., Habib-Hadef, S., Otandault, A., Samalin, E., & Trétarre, B. (2023). Advocacy for colorectal cancer screening and awareness in people with intellectual disability. Journal of gastrointestinal oncology, 14(3), 1650–1652. https://doi.org/10.21037/jgo-22-998\n\nSatgé, D., Nishi, M., & Trétarre, B. (2023). Assessing cancer in people with profound and multiple disabilities. BMC cancer, 23(1), 798. https://doi.org/10.1186/s",
+      "token_count": 147,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c029",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nSawicki, T., Ruszkowska, M., Danielewicz, A., Niedźwiedzka, E., Arłukowicz, T., & Przybyłowicz, K.\nE. (2021). A Review of Colorectal Cancer in Terms of Epidemiology, Risk Factors, Development,\nSymptoms and Diagnosis. Cancers, 13(9), 2025. https://doi.org/10.3390/cancers13092025",
+      "token_count": 108,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c030",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nSchreuders, E. H., Ruco, A., Rabeneck, L., Schoen, R. E., Sung, J. J., Young, G. P., & Kuipers, E. J.\n(2015). Colorectal cancer screening: a global overview of existing programmes. Gut, 64(10),\n1637–1649. https://doi.org/10.1136/gutjnl-2014-309086\n\nSelby, K., Jensen, C. D., Levin, T. R., Lee, J. K., Schottinger, J. E., Zhao, W. K., Corley, D. A., &\nDoubeni, C. A. (2022). Program Components and Results From an Organized Colorectal Cancer\nScreening Program Using Annual Fecal Immunochemical Testing. Clinical gastroenterology and hepatology : the official clinical practice journal of the American Gastroenterological\nAssociation, 20(1), 145–152. https://doi.org/10.1016",
+      "token_count": 227,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c031",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "/j.cgh.2020.09.042\n\nShaukat, A., & Levin, T. R. (2022). Current and future colorectal cancer screening strategies.\nNature reviews. Gastroenterology & hepatology, 19(8), 521–531.\nhttps://doi.org/10.1038/s41575-022-00612-",
+      "token_count": 79,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c032",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "y\n\nShekleton, F. E., & Okocha, M. (2024). UK Screening and Surveillance For Bowel Cancers. In\nStatPearls. StatPearls Publishing.\n\n",
+      "token_count": 45,
+      "section": "21",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c033",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "###### 22\n\nShete S, Deng Y, Shannon J, et al. Differences in Breast and Colorectal Cancer Screening\nAdherence Among Women Residing in Urban and Rural Communities in the United States. JAMA\nNetw Open. 2021;4(10):e2128000. Doi:10.1001/jamanetworkopen.2021.28000",
+      "token_count": 81,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c034",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nSiegel, R. L., Wagle, N. S., Cercek, A., Smith, R. A., & Jemal, A. (2023). Colorectal cancer statistics,\n2023. CA: A Cancer Journal for Clinicians, 73(3). https://doi.org/10.3322/caac.21772",
+      "token_count": 77,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c035",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nSpilburg, June, “Improving Access to Colorectal Cancer Screening in Latino Communities in\nCalifornia: Eliminating Transition to Practice Hours for Nurse Practitioner Full Practice Authority” (2023). Doctor of Nursing Practice Final Manuscripts. 233.\n",
+      "token_count": 58,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c036",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\nSung, J. J. Y., Chiu, H. M., Jung, K. W., Jun, J. K., Sekiguchi, M., Matsuda, T., & Kyaw, M. H. (2019).\nIncreasing Trend in Young-Onset Colorectal Cancer in Asia: More Cancers in Men and More Rectal\nCancers. The American journal of gastroenterology, 114(2), 322–329.\nhttps://doi.org/10.14309/ajg.0000000000000133",
+      "token_count": 115,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c037",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nUeno, A., Yokota, M., Ueno, M., & Kawamoto, K. (2023). Colorectal cancer in adolescent and young adults: epidemiology in Japan and narrative review. Journal of gastrointestinal oncology, 14(4), 1856–1868. https://doi.org/10.21037/jgo-23-98",
+      "token_count": 77,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c038",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nUmpleby, K; Roberts, C; Cooper-Moss, N; Chesterton, L; Ditzel, N; Garner, C; Clark, S; Butt, J;\nHatton, C. (2023) We deserve better: Ethnic minorities with a learning disability and barriers to healthcare. UNSPECIFIED. NHS Race and Health Observatory.\n",
+      "token_count": 84,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c039",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\nUno Y: Mental retardation and colorectal disease: colonoscopic mass screening to determine whether the risk of adenomatous polyposis screening is increased in the mentally retarded. J\nGastroenterol Hepatol 1996; 11: 275–278.\n\nVirostko, J., Capasso, A., Yankeelov, T. E., & Goodgame, B. (2019). Recent trends in the age at diagnosis of colorectal cancer in the US National Cancer Data Base, 2004-2015. Cancer, 125(21),\n3828–3835. https://doi.org/10.1002/cncr.32347",
+      "token_count": 134,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c040",
+      "doc_id": "KCL_BCDD_2024",
+      "text": " von Karsa, L., Patnick, J., & Segnan, N. (2012). European guidelines for quality assurance in colorectal cancer screening and diagnosis. First Edition—Executive summary. Endoscopy, 44\nSuppl 3, SE1–SE8. https://doi.org/10.1055/s-0032-1309822\n",
+      "token_count": 74,
+      "section": "22",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c041",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\nVuik, F. E., Nieuwenburg, S. A., Bardou, M., Lansdorp-Vogelaar, I., Dinis-Ribeiro, M., Bento, M. J.,\nZadnik, V., Pellisé, M., Esteban, L., Kaminski, M. F., Suchanek, S., Ngo, O., Májek, O., Leja, M.,\nKuipers, E. J., & Spaander, M. C. (2019). Increasing incidence of colorectal cancer in young adults in Europe over the last 25 years. Gut, 68(10), 1820–1826. https://doi.org/10.1136/gutjnl-2018317592\n\n###### 23\n\nWee, H. L., Canfell, K., Chiu, H. M., Choi, K. S., Cox, B., Bhoo-Pathy, N., Simms, K. T., Hamashima,\nC., Shen, Q., Chua, B., Siwaporn, N., & Toes-Zoutendijk, E. (2024). Cancer screening programs in\nSouth-east Asia and Western Pacific. BMC health services research, 24(1), 102.\nhttps://doi.org/10.1186/s",
+      "token_count": 295,
+      "section": "23",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c042",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nWhite, A, Sheehan, R, Ding, J, Roberts, C, Magill, N, Keagan-Bull, R, Carter, B, Strydom, A (2022)\nLearning from Lives and Deaths - People with a learning disability and autistic people (LeDeR) report for 2021. Other. UNSPECIFIED, London, UK.\n\nWhite, A, Sheehan, R, Ding, J, Roberts, C, Magill, N, Keagan-Bull, R, Carter, B, Strydom, A (2023)\nLearning from Lives and Deaths - People with a learning disability and autistic people (LeDeR) report for 2022. Other. UNSPECIFIED, London, UK.\n\nWillis, D., Samalin, E., & Satgé, D. (2018). Colorectal Cancer in People with Intellectual Disabilities.\nOncology, 95(6), 323–336. https://doi.org/10.1159/000492077",
+      "token_count": 231,
+      "section": "23",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "KCL_BCDD_2024_c043",
+      "doc_id": "KCL_BCDD_2024",
+      "text": "\n\nYang, Y., Gao, Z., Huang, A., Shi, J., Sun, Z., Hong, H., & Gu, J. (2023). Epidemiology and early screening strategies for colorectal cancer in China. Chinese journal of cancer research, 35(6),\n606–617. https://doi.org/10.21147/j.issn.1000-9604.2023.06.05\n\nZhang, X., Yang, L., Liu, S., Li, H., Li, Q., Li, H., Wang, N., & Ji, J. (2023). Performance of different colorectal cancer screening strategies: a long-term passive follow-up population-based screening program in Beijing, China. BMC public health, 23(1), 1640. https://doi.org/10.1186/s12889-02316564-0\n\n",
+      "token_count": 188,
+      "section": "23",
+      "doc_type": "research",
+      "source_org": "KCL",
+      "credibility_tier": 2
+    }
+  ]
+}

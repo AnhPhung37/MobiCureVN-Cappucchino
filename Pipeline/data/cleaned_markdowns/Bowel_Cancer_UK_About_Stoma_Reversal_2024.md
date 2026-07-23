@@ -1,3 +1,4 @@
+# About stoma reversal
 
 This factsheet is about having surgery to reverse your stoma. It explains what a stoma reversal is, possible complications and what to expect after the operation. What is a stoma?
 
@@ -7,7 +8,7 @@ A temporary stoma is formed to allow the bowel to heal after surgery. Once the b
 
 Some people can’t have a stoma reversal and the stoma will be permanent. You can read more about this on page 2.
 
-### What is a stoma reversal?
+## What is a stoma reversal?
 
 Stoma reversal surgery involves re-joining the two healthy ends of your bowel and closing the stoma that was formed during your first operation. It means you’ll no longer need your stoma bag and you’ll empty your bowels by going to the toilet.
 
