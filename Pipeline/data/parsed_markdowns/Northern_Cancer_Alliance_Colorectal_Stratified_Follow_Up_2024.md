@@ -1,0 +1,383 @@
+# **Northern Cancer Alliance** **Colorectal Personalised Stratified** **Follow Up Clinical Review and** **Surveillance Guidelines**
+## **Developed and endorsed by the Northern** **Cancer Alliance Colorectal Pathway Group**
+
+|arch 2024|Col2|Col3|Col4|Col5|Col6|
+|---|---|---|---|---|---|
+|Title:|Title:|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|
+|Authors:|Authors:|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|
+|Circulation List:|Circulation List:|Colorectal Pathway Group<br>Personalised Care Working Group|Colorectal Pathway Group<br>Personalised Care Working Group|Colorectal Pathway Group<br>Personalised Care Working Group|Colorectal Pathway Group<br>Personalised Care Working Group|
+|Prepared by|Prepared by|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|
+|<br>**_Version History:_**|<br>**_Version History:_**|<br>**_Version History:_**|<br>**_Version History:_**|<br>**_Version History:_**|<br>**_Version History:_**|
+|Date:|28.01.2020|Version:|V1 [final]|Review Date:|28.01.2021|
+||20.02.2020||V1.1||28.02.2021|
+||26.02.2020||V1.2 [final]||28.02.2021|
+||11.03.2021||V1.3 [final]||11.03.2022|
+||20.07.2021||V1.4 [final]||11.03.2022|
+||26.07.2021||V1.5 [final]||11.03.2022|
+||01.12.2021||V1.6 [final]||01.12.2022|
+||01.03.2024||V1.7 [final]||01.03.2024|
+
+
+
+**Guidelines agreed by:**
+
+
+Colorectal Pathway Group members agreed the Guidelines on: 01.03.2024
+
+
+**Review Date: 01.03.2025**
+
+
+### **Contents**
+
+**AN OVERVIEW OF STRATIFIED FOLLOW-UP** ....................................................... 3
+
+
+**COLORECTAL CANCER PATIENT INCLUSION CRITERIA** ................................... 4
+
+
+**STRATIFIED FOLLOW-UP TESTS** ........................................................................... 5
+
+
+**CEA** ........................................................................................................................ 5
+
+**FBC** ........................................................................................................................ 5
+
+**Colonoscopy** ......................................................................................................... 5
+
+**Liver imaging** ........................................................................................................ 5
+
+
+**MINIMUM FOLLOW-UP SCHEDULE** ........................................................................ 6
+
+
+**SURVEILLANCE TESTS AND WHEN THE ‘CLOCK STARTS’** ............................... 6
+
+
+**DISCHARGE FROM SERVICE** ................................................................................. 7
+
+
+**APPENDIX** ................................................................................................................. 8
+
+
+2
+
+
+**INTRODUCTION**
+
+
+Following the production of the Clinical Advice to Cancer Alliances for the Commissioning of
+the Whole Bowel Cancer Pathway in November 2017 this section has been updated to reflect
+the Cancer Alliances responsibility to promote the use of Personalised Stratified Follow Up
+(PSFU) pathways and remote or self-care follow-up along the lines of the National Cancer
+Survivorship Initiative [NCSI].
+
+This document provides regional guidelines to complement existing National Institute for
+Health and Care Excellence (NICE) and NCA tumour specific guidance. This guideline does
+not override the individual responsibility of healthcare professionals in making decisions
+appropriate to the circumstances of the individual patient.
+
+It is not anticipated that the guidelines will cover all clinical situations in all patients, but where
+unusual circumstances exist, it is expected that such treatments would be discussed in the
+appropriate MDT.
+
+The guidelines will be reviewed on an annual basis. Where new treatments are introduced
+between revisions they will be added as an addendum to the current guideline.
+
+
+Patients with colorectal cancer will be considered for PSFU assuming they meet the inclusion
+criteria outlined below.
+
+#### **AN OVERVIEW OF STRATIFIED FOLLOW-UP**
+
+
+Stratified follow-up can lead to a reduction of routine appointments in a patient’s pathway.
+Following treatment, aftercare is discussed with the patient and the appropriate pathway
+assigned. Patients may move between pathways as their needs change.
+
+
+The pathways are as follows:
+
+
+**Personalised stratified follow-up (PSFU)** - is where patients continue to have all the
+cancer surveillance scans and tests they need, but a proportion follow a ‘self-managed’
+pathway mitigating the need for hospital-led appointments.
+
+At the present time individuals should remain in PSFU for a period of 5 years.
+
+
+**Hospital led face-to-face/telephone follow up:** Clinician led follow up where the individual
+will receive surveillance tests as per the clinical guidelines. Clinic appointments are
+scheduled as required and can be face to face or telephone consultations, and with a
+suitable clinician.
+
+This arrangement should be reviewed regularly and when appropriate the individual can be
+transferred to PSFU. Local arrangements as to where follow-up takes place should be
+considered i.e. following adjuvant radiotherapy people are referred-back to their surgical
+team for follow-up which can continue following implementation of these guidelines.
+Individual choice should also be offered as to where this takes place i.e. local hospital or
+centre.
+
+**Supportive/end of life care services** : Clinician led with palliative care input as required,
+when no further treatment options are available, attending hospital appointments is
+potentially difficult for people. Transfer of care to the G.P. and palliative care services should
+
+
+3
+
+
+be discussed and the G.P. made aware of this discussion. Community palliative care teams
+should be involved with the consent of the individual.
+
+
+Patients suitable for PSFU should be offered a 1:1 appointment with a Cancer Nurse Specialist
+(CNS) at the end of their primary treatment to explain how PSFU works and to ensure the
+patient knows how to contact the service if there are any concerns or symptoms in between
+surveillance testing. This could be done at the same time as the end of treatment summary
+and review of the Holistic Needs Assessment (HNA). Further detail on this below.
+
+
+A system must be developed for rapid re-entry of patients to the specialist cancer service as
+required.
+
+
+Colorectal cancer patients who are suitable for PSFU must meet the following inclusion criteria.
+
+### **COLORECTAL CANCER PATIENT INCLUSION CRITERIA**
+
+|Tumour type: Adenocarcinoma|Col2|
+|---|---|
+|**Marker**|**Inclusion**|
+|**Dukes Stage**|A/B/C|
+|**T Stage**|T1-4|
+|**N Stage**|N0-2|
+|**M Stage**|Non-metastatic|
+|**EMVI / EMLI +ve**|Yes or No|
+|**Differentiation of tumour**|Any|
+|**Adverse features**|Any|
+|**Resection status**|R0|
+
+
+
+The option of PSFU should be available for all individuals who meet the above criteria;
+however, this pathway is not suitable for everybody, and some may continue to need hospitalbased aftercare.
+
+
+Any individual participating in a clinical trial should be followed-up as per trial protocol.
+
+
+Following the multidisciplinary meeting (MDT) individuals should be reviewed and made aware
+of their future management plan. Decisions regarding PSFU can be discussed in the MDT but
+are only confirmed when a discussion has taken place with individuals. The chosen pathway
+is then documented in the medical notes and should be communicated to the G.P, preferably
+via the treatment summary. Regardless of follow-up pathway all individuals should be offered
+
+
+4
+
+
+a treatment summary and holistic needs assessment with their CNS or community service if
+available.
+
+### **STRATIFIED FOLLOW-UP TESTS**
+
+
+Though PSFU involves reduction of routine outpatient appointments from the pathway, routine
+surveillance tests will still be completed as outlined below. The following suggestions are
+made:
+
+
+**CEA**
+
+  - CEA to be measured on every patient pre-operatively and on every follow- up visit until
+end of year 2 and then yearly thereafter in-line with the shared care agreement until
+discharge at end of year 5. If the value of CEA doubles or rises continually a CT scan
+of the abdomen and chest or a CT scan of the abdomen plus a chest x-ray will be
+performed.
+
+
+**FBC**
+
+  - To be measured on every patient pre-operatively and on every follow up visit until the
+end of year 2 and then yearly thereafter in-line with the shared care agreement until
+discharge at end of year 5. If the value is abnormal, results should be flagged to the
+trust key worker.
+
+
+**Colonoscopy**
+
+  - Patients will receive a Colonoscopy request at 1 and 4 years post-operatively
+
+  - Further colonoscopy after this may be required depending on age, genetic profile,
+and risk
+
+  - Patients should also be encouraged to enter the national bowel cancer screening
+program
+
+
+**Liver imaging**
+
+  - A CT scan of the liver is the preferred investigation of choice for liver screening. There
+should be a minimum of 2 CT scans of the chest, abdomen and pelvis in the first 3
+years of follow-up. These should be done at end of year 1 and end of year 2.
+
+  - All patients who have had a Total Mesorectal Excision as a potentially curative
+resection should be followed up for the purpose of auditing the surgeon’s performance
+of the technique.
+
+  - Audit of the outcome of treatment requires accurate and complete collection of data
+which may be difficult to obtain by postal questionnaire or through the general
+practitioner. Follow-up may be justified for this reason alone.
+
+
+The results will be reviewed by appropriately qualified or trained staff and the patient and GP
+informed of the results. This information may trigger a recall of the patient back to specialist
+services as required.
+
+
+Patients with stomas, bowel function, and other late effects of treatment [surgical or
+chemotherapy] may initially need planned hospital follow-up or in the community by trained
+staff. The frequency of follow up investigations delivered either remotely or in secondary care
+will depend upon the risk of recurrence and should be intended to pick up recurrence before
+symptoms develop.
+
+
+5
+
+
+Screening for genetic or familial conditions such as HNPCC or FAP should be done outside of
+these guidelines.
+
+### **MINIMUM FOLLOW-UP SCHEDULE**
+
+
+Colorectal cancer follow-up is the shared responsibility of the specialist team, primary care
+and the patient. A minimum follow-up schedule should be agreed. It should include at least 2
+CT scans of the chest, abdomen and pelvis and a colonoscopy within the first three years after
+surgery. A completion colonoscopy should be performed as soon as practicably possible in
+those patients who had an incomplete examination before surgery. Teams may choose to
+supplement this with regular CEA tests, which may continue for five years post-treatment.
+
+
+After 5 years, patients may have further surveillance colonoscopies and if not, should be
+encouraged to join the national screening program. Tests should be delivered irrespective of
+whether a patient is seen in the clinic. The follow-up schedule may be conducted in the form
+of telephone clinics or virtual clinics in place of conventional clinical visits for patients.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+|Test/Year|0 – 1|1 – 2|2 -3|3 – 4|4 - 5|
+|---|---|---|---|---|---|
+|Clinical review|3 monthly<br>nurse led<br>after 1st|6 monthly|Shared care<br>at year 3|Shared care|Shared care|
+|CEA|3 monthly|6 monthly|Annually|Annually|Annually|
+|FBC|3 monthly|6 monthly|Annually|Annually|Annually|
+|Endoscopy|If not had<br>completion<br>pre-<br>operative<br>done as<br>baseline|Colonoscopy<br>or CTC [may<br>be combined<br>with CT i.e.<br>CTC<br>instead]||Colonoscopy<br>or CTC [may<br>be combined<br>with CT i.e.<br>CTC<br>instead]||
+|CT C/A/P|Pre-<br>operative<br>[completed if<br>not e.g.<br>emergency]|End Year 1|End Year 2|||
+
+
+
+*Some trusts may require urea and electrolytes (U+E) checking to help when requesting CTs
+
+#### **SURVEILLANCE TESTS AND WHEN THE ‘CLOCK STARTS’**
+
+
+It is advised that the ‘clock starts’ for all patients on a colorectal PSFU pathway at the ‘date of
+first treatment’ i.e. a patient will have their annual follow up investigations scheduled from this
+date. It is recognised that this won’t be suitable for all patients e.g. those that may still be on
+active treatment. In these instances, the clinical team may wish to delay the patients first (and
+subsequent) surveillance tests. This should be clearly documented in the End of Treatment
+summary.
+
+
+6
+
+
+Patients who contact any member of the colorectal specialist team with worrying symptoms
+will be seen by the appropriate team within two weeks and if necessary, the case will be
+discussed at the MDT meeting.
+
+
+All patients following initial treatment for colorectal cancer, will be given information about selfcare and surveillance. A list of symptoms that could be a cause for concern and a contact
+number for the Colorectal CNS will be given as part of the information pack developed by
+Trusts.
+
+
+GPs and patients should also be given information on symptoms which may indicate
+recurrence.
+
+
+Shared care follow up should follow local policies devised by the Trusts and Commissioners.
+
+
+A treatment summary should be sent to the GP and patient within 6 weeks following primary
+treatment - surgery, chemotherapy or radiotherapy. The National Cancer Survivorship Initiative
+treatment summary template should be utilised. Follow up after surgery should focus on postoperative issues, promoting and sustaining recovery (including early detection and
+management of late effects), future planning, and stoma management.
+
+
+Patients’ emotional and practical needs should be assessed, using an HNA undertaken by a
+CNS to identify specific needs, and appropriate care has or needs to be provided.
+
+#### **DISCHARGE FROM SERVICE**
+
+
+All patients on a PSFU pathway will be discharged back to the care of their GP at 5 years
+(unless they are palliative and may be discharged sooner) and will have to re-access the
+service via their GP. Written information will be given to the patient/GP on the patient’s end of
+treatment summary to advise them regarding this date.
+
+At this point:
+
+  - For patients between 50-74 they will receive a NHS bowel cancer screening kit every
+2 years as part of the national screening programme
+
+  - For patients <50 they will be discharged to the care of their GP unless e.g. due to
+genetics, they would require ongoing surveillance tests/monitoring.
+
+
+7
+
+
+### **APPENDIX**
+
+**1.1 CLINICAL RESPONSIBILITIES AND ROLES**
+
+**Stratification**
+The clinical team / consultant is responsible for identifying patients suitable for supported selfmanagement. The decision should be made based on holistic needs assessment, clinical
+judgement and discussion with the patient, then recorded appropriately within the Trust clinical
+systems.
+
+**Stratified Follow up Consultation**
+The CNS will manage the stratified follow up consultation. They will ensure that the patient is
+provided with written information, a treatment summary has been completed and a copy has
+been sent/given to the patient and sent to the GP. A holistic needs assessment will also be
+carried out and action taken as necessary. All surveillance and scans should be in place and
+patients are aware of how results will be received.
+
+**Re- access to Services**
+Patients will receive verbal and written information about how to re access the service if they
+have a problem or concern at the consultation appointment with the CNS. Patients should
+contact their clinical team via telephone who will give them verbal advice or arrange a clinic
+appointment. Patients can also re-access the service via their GP.
+
+
+8
+
+

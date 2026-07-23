@@ -1,0 +1,169 @@
+{
+  "source_file": "WOCN_Basic_Ostomy_Skin_Care_2024.md",
+  "source_path": "/Users/quannguyen/MobiCureVN-Cappucchino/Pipeline/data/cleaned_markdowns/WOCN_Basic_Ostomy_Skin_Care_2024.md",
+  "chunker": "NeuralChunker",
+  "model": "mirth/chonky_modernbert_base_1",
+  "chunk_count": 32,
+  "chunks": [
+    {
+      "chunk_index": 1,
+      "text": "# BASIC OSTOMY SKIN CARE\n\nThe Wound, Ostomy, and Continence Nurses Society™ suggests the following format for bibliographic citations:\n\nWound, Ostomy, and Continence Nurses Society. (2024). _Basic Ostomy Skin Care: A Guide for_\n_Patients and Health Care Workers_ . Mt. Laurel, NJ: Author.\n\nCopyright© 2024 by the Wound, Ostomy, and Continence Nurses Society™ (WOCN [®] ). Date of\nPublication: July 2024. This document may be reproduced non-commercially for educational purposes. Any other reproduction is subject to WOCN Society approval. The information and recommendations in this publication are not a substitute for personal or professional advice or diagnosis.\n",
+      "token_count": 170
+    },
+    {
+      "chunk_index": 2,
+      "text": "\n### Contents\n\nIntroduction 5\n\nCare of Your Skin 6\n\nPouching Systems 6\n\nTypes of Pouching Systems [6](https://docs.google.com/document/d/1SUaToXqkyvNPNV3L4SvtHY8eQULvsD3Rhi1MZ65_4xs/edit?pli=1#heading=h.2et92p0)\n\nSkin Barriers [6](https://docs.google.com/document/d/1SUaToXqkyvNPNV3L4SvtHY8eQULvsD3Rhi1MZ65_4xs/edit?pli=1#heading=h.tyjcwt)\n\nChanging a Pouching System 7\n\nRemoval of a pouching system 7\n\nCleaning the skin around the ostomy 8\n\nApplying the pouching system 8\n\nEmptying the pouching system 9\n\nOstomy Accessories 10\n\nSpecial Care for Children 14\n\nCommon Questions 14\n\nWhat should I do with my soiled supplies? 14\n\nCan I get my pouching system wet? 14 [How can I get the pouching system to stick better if I sweat a lot?](https://docs.google.com/document/d/1SUaToXqkyvNPNV3L4SvtHY8eQULvsD3Rhi1MZ65_4xs/edit?pli=1#heading=h.z337ya) 14\n\nExamples of Ostomy Product Manufacturers 15\n\nStep-by-Step Guide: Changing a Pouching System 16\n\nReferences 17\n\n#### Acknowledgments\n\nBasic Ostomy Skin Care: A Guide for Patients and Health Care Workers\n\nOriginated By:\nWound, Ostomy, and Continence Nurses Society [TM] (WOCN [®] ) Clinical Practice Ostomy\nSubcommittee in 2007 and updated in 2012, 2018, and 2024.\n\nUpdated/Revised:\nFrom October 2023 ─ July 2024\n\nUpdate of this document is generously sponsored by an unrestricted education grant from\nHollister, Incorporated.\n\nBasic Ostomy Skin Care Task Force:\n\nChairperson:\n\nJanice Erbe Gorski, DNP, APNP, FNP-BC, CWON-AP\nMedical College of Wisconsin\nMilwaukee, Wisconsin\n\nMembers:\n\nHayley N. Hardt, BSN, RN, CWOCN\nDepartment of Veterans Affairs\nTemple, Texas\n\nBarbara J. Rozenboom, BSN, RN, CWON\nUnityPoint at Home\nDes Moines, Iowa\n\nSarah Trapp, BSN, RN, CWOCN, CFCN\nUniversity of Wisconsin Hospital\nMadison, Wisconsin\n\n",
+      "token_count": 622
+    },
+    {
+      "chunk_index": 3,
+      "text": "#### Introduction\n\nThis guide discusses how to care for the skin around an ostomy. Tools and resources are included if needed. This information is useful for the person who has an ostomy. It may also be helpful for the nurses and caregivers caring for those with ostomies.\n\nIf you have questions about the information in this document, problems with leakage, or skin issues, contact your wound, ostomy, continence (WOC) nurse or your healthcare worker. A\nWOC nurse has extra education in caring for people who have wounds, ostomies, and/or bladder and bowel problems. [1]\n\nIf you do not know who the WOC nurse is in your area, please visit the WOCN website, at [https://www.wocn.org/learning-center/patient-resources/find-a-nurse to conduct a](https://www.wocn.org/learning-center/patient-resources/find-a-nurse) search in your area.\n\n",
+      "token_count": 214
+    },
+    {
+      "chunk_index": 4,
+      "text": "#### Care of Your Skin\n\nAn ostomy pouching system is worn to protect the skin from stool or urine. [2] Your WOC nurse or health care worker will help you choose the system that works best for you. The skin around the ostomy should look the same as the skin on the other side of the abdomen. [3-5] Healthy skin should not hurt, itch, or be red or darker than normal skin. [5-7]",
+      "token_count": 96
+    },
+    {
+      "chunk_index": 5,
+      "text": "\n\n#### Pouching Systems\n\nThe goal for a basic pouching system is to protect the skin, contain the urine or stool, and get a good wear time. [8,9] Only add extra products if needed to keep the skin healthy and to prevent leaks. It is important to follow directions from your WOC nurse, health care worker, or product company.\n",
+      "token_count": 78
+    },
+    {
+      "chunk_index": 6,
+      "text": "\nTypes of Pouching Systems\nA pouching system includes the products that are used to collect stool or urine. There are two parts of a pouching system.\n\n- A skin barrier attaches to the skin.\n- A pouch holds the urine or stool.\n\nThe pouching system can be one-piece or two-piece. [10] A one-piece pouching system has the skin barrier and the pouch together as one. [2] A two-piece pouching system requires you to attach the pouch to the skin barrier. [2] One of the considerations when choosing a pouching system is knowing what your insurance will cover. [2]",
+      "token_count": 138
+    },
+    {
+      "chunk_index": 7,
+      "text": " There are two basic types of pouches.\n\n- Urostomy pouches have a spout on the end to empty urine. [2,11]\n- Fecal pouches have different options for emptying.\n- A drainable end that closes with a clip or an interlocking closure. [2,8,12-15 ]\n- A high output pouch with a larger spout is available if you have a large amount of watery stool from your ostomy. [12]\n- A closed-end pouch can be used if you have formed stool. The pouch is thrown away instead of emptied. [2,12]",
+      "token_count": 134
+    },
+    {
+      "chunk_index": 8,
+      "text": "\n\nSkin Barriers\nSeveral types of skin barriers are available.\n\n- A standard wear barrier is usually used for semi-formed or formed stool. [2]\n- An extended wear barrier is usually used for urine or stool that is loose or liquid.\n- An infused barrier is used for sensitive skin or skin at risk. It has added ingredients to help keep the skin healthy. [2]\n\nTell your WOC nurse or health care worker if your skin is sensitive to tape.\n\nChanging a Pouching System\n\nChange the pouching system 1-2 times per week or if it is leaking. [13,14] Try to choose a time to change the pouching system when the ostomy is not producing a lot of urine or stool. The most popular times are:\n\n- Before eating or drinking in the morning.\n- At the end of the day.\n- At least two hours after a meal.\n",
+      "token_count": 198
+    },
+    {
+      "chunk_index": 9,
+      "text": "\nRemoval of a pouching system\n\n- Change the pouching system at a routine time or at any sign of leakage:\n- Odor when you have not just emptied the pouch.\n- Skin burning or itching. [5]\n- [Removing a Used Pouching System: https://youtu.be/nX-](https://youtu.be/nX-AeYo3Nyg) [AeYo3Nyg](https://youtu.be/nX-AeYo3Nyg)\n- Remove the old pouching system by pushing down on the skin gently while pulling back on the skin barrier. [14] Start at the top of the pouching system and work towards the bottom. [13,17]\n- Take your time removing the pouching system. Take it off gently in the direction hair grows. Going too fast may hurt the skin.\n- If needed, use warm water or adhesive remover to remove the pouching system. [14]\n- If you use an oil-based adhesive remover, it is very important to wash off the adhesive remover from the skin with non-oily soap and water.\n- Look at the skin around the ostomy, and use a mirror as needed. Check for redness, darkness, rashes, or open skin. [14]\n- The skin may look more pink, red, or darker than normal right after you take off the pouching system. This color should fade within a few minutes.\n- Look for any place where stool or urine may have leaked under the pouching system and onto the skin. Check the back of the pouching system for signs of leakage. [14]\n- When you apply the next pouching system, skin barrier strips, rings or paste can be added at areas of creases, folds, or scars to achieve a better seal and prevent leaking.\n- Contact your WOC nurse or health care worker if:\n- You are suddenly changing the pouching system more often than normal.\n- The skin is red, sore, or itchy. [14]\n- If a WOC nurse is not available, the “Peristomal Skin Assessment Guide” can help you. [14] [http://psag-consumer.wocn.org/](http://psag-consumer.wocn.org/#home) (See the next page for QR codes to access the Peristomal Skin Assessment Guide for Consumers in English and Spanish.)\n\nCleaning the Skin Around the Ostomy\n\n- Clean the skin around the ostomy with warm water and a washcloth or soft paper towel and pat dry. [5,13,14,16,17 ]\n- Do not use soaps with oils. They can stop the pouching system from sticking. [14]\n- Do not use alcohol or any other harsh chemicals to clean the skin around the ostomy. They can cause the skin to get sore.\n- Do not use baby wipes. [13,18] They can stop the pouching system from sticking or can irritate the skin. [13] Only wipes made for cleaning the skin around an ostomy should be used. [18]\n- The ostomy does not need to be cleaned like the skin around it does. [14]\n- When the ostomy is wiped, it is normal to see a little blood.\n- Dry the skin before you put on the new pouching system.\n- Body hair can stop the pouching system from sticking or cause pain with the pouching system removal. If this happens, cut the hair with an electric razor or clippers. [14 ] Clip excess hair around the ostomy in the direction of hair growth.\n",
+      "token_count": 786
+    },
+    {
+      "chunk_index": 10,
+      "text": "\nApplying the pouching system\n\n- If needed, measure the ostomy with a measuring guide to obtain the size, and cut or mold the skin barrier to fit the ostomy size and shape. [5,13,18]\n- Attach the pouch to the skin barrier if the pouching system is a two-piece system. Make sure the pouch is closed.\n- Apply the pouching system around the ostomy. Hold the skin smooth as you put the pouching system on to avoid wrinkles in the skin. Standing may be helpful to flatten the abdomen. [14] skin. [2 ] The best time to change the pouching system is different for everyone. Choose a day and time that works best for you. Some people prefer to change it when bathing or showering. [14 ]\n- Standing while applying the pouching system may be easier to ensure a flat abdominal area. If the belly is flat, it is ok to sit as well. [14]\n- The pouch opening is usually positioned at the 6 o’clock location for ease of emptying. [14]\n",
+      "token_count": 229
+    },
+    {
+      "chunk_index": 11,
+      "text": "\nEmptying the pouching system\n\n- Empty the pouch when it is ⅓-½ full, or if filled with gas. [12-15,19 ]\n- It can help to put a piece of toilet paper in the toilet before emptying to lower noise and splashing. [11,12,14]\n- Empty the pouch before activities and at bedtime. [15,19]\n- If the pouch gets too full, it can cause the pouch to pull away from the skin and leak. [13,15]\n- Clean the end of the pouch with toilet paper. [11]\n- For fecal pouches, clean the inside end of the pouch to stop stool from squeezing out of the end when closing it.\n- A few drops of deodorizer can be added into the end of the pouch if desired.\n- If the pouch has a clamp, carry an extra one with you in case it breaks or gets lost.\n- If the pouching system has an interlocking closure, avoid getting stool on this area. If the closure does get soiled, wash with soap and water, then blot dry.\n- People with a urostomy or those who wear a high output pouch can attach the pouch to a night drainage bag at bedtime. [11]",
+      "token_count": 270
+    },
+    {
+      "chunk_index": 12,
+      "text": "\n\n#### Ostomy Accessories\n\nThe pouching system should provide a consistent seal. Extra products (ostomy accessories) may be added to improve wear time, enhance the seal, or provide more security. [20] The table below tells how to use these products.\n",
+      "token_count": 56
+    },
+    {
+      "chunk_index": 13,
+      "text": "\n|Product|Video|Use|Tips|\n|---|---|---|---|\n|<br>Adhesive remover<br>|<br> <br>https://www.youtube.com/watc<br>h?v=MfBW1MVIGCw&t=70s<br>|<br>To remove tape or sticky<br>residue from the skin.11 <br> <br>May be helpful to reduce skin<br>tearing from tape<br>removal.11,12,18,20-22 <br> <br>|<br>Available in wipes, liquids,<br>or sprays.11,12 <br> <br>Some require cleaning the<br>skin with mild soap and<br>water after use.11,12 <br>|\n\n|Product|Video|Use|Tips|\n|---|---|---|---|\n|<br>Skin Barrier film/sealant<br>|<br> <br>https://www.youtube.com/watc<br>h?v=MfBW1MVIGCw<br>|<br>Provides a thin protective<br>layer to the skin to prevent<br>skin damage when the<br>pouching system is<br>removed.11,20-22 <br> <br>Recommend only use as<br>needed because it may<br>prevent the pouching system<br>from sticking.12,18<br> <br>|<br>Available as wipes, sprays,<br>gels, liquids, or roll-ons.11,12 <br> <br>Some products contain<br>alcohol and cause pain<br>when applied to open<br>skin.11,12,22 <br> <br>Alcohol-free (no sting)<br>options are available.2,11 <br> <br>|\n",
+      "token_count": 421
+    },
+    {
+      "chunk_index": 14,
+      "text": "|Ostomy belt<br> <br> <br>Image by John C. Hardt<br>|<br> <br>https://youtu.be/BM6hjtnB3G8|Attaches to the pouching<br>system to hold it in place.11<br> <br>|Belt tabs are on the sides of<br>some pouches or skin<br>barriers.2 <br> <br>Should be applied snugly<br>but not so tight as to cause<br>trauma to the skin.11<br> <br>Adjustable, available in<br>various sizes and widths.11<br> <br>May be washed and<br>reused.11|\n\n|Product|Video|Use|Tips|\n|---|---|---|---|\n|<br>Skin barrier paste<br> <br> <br>Image by John C. Hardt<br> <br>|<br>|<br>Can be used to fill in small<br>uneven areas or to caulk<br>around the inner edge of the<br>skin barrier.2,11,12,13,20,21 <br> <br>Paste is not an adhesive or a<br>glue.12<br>|<br>May be applied to the skin<br>or to the back of the skin<br>barrier.8 <br> <br>Some pastes contain<br>alcohol which may cause<br>pain to open skin.2,8,11,21<br> <br>Alcohol-free options are<br>available.<br> <br>Not often used for<br>urostomies.11 <br> <br>|\n",
+      "token_count": 389
+    },
+    {
+      "chunk_index": 15,
+      "text": "|<br>Skin barrier powder<br> <br> <br> <br> <br>Image by John C. Hardt <br> <br>|<br> <br>https://youtu.be/iB99i_f0zZ8<br> <br> <br> <br>|Helps heal open skin around<br>the ostomy.11,12<br> <br>Absorbs moisture from skin<br>irritation.2,11,12,20 <br> <br>|Apply to open skin, brush<br>off excess.11<br> <br>May be sealed in with a<br>barrier film/sealant to<br>provide a dry surface<br>(crusting).2,11,12 <br> <br>|\n\n|Product|Video|Use|Tips|\n|---|---|---|---|\n|<br>Skin barrier rings<br> <br> <br> <br>Image by John C. Hardt<br>|<br> <br> <br>https://youtu.be/YytKcZnDfsE|<br>A moldable circular ring that<br>may be used to improve the<br>seal and fill uneven<br>areas.2,8,11,12,20,21 <br> <br>|<br>May be applied to the skin<br>or to the back of the skin<br>barrier.2 <br> <br>Available in different types,<br>sizes, depths, and<br>shapes.11,12 <br> <br>Can be stretched, cut, or<br>formed into the shape<br>needed.11,12,21 <br>|\n",
+      "token_count": 395
+    },
+    {
+      "chunk_index": 16,
+      "text": "|<br>Elastic barrier strips<br> <br>Image by John C. Hardt||Used around the outside<br>edges of the pouching system<br>barrier for added security.2,18 <br> <br>Helps prevent barrier edges<br>from rolling.11<br> <br>Can be used to protect the<br>pouching system edges when<br>bathing or swimming.18 <br>|Skin-friendly alternative to<br>tape.11 <br> <br>Should not be used to patch<br>leaking pouching<br>systems.18,22|\n\n#### Special Care for Children\n\n- Wear time varies depending on the age of the child. Pediatric pouching systems are thinner and more flexible. They are changed more often.\n- For neonates. the goal is to get a 24-hour wear time to protect the skin. [23]\n- Older infants and children may change the pouching system every 1-4 days, the average is 2-3 days. [23]\n- Teenagers may change the pouching system 1-2 times per week. [23]\n- Continue to measure the ostomy as children grow, the ostomy size will change. [23]\n- Avoid liquid skin barriers and adhesive removers in infants and children. [23]\n- Avoid paste with alcohol in premature infants. [23,24]\n- Alcohol-free pastes, skin barrier rings, and elastic barrier strips may be used. [24]\n\n#### Common Questions\n\nWhat should I do with my soiled supplies?\n\n- It is ok to throw a used pouching system in the garbage. [25]\n- When away from home, carry plastic bags in a pocket or purse to throw away a used pouching system.\n- If you use washable items to clean your skin, they may be washed with your laundry.\n- Clamps and connectors should be washed with soap and water and allowed to air dry.\n",
+      "token_count": 431
+    },
+    {
+      "chunk_index": 17,
+      "text": "\nCan I get my pouching system wet?\n\n- You can shower, bathe, swim, or get in a hot tub with your pouching system on. [5,19] Pouching systems are waterproof.\n- Check and empty your pouch before and after going in the water.\n- Some gas filters on pouches need to be covered before getting wet or water will stop them from working. [19] Stickers that come with the pouches may be used to cover the filter.\n- You can bathe or shower every day. On the day you plan to change your pouching system, the pouching system can be left on or removed to bathe or shower.\n- Water will not hurt your ostomy or get inside you through the ostomy. [14] Use a gentle spray of water when showering.\n- A hairdryer on a cool setting can be used to dry the wet tape and cloth backing of the pouching system. [2.14]\n- Waterproof tape or elastic barrier strips around the edges of the pouching system may be used to help secure the pouching system in the water. [14]\n- Some people wear swim shirts, tight athletic shorts, belts, or garments made for persons with an ostomy when swimming to keep their pouch close to the body. [14]\n",
+      "token_count": 280
+    },
+    {
+      "chunk_index": 18,
+      "text": "\nHow can I get the pouching system to stick better if I sweat a lot?\n\n- To help absorb sweat, dust the skin with ostomy powder. Then dab the skin with a barrier wipe before applying the pouching system.\n",
+      "token_count": 50
+    },
+    {
+      "chunk_index": 19,
+      "text": "\nExamples of Ostomy Product Manufacturers\n\nAnother good source of information is product literature from ostomy product manufacturers.\n\nDisclaimers:\n\n- Product manufacturers are examples only and are not inclusive or intended as an endorsement.\n- It is important to follow the manufacturer’s directions regarding the use and application technique for specific products in order to achieve the desired results.\n- The WOCN Society does not endorse any specific brands or products.\n",
+      "token_count": 94
+    },
+    {
+      "chunk_index": 20,
+      "text": "\n|Manufacturer|Website|Telephone Number|\n|---|---|---|\n|B. Braun <br>|http://www.bbraunusa.com/en/products-and-<br>therapies.html|1-800-523-9676 or <br>1-610-691-5400 <br>|\n|Coloplast <br>|www.coloplast.us|1-800-533-0464 or <br>1-888-726-7872 <br>|\n|ConvaTec Inc. <br>|www.convatec.com <br>|<br>1-800-422-8811 <br>|\n|Cymed <br>|http://cymed.us/|1-800-582-0707 <br>|\n|Hollister Incorporated <br>|www.hollister.com|1-800-323-4060 <br>|\n|Nu-Hope Laboratories, Inc. <br>|www.nu-hope.com|1-800-899-5017 <br>|\n|Marlen Mfg & Devel. Group <br> <br>|www.marlenmfg.com|1-216-292-7060|\n\n#### References\n\n1. Murphree RW, Jaszarowski K. Professional practice for wound, ostomy, and continence nursing. In: Carmel J, Colwell J, Goldberg MT, eds. _Wound, Ostomy, and Continence_ _Nurses Society Core Curriculum Ostomy Management._ 2 [nd] ed. Wolters Kluwer; 2022: 111.\n2. Colwell J, Hudson K. Selection of pouching system. In: Carmel J, Colwell J, Goldberg\n\nMT, eds. _Wound, Ostomy, and Continence Nurses Society Core Curriculum Ostomy_\n_Management._ 2 [nd] ed. Wolters Kluwer; 2022: 172-188.\n3. Goldberg MT, Mahoney MF. Preoperative preparation of patients undergoing a fecal or urinary diversion. In: Carmel J, Colwell J, Goldberg MT, eds. _Wound, Ostomy, and_ _Continence Nurses Society Core Curriculum Ostomy Management._ 2 [nd] ed. Wolters Kluwer; 2022: 143-151.\n4. Merkert JL. Peristomal complications. _Home Healthc Now_ . 2022;40(5):264-269.\ndoi:10.1097/NHH.0000000000001110\n5. Ratliff CR, Goldberg M, Jaszarowski K, McNichol L, Pittman J, Gray M. Peristomal skin health: A WOCN Society consensus conference. _J Wound Ostomy Continence Nurs_ . 2021;48(3):219-231. doi:10.1097/WON.0000000000000758",
+      "token_count": 651
+    },
+    {
+      "chunk_index": 21,
+      "text": "\n6. Francis KF. Assessment and identification of skin disorders in skin of color: An integrative review. _J Wound Ostomy Continence Nurs_ . 2023;50(2):107-114. doi:10.1097/WON.0000000000000960",
+      "token_count": 58
+    },
+    {
+      "chunk_index": 22,
+      "text": "\n7. Stelton S. Stoma and peristomal skin care: A clinical review. _Am J Nurs_ . 2019;119(6):38\n45. doi:10.1097/01.NAJ.0000559781.86311.64\n8. Berti-Hearn L, Elliott B. Ileostomy care: A guide for home care clinicians. _Home Healthc_\n\n_Now_ . 2019;37(3):136-144. doi:10.1097/NHH.0000000000000776",
+      "token_count": 117
+    },
+    {
+      "chunk_index": 23,
+      "text": "\n9. Colwell JC, Stoia Davis J, Emodi K, et al. Use of a convex pouching system in the postoperative period: A national consensus. _J Wound Ostomy Continence Nurs_ . 2022;49(3):240-246. doi:10.1097/WON.0000000000000874",
+      "token_count": 72
+    },
+    {
+      "chunk_index": 24,
+      "text": "\n10. Burch J. The community nurse and stoma care. _Br J Community Nurs_ . 2022;27(4):165\n168. doi:10.12968/bjcn.2022.27.4.165",
+      "token_count": 51
+    },
+    {
+      "chunk_index": 25,
+      "text": "\n11. Mahoney M, Baxter K, Burgess J, et al. Urostomy products and tips. In: Carmel J,\n\nColwell J, Goldberg MT, eds. _Wound, Ostomy, and Continence Nurses Society Core_\n_Curriculum Ostomy Management._ 2 [nd] ed. Wolters Kluwer; 2022: 343-353.\n12. Salvadalena G, Bauer C, Baxter K, et al. Colostomy and ileostomy products and tips best practice for clinicians. In: Carmel J, Colwell J, Goldberg MT, eds. _Wound, Ostomy,_ _and Continence Nurses Society Core Curriculum Ostomy Management._ 2 [nd] ed. Wolters Kluwer; 2022: 327-334.\n13. Cross HH. CE: Nursing care for patients after ostomy surgery. _Am J Nurs_ .\n\n2023;123(8):34-41. doi:10.1097/01.NAJ.0000947460.38199.fe",
+      "token_count": 228
+    },
+    {
+      "chunk_index": 26,
+      "text": "\n14. Carmel J, Goldberg M. Postoperative education for the patient with a fecal or urinary diversion. In: Carmel J, Colwell J, Goldberg MT, eds. _Wound, Ostomy, and Continence_ _Nurses Society Core Curriculum Ostomy Management._ 2 [nd] ed. Wolters Kluwer; 2022: 189-200.\n15. Blevins S. Colostomy care. _MEDSURG Nursing._ 2019;28(2):125-126. Accessed March\n\n20, 2024.\nhttps://www.proquest.com/openview/fa122294e5302c1ce33b42f6a60b6688/1.pdf?pqorigsite=gscholar&cbl=30764",
+      "token_count": 171
+    },
+    {
+      "chunk_index": 27,
+      "text": "\n16. Burch J. Peristomal skin care considerations for community nurses. _Br J Community_\n\n_Nurs_ . 2019;24(9):414-418. doi:10.12968/bjcn.2019.24.9.414\n\n17. Schuetz SJ, Sanchez M. Preventive stoma care and peristomal skin complications. _Seminars in Colon & Rectal Surgery_ . 2023;34(2):N.PAG. doi:10.1016/j.scrs.2023.100959",
+      "token_count": 121
+    },
+    {
+      "chunk_index": 28,
+      "text": "\n18. Burch J, Boyles A, Maltby E, et al. Keep it simple: Peristomal skin health, quality of life and wellbeing. _Br J Nurs_ . 2021;30(Sup6):5-24. doi:10.12968/bjon.2021.30.Sup6.1\n19. Berti-Hearn L, Elliott B. Colostomy care: A guide for home care clinicians. _Home Healthc_\n\n_Now_ . 2019;37(2):68-78. doi:10.1097/NHH.0000000000000735",
+      "token_count": 130
+    },
+    {
+      "chunk_index": 29,
+      "text": "\n20. Morss-Walton PC, Yi JZ, Gunning ME, McGee JS. Ostomy 101 for dermatologists:\n\nManaging peristomal skin diseases. _Dermatol Ther_ . 2021;34(5):e15069.\ndoi:10.1111/dth.15069",
+      "token_count": 71
+    },
+    {
+      "chunk_index": 30,
+      "text": "\n21. Burch J. Stoma product selection: A guide for community nurses. _Br J Community Nurs_ .\n\n2022;27(1):20-24. doi:10.12968/bjcn.2022.27.1.20\n22. O'Flynn SK. Peristomal skin damage: Assessment, prevention and treatment. _Br J Nurs_ .\n\n2019;28(5):S6-S12. doi:10.12968/bjon.2019.28.5.S6",
+      "token_count": 115
+    },
+    {
+      "chunk_index": 31,
+      "text": "\n23. Forest-Lalande L. Best practice guidelines for ostomy care in neonates, children, and adolescents: An executive summary. _J Wound Ostomy Continence Nurs_ . 2023;50(5):381-385. doi:10.1097/WON.0000000000001001",
+      "token_count": 64
+    },
+    {
+      "chunk_index": 32,
+      "text": "\n24. Wound, Ostomy and Continence Nurses Society. Pouching infants/children and pediatric pouches. In: Carmel J, Colwell J, Goldberg MT, eds. _Wound, Ostomy, and Continence_ _Nurses Society Core Curriculum Ostomy Management._ 2 [nd] ed. Wolters Kluwer; 2022: 367-368.\n25. Smith D, Samways N. How to change a stoma bag. _Nurs Stand_ . 2020;35(5):69-74.\ndoi:10.7748/ns.2020.e11484\n\n",
+      "token_count": 134
+    }
+  ]
+}

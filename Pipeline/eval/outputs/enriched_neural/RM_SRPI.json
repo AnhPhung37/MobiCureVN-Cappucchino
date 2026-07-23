@@ -1,0 +1,157 @@
+{
+  "doc_id": "RM_SRPI",
+  "source_file": "Royal_Marsden_Stoma_Reversal_Patient_Info.md",
+  "chunk_count": 15,
+  "chunks": [
+    {
+      "chunk_id": "RM_SRPI_c001",
+      "doc_id": "RM_SRPI",
+      "text": "# Stoma reversal\n\n## GI Unit\n\n### Patient Information\n\n### Introduction\n\nThe timing of your stoma reversal surgery will depend on the reason for your first operation, or if you have had chemotherapy or radiotherapy. Your surgeon or clinical nurse specialist will discuss this further with you.\n\n",
+      "token_count": 61,
+      "section": "Stoma reversal",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c002",
+      "doc_id": "RM_SRPI",
+      "text": "### What preparation will I need?\n\nYou will need a rectal contrast enema, which we will give you in the x-ray department. You may also require a flexible sigmoidoscopy. Please see The Royal Marsden booklet _[Having a](https://patientinfolibrary.royalmarsden.nhs.uk/)_\n_[flexible sigmoidoscopy](https://patientinfolibrary.royalmarsden.nhs.uk/)_ for more details. These will allow us to look at the new surgical join in the bowel (anastomosis). If the join has healed then we can go ahead with the reversal. Bowel preparation may be needed, depending on the type of stoma you have.\n\n",
+      "token_count": 154,
+      "section": "What preparation will I need?",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c003",
+      "doc_id": "RM_SRPI",
+      "text": "### What happens during the operation\n\nThe stoma reversal operation is carried out under general anaesthetic.\n\nA small cut is made around the stoma. The hole in the bowel is stitched together and replaced through the hole in the abdomen.\n\nThe wound is left open and dressed daily whilst you are an inpatient. The wound may need dressing by a district nurse once you are discharged home. This will be arranged for you before you leave hospital.\n\nThe reversal operation takes around 60 minutes. Most patients stay in hospital for five to seven days afterwards, depending on how long the bowel takes to pass wind/stool and for you to have some bowel control.\n",
+      "token_count": 138,
+      "section": "What happens during the operation",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c004",
+      "doc_id": "RM_SRPI",
+      "text": "### What are the risks of the operation?\n\nWound - Sometimes the wound at the stoma site can become infected, causing pain and redness. If you notice either of these symptoms or you have a temperature, you must contact your specialist nurse or The Royal Marsden Macmillan Hotline.\n\nLeak from the anastomosis – Rarely the newly formed bowel may leak, causing pain, discomfort and a discharge of pus from the rectum. You may also develop a temperature. If this happens, please contact your specialist nurse or The Royal Marsden\nMacmillan Hotline.\n",
+      "token_count": 123,
+      "section": "What are the risks of the operation?",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c005",
+      "doc_id": "RM_SRPI",
+      "text": "\n### What can I expect afterwards?\n\nDepending on the type of surgery you have had before your stoma reversal and whether or not you have had radiotherapy as well, your bowel control may be erratic and may take some time to settle. The bowel may act more frequently and urgently and control can take weeks or months to return. Your bowel control may never be the same as it was before your operation.\n\nMany patients report problems with the need to hurry urgently to the toilet and it is not unusual to go to the toilet up to 20 times a day to begin with after the operation. This is because a section of your bowel has been removed and your body will take some time to get used to it. The muscles that control your bowel action may also have been affected by the surgery. Therefore you may feel that you have lost the ability to control your bowels.\n",
+      "token_count": 179,
+      "section": "What can I expect afterwards?",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c006",
+      "doc_id": "RM_SRPI",
+      "text": "### General advice\n\nBe patient as it will take time for your body and bowel to recover.\nIt may take up to six months for your bowels to settle down.\n\n",
+      "token_count": 37,
+      "section": "General advice",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c007",
+      "doc_id": "RM_SRPI",
+      "text": "#### Diet and fluids\n\n- Diet can sometimes help to improve your bowel control\n- Make sure that you have breakfast every morning, preferably cereal such as Weetabix, a banana, or brown or wholemeal toast, as these will add bulk to your stools\n- Introduce high fibre foods back into your diet slowly, as your bowel needs time to rest. Examples of high fibre foods include wholegrain cereals, dried fruit, nuts, and seeds and pulses, such as beans and lentils.\n\n- Avoid foods that have a laxative effect such as prunes, dried fruit or nuts in the first few weeks following your surgery. Spicy foods will also make your bowel more active\n- Ensure that you drink enough – try to drink 1.5 litres (8 cups) of fluid a day\n- Avoid drinking coffee and fizzy drinks (especially diet drinks) as these act as laxatives\n- Keeping your own food diary may be helpful.\n",
+      "token_count": 201,
+      "section": "Diet and fluids",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c008",
+      "doc_id": "RM_SRPI",
+      "text": "\n#### Leakage from the bowel (incontinence)\n\n- Many patients report problems with bowel leakage and difficulty recognising the difference between wind and faeces\n- Using a pad may help improve confidence when going out and about\n- Some patients find a small piece of gauze or tissue placed between their buttocks helps to absorb any minor leakage and prevents soreness\n- Anal plugs are also available. These are small absorbent bungs that are inserted into your anus. This will prevent faecal soiling, although they are not effective for full incontinence.\n",
+      "token_count": 120,
+      "section": "Leakage from the bowel (incontinence)",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c009",
+      "doc_id": "RM_SRPI",
+      "text": "\n#### Sore skin\n\n- Many patients complain of sore skin around their anus\n- Try to keep the area clean and dry\n- Moist toilet tissues or wet wipes may be more soothing than dry toilet paper\n- Apply a barrier cream (for example, Sudocream or Metanium) after each bowel motion. If this is not helpful, your GP may be able to prescribe you an alternative.\n",
+      "token_count": 86,
+      "section": "Sore skin",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c010",
+      "doc_id": "RM_SRPI",
+      "text": "\n### Bowel control exercises\n\nBowel control exercises may help to improve your bowel control by strengthening your pelvic floor and rectal muscles.\nPlease ask your specialist nurse for The Royal Marsden leaflet\n_[Exercises for your pelvic floor](https://patientinfolibrary.royalmarsden.nhs.uk/)_ . These exercises take at least four weeks before they make much difference in most people, and you will probably not get full benefit from them until you have done them for three or four months. You will need to persevere and do these exercises regularly.\n",
+      "token_count": 120,
+      "section": "Bowel control exercises",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c011",
+      "doc_id": "RM_SRPI",
+      "text": "\n### Medication\n\nBulking agents\n\nYour doctor may recommend taking a bulk forming agent (for example, Normacol). This is often referred to as a laxative which may seem strange if you are going to the toilet more frequently.\nBulk forming laxatives work by improving the consistency of your stool, making it bigger, which then helps your bowel sense when stool is there, to achieve better evacuation when you do empty your bowels. This then helps you to control your bowels better, reducing the need to rush to the toilet and improving the frequency in which you have your bowels open. Some types of bulking agent (for example, Fybogel) are made of fermentable fibre and can produce quite a lot of gas, which can make things worse. Normacol does not ferment much in the bowel so this may be a better option for you.\n",
+      "token_count": 182,
+      "section": "Medication",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c012",
+      "doc_id": "RM_SRPI",
+      "text": "\nSuppositories\n\nIf you do not feel as though your bowel is completely empty after going to the toilet, you may find that inserting a glycerine suppository into your anus will help to evacuate your rectum and avoid soiling. These are available to buy over the counter from most pharmacies.\n",
+      "token_count": 65,
+      "section": "Medication",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c013",
+      "doc_id": "RM_SRPI",
+      "text": "\nAnti-diarrhoeals\n\nYour doctor may also recommend that you take an antidiarrhoeal (for example, loperamide or codeine phosphate) to thicken and dry up your loose stools. These often work better if taken in small doses, 30 minutes before eating. Please ask your specialist nurse for more information.\n",
+      "token_count": 72,
+      "section": "Medication",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c014",
+      "doc_id": "RM_SRPI",
+      "text": "\nRectal irrigation\n\nRectal irrigation can be used to manage faecal urgency and leakage by using specialist equipment to introduce a measured amount of water into the bowel via the rectum. The water then causes muscular contractions within the bowel, which then causes expulsion of its contents (faeces being released).\nIt is important that you only start irrigation under nursing or medical supervision.\n\n",
+      "token_count": 79,
+      "section": "Medication",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "RM_SRPI_c015",
+      "doc_id": "RM_SRPI",
+      "text": "### Contact details\n\nIf you have any questions or concerns about this information, please contact:\n\nColorectal Clinical Nurse Specialist 020 7811 8108\n\nAlternatively, please call:\n\nThe Royal Marsden Macmillan Hotline: 020 8915 6899 (available 24 hours a day, 7 days a week)\n\nCall us straight away if you are feeling unwell or are worried about the side effects of cancer treatments.\n\nThis service provides specialist advice and support to all Royal\nMarsden patients, as well as to their carers, and both hospital and community-based doctors and nurses caring for Royal\nMarsden patients.\n\n### Notes and questions\n\n#### Notes and questions\n\nReferences\n\nThis booklet is evidence based wherever the appropriate evidence is available, and represents an accumulation of expert opinion and professional interpretation.\n\nDetails of the references used in writing this booklet are available on request from:\n\nThe Royal Marsden Help Centre\nTelephone: Chelsea 020 7811 8438 / 020 7808 2083\nSutton 020 8661 3759 / 3951\nEmail: [patientcentre@rmh.nhs.uk](mailto:patientcentre@rmh.nhs.uk)\n\nNo conflicts of interest were declared in the production of this booklet.\n\nShould you require information in an alternative format, please contact\nThe Royal Marsden Help Centre.\n\nThe patient information service is generously supported by The Royal Marsden Cancer Charity.\n[royalmarsden.org](http://royalmarsden.org)\n\nRegistered Charity No.1095197\n\nRevised March 2024. Planned review March 2027\n© The Royal Marsden NHS Foundation Trust GI-1079-06\n",
+      "token_count": 380,
+      "section": "Contact details",
+      "doc_type": "patient_education",
+      "source_org": "Royal_Marsden",
+      "credibility_tier": 2
+    }
+  ]
+}

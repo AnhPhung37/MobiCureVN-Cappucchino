@@ -1,0 +1,1707 @@
+CANCER TYPE
+
+#### Understanding Bowel Cancer
+
+_A guide for people with cancer, their families and friends_
+
+For information & support, call 13 11 20
+
+Understanding Bowel Cancer
+A guide for people with cancer, their families and friends
+
+First published January 2003. This edition April 2025.
+© Cancer Council Australia 2025. ISBN 978 1 923073 34 0
+_Understanding Bowel Cancer_ is reviewed approximately every 2 years.
+Check the publication date above to ensure this copy is up to date.
+Editor: Wendy Winkler. Designer: Ali Wright. Printer: IVE Group.
+
+Acknowledgements
+This booklet has been developed by Cancer Council NSW on behalf of all other state and territory
+Cancer Councils as part of a National Cancer Information Subcommittee initiative. We thank the reviewers of this booklet: Prof Alexander Heriot, Colorectal Surgeon and Director Cancer Surgery, Peter MacCallum
+Cancer Centre, Director, Lower GI Tumour Stream, Victorian Comprehensive Cancer Centre, VIC; Dr Cameron
+Bell, Gastroenterologist, Royal North Shore Hospital, NSW; Graham Borgas, Consumer; Prof Michael Bourke,
+Director of Gastrointestinal Endoscopy, Westmead Hospital, The University of Sydney, NSW; Laura Carman,
+13 11 20 Consultant, Cancer Council Victoria, VIC; Amanda Connolly, Specialist Bowel Care Nurse, Icon Cancer
+Centre Windsor Gardens, SA; A/Prof Melissa Eastgate, Operations Director, Cancer Care Services, Royal
+Brisbane and Women’s Hospital, QLD; Anne Marie Lyons, Stomal Therapy Nurse, Concord Repatriation General
+Hospital and NSW Stoma Ltd, NSW; Lisa Nicholson, Manager Bowel Care Services, Bowel Cancer Australia,
+NSW; Stefanie Simnadis, Clinical Dietitian, St John of God Subiaco Hospital, WA; Rafi Sharif, Consumer;
+Dr Kirsten van Gysen, Radiation Oncologist, The Nepean Cancer and Wellness Centre, NSW; Sarah Williams,
+Clinical Nurse Consultant, Lower GI, Peter MacCallum Cancer Centre, VIC. We also thank the health professionals, consumers and editorial teams who have worked on previous editions of this title.
+
+Note to reader
+Always consult your doctor about matters that affect your health. This booklet is intended as a general introduction to the topic and should not be seen as a substitute for medical, legal or financial advice.
+You should obtain independent advice relevant to your specific situation from appropriate professionals, and you may wish to discuss issues raised in this booklet with them.
+
+All care is taken to ensure that the information in this booklet is accurate at the time of publication. Please note that information on cancer, including the diagnosis, treatment and prevention of cancer, is constantly being updated and revised by medical professionals and the research community. Cancer Council Australia and its members exclude all liability for any injury, loss or damage incurred by use of or reliance on the information provided in this booklet.
+
+Cancer Council
+Cancer Council is Australia’s peak non-government cancer control organisation. Through the 8 state and territory Cancer Councils, we provide a broad range of programs and services to help improve the quality of life of people living with cancer, their families and friends. Cancer Councils also invest heavily in research and [prevention. To make a donation and help us beat cancer, visit cancer.org.au or call your local Cancer Council.](http://cancer.org.au)
+
+_Cancer Council acknowledges Traditional Custodians of Country throughout Australia and_
+_recognises the continuing connection to lands, waters and communities. We pay our respects_
+_to Aboriginal and Torres Strait Islander cultures and to Elders past, present and emerging._
+
+Cancer Council Australia Level 2, 320 Pitt Street, Sydney NSW 2000 ABN 91 130 793 725
+Telephone 02 8256 4100 Email [info@cancer.org.au](mailto:info@cancer.org.au) Website [cancer.org.au](http://cancer.org.au)
+
+## About this booklet
+
+This booklet has been prepared to help you understand more about bowel cancer. Bowel cancer is also known as colorectal cancer or sometimes simply as colon cancer or rectal cancer.
+
+Many people feel shocked and upset when told they have bowel cancer. We hope this booklet will help you, your family and friends understand how bowel cancer is diagnosed and treated. We also include information about support services.
+
+We cannot give advice about the best treatment for you. You need to discuss this with your doctors. However, this information may answer some of your questions and help you think about what to ask your treatment team (see page 71 for a question checklist).
+
+This booklet does not need to be read from cover to cover – just read the parts that are useful to you. Some medical terms that may be unfamiliar are explained in the glossary (see page 72). You may also like to pass this booklet to your family and friends for their information.
+
+How this booklet was developed – This information was developed with help from a range of health professionals and people affected by bowel cancer. It is based on Australian and international clinical practice guidelines. [1,2]
+
+If you or your family have any questions or concerns, call
+Cancer Council 13 11 20 . We can send you more information and connect you with support services in your area. You can also visit your local Cancer Council website (see back cover).
+
+### Contents What is cancer? 4
+
+The bowel 6
+
+Key questions 8
+
+What is bowel cancer? 8
+
+How common is bowel cancer? 8
+
+What are the symptoms? 9
+
+What are the risk factors? 10
+
+Can bowel cancer run in families? 11
+
+Which health professionals will I see? 12
+
+Diagnosis 14
+
+General tests 14
+
+Screening test for bowel cancer 16
+
+Colonoscopy, polypectomy and biopsy 17
+
+Less commonly used tests 18
+
+Further tests 20
+
+Staging bowel cancer 22
+
+Prognosis 24
+
+Making treatment decisions 26
+
+Treatment for early bowel cancer 28
+
+Preparing for treatment (prehabilitation) 29
+
+Surgery 30
+
+Radiation therapy 39
+
+Chemotherapy 42
+
+Treatment for advanced bowel cancer 45
+
+Drug therapies 45
+
+Targeted therapy 46
+
+Immunotherapy 46
+
+Radiation therapy 47
+
+Surgery 47
+
+Thermal ablation 48
+
+Palliative treatment 48
+
+Having a stoma 50
+
+How the stoma works 52
+
+Living with a stoma 53
+
+Eating with a stoma 53
+
+Support for people with a stoma 55
+
+Changes to your diet and bowel habits 56
+
+Incontinence 56
+
+Diarrhoea 58
+
+Wind (fatulence) 60
+
+Eating after treatment 61
+
+Looking after yourself 63
+
+Life after treatment 65
+
+Follow-up appointments 66
+
+What if bowel cancer returns? 66
+
+Caring for someone with cancer 67
+
+Seeking support 68
+
+Support from Cancer Council 69
+
+Useful websites 70
+
+Question checklist 71
+
+Glossary 72
+
+How you can help 76
+
+Key to icons
+
+Icons are used throughout this booklet to indicate:
+
+More information
+
+Alert
+
+Tips
+
+Is this Cancer Council booklet helpful?
+Please follow this
+QR code for a quick
+3-minute survey, or call 13 11 20 to provide your feedback.
+
+## What is cancer?
+
+Cancer is a disease of the cells. Cells are the body’s basic building blocks – they make up tissues and organs. The body constantly makes new cells to help us grow, replace worn-out tissue and heal injuries.
+
+Normally, cells multiply and die in an orderly way, so that each new cell replaces one lost. Sometimes, however, cells become abnormal and keep growing. These abnormal cells may turn into cancer.
+
+In solid cancers, such as bowel or breast cancer, the abnormal cells form a mass or lump called a tumour. In some cancers, such as leukaemia, the abnormal cells build up in the blood.
+
+How cancer starts
+
+4 Understanding Bowel Cancer
+
+Not all tumours are cancer. Benign tumours tend to grow slowly and usually don’t move into other parts of the body or turn into cancer. Cancerous tumours, also known as malignant tumours, have the potential to spread. They may invade nearby tissue, destroying normal cells. The cancer cells can break away and travel through the bloodstream or lymph vessels to other parts of the body.
+
+The cancer that first develops in a tissue or organ is called the primary cancer. It is considered localised cancer if it has not spread to other parts of the body. If the primary cancer cells grow and form another tumour at a new site, it is called a secondary cancer or metastasis.
+
+A metastasis keeps the name of the original cancer. For example, bowel cancer that has spread to the liver is called metastatic bowel cancer, even though the main symptoms may be coming from the liver.
+
+How cancer spreads
+
+Malignant cancer
+
+Cancer cells break away
+
+Cancer cells travel to lymph nodes and other parts of the body (metastasis) (angiogenesis) tissue
+
+What is cancer? 5
+
+## The bowel
+
+The bowel is part of the lower gastrointestinal (GI) tract, which is part of the digestive system. The digestive system starts at the mouth and ends at the anus. It helps the body break down food and turn it into energy. It also gets rid of the parts of food the body does not use.
+
+The small bowel (also called small intestine)
+
+This is a long tube (4–6 m) that absorbs nutrients from food. The small bowel is longer and narrower than the large bowel. It has 3 parts:
+
+- duodenum - top section; receives broken-down food from stomach
+- jejunum - middle section
+- ileum - lower, longest section; moves waste to large bowel.
+- See our _Understanding Small Bowel Cancer_ fact sheet _._
+
+The large bowel (also called large intestine or colon)
+
+About 1.5 m long, this tube absorbs water and salts, and turns what is left into solid waste (faeces, stools or poo). The large bowel has 3 parts:
+
+- caecum - looks like a pouch; it receives waste from the small bowel; the appendix is attached to the caecum (see our _Understanding_
+
+_Appendix Cancer and PMP_ fact sheet)
+
+- colon - main, longest section of the large bowel; has 4 parts: ascending colon, transverse colon, descending colon and sigmoid colon
+- rectum - the last 15–20 cm of the large bowel.
+
+This booklet is only about cancer of the large bowel.
+
+The anus
+
+This is the opening at the end of the large bowel. During a bowel movement, the anal muscles relax to release faeces (poo).
+
+- See our _Understanding Anal Cancer_ fact sheet.
+
+6 Understanding Bowel Cancer
+
+The bowel 7
+
+## Key questions
+
+Q: What is bowel cancer?
+
+A: Bowel cancer (also called colorectal cancer) is cancer in any part of the large bowel (colon or rectum). It may also be called colon cancer or rectal cancer, depending on where in the bowel it is.
+
+The cancer starts in the lining of the inner bowel wall (called the mucosa). It usually develops from small growths called polyps.
+
+Most polyps are harmless (benign), but some may turn into cancer.
+
+Removing polyps during a colonoscopy reduces the risk of bowel cancer (see page 17).
+
+If untreated, bowel cancer can grow into the deeper layers of the bowel wall. It can also spread to the lymph nodes. If the cancer advances further, it can spread to other organs, such as the liver or the lungs.
+
+Q: How common is bowel cancer?
+
+A: Bowel cancer is the 4th most common cancer in Australia. Each year, about 15,500 Australians are diagnosed with bowel cancer.
+
+It is more common in people over 50, but it can happen at any age.
+
+The number of adults under 50 with bowel cancer is increasing, with research yet to give a clear reason for this. [3]
+
+For an overview of what to expect at every stage of your cancer [care, visit cancer.org.au/cancercareguides/bowel-cancer. This](http://cancer.org.au/cancercareguides/bowel-cancer) is a short guide to what is recommended, from diagnosis to treatment and beyond.
+
+8 Understanding Bowel Cancer
+
+Q: What are the symptoms?
+
+A: Some people have no symptoms and the cancer is found through screening (see page 16). However, many people with bowel cancer experience some of the symptoms listed below.
+
+Other conditions can also cause the same symptoms, including irritable bowel syndrome (IBS), diverticulitis (inflammation of pouches in the bowel), inflammatory bowel disease, haemorrhoids, or an anal fissure (cracks in the skin lining the anus). Having some of the symptoms on this list does not mean that you definitely have bowel cancer.
+
+Talk to your doctor if you have any of these symptoms, especially if they are ongoing, get worse, or if there is any bleeding:
+
+- blood in or on faeces (poo) or on the toilet paper; this might be bright red or make the poo look dark brown or black
+- a persistent or unexplained change in bowel habits, such as diarrhoea or loose stools, constipation or smaller, more frequent bowel movements
+- a change in the look of faeces (e.g. narrower or with mucus)
+- a feeling of fullness or bloating in the abdomen (belly) or a strange sensation in the rectum, often during a bowel movement
+- a feeling that the bowel hasn’t emptied completely after you have done a poo
+- losing weight without trying to
+- rectal or anal pain
+- a lump in the rectum or anus
+- abdominal pain or swelling
+- weakness or fatigue, dizziness or breathlessness
+- a low red blood cell count (anaemia or iron deficiency)
+- a blockage in the bowel (see pages 34–35).
+
+Key questions 9
+
+Q: What are the risk factors?
+
+A: Anything that can increase your risk of cancer is called a risk factor. For bowel cancer, these include:
+
+- older age – bowel cancer is more common in people over 50, but the number of younger people being diagnosed is increasing
+- polyps – most polyps can become bowel cancer; having a large number of polyps in the bowel is a strong risk factor
+- dietary factors – a diet that is low in fibre, fruit, vegetables and wholegrains, and high in red and processed meats such as salami, ham and bacon
+- smoking – increases your risk of bowel cancer and bowel polyps
+- drinking alcohol – the less alcohol you drink, the lower your risk.
+
+If you choose to drink, follow the Australian Alcohol Guidelines – [health.gov.au/news/australian-alcohol-guidelines-revised](http://health.gov.au/news/australian-alcohol-guidelines-revised)
+
+- body weight – being above a healthy weight
+- physical inactivity – not moving your body enough. Be active on most days and minimise long periods of sitting
+- strong family history – a small number of bowel cancers and types of polyps run in families (see pages 11 and 21)
+- other bowel diseases – inflammatory bowel diseases, such as
+
+Crohn’s disease or ulcerative colitis, significantly increase risk, particularly if you have had the disease for more than 10 years (IBS does not increase your risk)
+
+- other cancers – people who have had bowel cancer are more likely to develop a second bowel cancer; some people who have had ovarian cancer or cancer of the uterus, or who have had radiation treatment to the abdomen/pelvis, may also have an increased risk of bowel cancer
+- type 2 diabetes – this may increase your risk of bowel cancer
+- rare genetic disorders – some bowel cancers are linked to an inherited gene (see page 21) or condition (e.g. cystic fibrosis).
+
+10 Understanding Bowel Cancer
+
+Q: Can bowel cancer run in families?
+
+A: Sometimes bowel cancer runs in families. The risk of developing bowel cancer may be higher if one or more of your close family members (a parent, brother or sister) has had bowel cancer. The risk is higher if they were diagnosed before the age of 50, or if
+
+2 or more close relatives have had bowel cancer. A family history of some other cancers, such as cancer of the uterus (endometrial cancer), may also increase the risk (see Lynch syndrome, below).
+
+Some people have an inherited faulty gene that increases their risk of developing bowel cancer. These faulty genes are responsible for a small number of bowel cancers in the population. There are
+
+2 main genetic conditions that occur in some families:
+
+Lynch syndrome – Less than 5% of bowel cancers are linked to
+
+Lynch syndrome, which causes a fault in the gene that helps repair a cell’s DNA. People with Lynch syndrome have an increased risk of developing bowel cancer, cancer of the uterus, and other cancers such as kidney, bladder and ovarian. Bowel cancer may also happen at a younger age than usual.
+
+Familial adenomatous polyposis (FAP) – This condition is linked to about 1% of bowel cancers. It causes hundreds of polyps to form in the bowel. If these polyps are not removed, they may become cancerous. If you have a family history, talk to your doctor about regular check-ups or ask for a referral to a family cancer clinic.
+
+To find out more, call Cancer Council 13 11 20.
+
+The National Bowel Cancer Screening Program is a free test available to Australians aged over 45. If you have a positive test, you will need a colonoscopy. See pages 16 and 17.
+
+Key questions 11
+
+Q: Which health professionals will I see?
+
+A: Your general practitioner (GP) will arrange the first tests to assess your symptoms, or further tests if you have had a positive screening test (see page 16). If these tests do not rule out cancer, you will usually be referred to a specialist, such as a gastroenterologist or colorectal surgeon.
+
+Health professionals you may see assists you with treatment decisions and works in
+GP partnership with your specialists in providing ongoing care diagnoses bowel cancer; performs bowel surgery; may colorectal surgeon perform colonoscopy diagnoses and treats disorders of the digestive system, gastroenterologist including removing bowel polyps; performs colonoscopy radiation oncologist, radiation therapist medical oncologist cancer care coordinator a radiation oncologist treats cancer by prescribing and overseeing a course of radiation therapy; a radiation therapist plans and delivers radiation therapy treats cancer with drug therapies such as chemotherapy, targeted therapy and immunotherapy (systemic treatment) coordinates your care, liaises with other members of the MDT, and supports you and your family throughout treatment; care may also be coordinated by a clinical nurse consultant (CNC), cancer nurse specialist or colorectal cancer nurse, or patient navigator administers drugs and provides care, information and nurse support throughout treatment stomal therapy nurse
+
+12 Understanding Bowel Cancer provides information about surgery and can help you to adjust to life with a temporary or permanent stoma
+
+The specialist will arrange further tests. If bowel cancer is diagnosed, the specialist will consider treatment options.
+
+Often these will be discussed with other health professionals at what is known as a multidisciplinary team (MDT) meeting.
+
+During and after treatment, you may see a range of health professionals who specialise in different aspects of your care.
+helps with nutrition concerns, weight issues and dietitian suggests diet changes during treatment and recovery genetic counsellor provides advice for people with a strong family history of bowel cancer or with a genetic condition linked to bowel cancer links you to support services and helps you with social worker emotional, practical and financial issues physiotherapist, exercise physiologist continence physiotherapist occupational therapist counsellor, psychologist palliative care specialist and nurses help restore movement and mobility, and improve fitness and wellbeing provides exercises to help your pelvic floor muscles recover and improve bowel and bladder control assists in adapting your living and working environment to help you resume usual activities after treatment help you manage your emotional response to diagnosis and treatment work closely with the GP and cancer team to help control symptoms and maintain quality of life
+
+Key questions 13
+
+## Diagnosis
+
+Some people have tests for bowel cancer because they have symptoms; others have no symptoms but have tests because of a strong family history of bowel cancer (see page 11) or after receiving a positive result through the National Bowel Cancer Screening Program (see page 16).
+
+If your doctor suspects you have bowel cancer, you may have some of the tests described in this chapter, but you are unlikely to need them all.
+
+Some tests may be repeated during or after treatment to check how well treatment is working. It may take up to a week to get your test results.
+
+If waiting for test results makes you feel anxious, it may help to talk to a friend or family member, or call Cancer Council 13 11 20 for support.
+
+### General tests
+
+Physical examination
+
+Your doctor will ask to feel your abdomen for any swelling. To check for problems in the rectum and anus, they may also do an internal examination. The doctor puts a gloved, lubricated finger into the anus to feel for any lumps or swelling. This is called a digital rectal examination (DRE). If you feel embarrassed or scared about a DRE, let your doctor know. A nurse may be present, but you can also ask for a family member or friend to be in the room with you for support.
+
+The DRE may be uncomfortable, but it shouldn’t be painful. Because the anus is a muscle, it can help to try to relax during the examination.
+
+The pressure on the rectum might make you feel like you are going to have a bowel movement, but it is very unlikely that this will happen.
+
+14 Understanding Bowel Cancer
+
+Blood test
+
+You may have a blood test to check your general health and look for signs that you are losing blood from your bowel. The blood test may measure chemicals from your liver and check your red blood cell count (haemoglobin level). Having low red blood cells (anaemia) is common with bowel cancer, but it may also be caused by other conditions.
+
+Checking your faeces (poo) for signs of blood
+
+A test called the immunochemical faecal occult blood test (iFOBT) looks for tiny amounts of blood in your faeces. It is commonly used as a screening test for bowel cancer (see page 16).
+
+An iFOBT is generally not recommended for people who are bleeding from the rectum or have other bowel symptoms (e.g. a change in bowel habit, anaemia, unexplained weight loss, abdominal pain). People with these symptoms are usually referred for a colonoscopy straightaway.
+
+For an iFOBT, you usually collect a sample of your faeces at home.
+
+The sample is sent to a laboratory and examined for traces of blood, which may be a sign of polyps, cancer or another condition. Only a small number (around 3–4%) of positive iFOBT tests are due to cancer or large precancerous polyps; more commonly the traces of blood are from benign conditions like haemorrhoids. However, if the test finds blood in your faeces, your doctor will recommend you have a colonoscopy (see page 17).
+
+_“I had very light blood streaks on toilet paper_ _when wiping my bottom. After 2 weeks of this, I_ _went to my doctor thinking it was haemorrhoids_ but he sent me for a colonoscopy.” RICHARD
+
+Diagnosis 15
+
+Screening test for bowel cancer
+
+Screening is the process of looking for cancer or abnormalities that could lead to cancer in people who do not have any symptoms.
+Screening is particularly important for bowel cancer, which often has no symptoms in its early stages.
+
+Screening program
+Through the National Bowel Cancer
+Screening Program, people aged
+50–74 are automatically sent a free iFOBT kit every 2 years, and people aged 45–49 can request a free test to be sent to them. You do the test at home and send it back. You don’t need to change what you eat or stop taking your medicines. A test kit can also be purchased from some pharmacies or online.
+
+If the screening test is negative, it means no traces of blood were found in your sample and you’ll be sent another test in 2 years. If you have symptoms between screening tests, let your doctor know. If the screening test is positive, it means there were traces of blood in your sample and you need more tests (see opposite page).
+
+It is important to do the screening test, as it can find early cancers and some precancerous polyps in the
+
+16 Understanding Bowel Cancer bowel. Removing polyps reduces the risk of developing bowel cancer.
+Finding bowel cancer early improves the chance of surviving the disease.
+
+If you want to order a test, have questions about how to do the test, need to update your contact details, or haven’t received your test kit, call 1800 627 701 or visit [cancerscreening.gov.au/bowel. If you](http://cancerscreening.gov.au/bowel) are an Indigenous Australian, visit [indigenousbowelscreen.com.au.](http://indigenousbowelscreen.com.au)
+
+People with a higher risk
+The National Bowel Cancer
+Screening Program is for people without symptoms of bowel cancer.
+
+If you have:
+
+- symptoms of bowel cancer (see page 9) – talk to your doctor about having a colonoscopy or other tests
+- another bowel condition, such as chronic inflammatory bowel disease – talk to your doctor about how they will monitor your risk of developing bowel cancer
+- a strong family history or a genetic condition linked to bowel cancer (see page 11) – talk to your doctor about when you need to start iFOBTs or screening colonoscopies.
+
+#### Colonoscopy, polypectomy and biopsy
+
+Colonoscopy – This is the main test to look for bowel cancer. It lets your doctor look at the lining of the entire large bowel. Before a colonoscopy, you clear out the bowel with a preparation (see page 19).
+
+It’s very important to follow the instructions – the cleaner the bowel, the more likely it is that the doctor can see polyps or areas of concern.
+
+Most colonoscopies are done as day surgery at a hospital. On the day of the procedure, you will usually be given a sedative or light anaesthetic so you don’t feel anything. This will make you drowsy or may put you to sleep. A colonoscopy usually takes 20–30 minutes.
+
+During the procedure, the doctor puts a colonoscope (a flexible tube with a camera on the end) through your anus and up into the rectum and colon. Carbon dioxide or air is passed through the colonoscope to inflate the colon and make it easier for the doctor to see the bowel.
+
+Polypectomy – During the colonoscopy, any precancerous polyps will be removed – this is called a polypectomy. Most polyps are small (less than
+
+1 cm) and the procedure is very safe and usually has no side effects.
+
+Biopsy – If the doctor sees abnormal-looking areas, including polyps, they will remove a sample of the tissue. This is called a biopsy.
+
+A pathologist looks at the sample under a microscope to check for cancer or specific gene changes (see _Genomic testing_ on page 21).
+
+Side effects – You may be weak or drowsy so someone will need to take you home afterwards. You won’t be able to drive until the day after your procedure. The gas used to inflate the bowel can sometimes cause bloating or wind pain. Rare complications include bleeding, or damage to the bowel (perforation) or spleen. Your doctor will explain the risks.
+
+Diagnosis 17
+
+##### Less commonly used tests
+
+CT colonography – Also called a virtual colonoscopy, it uses a CT scanner (see page 20) to create images of the colon and rectum. Bowel preparation is usually needed before the test (see opposite page). A CT colonography is done by a radiologist (who analyses x-rays and scans).
+
+You may have a CT colonography if a colonoscopy didn’t show all of the colon or when a colonoscopy is not safe. However, a CT colonography is not often used because it exposes you to radiation and is not as accurate as a colonoscopy. It can see only bigger polyps, not small ones.
+
+If any abnormality is detected, you will need to have a colonoscopy so that the doctor can take tissue samples. A CT colonography is covered by Medicare only in limited circumstances.
+
+Flexible sigmoidoscopy – This test is similar to a colonoscopy but only lets the doctor see the rectum and about the lower half of the colon (sigmoid and descending colon). Before a flexible sigmoidoscopy, you will need to have a light bowel clean-out, usually with an enema (see opposite page). You may be given light sedation for the procedure.
+
+You will then lie on your left side while a colonoscope (or, sometimes, a shorter but similar tube called a sigmoidoscope) is put into your anus and guided up through the bowel. The colonoscope or sigmoidoscope blows carbon dioxide or air into the bowel to inflate it slightly so the doctor can see the bowel wall more clearly.
+
+A light and camera at the end of the colonoscope or sigmoidoscope show up any unusual areas or polyps, and your doctor can take tissue samples (biopsies).
+
+18 Understanding Bowel Cancer
+
+Bowel preparation
+
+Before some tests, you will have to empty your bowel completely so the doctor can see the bowel clearly. This is called bowel preparation (or washout) and can vary, so ask your doctor what you need to do. It’s important to follow the instructions so you don’t have to repeat the test.
+
+Have an enema, if required
+
+One common way to clear the lower part of the bowel is using an enema. You may be given an enema by a nurse at the hospital before a colonoscopy if the laxative hasn’t completely cleaned out the bowel, or if you are only having a flexible sigmoidoscopy. An enema involves putting liquid directly into the rectum.
+The liquid washes out the lower part of the bowel, along with any faeces.
+
+Diagnosis 19
+
+##### Further tests
+
+If tests show you have bowel cancer, more tests will be done to see if it has spread to other parts of your body. Before you book any test, ask how much it will cost.
+
+CEA blood test
+
+You may be tested for carcinoembryonic antigen (CEA), a protein produced by some (not all) bowel cancers. Low levels are normal – but if you have a high level, your doctor may do more tests. Smoking, pregnancy and other factors can also raise CEA levels. If CEA is high, it will be retested after treatment to see if it has returned to normal.
+
+CT scan
+
+A CT (computerised tomography) scan uses x-rays and a computer to create a detailed picture of the inside of the body. CT scans are usually done at a hospital or radiology clinic.
+
+A dye is injected into a vein to make the pictures clearer. It may make you feel hot, have a strange taste in your mouth or feel that you need to urinate (wee or pee), but these sensations won’t last long.
+
+During the scan, you lie still on a table that moves in and out of the machine. Your chest, abdomen and the area between your hip bones (pelvis) will be scanned to see if the cancer has spread to these areas.
+
+The scan itself takes 5–10 minutes and is painless.
+
+Before having scans, tell the doctor if you have any allergies or have had a reaction to dyes during previous scans. You should also let them know if you have diabetes or kidney disease, are pregnant or breastfeeding, or are claustrophobic (afraid of confined spaces).
+
+20 Understanding Bowel Cancer
+
+MRI scan
+
+An MRI (magnetic resonance imaging) scan uses a powerful magnet and radio waves to create detailed pictures of the inside of your body.
+
+MRIs are mostly used only for cancers in the rectum, not cancers higher in the bowel. An MRI may also be used to scan the liver if there was an abnormality seen on a CT scan that needs to be checked.
+
+Before the scan, let your medical team know if you have a pacemaker or any other metallic object in your body. If you do, you may not be able to have an MRI scan as the magnet can interfere with some metallic objects. Newer devices are often safe to go into the scanner.
+
+Before the MRI, you may be injected with a dye to help make the pictures clearer. During the scan, you lie on a table that slides into a large metal tube open at both ends. The noisy, narrow machine makes some people feel anxious or claustrophobic. If you might feel distressed, talk to your medical team beforehand. You may be given medicine to help you relax. You will wear headphones or earplugs. The scan may take 30–90 minutes, depending on the area being scanned.
+
+Genomic testing
+
+If you are diagnosed with bowel cancer, the tissue removed during surgery will usually have more tests.
+Called genomic (or molecular) tests, they look for gene changes (mutations) and other features in the cancer cells that may cause them to multiply and grow. Results can help decide which treatments may or may not work for you. Some targeted therapy drugs only work for people with a RAS gene mutation.
+Immunotherapy drugs also only work for people with a fault in the gene that helps the cell’s DNA repair itself (called mismatch repair or
+MMR genes). See _Drug therapies_ on pages 45–47 for more details.
+
+Diagnosis 21
+
+PET–CT scan
+
+A positron emission tomography (PET) scan combined with a CT scan is a specialised imaging test. The 2 scans provide more detailed and accurate information about the cancer. A PET–CT scan is most commonly used before surgery to help find out where the cancer has spread to in the body. It can also be used after surgery to check if the cancer has come back after treatment.
+
+When you make the appointment for the scan, you will be given instructions to follow about how to prepare for the scan, including what you can eat and drink.
+
+Before the scan, you will be injected with a glucose solution containing a small amount of radioactive material. Cancer cells show up brighter on the scan because they take up more glucose solution than the normal cells do. You will then be asked to sit very quietly or lie down for 30–90 minutes as the glucose spreads through your body. Then you will have the scan itself, which usually takes around 30 minutes.
+
+You will also usually have a CT scan, before or after the PET scan.
+
+Medicare will only cover the cost of a PET–CT scan for bowel cancer in limited circumstances. If this test is recommended, check with your doctor what you will have to pay.
+
+##### Staging bowel cancer
+
+The tests described in this chapter help show whether you have bowel cancer and whether it has spread from the original site to other parts of the body. This is known as staging and it helps your health care team advise you on the best treatment options.
+
+22 Understanding Bowel Cancer
+
+The most common staging system for bowel cancer is the TNM system, which stands for tumour–node–metastasis. The Australian
+
+Clinico-Pathological Staging (ACPS) system may also be used in some hospitals. The TNM system gives numbers to:
+
+- how deep the tumour has gone into the bowel (T1–4)
+- whether or not lymph nodes are affected (N1–2)
+- whether the cancer has spread or metastasised outside the bowel (M0–M1).
+
+Based on the TNM numbers, the doctor then works out the cancer’s overall stage (see the box below for more detail). Around half of all bowel cancers in Australia are diagnosed at stage 1 or 2.
+
+The stage can be predicted before surgery based on the results of early tests, but may be revised after surgery, following tests on the cancer tissue and lymph nodes removed during surgery.
+
+Diagnosis 23
+
+Less common types of bowel cancer
+
+Most bowel cancers are adenocarcinomas, which start in the tissue lining the large bowel. Rarely, other less common types of cancer can also affect the bowel. These include lymphomas, squamous cell carcinomas, neuroendocrine tumours and gastrointestinal stromal tumours. Cancer can also start in the small bowel (called small
+
+##### Prognosis
+bowel cancer or small intestine cancer), or in the appendix, but this is rare. These cancers are not included in this booklet, and may have different treatment. For more information about these less common types of bowel cancers, call Cancer Council 13 11 20.
+
+- See our fact sheets on small bowel and appendix cancer.
+
+Prognosis means the expected outcome of a disease. You may wish to discuss your prognosis and treatment options with your doctor, but it is not possible for anyone to predict the exact course of the disease.
+
+Your doctor can give you an idea about the common issues that affect people with bowel cancer. Generally, the earlier that bowel cancer is diagnosed, the better the chances of successful treatment, but people with more advanced bowel cancer may still respond well to treatment.
+
+Test results, the type of cancer, the rate and depth of tumour growth, the likelihood of response to treatment, and factors such as your age, level of fitness and medical history are important in assessing your prognosis.
+
+24 Understanding Bowel Cancer
+
+Key points about diagnosing bowel cancer
+
+General tests General tests to check for abnormal symptoms include a digital rectal examination (DRE), blood tests, and the immunochemical faecal occult blood test (iFOBT). The iFOBT looks for tiny amounts of blood in your faeces (stools or poo).
+
+Main tests • A colonoscopy looks for polyps and cancer in the entire large bowel.
+
+- Before a colonoscopy, you will have a bowel preparation to empty out the bowel so the doctor can see inside more clearly.
+- If the doctor sees a suspicious-looking area, they will take a tissue sample (biopsy).
+
+Further tests Other tests can give more information about the bowel cancer to help guide treatment. These tests may include:
+
+- a blood test to check for a protein called carcinoembryonic antigen (CEA), which is produced by some cancer cells
+- imaging scans (CT, MRI or PET–CT) to show the location of the cancer and whether it has spread
+- genomic testing for gene mutations in the cancer cells.
+
+Staging and prognosis
+
+- The stage describes how far the cancer has spread.
+- Stage 1 bowel cancer is found only in the inner layers of the bowel; stage 2 has spread deeper into the bowel wall; stage 3 is in any layer of the bowel wall and has spread to nearby lymph nodes; stage 4 has spread to other parts of the body.
+- In general, bowel cancers found at earlier stages have a better chance of successful treatment.
+
+Diagnosis 25
+
+## Making treatment decisions
+
+Sometimes it is difficult to decide on the type of treatment to have.
+
+You may feel that everything is happening too fast, or you might be anxious to get started.
+
+Check with your specialist how soon treatment should begin, as it may not affect the success of the treatment to wait a while. Ask them to explain the options, and take as much time as you can before making a decision.
+
+Know your options – Understanding the disease, the available treatments, possible side effects and any extra costs can help you weigh up the options and make a well-informed decision. Check if the specialist is part of a multidisciplinary team (see page 13) and if the treatment centre is the most appropriate one for you – you may be able to have treatment closer to home, or it might be worth travelling to a centre that specialises in a particular treatment.
+
+Record the details – When your doctor first says you have cancer, you may not remember everything you are told. Taking notes can help. If you would like to record the discussion, ask your doctor first.
+
+It is a good idea to have a family member or friend go with you to appointments to join in the discussion, write notes or simply listen.
+
+Ask questions – If you are confused or want to check anything, it is important to ask your specialist questions. Try to prepare a list before appointments (see page 71 for suggestions). If you have a lot of questions, you could talk to a cancer care coordinator or nurse.
+
+26 Understanding Bowel Cancer
+
+Consider a second opinion – You may want to get a second opinion from another specialist to confirm or clarify your specialist’s recommendations or reassure you that you have explored all of your options. Specialists are used to people doing this. Your GP or specialist can refer you to another specialist and send your initial results to that person. You can get a second opinion even if you have started treatment or still want to be treated by your first doctor. You might decide you would prefer to be treated by the second specialist.
+
+It’s your decision – Adults have the right to accept or refuse any treatment that they are offered. For example, some people with advanced cancer choose treatment that has significant side effects even if it gives only a small benefit for a short period of time. Others decide to focus their treatment on quality of life. You may want to discuss your decision with the treatment team, GP, family and friends.
+
+- See our _Cancer Care and Your Rights_ booklet.
+
+Should I join a clinical trial?
+
+Your doctor or nurse may suggest you take part in a clinical trial. Doctors run clinical trials to test new or modified treatments and ways of diagnosing disease to see if they are better than current methods. For example, if you join a randomised trial for a new treatment, you will be chosen at random to receive either the best existing treatment or the modified new treatment. Over the years, trials have improved treatments and led to better outcomes for people diagnosed with cancer.
+
+_Trials and Research_ booklet.
+
+You may find it helpful to talk to your specialist, clinical trials nurse or GP, or to get a second opinion.
+If you decide to take part in a clinical trial, you can withdraw at any time. For more information, [visit australiancancertrials.gov.au.](https://www.australiancancertrials.gov.au/)
+
+- See our _Understanding Clinical_
+
+Making treatment decisions 27
+
+## Treatment for early bowel cancer
+
+This chapter only covers the treatment for stages 1–3 bowel cancer (see pages 22–23). Your health care team will recommend treatment based on what will give you the best outcome, where the cancer is in the bowel, if and how or where the cancer has spread, your general health, and your preferences.
+
+Colon cancer and rectal cancer are treated differently. The treatments you are offered will depend on the guidelines for best practice in treating bowel cancer. [1] You may have more than one treatment and treatments may be given in different orders and combinations.
+
+Treatment options by type of bowel cancer
+
+Colon cancer Rectal cancer
+
+- Surgery is the main treatment for colon cancer.
+- Surgery is the main treatment for early rectal cancer.
+- If the cancer has spread to the lymph nodes, you may have chemotherapy after surgery. This is called adjuvant chemotherapy.
+- If the cancer has spread beyond the rectal wall and/or into nearby lymph nodes, it is common to have chemotherapy combined with radiation therapy (chemoradiation). Most often this takes place before surgery. This is called neoadjuvant treatment.
+- Some people may have radiation therapy or chemotherapy on its own before surgery.
+- Radiation therapy is rarely used for colon cancer.
+- After surgery you may have further chemotherapy.
+
+28 Understanding Bowel Cancer
+
+Preparing for treatment (prehabilitation)
+
+Prehabilitation may improve your strength, help you cope with side effects and improve treatment. If you are feeling anxious or stressed, ask for a referral to a counsellor/psychologist or call Cancer Council on 13 11 20.
+
+Treatment for early bowel cancer 29
+
+### Surgery
+
+Your doctor will discuss the surgery best suited for you, depending on where the cancer is and your preferences. The aim of surgery is to remove the area of the bowel with cancer and the nearby lymph nodes.
+
+You will be given a general anaesthetic and have either open or keyhole surgery. Your doctor will discuss which method is best suited for you.
+
+Open surgery – This is usually done with one long cut (incision) down the middle of your tummy. Open surgery leaves a larger wound and scar, and has a longer recovery time and hospital stay. It is widely available.
+
+Keyhole surgery – Also called minimally invasive, laparoscopic or robotic surgery. The surgeon makes some small cuts in the abdomen and passes a thin tube with a light and camera (laparoscope) into one opening. They insert tools into the other cuts to remove the section of the bowel with cancer, using the camera as a guide. Keyhole surgery usually means less pain, scarring, time in hospital and a faster recovery.
+
+Surgery for cancer in the colon
+
+The most common surgery for colon cancer is a colectomy (removal of part of the colon, see opposite). Lymph nodes near the cancer are also removed. The surgeon cuts the bowel on either side of the cancer (with a small border of healthy tissue called the margin) and then joins the
+
+2 ends of the bowel back together. This join is called an anastomosis.
+
+Having a stoma – Sometimes one end of the bowel is brought through an opening made in your abdomen and stitched to the skin. Called a stoma, it lets faeces out to be collected in a bag. The stoma is usually temporary, and the operation is reversed later. In some cases, the stoma is permanent. Improved surgical techniques mean fewer people need a permanent stoma. For more information about stomas, see pages 50–55.
+
+30 Understanding Bowel Cancer
+
+Types of colectomies
+
+Area removed
+
+There are different types of colectomies depending on which part of the colon is removed. The surgery may be done as open or keyhole surgery.
+
+Right hemicolectomy
+The right side of the colon is removed.
+
+Left hemicolectomy
+The left side of the colon is removed.
+
+Sigmoid colectomy
+The sigmoid colon is removed.
+
+Subtotal or total colectomy
+Most or all of the colon is removed.
+
+Proctocolectomy
+All of the colon and the rectum are removed.
+
+Treatment for early bowel cancer 31
+
+Surgery for cancer in the rectum
+
+The type of operation you have depends on where in the rectum the cancer is, whether the bowel can be rejoined, and where in the rectum the join can be made. There are 2 main types of operation – an anterior resection or an abdominoperineal resection (which may also be called an abdominoperineal excision).
+
+Anterior resection – This is the most common operation. You may have a high anterior resection or an ultra-low anterior resection (see opposite page). As part of the procedure, the surgeon may create a temporary stoma (which will usually be reversed later). For further information about stomas, see pages 50–55.
+
+Abdominoperineal resection – This procedure may be recommended if the cancer is near the anal sphincter or it is too low to be removed without causing incontinence (loss of control over bowel movements).
+
+After an abdominoperineal resection, you will need a permanent stoma (colostomy). See pages 50–55 for more details and speak to your surgeon about any concerns you may have.
+
+Other types of surgery for colon or rectal cancer
+Endoscopic resection – Used for larger benign polyps. Some very early cancers that involve only the inner lining of the bowel may be suitable for endoscopic resection (also called endoscopic mucosal resection or EMR). This involves cutting out the tumour during a colonoscopy (see page 17). A bowel resection may also still be needed.
+
+Local excision – People who have very early-stage rectal cancer or are not fit for a major operation may have a local excision. The surgeon puts instruments into the anus to remove the cancer from the lining of the rectum, along with a margin of healthy tissue, without cutting into
+
+32 Understanding Bowel Cancer
+
+Types of resections
+
+Area removed
+
+There are different types of operations for cancer in the rectum. The surgery may be done as open or keyhole surgery (see page 30).
+
+High anterior resection
+The surgeon removes the lower left part of the colon and the upper part of the rectum. Nearby lymph nodes and surrounding fatty tissue are also removed. The lower end of your bowel is rejoined to the top of the remaining rectum.
+
+Ultra-low anterior resection
+The lower left part of the colon and all or part of the rectum are removed, along with nearby lymph nodes and surrounding fatty tissue. The end of the remaining bowel is joined to the lowest part of the rectum, just above the anus. In some cases, the surgeon may make a pouch using the remaining colon and join this pouch to the anus to improve ongoing bowel function. This is known as a colonic J-pouch.
+
+Abdominoperineal resection or excision (APR or APE)
+The sigmoid colon, the entire rectum and the anus are removed. Your surgeon uses the descending colon to create a permanent stoma (known as a colostomy, see page 51) for faeces to leave the body. The anal area will be stitched up and permanently closed.
+
+Treatment for early bowel cancer 33 the abdomen. Methods include transanal excision (TAE), transanal endoscopic microsurgery (TEMS), and transanal minimally invasive surgery (TAMIS).
+
+If there are 2 cancers – In a small number of people, 2 separate cancers may be found in the large bowel at the same time. The cancers may be discovered through tests or during surgery. In this case, there are several options for surgery, including to remove:
+
+- 2 sections of the bowel
+- one larger section of the bowel that includes both areas with cancer
+- all of the colon and rectum (proctocolectomy, see page 31) to prevent any chance of another cancer forming.
+
+In some locally advanced cancers, other organs that the bowel cancer is attached to may also be removed along with the bowel containing the cancer. The type of surgery your doctor recommends depends on several factors, including your age, where the tumours are in the bowel, genetic and other risk factors, and your preferences.
+
+Surgery for a blocked bowel (bowel obstruction)
+
+Sometimes bowel cancer grows and completely blocks the bowel.
+
+This is called a bowel obstruction. Waste matter cannot pass through the blocked bowel easily, and may cause bloating and abdominal pain; constipation; and nausea and vomiting.
+
+Sometimes the obstruction is found and cleared during the surgery to remove the cancer. In other cases, you will need emergency surgery to clear the blockage.
+
+If a section of the bowel needs to be removed, it may be possible to rejoin the bowel during the surgery, but some people may need a stoma
+
+34 Understanding Bowel Cancer (see pages 50–55). Sometimes a stoma is made before or “upstream” from the obstruction to relieve the blockage and allow time for staging scans of the cancer or chemoradiation (see page 42) before surgery.
+
+Having a stent – If only one area of the bowel is blocked or you are not fit enough for major bowel surgery, you may have a small hollow tube (stent) put in to help keep the bowel open and relieve symptoms.
+
+A stent may be permanent, or it can be used to help manage the blockage until you are fit enough to have a colectomy or resection. The stent is inserted through the rectum using a colonoscope (see page 17).
+
+Preventing bowel blockages – A dietitian or your surgeon or stomal therapist may suggest you take a stool softener or add more fluid to your diet to help food or waste pass through the blockage or stent more easily. Other people may be advised to eat low-fibre foods. Talk to a dietitian about suitable foods for your situation.
+
+If you are unable to have bowel surgery or a stent, you may be given medicine to help control the symptoms of a bowel obstruction.
+
+Risks of bowel surgery
+
+Your surgeon will talk to you about the risks and complications of bowel surgery. As with any major operation, surgery for bowel cancer has risks. These may include infection, bleeding, blood clots, damage to nearby organs, or leaking from the joins between the remaining parts of the bowel. After the operation, you will be carefully monitored for any complications.
+
+For what to expect after surgery, see the next 2 pages. You may also experience some of the side effects discussed on page 38.
+
+Treatment for early bowel cancer 35
+
+What to expect after surgery
+
+This is a general overview of what to expect. Your recovery time after the operation will depend on your age, whether you had open or keyhole surgery, whether you have a stoma, and your general health. You will probably be in
+
+36 Understanding Bowel Cancer hospital for 2–7 days, but it can take 2–3 months to fully recover. While in hospital you will start a plan (called enhanced recovery after surgery or ERAS) to help you recover and minimise the time spent in hospital.
+
+Treatment for early bowel cancer 37
+
+Side effects of bowel surgery
+Temporary or permanent stoma – Some people go home with a stoma.
+
+A stomal therapy nurse will see you after the operation to teach you how to look after the stoma and attach bags. See pages 50–55 for details. You will stay in hospital until you feel confident managing the stoma.
+
+Changes in bowel and bladder function – You may notice changes to how your bowel and bladder work. These changes usually improve within a few months but, for some people, it can take longer. See pages 56–61 for more details. Internal scar tissue (adhesions) from bowel surgery can increase the risk of developing a bowel obstruction (see pages 34–35). This may occur even many years after the surgery.
+
+Changes in sexual function – In males, removing the rectum may affect the nerves controlling erections or ejaculation. You may have trouble getting or keeping an erection firm enough for intercourse or other sexual activity. In females, if the rectum is removed, there may be a different feeling in the vagina during intercourse. It may be uncomfortable, as the rectum no longer cushions the vagina.
+
+- See our _Sex, Intimacy and Cancer_ booklet.
+
+Changes to what you can eat – See pages 54 and 61 to read about this.
+
+Fatigue – It is normal to feel tired after surgery. Although it’s a good idea to stay active and do gentle exercise as recommended by your doctor, you may find that you tire easily and need to rest during the day. Take breaks if you feel tired, and follow your doctor’s advice about restrictions, such as avoiding heavy lifting. You might have to remind your family and friends that it may take you several months to recover from surgery.
+
+- See our _Understanding Fatigue and Cancer_ fact sheet.
+
+38 Understanding Bowel Cancer
+
+#### Radiation therapy
+
+Radiation therapy (or radiotherapy) uses a controlled dose of radiation to kill or damage cancer cells so they can’t grow, multiply or spread.
+
+Radiation therapy may be given on its own or with chemotherapy (chemoradiation), which makes cancer cells more sensitive to radiation.
+
+When radiation therapy is used
+
+Radiation therapy may be recommended for rectal cancer but is rarely used to treat colon cancer. You may have radiation therapy:
+
+Before surgery (neoadjuvant) – Radiation therapy is used before surgery to shrink the tumour. This makes it easier for the surgeon to remove the cancer and reduces the risk of the cancer coming back.
+
+After surgery (adjuvant) – If rectal cancer is more advanced than expected, radiation therapy may be used after surgery to kill remaining cancer. This is only if radiation therapy wasn’t given before surgery.
+
+Having radiation therapy
+
+External beam radiation therapy (EBRT) is the most common radiation therapy for rectal cancer. A machine called a linear accelerator delivers a high dose to the affected area, with lower doses to surrounding tissue, reducing side effects.
+
+You will meet with your radiation oncologist for them to explain details about treatment, the number of sessions you need to have and whether you will have chemotherapy with your radiation treatment. For your radiation oncologist to design your treatment, a planning CT scan will be done in the treatment position. Small marks, like a freckle, may be made on your skin to help set you up in the exact same position for each treatment. It may take a few weeks to plan the treatment.
+
+Treatment for early bowel cancer 39
+
+Treatment is given daily, on weekdays. During treatment, you lie on the table of the radiation therapy machine. Each time you have treatment, you lie in the same position as you were in when you had the planning
+
+CT scan.
+
+Each treatment only takes a few minutes, but you may be on the treatment table for 10–20 minutes because of the time it takes to set you up accurately. The treatment is painless and can’t be seen or felt.
+
+After finishing neoadjuvant treatment, there will be a break before surgery. This gives time for the radiation therapy to have its full effect.
+
+Side effects of radiation therapy
+
+Most side effects are temporary and go away weeks or months after treatment. Feeling tired is common. Radiation therapy for rectal cancer is usually given over the pelvic area, which can affect your sexual function and ability to have children (fertility, see opposite page).
+
+Radiation therapy can irritate the bowel and bladder. This may mean needing to pass urine (wee or pee) more often or burning when you do (cystitis); redness and soreness in the treatment area; needing to poo urgently/suddenly or incontinence (see pages 56–57); diarrhoea (see pages 58–59); constipation; and mucus or small amounts of blood coming out of the anus. Radiation therapy can cause the skin or internal tissue to become less stretchy and harden (fibrosis). It can also inflame the lining of the rectum (radiation proctitis, see page 58).
+
+People react to radiation therapy differently, so some people may have few side effects, while others have more. Your treatment team will talk to you about possible side effects and how to manage them.
+
+- See our _Understanding Radiation Therapy_ booklet.
+
+40 Understanding Bowel Cancer
+
+Sexual function and fertility after radiation therapy
+
+You may find it helpful to share your feelings about any sexual or fertility issues with your partner, a counsellor, a sexual therapist or a fertility specialist.
+
+Treatment for early bowel cancer 41
+
+##### Chemotherapy
+
+Chemotherapy uses drugs to kill or slow the growth of cancer cells while doing the least possible damage to healthy cells. If the cancer has spread to lymph nodes or to other organs, you may have chemotherapy:
+
+Before surgery (neoadjuvant) – Some people with rectal cancer have chemotherapy before surgery to shrink it so it’s easier to remove. You may have only chemotherapy or with radiation therapy (chemoradiation).
+
+After surgery (adjuvant) – Chemotherapy after surgery for colon or rectal cancer aims to destroy any remaining cancer cells and reduce the chance of the cancer coming back. If your doctor recommends chemotherapy, you usually start treatment within 6–8 weeks, when your wounds have healed and you’ve recovered your strength.
+
+On its own – If the cancer has spread to other organs, such as the liver or lungs, chemotherapy may be used either to shrink the tumours or to reduce symptoms and make you more comfortable.
+
+Having chemotherapy
+
+Chemotherapy is usually given through a drip into a vein (intravenously).
+
+To avoid repeated needles, you may have it through a device inserted beneath your skin, such as a port-a-cath or peripherally inserted central catheter (PICC). Sometimes chemotherapy is taken as tablets (orally).
+
+Chemotherapy is commonly given as a period of treatment followed by a break. This is called a cycle. Adjuvant chemotherapy is usually given for 3–6 months, in cycles that last for 2–3 weeks each. Your medical oncologist will explain your treatment schedule. Usually, you have chemotherapy during day visits to a hospital or treatment centre. Some people have chemotherapy at home through a portable pump.
+
+42 Understanding Bowel Cancer
+
+Side effects of chemotherapy
+
+The side effects of chemotherapy vary, depending on the drugs used and the dose. Your medical oncologist or nurse will talk to you about the likely side effects, including how they can be prevented or controlled. If side effects are hard to manage, the chemotherapy treatment can be adjusted to reduce the side effects while still giving you a good result.
+
+Side effects may include tiredness; neutropenia (low white blood cells); feeling sick (nausea and vomiting); diarrhoea; lip and mouth sores; changes in appetite, taste and smell; sore hands and feet (peripheral neuropathy); and hair loss or thinning.
+
+The chemotherapy drug oxaliplatin may make your hands, feet, mouth and throat sensitive to cold items (e.g. cold food and drinks, air conditioning), causing pins and needles and numbness. Skin rash and increased sensitivity to sunburn are more common if using the chemotherapy drug fluorouracil or capecitabine.
+
+Keep a record of the doses and names of your chemotherapy drugs handy. This will save time if you get an infection and need to visit the emergency department (see below). You may also find it helpful to keep a symptom diary when you start chemotherapy, so you can monitor side effects as they occur.
+
+- See our _Understanding Chemotherapy_ booklet.
+
+If you are having chemotherapy, you have a higher risk of getting an infection or bleeding. If you have a temperature of 38°C or higher, or the “shivers and shakes”, contact your doctor or go to the emergency department immediately. Tell your doctor if you feel more tired than usual, or if you bruise or bleed easily.
+
+Treatment for early bowel cancer 43
+
+Key points about treating early bowel cancer
+
+Treatments for early colon cancer
+
+Treatments for early rectal cancer
+
+How surgery is done
+
+- The main treatment is surgery to remove part or all of the colon (colectomy).
+- There are different types of colectomies depending on where in the colon the cancer is.
+- If cancer has spread to nearby lymph nodes, you may have chemotherapy after surgery (adjuvant chemotherapy).
+- The main treatment is surgery to remove all or part of the rectum (resection).
+- There are different types of resections depending on where in the rectum the cancer is.
+- A local excision to remove the cancer may occasionally be used for very early-stage rectal cancer.
+- If the cancer has spread to nearby tissue or lymph nodes, you will usually have chemoradiation before the surgery.
+- Some people have radiation therapy or chemotherapy on its own before surgery.
+- Surgery for bowel cancer may be done as open surgery (one large cut) or keyhole surgery (several smaller cuts).
+- During bowel surgery, the surgeon cuts the bowel on either side of the cancer and joins the 2 ends back together (anastomosis).
+- If it is not possible to join the bowel back together or if the bowel needs time to heal, the surgeon will create a way for faeces (stools or poo) to come through an opening (stoma) in the abdominal wall.
+
+44 Understanding Bowel Cancer
+
+## Treatment for advanced bowel cancer
+
+When bowel cancer has spread to other parts of the body such as the liver, lung, or lining of the abdomen and pelvis (omentum and peritoneum), it is called advanced or metastatic (stage 4) bowel cancer.
+
+To control the cancer, slow its growth and manage symptoms such as pain, a combination of different treatments may be recommended.
+
+These may include chemotherapy, targeted therapy, immunotherapy, radiation therapy and surgery. For some people, the best option may be to join a clinical trial (see page 27).
+
+### Drug therapies
+
+Advanced bowel cancer is commonly treated with drugs that reach cancer cells throughout the body. This is called systemic treatment, and includes chemotherapy (see pages 42–43), targeted therapy and immunotherapy.
+
+The drugs used for bowel cancer are rapidly changing as clinical trials find newer drugs (see page 27). Your medical oncologist will discuss which combination of drugs is best for your situation. You may also be able to get other drugs through a clinical trial.
+
+Scans and blood tests will be used to monitor your response to systemic treatments. If results show that the cancer is shrinking or is under control, you’ll continue to have chemotherapy or targeted therapy or both. If the cancer is growing, that treatment will stop and your doctor will discuss other treatments.
+
+Treatment for advanced bowel cancer 45
+
+Targeted therapy
+
+This is a type of drug treatment that attacks specific features of cancer cells to stop the cancer growing and spreading. Monoclonal antibodies are the main type of targeted therapy drug used in Australia for advanced bowel cancer.
+
+There are a range of different targeted therapy drugs. These drugs will only work for bowel cancers with particular gene changes (mutations).
+
+Your medical oncologist will usually do tests (see page 21) on the biopsy sample (or may do blood tests) to see which targeted therapy is likely to work for you.
+
+Some targeted therapy drugs are given as tablets, while others are given as a drip into a vein in hospital. They may sometimes be given at the same time as chemotherapy, or given after you have stopped chemotherapy treatment.
+
+Side effects – The side effects of targeted therapy vary depending on which ones are used. For a detailed list of side effects, visit [eviq.org.au and search for the drug you are being given. Some of](http://eviq.org.au) the more common side effects may include: tiredness, skin problems, diarrhoea, joint pain, skin problems and sore eyes.
+
+- See our _Understanding Targeted Therapy_ fact sheet.
+
+Immunotherapy
+
+Immunotherapy is a type of drug therapy treatment that uses the body’s own immune system to fight cancer.
+
+Checkpoint inhibitors are the main type of immunotherapy drug used for the small number of advanced bowel cancers that have a fault in the mismatch repair (MMR) gene. The drug pembrolizumab is given
+
+46 Understanding Bowel Cancer directly into a vein through a drip (infusion) and the treatment is repeated every 3 or 6 weeks. How many infusions you receive will depend on how you respond to the drug.
+
+Side effects – Checkpoint inhibitor immunotherapy acts on the immune system, so it can sometimes cause the immune system to attack healthy cells in any part of the body. This can lead to a variety of side effects such as rash, itchy skin, diarrhoea, breathing problems, inflammation of the liver, hormone changes and temporary arthritis.
+
+Your doctor will discuss possible side effects with you.
+
+- See our _Understanding Immunotherapy_ fact sheet.
+
+##### Radiation therapy
+
+Radiation therapy can be used as a palliative treatment for both advanced colon and advanced rectal cancer. It can be used to control the growth of the tumour and relieve symptoms such as bleeding. If the cancer has spread to the bone or formed a mass in the pelvis, radiation therapy can reduce pain. For further details, see pages 39–41.
+
+If the tumour has spread to the liver, you may be offered a specialised type of radiation therapy. Options may include selective internal radiation therapy (SIRT, also called radioembolisation) or stereotactic body radiation therapy (SBRT).
+
+- See our _Understanding Secondary Liver Cancer_ fact sheet.
+
+###### Surgery
+
+Some people are able to have surgery to remove bowel cancer that has spread. Generally, surgery is not recommended if you are unwell or the cancer has spread to many places in the body.
+
+Treatment for advanced bowel cancer 47
+
+- If the cancer has spread, surgery may remove parts of the bowel along with all or part of other affected organs. This is called an en bloc resection and is usually for locally advanced bowel cancer. If the liver, lungs or other organs are affected, a separate surgery (called metasectomy) may remove some or all of the cancer in that organ.
+- If the cancer has spread to the lining of the abdomen (peritoneum), some people have surgery to try to remove all of the cancer – however, this can only be done when there is limited cancer and spread. This is known as a peritonectomy or cytoreductive surgery. Sometimes, a heated chemotherapy solution is put into the abdomen for 60–90 minutes during a peritonectomy. This is called hyperthermic intraperitoneal chemotherapy (HIPEC).
+
+##### Thermal ablation
+
+If the cancer has spread to only a small number of places in a single area, such as the liver or lungs, your doctor may recommend thermal ablation. This may use heat to destroy the tumour. The heat may come from radio waves (radio frequency ablation) or microwaves (microwave ablation). It is best performed in a specialised centre. Cryoablation is a similar process that may sometimes be offered, and uses cold or freezing instead of heat.
+
+##### Palliative treatment
+
+This is treatment that aims to slow the spread of cancer and relieve symptoms, such as pain, without trying to cure the disease. Treatments given palliatively for advanced bowel cancer may include surgery, chemotherapy, radiation therapy or targeted therapy.
+
+- See our _Understanding Palliative Care_ and _Living with Advanced_
+
+_Cancer_ booklets, and listen to our advanced cancer podcast.
+
+48 Understanding Bowel Cancer
+
+Key points about treating advanced bowel cancer
+
+What it is Advanced bowel cancer is cancer that has spread from the bowel to another part of the body or come back after the initial treatment.
+
+Treatment goal Treatment aims to control the cancer, slow down its spread and manage any symptoms.
+
+Main treatment Drug therapies, including chemotherapy, targeted therapy and immunotherapy, are used to control the cancer’s growth and stop it spreading.
+
+Targeted therapy Targeted therapy drugs target specific features of cancer cells to stop the cancer growing and spreading. Monoclonal antibodies are the main type of targeted therapy drug used for advanced bowel cancer. The tumour may need to be tested to see if these drugs will help.
+
+Immunotherapy A small number of people with advanced bowel cancer may be given an immunotherapy drug that uses the body’s own immune system to fight the cancer cells.
+
+Other treatment options
+
+Treatment side effects
+
+Other options might include radiation therapy, surgery and supportive treatments like pain relief.
+For some people, the best option may be to join a clinical trial. Palliative care may also be suggested.
+
+All treatments can cause side effects, such as tiredness, skin problems or bowel issues. Talk to your doctor about how to manage any side effects.
+
+Treatment for advanced bowel cancer 49
+
+## Having a stoma
+
+A stoma is a surgically created opening in the abdomen that allows waste (faeces, stools or poo) to leave the body. There are 2 main types of stoma (colostomy and ileostomy, see opposite page).
+
+Stomas may be temporary (usually formed from a loop of the bowel) or permanent (formed from the end of the bowel). If you may need a stoma because of surgery, you will usually see a stomal therapy nurse (see page 12) beforehand. They will mark on your abdomen where the stoma will be placed, taking into account skin folds, you being able to see the stoma, and any prominent bones or old scars.
+
+Temporary stoma – Needed only until the newly joined bowel heals.
+
+A loop of the bowel is brought out through a cut in the abdomen. The bowel is then cut and stitched to the skin to create an opening. This may also be done with the end of the bowel. You will have another operation, usually after 3–12 months, to close the stoma and rejoin the bowel. This is called a stoma reversal. Some people may have a stoma for longer, as you usually wait until all treatment is complete before closing the stoma.
+
+Permanent stoma – About 1 in 10 people with rectal cancer need a permanent stoma when the tumour involves the anal sphincter muscles or they aren’t strong enough to control the bowel (incontinence, see pages 56–57). Permanent stomas are less common with colon cancer.
+
+Appearance – Like the inside of the mouth, a stoma is soft, moist, and red or pink. It may be level with the surrounding skin, slightly raised or in a dip (recessed). The stoma doesn’t have any feeling, but the skin around it does. Stomas vary in size and can change shape after surgery.
+
+50 Understanding Bowel Cancer
+
+Stoma
+
+Having a stoma 51
+
+### How the stoma works
+
+When the bowel moves, wind and waste matter come out through the stoma. You can’t control when this happens, so a small bag on the outside of the body collects the waste matter. This is called a stoma bag or an appliance. Stoma bags have adhesive (glue) on the back so they stick securely to the skin and are leakproof and don’t smell. A filter lets out wind (but not the smell), to stop it inflating the bag. If your bag fills with air, talk to your stomal therapy nurse for ways to prevent this.
+
+Attaching the bag – When you’re in hospital, a stomal therapy nurse will teach you how to change your bag, help you choose a bag that suits your body shape and explain how to attach it securely.
+
+Emptying the bag – Stoma bags can be drainable (able to be emptied) or closed (thrown out after each bowel movement). After a colostomy, you may be able to wear a drainable or closed bag, depending on how thick or watery your waste matter is. After an ileostomy, you wear a drainable bag. How often you need to empty or change a stoma bag is affected by what you eat and drink.
+
+- Closed bags may need changing 1–3 times a day. They should be put in a rubbish bin, not flushed down the toilet.
+- Drainable bags have to be emptied in the toilet when they are about one-third full, and replaced every 1–3 days. A colostomy bag may need emptying 1–3 times a day. An ileostomy bag may need emptying
+
+4–6 times a day, depending on what you eat and drink, because the waste is no thicker than a paste (more watery).
+
+If you have a colostomy in your descending colon, you may be able to wash out the colon with water (colostomy irrigation) to remove waste, then wear a small cover rather than a stoma bag. Ask your doctor or stomal therapy nurse about this option.
+
+52 Understanding Bowel Cancer
+
+#### Living with a stoma
+
+Having a stoma, even temporarily, is a big change and takes some getting used to. Thousands of Australians have a stoma and lead a mostly normal life. The stoma may sometimes affect your lifestyle, but most issues can be managed, especially with some planning.
+
+How a stoma bag might look – You may worry about the bag being seen under clothing. Although the bag may seem obvious to you, most people won’t notice the bag unless you tell them. The stoma’s location may make some clothes less comfortable (e.g. tight waistbands, belts), but you will generally be able to keep wearing your normal clothes.
+
+You can also buy underwear that is designed for people with a stoma.
+
+How a stoma might affect your sex life – You may worry that the stoma will affect your ability to have sex. Getting used to looking after the stoma will help you feel more confident. Sex when you have a stoma may need a little planning, but can still be satisfying and fulfilling.
+
+However, it is dangerous to use the stoma hole in any sexual activity.
+
+- See our _Sex, Intimacy and Cancer_ booklet.
+
+Stoma prolapse – This is when some of the bowel comes out through the stoma opening. Sometimes the prolapse will slide back in by itself, but it may pop in and out. Your stomal therapy nurse or surgeon can tell you how to look after the prolapsed stoma and adapt the stoma bag.
+
+##### Eating with a stoma
+
+You may need to change what you eat at first to help the stoma settle.
+
+Eating a diet of bland, soft, low-fibre food for the first 4–6 weeks will help – the stoma hole is swollen at first so the opening is narrower.
+
+Foods that irritate the stoma vary from person to person.
+
+Having a stoma 53
+
+Sometimes food can build up and cause a blockage, stopping solids, fluids and gas moving through. You may need to change what and how you eat (see below) to help avoid this. A stoma blockage can be uncomfortable and cause a bloated feeling or nausea. If symptoms of a blockage last for 2 hours or you vomit, contact your nurse or hospital.
+
+How much waste comes out depends on how, what and when you eat.
+
+Over time, most people find they can eat a normal healthy diet. If you have concerns, talk to a stomal therapist or ask to see a dietitian. Bowel
+
+Cancer Australia has recipes for people recovering from surgery or [with a stoma. Call 1800 727 336 or visit bowelcanceraustralia.org.](http://bowelcanceraustralia.org)
+
+Ways to manage stoma blockages
+
+- Eat regular meals.
+- Avoid eating a large amount of food at one time.
+- Try to maintain a balanced diet so your body gets the nutrients it needs.
+- Drink 8–10 glasses of fluid a day to stay well hydrated.
+- Cut food into small, bitesized pieces, and chew slowly and thoroughly.
+- Limit high-fibre foods, raw vegetables, the skin on fruit and vegetable, nuts, seeds, kernels (e.g. corn, popcorn) and sausage skins. These foods are more likely to cause blockages.
+
+54 Understanding Bowel Cancer
+
+- If you have trouble eating certain foods, talk to a dietitian about alternatives.
+- You may find cooked foods easier to digest.
+- Try new foods one at a time, in a small amount, and note any reaction. If it doesn’t irritate the stoma, try a larger amount next time.
+- Massage your belly and the area around the stoma. Lie on your back, pull your knees up to your chest and roll from side to side. This may help move a blockage through the stoma.
+
+##### Support for people with a stoma
+
+See a stomal therapy nurse – If there is a chance you could need a stoma, the surgeon will usually refer you to a stomal therapy nurse before surgery. Stomal therapy nurses are registered nurses with special training in stoma care. They are available at most major hospitals, district nursing agencies and in private practice. A stomal therapy nurse can talk to you about the best position for the stoma, answer questions about your surgery and recovery, and give you information about adjusting to life with a stoma. To find a nurse, visit the Australian [Association of Stomal Therapy Nurses at stomaltherapy.au.](http://stomaltherapy.au)
+
+Join a stoma association – The stomal therapy nurse will ask if you’d like to join a stoma (or ostomy) association. For a small yearly membership fee, you will be able to get free stoma appliances and products. Some stoma associations provide assistance and information and coordinate support groups. Visit the Australian Council of Stoma [Associations at australianstoma.com.au for more information.](http://australianstoma.com.au)
+
+Register for the Stoma Appliance Scheme – The Australian
+
+Government’s Stoma Appliance Scheme (SAS) provides free stoma supplies to people with a temporary or permanent stoma. To apply for the SAS, you must hold a Medicare card and belong to a stoma [association. Visit health.gov.au and type “stoma appliance scheme”](http://health.gov.au) into the search box for more details.
+
+Find a support group – There are many support groups or forums on social media you can follow or join, including at Bowel Cancer
+
+Australia (see page 68).
+
+Having a stoma 55
+
+## Changes to your diet and bowel habits
+
+Treatment for bowel cancer can affect how your bowel and digestion work. Some people may also find that some foods cause discomfort.
+
+These changes can be difficult to adjust to. They usually improve over time, but issues may be ongoing and require specialised help.
+
+If you experience problems, talk to your GP, specialist doctor, specialist nurse or dietitian. To find an accredited practising dietitian, [visit dietitiansaustralia.org.au and use the “find a dietitian” search tool.](http://dietitiansaustralia.org.au)
+
+Surgery for rectal cancer can lead to symptoms such as faecal incontinence, constipation or frequent bowel movements. This is known as low anterior resection syndrome (LARS), and it can last for months or years. If you have ongoing bowel effects after rectal surgery, talk to your surgeon. Ways to improve bowel function may include changing what you eat, taking medicines and having physiotherapy.
+
+### Incontinence
+
+Incontinence is when you can’t control your bowel or bladder.
+
+Faecal incontinence – After surgery or radiation therapy, the movement of waste through the large bowel can become faster. You may feel that you can’t wait when you need to go to the toilet (urgency), you need to go more often, or you have less control over bowel movements. Bowel surgery or radiation therapy may weaken the anus, making it difficult to hold on when you feel the need to empty your bowels, particularly if you have loose bowel movements (diarrhoea).
+
+56 Understanding Bowel Cancer
+
+Urinary incontinence – This is when urine (wee or pee) leaks from your bladder without you being able to control it. Bladder control may change after surgery or radiation therapy. For example, radiation therapy can irritate the lining of your bladder, because the bladder is located near the large bowel. Some people find they need to urinate more often, need to go in a hurry or don’t fully empty the bladder.
+
+While you may feel embarrassed if you have bowel or bladder changes, there are ways to manage the symptoms. Incontinence usually improves in a few months, but sometimes takes years. Talk to your treatment team about whether any bowel or bladder changes are likely to be permanent.
+
+Ways to manage incontinence
+
+- Talk to your surgeon or GP about available treatments. They may refer you to a continence nurse or physiotherapist, who can suggest exercises to strengthen your pelvic floor muscles.
+- Call the National Continence Helpline on 1800 33 00 66 to talk to a continence nurse about continence aids, if needed, [or visit continence.org.au.](http://continence.org.au)
+- Find out the location of toilets near where you are. [Visit toiletmap.gov.au or](http://toiletmap.gov.au) download the National
+
+Public Toilet Map app to your smartphone.
+
+- The Australian Government’s _Improving Bowel Function_ _After Bowel Surgery_ booklet has helpful tips about managing bowel problems. Call 1800 33 00 66 to get a [copy, or visit continence.org.](http://continence.org.au/get-help/resources) [au/get-help/resources.](http://continence.org.au/get-help/resources)
+- Bowel Cancer Australia has Bowel Care Nurses and a nutritionist specially trained to help manage and improve bowel dysfunction from LARS or bowel cancer. Call 1800 727 336 or visit [bowelcanceraustralia.org.](http://bowelcanceraustralia.org)
+
+Changes to your diet and bowel habits 57
+
+Radiation proctitis
+
+Radiation to the pelvic area can affect the lining of the rectum, causing inflammation and swelling (known as radiation proctitis). This can lead to a range of side effects including diarrhoea and bleeding from the rectum, the need to empty the bowels urgently, and loss of control over the bowels (faecal incontinence, see pages 56–57).
+
+#### Diarrhoea
+
+These side effects may appear shortly after radiation therapy for rectal cancer, but are generally not an ongoing problem because the rectum is then removed during surgery.
+
+Your treatment team will talk to you about the risk of developing radiation proctitis and ways to cope with bowel changes.
+
+Diarrhoea is the frequent passing of loose, watery faeces (stools or poo). It can also cause abdominal cramping, wind and pain. Different types of treatment can cause diarrhoea:
+
+Surgery – If you have had part of your bowel removed, your bowel movements may be looser than you were used to. This is because the bowel absorbs water to form faeces. With a shorter bowel, the faeces don’t form as solidly as before. This may be ongoing, but there are many ways of managing diarrhoea.
+
+Radiation therapy – Diarrhoea is a common side effect of radiation therapy. It can take some weeks to settle down after treatment has finished. For a small number of people, diarrhoea is ongoing.
+
+Drug therapies – Chemotherapy, immunotherapy and targeted therapy drugs can cause diarrhoea and nausea. These side effects will go away after treatment and you can gradually return to a normal diet.
+
+58 Understanding Bowel Cancer
+
+How to manage diarrhoea
+
+- Eat small frequent meals instead of 3 big ones. Try eating every 2 hours.
+- Low-fibre foods may be easier to digest. Examples include bananas, white rice, white pasta, white bread, potatoes, white fish and steamed chicken without the skin.
+- Limit foods that increase bowel activity, e.g. caffeine; alcohol; spicy, fatty or oily foods; high-sugar fluids such as juice and soft/fizzy drink; artificial sweeteners.
+- Raw fruit and vegetables, wholegrain breads and cereals, or legumes (e.g. lentils, chickpeas) may make diarrhoea worse. If they do, you may want to cut back on these foods for a few days.
+- Lactose in dairy foods may make diarrhoea worse. Try low-lactose or soy-based products instead.
+- Talk to your treatment team about ways to control diarrhoea, such as using over-the-counter medicines and changing what you eat.
+- Watch for warning signs of dehydration. These include a dry mouth, dark yellow urine, dizziness and confusion. If dehydration is left untreated, it can be dangerous.
+- Drink plenty of water (about 6 glasses a day) to avoid becoming dehydrated. Consider having an oral rehydration solution, such as Hydralyte or Gastrolyte.
+- If your anus becomes sore, clean the area with warm water and a soft cloth or soft/water wipes or anal cleansing wipes (e.g. Rectogesic). Ask your treatment team to recommend a cream. Taking a soothing bath may also help.
+- Having diarrhoea can make you feel tired. Try to rest as much as possible and ask family or friends for help.
+- Ask for a referral to a dietitian or physiotherapist who looks after bowel issues. If diarrhoea continues for a few days, see a doctor.
+
+Changes to your diet and bowel habits 59
+
+##### Wind (flatulence)
+
+Many people who have treatment for bowel cancer find that it gives them wind (gas or farting). This especially happens after you have had surgery. However, it is usually temporary and improves over time.
+
+Working out what foods cause wind and what you can eat without side effects may help – although foods can still affect people differently.
+
+Tips to manage wind
+
+- Try chewing charcoal tablets, eating natural yoghurt and drinking peppermint tea.
+- Cut your food into small, bite-sized pieces.
+- Chew your food slowly and thoroughly.
+- When you have a drink, take small sips and don’t use a straw.
+- Talk to your doctor about what types of light exercise you can do to relieve bloating and wind.
+- Foods such as eggs, legumes (e.g. lentils and chickpeas), fizzy drinks, and sugar-free foods may increase gas. If they do, you may find it helpful to limit these foods.
+- Try keeping a food and symptom diary (see opposite page) to help identify foods that cause wind.
+- Ask your doctor if there are any medicines that may be helpful to you.
+
+_“Three months after the ileostomy, I went in for_ _the reversal surgery. You have to stay in hospital_ _until you pass wind, which took 6 days. Passing_ wind will never lose its amusement.” RICHARD
+
+60 Understanding Bowel Cancer
+
+_“When I first got put back together after the_ _ileostomy, processed food really messed with_ _me. The more processed it is, the slower my body_ _deals with it. Some of the things I loved – pizza,_ _processed meat, bread, red meat and potato – play_ _with me. The greener the better – salads, fruit, fish,_ chicken really make me feel sensational.” RICHARD
+
+##### Eating after treatment
+
+Immediately after treatment – particularly surgery – you may be on a modified diet. What you are able to eat might depend on the type of surgery you’ve had, how much of your bowel was removed and whether you have a stoma.
+
+During and after treatment, you may find that certain foods upset your bowel and cause diarrhoea or wind (see pages 58–60). Your health care team may suggest foods to avoid, but as foods can affect people differently, you will need to experiment to work out which foods cause problems for you. It is better to limit – not exclude – these foods in your diet, as you may find that what you can handle improves over time.
+
+Keeping a diary of what you eat can help. Make a note of the foods that cause constipation, diarrhoea or wind. Your ability to handle different foods usually gets better with time but can take many months. When returning to your usual diet, introduce one food at a time. If something causes a problem, try it again in a few weeks to see if your response has improved. Share this information with the health care team as it can help them figure out how to manage any issues.
+
+- See our _Nutrition for People Living with Cancer_ booklet _._
+
+Changes to your diet and bowel habits 61
+
+Key points about having a stoma, and changes to your diet and bowel habits
+
+Having a stoma • After bowel surgery, some people will need to have a stoma, which is a surgically created opening in the abdomen.
+
+- Waste passes out of the body through this opening and is collected in a bag.
+- A stoma may be temporary or permanent.
+- Stomal therapy nurses and stoma associations can provide support and information to help you get used to life with a stoma.
+
+Common bowel and bladder changes
+
+Managing changes to your diet and digestion
+
+Most people have changes in the way their bowel works after treatment for bowel cancer. You may have trouble controlling your bowel (faecal incontinence) or bladder (urinary incontinence), or you may have diarrhoea or extra wind.
+
+- There are many ways to manage incontinence and changes to how your bowel and bladder work. For support and information, talk to your health care team.
+- Drinking plenty of fluid throughout the day will help avoid dehydration and reduce constipation and blockages.
+- You may need to change what you eat, especially if the diarrhoea or wind is ongoing, or if you have a blockage in the stoma.
+- A dietitian can give you advice on removing certain foods from your diet, and tell you if and when to reintroduce them.
+
+62 Understanding Bowel Cancer
+
+## Looking after yourself
+
+Cancer can cause physical and emotional strain, so it’s important to look after your wellbeing. Cancer Council has free booklets and programs to help you during and after treatment. Call 13 11 20 to find out more, or visit your local Cancer Council website (see back cover). You could also ask your GP or doctor about talking to a counsellor or psychologist for some additional mental health support during and after treatment.
+
+Eating well – Healthy food can help you cope with treatment and side effects. A dietitian can explain how to manage any special dietary needs or eating problems and choose the best foods for your situation.
+
+- See our _Nutrition for People Living with Cancer_ booklet.
+
+Staying active – Physical activity can reduce tiredness, improve circulation and lift mood. The right exercise for you depends on what you are used to, how you feel, and your doctor’s advice.
+
+- See our _Exercise for People Living with Cancer_ booklet.
+
+Complementary therapies – These are used alongside conventional medical treatments. Massage, relaxation and acupuncture can increase your sense of control, decrease stress and anxiety, and improve your mood. Let your doctor know about any therapies you are using or thinking about trying, as some may not be safe or evidence-based.
+
+- See our _Understanding Complementary Therapies_ booklet.
+
+Alternative therapies are used instead of conventional medical treatments. They are unlikely to be scientifically tested, may stop successful treatment or be harmful. Cancer Council does not recommend alternative therapies as a cancer treatment.
+
+Looking after yourself 63
+
+Work and money – Cancer can change your financial situation, especially if you have extra medical expenses or need to stop working.
+
+Getting professional financial advice and talking to your employer can give you peace of mind. You can also check whether any financial assistance is available to you by asking a social worker at your hospital or treatment centre or calling Cancer Council 13 11 20.
+
+- See our _Cancer and Your Finances_ and _Cancer, Work and You_ booklets.
+
+Relationships – Having cancer can affect your relationships with family, friends and colleagues in different ways. Cancer is stressful, tiring and upsetting, and this may strain relationships. The experience of cancer may also result in positive changes to your values, priorities or outlook on life. Give yourself time to adjust to what’s happening, and do the same for those around you. It may help to discuss your feelings with each other.
+
+- See our _Emotions and Cancer_ booklet.
+
+Sex life – Cancer can affect your sex life in physical and emotional ways. The impact of these changes depends on many factors, such as treatment and side effects, your self-confidence, and if you have a partner. Although sexual intercourse may not always be possible, closeness and sharing can still be part of your relationship.
+
+- See our _Sex, Intimacy and Cancer_ booklet.
+
+Contraception and fertility – If you can have sex, you may need to use certain types of contraception to protect your partner or avoid pregnancy for a time. Your doctor will explain what precautions to take. They will also tell you if treatment will affect your fertility permanently or temporarily. If having children is important to you, discuss the options with your doctor before starting treatment.
+
+- See our _Fertility and Cancer_ booklet.
+
+64 Understanding Bowel Cancer
+
+## Life after treatment
+
+For most people, the cancer experience doesn’t end on the last day of treatment. Life after cancer treatment can present its own challenges.
+
+You may have mixed feelings when treatment ends, and worry that every ache and pain means the cancer is coming back.
+
+Some people say that they feel pressure to return to “normal life”.
+
+It is important to allow yourself time to adjust to the physical and emotional changes, and establish a new daily routine at your own pace.
+
+Your family and friends may also need time to adjust.
+
+Cancer Council 13 11 20 can help you connect with other people who have had bowel cancer, and provide you with information about the emotional and practical aspects of living well after cancer.
+
+- See our _Living Well After Cancer_ booklet.
+
+Dealing with feelings of sadness
+
+If you have continued feelings of sadness, have trouble getting up in the morning or have lost motivation to do things that previously gave you pleasure, you may be experiencing depression. This is quite common among people who have had cancer.
+
+Talk to your GP, because counselling or medication – even for a short time – may help. Some people can get a Medicare rebate for sessions with a psychologist. Cancer Council may also run a counselling program in your area.
+
+For information about coping with depression and anxiety, call
+Beyond Blue on 1300 22 4636 or [visit beyondblue.org.au. For 24-hour](http://beyondblue.org.au) crisis support, call Lifeline 13 11 14 [or visit lifeline.org.au.](http://lifeline.org.au)
+
+Life after treatment 65
+
+### Follow-up appointments
+
+After treatment ends, you will have regular appointments to monitor your health, manage any long-term side effects and check that the cancer hasn’t come back or spread. You will usually have a physical examination and you may have blood tests (including checking CEA levels, see page 20), scans and colonoscopies. You will usually have a follow-up colonoscopy a year after the colonoscopy that showed bowel cancer. However, this may be sooner if only part of the bowel was seen during the last colonoscopy.
+
+Check-ups may become less frequent if you have no further problems.
+
+Between follow-up appointments, let your doctor know immediately of any symptoms or health problems. Don’t wait for your next appointment.
+
+When a follow-up appointment or test is approaching, many people find that they think more about the cancer and may feel anxious.
+
+Talk to your treatment team or call Cancer Council 13 11 20 if you are finding it hard to manage this anxiety.
+
+#### What if bowel cancer returns?
+
+For some people, bowel cancer does come back after treatment, called a recurrence. Regular check-ups are important so if cancer comes back, it can be found early. If the recurrence is only in the bowel and nearby lymph nodes, you may be able to have surgery to remove the cancer.
+
+If bowel cancer has spread beyond the bowel (advanced or metastatic bowel cancer), you may be offered treatment, such as surgery, chemotherapy, targeted therapy, immunotherapy or radiation therapy (see pages 45–48). These treatments may remove the cancer, help control its growth and relieve symptoms. If your bowel becomes blocked, you will need urgent treatment (see pages 34–35).
+
+66 Understanding Bowel Cancer
+
+## Caring for someone with cancer
+
+You may be reading this booklet because you are caring for someone with cancer. What this means for you will vary depending on the situation. Being a carer can bring a sense of satisfaction, but it can also be challenging and stressful.
+
+It is important to look after your own physical and emotional wellbeing. Give yourself some time out and share your concerns with somebody neutral such as a counsellor or your doctor, or try calling
+
+Cancer Council 13 11 20. There is a wide range of support available to help you with the practical and emotional aspects of your caring role.
+
+Support services – Support services such as Meals on Wheels, home help or visiting nurses can help you in your caring role. You can find local services, as well as information and resources, through the Carer [Gateway. Call 1800 422 737 or visit carergateway.gov.au.](http://carergateway.gov.au)
+
+Support groups and programs – Many cancer support groups and cancer education programs are open to carers as well as to people with cancer. Support groups and programs offer the chance to share experiences and ways of coping.
+
+Carers Australia – Carers Australia provides information and [advocacy for carers. Visit carersaustralia.com.au.](http://carersaustralia.com.au)
+
+Cancer Council – You can call Cancer Council 13 11 20 or visit your local Cancer Council website to find out more about carers’ services.
+
+- See our _Caring for Someone with Cancer_ booklet.
+
+Caring for someone with cancer 67
+
+## Seeking support
+
+A cancer diagnosis can affect every aspect of your life. You will probably experience a range of emotions – fear, sadness, anxiety, anger and frustration are all common reactions. Cancer also often creates practical and financial issues.
+
+There are many sources of support and information to help you, your family and carers navigate all stages of the cancer experience, including:
+
+- information about cancer and its treatment
+- access to benefits and programs to ease the financial impact of cancer treatment
+- home care services, such as Meals on Wheels, visiting nurses and home help
+- aids and appliances
+- support groups and programs
+- counselling services.
+
+The availability of services may vary depending on where you live, and some services will be free but others might have a cost.
+
+To find good sources of support and information, you can talk to the social worker, nurse or stomal therapy nurse at your hospital or treatment centre, or get in touch with Cancer Council 13 11 20.
+
+Bowel Cancer Australia can offer help from Bowel Care Nurses, a nutritionist and psychosocial support. Call 1800 727 336 or [visit bowelcanceraustralia.org to also access detailed](http://bowelcanceraustralia.org) information about all aspects of bowel cancer, and low-fibre recipes. Connect with people who have bowel cancer in peer-to-peer support or a nurse-moderated online group.
+
+68 Understanding Bowel Cancer
+
+Support from Cancer Council
+
+Cancer Council offers a range of services to support people affected by cancer, their families and friends. Services may vary by location.
+
+Seeking support 69
+
+Useful websites
+
+You can find many useful resources online, but not all websites are reliable.
+These websites are good sources of support and information.
+
+Australian
+
+Cancer Council Australia [cancer.org.au](http://cancer.org.au)
+
+Cancer Council Online Community [cancercouncil.com.au/OC](http://cancercouncil.com.au/OC)
+
+Cancer Council podcasts [cancercouncil.com.au/podcasts](http://cancercouncil.com.au/podcasts)
+
+Guides to Best Cancer Care [cancer.org.au/cancercareguides](http://cancer.org.au/cancercareguides)
+
+Australian Association of Stomal [stomaltherapy.au](http://stomaltherapy.au)
+Therapy Nurses
+
+Australian Council of Stoma [australianstoma.com.au](http://australianstoma.com.au)
+Associations (ACSA)
+
+Bowel Cancer Australia [bowelcanceraustralia.org](http://bowelcanceraustralia.org)
+
+Cancer Australia [canceraustralia.gov.au](http://canceraustralia.gov.au)
+
+Cancer Screening [cancerscreening.gov.au](http://cancerscreening.gov.au)
+
+Colorectal Surgical Society of Australia [cssanz.org](http://cssanz.org) and New Zealand
+
+Continence Health Australia [continence.org.au](http://continence.org.au)
+
+Dietitians Australia [dietitiansaustralia.org.au](http://dietitiansaustralia.org.au) eviQ (cancer treatments information) [eviq.org.au](http://eviq.org.au)
+
+Healthdirect Australia [healthdirect.gov.au](http://healthdirect.gov.au)
+
+Our Mob and Cancer [ourmobandcancer.gov.au](http://ourmobandcancer.gov.au)
+
+Services Australia [servicesaustralia.gov.au](http://servicesaustralia.gov.au)
+
+International
+
+American Society of Colon and [fascrs.org](http://fascrs.org)
+Rectal Surgeons
+
+Bowel Cancer UK [bowelcanceruk.org.uk](http://bowelcanceruk.org.uk)
+
+Fight Colorectal Cancer (US) [fightcolorectalcancer.org](http://fightcolorectalcancer.org)
+
+The Association of Coloproctology [acpgbi.org.uk](http://acpgbi.org.uk) of Great Britain and Ireland
+
+70 Understanding Bowel Cancer
+
+### Question checklist
+
+Asking your doctor questions will help you make an informed choice.
+You may want to include some of the questions below in your own list.
+
+Diagnosis
+
+- What type of bowel cancer do I have?
+- Has the cancer spread? If so, where has it spread? How fast is it growing?
+- Are the latest tests and treatments for this cancer available in this hospital?
+- Will a multidisciplinary team be involved in my care?
+- Are there clinical guidelines for this type of cancer?
+
+Treatment
+
+- What treatment do you recommend? What is the aim of the treatment?
+- Are there other treatment choices for me? If not, why not?
+- Will I need a stoma? If so, will it be temporary or permanent?
+- Will you refer me to a stomal therapy nurse?
+- If I don’t have the treatment, what should I expect?
+- How long do I have to make a decision?
+- I’m thinking of getting a second opinion. Can you recommend anyone?
+- How long will treatment take? Will I have to stay in hospital?
+- Are there any out-of-pocket expenses not covered by Medicare or my private health cover? Can the cost be reduced if I can’t afford it?
+- How will we know if the treatment is working?
+- Are there any clinical trials or research studies I could join?
+
+Side effects
+
+- What are the risks and possible side effects of each treatment?
+- Will I have a lot of pain? What will be done about this?
+- Can I work, drive and do my normal activities while having treatment?
+- Will the treatment affect my sex life and fertility?
+- Should I change my diet or physical activity during or after treatment?
+
+After treatment
+
+- How often will I need check-ups after treatment?
+- If the cancer returns, how will I know? What treatments could I have?
+
+Question checklist 71
+
+#### Glossary abdomen
+The part of the body between the chest and hips, which contains the stomach, spleen, pancreas, liver, gall bladder, bowel, bladder and kidneys. Also known as the belly.
+abdominoperineal resection (APR)
+An operation for rectal cancer. This involves removing the sigmoid colon, rectum and anus, and creating a permanent colostomy.
+advanced cancer
+Cancer that is unlikely to be cured. In most cases, the cancer has spread to other parts of the body (secondary or metastatic cancer).
+Treatment can often still control the cancer and manage symptoms.
+anaemia
+A reduction in the number or quality of red blood cells in the body.
+anastomosis
+The joining together of 2 tubes, such as joining back together 2 cut ends of the bowel.
+anterior resection
+Operation to remove cancer in the rectum.
+anus
+The opening at the end of the bowel where solid waste matter (faeces or poo) normally leaves the body.
+appliance
+See stoma bag/appliance.
+ascending colon
+The right side of the bowel.
+biopsy
+The removal of a sample of cells or tissue from the body for examination under a microscope to help diagnose a disease.
+bowel
+Often refers to the large bowel, or colon and rectum. See also large bowel; small bowel.
+
+72 Understanding Bowel Cancer bowel cancer
+Cancer of the large bowel; also known as colorectal cancer, colon cancer or rectal cancer.
+bowel movement
+Defecation. To pass waste matter (poo) from the bowels.
+bowel obstruction
+When the bowel is blocked and waste matter cannot pass through easily.
+caecum
+The pouch at the start of the large bowel that receives waste from the small bowel.
+carcinoembryonic antigen (CEA)
+A protein found in the blood of some people with bowel cancer.
+catheter
+A hollow, flexible tube through which fluids can be passed into the body or drained from it.
+central venous access device (CVAD)
+A thin plastic tube inserted into a vein so chemotherapy or fluid can be given, and blood can be taken. Types of CVADs include port-a-caths and PICC lines.
+chemoradiation (chemoradiotherapy)
+Treatment that combines chemotherapy with radiation therapy.
+chemotherapy
+A cancer treatment that uses drugs to kill cancer cells or slow their growth. May be given alone or with other treatments.
+colectomy
+An operation in which cancerous areas of the colon are cut out and the healthy parts are sewn back together. Colectomies are named for the part removed. They include right and left hemicolectomies; sigmoid, subtotal and total colectomies; and proctocolectomy.
+colon
+The main working area of the large bowel, where water is removed from waste. Its
+4 parts are the ascending colon, transverse colon, descending colon and sigmoid colon.
+colon cancer
+Cancer that develops in the main part of the large bowel, the colon.
+colonic J-pouch
+An internal pouch surgically created using the lining of the large bowel to increase the capacity of the “new” rectum.
+colonoscopy
+An examination of the large bowel with a camera on a flexible tube (colonoscope), which is passed through the anus.
+colorectal cancer
+See bowel cancer.
+colostomy
+A surgically created opening (stoma) in the abdomen to the outside of the body. It is made from the colon (part of the large bowel).
+Also, the operation that creates this stoma.
+CT scan
+A computerised tomography scan. This scan uses x-rays to create cross-sectional pictures of the body.
+descending colon
+The left side of the colon.
+digital rectal examination (DRE)
+An examination in which a doctor puts a gloved finger into the anus to feel for abnormalities of the anus, rectum or prostate.
+enema
+A liquid solution put into the rectum to wash out the lower bowel.
+faeces
+Waste matter that normally leaves the body through the anus. Also known as stools or poo.
+familial adenomatous polyposis (FAP)
+A condition that causes hundreds of polyps to form in the large bowel. The polyps will usually become cancerous if untreated.
+flexible sigmoidoscopy
+A procedure in which a doctor inserts a colonoscope or sigmoidoscope into the anus to examine the rectum and lower colon.
+gastrointestinal (GI) tract
+The passage from the mouth to the anus that digests food and gets rid of waste. The lower
+GI tract includes the colon, rectum and anus.
+genes
+The microscopic units that determine how the body’s cells grow and behave. Genes are found in every cell of the body and are inherited from both parents.
+genetic testing
+Tests to detect faulty genes that may increase the risk of developing certain cancers.
+hyperthermic intraperitoneal chemotherapy (HIPEC)
+When chemotherapy drugs are heated and put directly into the abdomen for
+60–90 minutes during a peritonectomy.
+ileostomy
+A surgically created opening (stoma) in the abdomen to the outside of the body. It is made from the ileum (part of the small bowel). Also, the operation that creates this stoma.
+ileum
+The lowest section of the small bowel; transfers waste to the large bowel.
+immunochemical faecal occult blood test (iFOBT)
+Checks faeces for tiny amounts of blood.
+immunotherapy
+Drugs that use the body’s own immune system to fight cancer.
+
+Glossary 73 incontinence
+An accidental or involuntary wee or poo.
+inflammatory bowel disease
+A benign condition that causes inflammation of the bowel.
+keyhole surgery
+Surgery done through small cuts in the body using a thin viewing instrument with a light and camera. Also called laparoscopic, minimally invasive or robotic surgery.
+large bowel
+Part of the lower digestive system. The large bowel stores waste until it leaves the body as faeces. Its main sections are the colon and rectum. Also called the large intestine.
+local excision
+Surgery used for some small rectal cancers.
+The surgeon removes the cancer through the anus, instead of from the abdomen.
+lymph nodes
+Small structures, found in groups in the body, that collect and destroy bacteria and viruses.
+Also called lymph glands.
+malignant
+Cancerous. Malignant cells can spread (metastasise) and eventually cause death if they cannot be treated.
+metastasis (plural: metastases)
+A cancer that has spread from a primary cancer in another part of the body. Also called secondary or advanced cancer.
+MRI scan
+A magnetic resonance imaging scan uses magnetic fields and radio waves to take detailed cross-sectional pictures of the body.
+open surgery
+A surgical method (operation) using one large cut in the body to view and reach the organs.
+
+74 Understanding Bowel Cancer pelvic exenteration
+Surgical removal of all organs from the pelvis.
+pelvis
+The lower part of the trunk of the body:
+roughly, the area that extends from hip to hip and waist to groin.
+peritonectomy
+An operation to remove part of the lining of the abdomen (peritoneum).
+PET–CT scan
+Positron emission tomography scan combined with CT scan. In a PET scan, a person is injected with a small amount of radioactive solution to find cancerous areas.
+polyp
+A growth from a surface in the body, such as the large bowel. Most polyps are benign, but they can become malignant.
+proctocolectomy
+An operation to remove the entire colon and rectum.
+radiation therapy
+The use of targeted radiation to kill or damage cancer cells so they cannot grow, multiply or spread. The radiation is usually in the form of x-ray beams. Also called radiotherapy.
+rectal cancer
+Cancer that develops in the rectum, the last part of the large bowel.
+rectum
+The last 15–20 cm of the large bowel, just above the anus, which stores faeces (poo) until you have a bowel movement.
+selective internal radiation therapy (SIRT)
+A type of internal radiation therapy used to treat liver cancers.
+sigmoid colon
+The part of the colon below the descending colon and above the rectum and anus.
+small bowel (small intestine)
+The middle of the gastrointestinal tract, takes food from the stomach and absorbs nutrients.
+Includes the duodenum, jejunum and ileum.
+small bowel cancer
+A rare cancer that occurs in the small bowel.
+May also be called small intestine cancer.
+stent
+A metal or plastic tube put into a blocked organ so that substances can pass through.
+stereotactic body radiation therapy (SBRT)
+A type of radiation therapy that delivers high doses of precise radiation.
+stoma (ostomy)
+A surgically created opening to allow urine (pee or wee) or faeces (poo) to leave the body.
+stoma bag/appliance
+A bag or pouch used to cover a stoma and collect urine or faeces.
+surgery
+A procedure performed by a surgeon to remove or repair a part of the body. Also known as an operation or surgical resection.
+systemic treatment
+Cancer drugs that spread throughout the whole body. Includes chemotherapy, targeted therapy and immunotherapy.
+targeted therapy
+Drugs that target specific features of cancer cells to stop them growing and spreading.
+
+References thermal ablation
+Treatment that uses extreme temperatures (thermal) to destroy cancer cells.
+transanal endoscopic microsurgery (TEMS)
+/ transanal excision (TAE) / transanal minimally invasive surgery (TAMIS)
+Surgical options that let the surgeon remove a rectal cancer through the anus using keyhole or laparoscopic equipment.
+transverse colon
+The part of the colon between the ascending and descending colon.
+tumour marker
+Chemical produced by cancer cells and released into the blood. It may suggest the presence of a tumour. Markers can be found by blood tests or by testing tumour samples.
+virtual colonoscopy
+A medical imaging procedure that uses a
+CT scanner to create and display images of the colon and rectum.
+waste matter
+Material left after food is digested. Called faeces, stools or poo.
+
+Can’t find a word here?
+
+For more cancer-related words, visit:
+
+- [cancercouncil.com.au/words](http://cancercouncil.com.au/words)
+- [cancervic.org.au/glossary.](http://cancervic.org.au/glossary)
+1. Cancer Council Australia Colorectal Cancer Guidelines Working Party, _Clinical practice_
+
+_guidelines for the prevention, early detection and management of colorectal cancer_, Cancer [Council Australia, Sydney, 2023, viewed 30 October 2024, available from cancer.org.au/](http://cancer.org.au/clinical-guidelines/bowel-cancer/colorectal-cancer) [clinical-guidelines/bowel-cancer/colorectal-cancer](http://cancer.org.au/clinical-guidelines/bowel-cancer/colorectal-cancer)
+2. A Cervantes et al. on behalf of the ESMO Guidelines Committee, “Metastatic colorectal cancer: ESMO Clinical Practice Guidelines for diagnosis, treatment and follow-up”, _Annals of_ _Oncology_, vol. 34, iss. 1, pp. 10–32, January 2023.
+3. Australian Institute of Health and Welfare (AIHW), _Cancer Data in Australia 2024_, viewed [9 December 2024, available from aihw.gov.au/reports/cancer/cancer-data-in-Australia.](http://aihw.gov.au/reports/cancer/cancer-data-in-Australia)
+
+Glossary 75
+
+### How you can help
+
+At Cancer Council, we’re dedicated to improving cancer control. As well as funding millions of dollars in cancer research every year, we advocate for the highest quality care for cancer patients and their families. We create cancer-smart communities by educating people about cancer, its prevention and early detection. We offer a range of practical and support services for people and families affected by cancer. All these programs would not be possible without community support, great and small.
+
+Join a Cancer Council event: Join one of our community fundraising events such as Daffodil Day, Australia’s Biggest Morning Tea, Relay
+For Life, Girls’ Night In and other Pink events, or hold your own fundraiser or become a volunteer.
+
+Make a donation: Any gift, large or small, makes a meaningful contribution to our work in supporting people with cancer and their families now and in the future.
+
+Buy Cancer Council sun protection products: Every purchase helps you prevent cancer and contribute financially to our goals.
+
+Help us speak out for a cancer-smart community: We are a leading advocate for cancer prevention and improved patient services. You can help us speak out on important cancer issues and help us improve cancer awareness by living and promoting a cancer-smart lifestyle.
+
+Join a research study: Cancer Council funds and carries out research investigating the causes, management, outcomes and impacts of different cancers. You may be able to join a study.
+
+To find out more about how you, your family and friends can help, please call your local Cancer Council.
+
+76 Understanding Bowel Cancer
+
+### Cancer Council 13 11 20
+
+Being diagnosed with cancer can be overwhelming. At
+Cancer Council, we understand it isn’t just about the treatment or prognosis. Having cancer affects the way you live, work and think. It can also affect our most important relationships.
+
+When disruption and change happen in our lives, talking to someone who understands can make a big difference.
+Cancer Council has been providing information and support to people affected by cancer for over 50 years.
+
+Calling 13 11 20 gives you access to trustworthy information that is relevant to you. Our experienced health professionals are available to answer your questions and link you to services in your area, such as transport, accommodation and home help. We can also help with other matters, such as legal and financial advice.
+
+If you are finding it hard to navigate through the health care system, or just need someone to listen to your immediate concerns, call 13 11 20 and find out how we can support you, your family and friends.
+
+If you need information in a language other than English, an interpreting service is available. Call 131 450.
+
+If you are deaf, or have a hearing or speech impairment, you can contact us through the National Relay Service.
+[accesshub.gov.au](http://accesshub.gov.au)
+
+_Cancer Council services and programs vary in each area._
+_13 11 20 is charged at a local call rate throughout Australia (except from mobiles)._
+
+For information & support on cancer-related issues, call Cancer Council 13 11 20
+
+Visit your local Cancer Council website
+
+Cancer Council ACT [actcancer.org](https://www.actcancer.org/)
+
+Cancer Council NSW [cancercouncil.com.au](https://www.cancercouncil.com.au/)
+
+Cancer Council NT [cancer.org.au/nt](https://www.cancer.org.au/nt)
+
+Cancer Council Queensland [cancerqld.org.au](https://cancerqld.org.au/index.php)
+
+Cancer Council SA [cancersa.org.au](https://www.cancersa.org.au/)
+
+Cancer Council Tasmania [cancer.org.au/tas](https://www.cancer.org.au/tas)
+
+Cancer Council Victoria [cancervic.org.au](https://cancervic.org.au/)
+
+Cancer Council WA [cancerwa.asn.au](https://cancerwa.asn.au/)
+
+Cancer Council Australia [cancer.org.au](https://www.cancer.org.au/)
+
+_This booklet is funded through the generosity of the people of Australia._
+_To support Cancer Council, call your local Cancer Council or visit your local website._

@@ -1,0 +1,137 @@
+{
+  "doc_id": "GMC_CPI_2024",
+  "source_file": "GM_Cancer_Colorectal_Patient_Info_2024.md",
+  "chunk_count": 13,
+  "chunks": [
+    {
+      "chunk_id": "GMC_CPI_2024_c001",
+      "doc_id": "GMC_CPI_2024",
+      "text": "July 2024\nReview: July 2026\n\n# Your personalised stratified follow up (PSFU) information for Colorectal Cancer\n\n## Patient information leaflet\n\n",
+      "token_count": 35,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c002",
+      "doc_id": "GMC_CPI_2024",
+      "text": "Introduction\n\nThis leaflet tells you what Personalised Stratified Follow Up (PSFU) is.\n\nIt also tells you what to do if you have any concerns about your health.\n\nIt is for patients who have colorectal cancer (also called bowel cancer).\n",
+      "token_count": 56,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c003",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWhat is PSFU and why has it been introduced?\n\nPSFU is one way patients can be followed up after treatment.\n\nIt has been shown to be better for patients in lots of ways.\n\nPSFU means that you only have to come to hospital for investigations needed for your follow up.\n\nPSFU means that you can call us when you have a problem or worry rather than waiting until your routine clinic appointment. Your colorectal team can arrange for you to be seen quickly at the hospital if needed.\nYou will get support and advice from the right people, when you need it, allowing you peace of mind.\n",
+      "token_count": 131,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c004",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWill I still have scans and blood tests?\n\nYes.\n\nYour follow-up will be personalised to you.\n\nYour treating team will give you a schedule of tests that you will need to have. You will receive the same tests that you would have if you were followed up in a face-to-face clinic.\n\nThese may be different tests to another patient with colorectal cancer. If you have any concerns about the tests you are having, please contact your specialist team to discuss them.\n",
+      "token_count": 106,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c005",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWhat is a schedule of tests?\n\nA schedule is a list of scans, investigations and blood tests that you will have over the course of your follow-up.\nwww.gmcancer.org.uk\n\nThere are a number of different schedules for patients with colorectal cancer and your schedule will be detailed in your treatment summary. Your clinical nurse specialist will also go through it with you.\n\nSome of the tests you may have are:\n\n- CEA blood test (carcinoembryonic antigen blood test) – this is used to check the level of CEA in your blood. CEA is a protein (molecule) that is produced by some bowel cancers and other types of cancer. This test cannot tell you if your cancer has come back but it would mean that you may need some additional tests.\n- MRI Scan (magnetic resonance imaging). A non-invasive scan that provides detailed images of the inside of your body\n- CT Scan (computed tomography) – a scan of your chest, tummy (abdomen) and pelvis\n- Flexible Sigmoidoscopy - a short thin flexible tube attached to a small camera that is used to check inside your bottom and lower end of your large bowel.\n- Colonoscopy - a long thin flexible tube with a small camera inside that is used to check inside your large bowel.\n",
+      "token_count": 280,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c006",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWill I have to remember when all my investigations are?\n\nNo. Investigations such as blood tests and scans will be booked closer to the time that they are needed.\n\nYou will be sent details of where and when to have these tests.\n",
+      "token_count": 53,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c007",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWhat information will I be given?\n\nIn addition to this leaflet, you will have an end of treatment review with a member of your colorectal team.\n\nThey will discuss with you what will happen next regarding your follow-up.\n\nA treatment summary will then be sent to you and your GP and this will provide information regarding\n\n- Your diagnosis\n- The treatment you have had and the possible side effects\n- Signs and symptoms to report to your specialist team\n- Explanation of your personal plan for future investigations www.gmcancer.org.uk\n",
+      "token_count": 119,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c008",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWhat sort of symptoms should I look for?\n\n- If you are bleeding heavily from your bottom or stoma, please go to your local Accident and Emergency Department as you may require urgent attention.\n",
+      "token_count": 43,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c009",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWill everyone be followed up this way?\n\nNot everyone will be followed up in the same way. Some patients will still be seen in an outpatient clinic at the hospital.\nwww.gmcancer.org.uk\n\nOther patients on PSFU may have a different schedule of tests to you as your follow up is personalised to you.",
+      "token_count": 71,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c010",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\n\nYour specialist team will talk to you about what they think is the best way to be followed up.\n\n- They will think about all the details of your cancer and care.\n- They will look at how you have reacted to treatment and if you have any other health conditions.\n- They will ask you if you can manage some of your own care and if you are happy to be followed up this new way.\n\nIt may be that during your follow up it is decided to move you back to regular outpatient appointments if you or your medical team feel that this would be better for you.\n",
+      "token_count": 124,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c011",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nIt can feel unsettling to move from active treatment to follow up.\n\nSome patients find that moving away from having lots of contact with their clinical team to follow up can be unsettling.\n\nAlthough you may have less appointments to attend you will still be under the care of your consultant.\nYour test results will still be reviewed by your consultant team and your clinical nurse specialist will contact you with the results by phone or letter.\n\nIf you have any worries at all you can discuss them in your end of treatment appointment or contact your clinical nurse specialist.\n",
+      "token_count": 116,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c012",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nWhere can I go for more information on Personalised Stratified Follow Up?\n[https://gmcancer.org.uk/programmes-of-work/personalised-care/](https://gmcancer.org.uk/programmes-of-work/personalised-care/)\n",
+      "token_count": 61,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    },
+    {
+      "chunk_id": "GMC_CPI_2024_c013",
+      "doc_id": "GMC_CPI_2024",
+      "text": "\nContact Numbers:\n\nThis information can be made available in alternative formats, such as easy read or large print, and may be available in alternative languages, upon request. Please contact the team by email on: gmcancer.comms@nhs.net www.gmcancer.org.uk\n",
+      "token_count": 63,
+      "section": "Your personalised stratified follow up (PSFU) information for Colorectal Cancer",
+      "doc_type": "patient_education",
+      "source_org": "GM_Cancer",
+      "credibility_tier": 2
+    }
+  ]
+}
