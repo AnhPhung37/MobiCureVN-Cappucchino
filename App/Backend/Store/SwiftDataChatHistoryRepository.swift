@@ -12,7 +12,10 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         if let container {
             self.container = container
         } else {
-            self.container = try ModelContainer(for: ChatRecord.self)
+            // Full schema: this store is shared with WoundLogRecord. Opening a container over
+            // only ChatRecord would create a store missing the wound-log table (and vice versa),
+            // producing `no such table` I/O errors. Prefer AppConfig.modelContainer at call sites.
+            self.container = try ModelContainer(for: ChatRecord.self, WoundLogRecord.self)
         }
     }
 

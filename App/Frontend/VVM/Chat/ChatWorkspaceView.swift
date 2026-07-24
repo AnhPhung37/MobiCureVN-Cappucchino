@@ -7,6 +7,8 @@ struct ChatWorkspaceView: View {
 
     @FocusState private var inputFocused: Bool
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.light.rawValue
+    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
+    @AppStorage(AppConfig.selectedModelStorageKey) private var selectedModelRaw = ModelCatalog.default.rawValue
     @State private var isSidebarVisible = true
     @State private var isShowingAttachmentSheet = false
     @State private var isShowingCameraPicker = false
@@ -14,6 +16,8 @@ struct ChatWorkspaceView: View {
     @State private var photoPickerItems: [PhotosPickerItem] = []
     @State private var attachedImages: [UIImage] = []
     @State private var searchText: String = ""
+    @State private var downloadedModels: Set<ModelCatalog> = []
+    @State private var isShowingProfile = false
 
     init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -51,6 +55,16 @@ struct ChatWorkspaceView: View {
                 }
             }
             .background(workspaceBackground)
+            // A status change to ready/unavailable means a download just finished (or
+            // failed) — re-scan disk so the picker's "downloaded" badges stay accurate.
+            .onChange(of: viewModel.backendStatus) { _, _ in
+                refreshDownloadedModels()
+            }
+            // A background download for a non-active model finishes without touching
+            // backendStatus; when its key leaves the map, re-scan so its "on device" badge appears.
+            .onChange(of: viewModel.downloadingModels) { _, _ in
+                refreshDownloadedModels()
+            }
             .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItems, maxSelectionCount: 10, matching: .images)
             .onChange(of: photoPickerItems) { _, newItems in
                 guard !newItems.isEmpty else { return }
@@ -66,6 +80,16 @@ struct ChatWorkspaceView: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Choose how to add an image to your message.")
+            }
+            .sheet(isPresented: $isShowingProfile) {
+                // Pass the active conversation so Profile shows the facts remembered for THIS
+                // conversation — the same block injected into the live system prompt.
+                ProfileView(
+                    viewModel: ProfileViewModel(
+                        repository: MockProfileRepository(),
+                        conversationId: viewModel.currentConversationId
+                    )
+                )
             }
         }
     }
@@ -97,7 +121,8 @@ struct ChatWorkspaceView: View {
             emergencyFooter
                 .padding(16)
         }
-        .frame(width: width, height: .infinity)
+        .frame(width: width)
+        .frame(maxHeight: .infinity)
         .background(Color(.systemBackground))
         .overlay(alignment: .trailing) {
             Rectangle().fill(Color(.separator)).frame(width: 1)
@@ -136,7 +161,7 @@ struct ChatWorkspaceView: View {
         .font(.system(size: 13, weight: .medium))
     }
 
-    private func statusRow(icon: String, text: String, color: Color) -> some View {
+    private func statusRow(icon: String, text: LocalizedStringKey, color: Color) -> some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
@@ -187,7 +212,7 @@ struct ChatWorkspaceView: View {
                 } else {
                     ForEach(filteredConversationSections) { section in
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(section.title)
+                            Text(LocalizedStringKey(section.title))
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(Color(.secondaryLabel))
                                 .padding(.horizontal, 8)
@@ -202,7 +227,7 @@ struct ChatWorkspaceView: View {
                                                 .font(.system(size: 14, weight: .semibold))
                                                 .foregroundColor(Color(.label))
                                                 .lineLimit(1)
-                                            Text(conversation.preview.isEmpty ? "No preview" : conversation.preview)
+                                            (conversation.preview.isEmpty ? Text("No preview") : Text(conversation.preview))
                                                 .font(.system(size: 12))
                                                 .foregroundColor(Color(.secondaryLabel))
                                                 .lineLimit(2)
@@ -270,6 +295,10 @@ struct ChatWorkspaceView: View {
                     VStack(spacing: 18) {
                         workspaceHeader
 
+                        if viewModel.backendStatus == .loading && viewModel.isFirstTimeModelSetup {
+                            firstTimeModelSetupNotice
+                        }
+
                         if viewModel.messages.isEmpty {
                             emptyHero
                             quickQuestionSection
@@ -327,6 +356,7 @@ struct ChatWorkspaceView: View {
             Spacer()
 
             HStack(spacing: 8) {
+                modelPicker
                 languageToggle
                 Button {
                     cycleAppearanceMode()
@@ -338,8 +368,26 @@ struct ChatWorkspaceView: View {
                         .background(Circle().fill(Color(.tertiarySystemBackground)))
                 }
                 .accessibilityLabel("Toggle appearance")
+
+                profileButton
             }
         }
+    }
+
+    /// Avatar entry point to the patient's Profile — medical record, uploaded wound photos, and
+    /// what the assistant remembers this conversation. Presented as a sheet so it overlays the
+    /// chat without losing the conversation's place.
+    private var profileButton: some View {
+        Button {
+            isShowingProfile = true
+        } label: {
+            Image(systemName: "person.crop.circle.fill")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.blue)
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(Color.blue.opacity(0.12)))
+        }
+        .accessibilityLabel("Hồ sơ")
     }
 
     private func cycleAppearanceMode() {
@@ -350,25 +398,105 @@ struct ChatWorkspaceView: View {
         AppearanceMode(rawValue: appearanceModeRaw) ?? .light
     }
 
+    private var appLanguage: AppLanguage {
+        AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese
+    }
+
+    private var selectedModel: ModelCatalog {
+        ModelCatalog(rawValue: selectedModelRaw) ?? .default
+    }
+
+    private var modelPicker: some View {
+        Menu {
+            Section("Mô hình AI") {
+                ForEach(ModelCatalog.allCases, id: \.self) { model in
+                    Button {
+                        switchModel(to: model)
+                    } label: {
+                        if model == selectedModel {
+                            Label(model.displayName, systemImage: "checkmark")
+                        } else {
+                            Text(verbatim: model.displayName)
+                        }
+                        // Second Text renders as the menu item's subtitle: tells the user the
+                        // state of this model — downloading (with %), on-disk (instant switch),
+                        // or not yet fetched (size of the download it would trigger).
+                        if let progress = viewModel.downloadingModels[model] {
+                            Text("Đang tải về · \(Int(progress * 100))%")
+                        } else if downloadedModels.contains(model) {
+                            Text("Đã có trên máy · chuyển nhanh")
+                        } else {
+                            Text("Cần tải về (\(model.approxDownloadSize))")
+                        }
+                    }
+                    // A model still downloading can't be used yet — but every other row
+                    // (including already-downloaded ones) stays tappable so the user can
+                    // switch to a ready model while this one keeps downloading.
+                    .disabled(viewModel.downloadingModels[model] != nil && model != selectedModel)
+                }
+            }
+            .onAppear { refreshDownloadedModels() }
+        } label: {
+            // Show the active model's name inline so the user doesn't have to
+            // open the menu just to check which model is in use.
+            HStack(spacing: 6) {
+                Image(systemName: "cpu")
+                    .font(.system(size: 14, weight: .semibold))
+                Text(verbatim: selectedModel.shortName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .lineLimit(1)
+            }
+            .foregroundColor(Color(.secondaryLabel))
+            .padding(.horizontal, 12)
+            .frame(height: 34)
+            .background(Capsule().fill(Color(.tertiarySystemBackground)))
+        }
+        // The menu stays open during background downloads — the user can switch to any
+        // already-downloaded model while another downloads. Only block during active
+        // generation, where swapping the resident model would race the in-flight stream.
+        .disabled(viewModel.isLoading)
+        .accessibilityLabel("Chọn mô hình AI")
+    }
+
+    private func switchModel(to model: ModelCatalog) {
+        // Allow re-selecting the current model only when it's unavailable (retry) — otherwise
+        // a no-op. AppConfig.switchModel decides whether this is an instant load (already on
+        // disk) or a background download, and keeps the current model active meanwhile.
+        guard model != selectedModel || viewModel.backendStatus == .unavailable else { return }
+        Task { await AppConfig.switchModel(to: model) }
+    }
+
+    /// Scans Application Support off the main thread for models already on disk.
+    /// Runs when the picker opens and after each download finishes.
+    private func refreshDownloadedModels() {
+        Task.detached(priority: .utility) {
+            let downloaded = Set(ModelCatalog.allCases.filter {
+                ModelManager.shared.isModelDownloaded(repoID: $0.repoID)
+            })
+            await MainActor.run { downloadedModels = downloaded }
+        }
+    }
+
     private var languageToggle: some View {
         HStack(spacing: 0) {
-            Button(action: {}) {
-                Text("VI")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Capsule().fill(Color.blue))
-            }
-            Button(action: {}) {
-                Text("EN")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(Color(.secondaryLabel))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-            }
+            languageButton("VI", language: .vietnamese)
+            languageButton("EN", language: .english)
         }
         .background(Capsule().fill(Color(.secondarySystemBackground)))
+    }
+
+    private func languageButton(_ label: String, language: AppLanguage) -> some View {
+        let isSelected = appLanguage == language
+        return Button {
+            appLanguageRaw = language.rawValue
+        } label: {
+            Text(verbatim: label)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(isSelected ? .white : Color(.secondaryLabel))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(isSelected ? Capsule().fill(Color.blue) : nil)
+        }
     }
 
     private func tagPill(_ text: String, color: Color) -> some View {
@@ -421,8 +549,12 @@ struct ChatWorkspaceView: View {
             Circle()
                 .fill(statusColor(for: viewModel.backendStatus))
                 .frame(width: 8, height: 8)
-            Text(statusLabel(for: viewModel.backendStatus))
+            Text(LocalizedStringKey(statusLabel(for: viewModel.backendStatus)))
                 .font(.system(size: 13, weight: .semibold))
+            if viewModel.backendStatus == .loading, viewModel.downloadProgress > 0 {
+                Text(verbatim: "\(Int(viewModel.downloadProgress * 100))%")
+                    .font(.system(size: 13, weight: .semibold))
+            }
         }
         .foregroundColor(Color(.secondaryLabel))
         .padding(.horizontal, 14)
@@ -433,6 +565,23 @@ struct ChatWorkspaceView: View {
         .overlay(
             Capsule().strokeBorder(Color.green.opacity(0.18), lineWidth: 1)
         )
+    }
+
+    private var firstTimeModelSetupNotice: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "info.circle")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.accentColor)
+            Text(LocalizedStringKey("Lần đầu tải model có thể mất vài phút, tuỳ theo tốc độ mạng và thiết bị. Các lần sau sẽ nhanh hơn nhiều."))
+                .font(.system(size: 12))
+                .foregroundColor(Color(.secondaryLabel))
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12).fill(Color.accentColor.opacity(0.08))
+        )
+        .transition(.opacity)
     }
 
     private var emptyHero: some View {
@@ -456,7 +605,7 @@ struct ChatWorkspaceView: View {
         .padding(.top, 10)
     }
 
-    private func infoChip(text: String) -> some View {
+    private func infoChip(text: LocalizedStringKey) -> some View {
         HStack(spacing: 6) {
             Image(systemName: "checkmark.circle.fill")
             Text(text)
@@ -474,7 +623,9 @@ struct ChatWorkspaceView: View {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
                 ForEach(quickQuestions) { question in
                     Button {
-                        viewModel.inputText = question.prompt
+                        // Resolve the prompt in the selected UI language so the question
+                        // sent to the model matches what the user sees on the card.
+                        viewModel.inputText = question.prompt.localized(for: appLanguage)
                         submitCurrentMessage()
                     } label: {
                         quickQuestionCard(question)
@@ -500,10 +651,10 @@ struct ChatWorkspaceView: View {
                 Spacer()
             }
 
-            Text(question.title)
+            Text(LocalizedStringKey(question.title))
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(Color(.label))
-            Text(question.prompt)
+            Text(LocalizedStringKey(question.prompt))
                 .font(.system(size: 13))
                 .foregroundColor(Color(.secondaryLabel))
                 .multilineTextAlignment(.leading)
@@ -522,7 +673,8 @@ struct ChatWorkspaceView: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(viewModel.sections) { section in
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(section.title.uppercased())
+                    Text(LocalizedStringKey(section.title))
+                        .textCase(.uppercase)
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -631,7 +783,7 @@ struct ChatWorkspaceView: View {
         viewModel.sendMessage(
             prompt: prompt,
             displayContent: trimmed,
-            attachedImageData: attachedImages.compactMap { $0.jpegData(compressionQuality: 0.9) }
+            attachedImageData: attachedImages.compactMap { $0.attachmentJPEGData() }
         )
         clearDraftAttachments()
     }
@@ -748,6 +900,7 @@ struct ChatWorkspaceView: View {
     private func relativeDate(_ date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
+        formatter.locale = appLanguage.locale
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 

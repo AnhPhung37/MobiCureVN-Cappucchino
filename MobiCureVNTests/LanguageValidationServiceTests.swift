@@ -60,6 +60,91 @@ final class LanguageValidationServiceTests: XCTestCase {
         XCTAssertTrue(result.requiresTranslation)
     }
 
+    // MARK: - Density-Based Detection (issue #2 regression table)
+
+    /// Table covering the density/detect contract. The key regression case is an English
+    /// sentence carrying a single Vietnamese place name: it must stay .english and NOT be
+    /// promoted to .mixed (which used to trigger on any single diacritic).
+    func testDetectionTable() async {
+        struct Case {
+            let name: String
+            let text: String
+            let expected: DetectedLanguage
+        }
+
+        let cases: [Case] = [
+            Case(name: "pure English",
+                 text: "What are the signs of infection in a surgical wound?",
+                 expected: .english),
+            Case(name: "English + one Vietnamese place name (regression)",
+                 text: "I had my surgery at a hospital in Đà Nẵng last week and feel fine.",
+                 expected: .english),
+            Case(name: "pure Vietnamese",
+                 text: "Tôi bị đau bụng dữ dội sau khi phẫu thuật ruột hôm qua.",
+                 expected: .vietnamese),
+            Case(name: "accent-less Vietnamese",
+                 text: "toi bi dau bung sau khi mo",
+                 expected: .vietnamese),
+            Case(name: "CJK leakage",
+                 text: "这是中文文本需要翻译成英文",
+                 expected: .unsupported(detected: "foreign-script")),
+        ]
+
+        for c in cases {
+            let result = await sut.detect(c.text, using: llmService)
+            XCTAssertEqual(result, c.expected, "Case failed: \(c.name) — got \(result)")
+        }
+    }
+
+    func testEnglishWithVietnamesePlaceNameStaysEnglish() async {
+        // Explicit spotlight on the misrouting bug: one accented word must not flip to .mixed.
+        let result = await sut.detect(
+            "The clinic in Hà Nội gave me antibiotics for my wound infection.",
+            using: llmService
+        )
+        XCTAssertEqual(result, .english)
+        XCTAssertFalse(result.requiresTranslation)
+    }
+
+    func testLLMVietnameseVerdictVetoedForZeroSignalEnglish() async {
+        // Reproduces the field bug: the small on-device classifier answered "vietnamese"
+        // for a pure-English sentence. With zero Vietnamese density, detect must veto that
+        // verdict and return .english rather than mis-route the turn through translation.
+        let stub = StubLLMService(reply: "vietnamese")
+        let result = await sut.detect(
+            "Does my period affect the recovery of the wound?",
+            using: stub
+        )
+        XCTAssertEqual(result, .english)
+        XCTAssertFalse(result.requiresTranslation)
+    }
+
+    func testLLMVietnameseVerdictTrustedForAccentlessVietnamese() async {
+        // The veto must NOT fire for genuine accent-less Vietnamese: it carries function-word
+        // signal, so a "vietnamese" verdict is trusted.
+        let stub = StubLLMService(reply: "vietnamese")
+        let result = await sut.detect("toi bi dau bung khong", using: stub)
+        XCTAssertEqual(result, .vietnamese)
+    }
+
+    func testDensityLowForEnglishWithOneAccentedPlaceName() {
+        // A two-word Vietnamese place name in a short English sentence must stay below the
+        // dominance threshold (0.25), so it is not treated as Vietnamese-dominant.
+        let density = sut.vietnameseDensity("I visited Đà Nẵng for a checkup this morning today")
+        XCTAssertLessThan(density, 0.25)
+    }
+
+    func testDensityHighForPureVietnamese() {
+        let density = sut.vietnameseDensity("Tôi bị đau bụng và buồn nôn sau phẫu thuật")
+        XCTAssertGreaterThanOrEqual(density, 0.35)
+    }
+
+    func testDensityCatchesAccentlessVietnameseFunctionWords() {
+        // No diacritics at all, but the function words carry the signal.
+        let density = sut.vietnameseDensity("toi bi dau bung khong")
+        XCTAssertGreaterThan(density, 0.0)
+    }
+
     // MARK: - English Detection
 
     func testEnglishMedicalTextDetected() async {
@@ -201,5 +286,20 @@ final class LanguageValidationServiceTests: XCTestCase {
     func testTranslateReturnsOriginalForEmptyInput() async {
         let result = await sut.translate("", to: .vietnamese, using: llmService)
         XCTAssertEqual(result, "")
+    }
+}
+
+/// Minimal LLM stub that always yields a fixed reply, letting a test force a specific
+/// classifier verdict (e.g. a spurious "vietnamese") regardless of the input text.
+private nonisolated final class StubLLMService: LLMServiceProtocol {
+    private let reply: String
+    init(reply: String) { self.reply = reply }
+
+    nonisolated func stream(request: LLMRequest) -> AsyncStream<String> {
+        let reply = self.reply
+        return AsyncStream { continuation in
+            continuation.yield(reply)
+            continuation.finish()
+        }
     }
 }

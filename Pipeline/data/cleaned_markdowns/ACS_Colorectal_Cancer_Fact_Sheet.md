@@ -107,4 +107,3 @@ Models used for illustrative purposes only.
 
 Colorectal Cancer in the US:
 
-2026 estimates [ 1]

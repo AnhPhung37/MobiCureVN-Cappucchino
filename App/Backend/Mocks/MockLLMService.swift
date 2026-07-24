@@ -39,6 +39,11 @@ nonisolated final class MockLLMService: LLMServiceProtocol {
             return classifyLanguage(query)
         }
 
+        // Second-pass language confirmation ("Is the TEXT below written in X? yes/no").
+        if lower.contains("is the text below written in") {
+            return confirmLanguage(query)
+        }
+
         if lower.contains("nhiễm trùng") || lower.contains("infection") || lower.contains("mủ") {
             return """
             Dựa trên tài liệu y tế, các dấu hiệu nhiễm trùng vết mổ bao gồm: \
@@ -87,8 +92,11 @@ nonisolated final class MockLLMService: LLMServiceProtocol {
     }
 
     // Stand-in for the real model's language classification used by LanguageValidationService.
-    // Since there's no model in mock mode, use diacritics + a short list of common
-    // non-diacritic Vietnamese words as the signal, falling back to English otherwise.
+    // A real LLM judges the DOMINANT language rather than flagging any single diacritic, so
+    // this mirrors that: it classifies by the fraction of Vietnamese-signal words (diacritics
+    // or accent-less function words), not by mere presence. This is what lets the mock model
+    // the issue-#2 regression faithfully — an English sentence mentioning one Vietnamese
+    // place name ("Đà Nẵng") classifies as english, not vietnamese.
     private func classifyLanguage(_ prompt: String) -> String {
         guard let range = prompt.range(of: "TEXT:") else { return "english" }
         let text = String(prompt[range.upperBound...])
@@ -96,16 +104,31 @@ nonisolated final class MockLLMService: LLMServiceProtocol {
             .lowercased()
 
         let vietnameseDiacritics = "àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ"
-        if text.contains(where: { vietnameseDiacritics.contains($0) }) {
-            return "vietnamese"
-        }
+        let commonVietnameseWords: Set<String> = ["toi", "khong", "bi", "dau", "va", "cua", "voi", "gi", "khi", "sau", "mo"]
 
-        let commonVietnameseWords: Set<String> = ["toi", "la", "khong", "co", "bi", "dau", "va", "cua", "voi", "gi"]
-        let words = text.split { !$0.isLetter }.map(String.init)
-        if words.contains(where: commonVietnameseWords.contains) {
-            return "vietnamese"
-        }
+        let words = text
+            .split { !$0.isLetter && !vietnameseDiacritics.contains($0) }
+            .map(String.init)
+        guard !words.isEmpty else { return "english" }
 
-        return "english"
+        let vietnameseWords = words.filter { word in
+            word.contains(where: { vietnameseDiacritics.contains($0) })
+                || commonVietnameseWords.contains(word)
+        }
+        let density = Double(vietnameseWords.count) / Double(words.count)
+
+        // Dominant-language judgement: a minority of Vietnamese-signal words (a stray place
+        // name in an English sentence) reads as english.
+        return density >= 0.30 ? "vietnamese" : "english"
+    }
+
+    // Stand-in for the real model's second-pass yes/no confirmation. The prompt asks
+    // "Is the TEXT below written in {Vietnamese|English}?"; answer consistently with
+    // `classifyLanguage` so the two-pass verify path is deterministic in mock mode.
+    private func confirmLanguage(_ prompt: String) -> String {
+        let asksVietnamese = prompt.lowercased().contains("written in vietnamese")
+        let classified = classifyLanguage(prompt) // "vietnamese" or "english"
+        let textIsVietnamese = classified == "vietnamese"
+        return textIsVietnamese == asksVietnamese ? "yes" : "no"
     }
 }

@@ -301,6 +301,12 @@ struct ChatView: View {
             ProgressView(value: viewModel.downloadProgress)
                 .progressViewStyle(.linear)
                 .animation(.easeInOut(duration: 0.25), value: viewModel.downloadProgress)
+
+            if viewModel.isFirstTimeModelSetup {
+                Text(LocalizedStringKey("Lần đầu tải model có thể mất vài phút, tuỳ theo tốc độ mạng và thiết bị. Các lần sau sẽ nhanh hơn nhiều."))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(.secondaryLabel))
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -466,13 +472,21 @@ struct ChatView: View {
         viewModel.sendMessage(
             prompt: prompt,
             displayContent: displayText,
-            attachedImageData: attachedImages.compactMap { $0.jpegData(compressionQuality: 0.9) }
+            attachedImageData: attachedImages.compactMap { $0.attachmentJPEGData() }
         )
         clearAttachmentDraft()
     }
 
     private var canSubmitDraft: Bool {
         viewModel.isLoading || !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachedImages.isEmpty
+    }
+
+    private func submitWoundAnalysis() {
+        guard !attachedImages.isEmpty else { return }
+        let note = viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let userNote = note == imageOnlyDraftText ? "" : note
+        viewModel.analyzeWoundPhotos(attachedImages, userNote: userNote)
+        clearAttachmentDraft()
     }
 
     private func clearAttachmentDraft() {
@@ -547,6 +561,28 @@ struct ChatView: View {
                 }
                 .accessibilityLabel("Remove attached images")
             }
+
+            // Dedicated wound-analysis entry point — deliberately separate from the normal
+            // send button. Ordinary attachments (e.g. a medication label) should go through
+            // the regular text+image chat turn, not the heavier VLM-findings-first pipeline.
+            Button {
+                submitWoundAnalysis()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "bandage.fill")
+                    Text("Phân tích vết thương / Analyze Wound")
+                        .font(.system(size: 13, weight: .semibold))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.accentColor.opacity(0.12))
+                )
+                .foregroundColor(.accentColor)
+            }
+            .disabled(viewModel.isLoading)
+            .accessibilityLabel("Analyze wound photo")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {

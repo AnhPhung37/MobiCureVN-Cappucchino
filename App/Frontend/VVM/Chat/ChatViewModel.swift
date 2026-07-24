@@ -16,9 +16,9 @@ enum ChatError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .streamFailed:
-            return "Không thể kết nối. Vui lòng thử lại."
+            return "Không thể kết nối. Vui lòng thử lại.".localized(for: .current)
         case .emptyResponse:
-            return "Không nhận được phản hồi. Vui lòng thử lại."
+            return "Không nhận được phản hồi. Vui lòng thử lại.".localized(for: .current)
         }
     }
 }
@@ -34,6 +34,15 @@ final class ChatViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var backendStatus: LLMBackendStatus = .mock
     @Published var downloadProgress: Double = 0
+    /// Per-model background-download progress (0...1), keyed by model. Non-empty while one or
+    /// more models are downloading in parallel; drives the picker's per-row "downloading… %"
+    /// state so the user can still pick an already-downloaded model meanwhile.
+    @Published private(set) var downloadingModels: [ModelCatalog: Double] = [:]
+    /// True when the currently loading model has no valid files on disk yet, i.e. this
+    /// `.loading` run is a real first-time download+install rather than a quick reload of
+    /// weights already cached from a previous launch. Drives the "first load can take a
+    /// while" hint so it isn't shown on every routine relaunch.
+    @Published private(set) var isFirstTimeModelSetup: Bool = false
     @Published private(set) var processingState: ChatProcessingState = .idle
 
     @Published var sections: [ChatSection] = []
@@ -65,6 +74,8 @@ final class ChatViewModel: ObservableObject {
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
+        downloadingModels = AppConfig.modelDownloadProgress
+        isFirstTimeModelSetup = !ModelManager.shared.isModelDownloaded(repoID: AppConfig.selectedModel.repoID)
         bindLLMStatusUpdates()
 
         Task { await self.bootstrapHistory() }
@@ -75,7 +86,11 @@ final class ChatViewModel: ObservableObject {
             .compactMap { $0.userInfo?[AppConfig.llmStatusUserInfoKey] as? LLMBackendStatus }
             .receive(on: RunLoop.main)
             .sink { [weak self] status in
-                self?.backendStatus = status
+                guard let self else { return }
+                if status == .loading, self.backendStatus != .loading {
+                    self.isFirstTimeModelSetup = !ModelManager.shared.isModelDownloaded(repoID: AppConfig.selectedModel.repoID)
+                }
+                self.backendStatus = status
             }
             .store(in: &cancellables)
 
@@ -93,6 +108,14 @@ final class ChatViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 self?.downloadProgress = value
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: AppConfig.modelDownloadsDidChange)
+            .compactMap { $0.userInfo?[AppConfig.modelDownloadsUserInfoKey] as? [ModelCatalog: Double] }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] progress in
+                self?.downloadingModels = progress
             }
             .store(in: &cancellables)
 
@@ -140,10 +163,67 @@ final class ChatViewModel: ObservableObject {
         // without a second retrieval (the orchestrator already retrieved this context).
         let sourcesBox = SourcesBox()
         streamingTask = Task {
-            let fullText = await streamResponse(for: text, assistantIndex: assistantIndex, sourcesBox: sourcesBox)
+            let fullText = await streamResponse(
+                for: text,
+                images: attachedImageData,
+                assistantIndex: assistantIndex,
+                sourcesBox: sourcesBox
+            )
             // The orchestrator buffers and delivers the whole response at the end, so a
             // cancel (Stop button / clear / switch) leaves fullText empty. Don't run the
             // normal finalize — it would overwrite the bubble with an error and persist it.
+            guard !Task.isCancelled else {
+                handleCancelledGeneration(partialText: fullText, assistantIndex: assistantIndex)
+                return
+            }
+            await finalizeResponse(fullText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+        }
+    }
+
+    /// Wound-photo flow: a VLM pre-step extracts structured visual findings from the photo(s),
+    /// then those findings (not the raw photos) drive the normal RAG → LLM → guardrail pipeline
+    /// via `ChatService.processQuery` — the same path `sendMessage` uses, so Vietnamese
+    /// translation/refine/emergency-detection still apply. Gated behind a dedicated
+    /// "Analyze Wound" action rather than every image attachment, since ordinary chat photos
+    /// (e.g. medication labels) shouldn't pay for the extra VLM hop and model swap.
+    func analyzeWoundPhotos(_ images: [UIImage], userNote: String = "") {
+        guard !images.isEmpty, !isLoading else { return }
+        let attachedImageData = images.compactMap { $0.attachmentJPEGData() }
+        guard !attachedImageData.isEmpty else { return }
+
+        let bubbleText = userNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            ? "Phân tích ảnh vết thương".localized(for: .current)
+            : userNote
+        appendUserMessage(bubbleText, imageData: attachedImageData)
+        let assistantIndex = appendAssistantPlaceholder()
+        rebuildSections()
+
+        let sourcesBox = SourcesBox()
+        streamingTask = Task {
+            processingState = .generating
+            // analyzeWound also persists a structured WoundLogEntry (parsed findings + saved
+            // photo) to AppConfig.woundLogRepository as a side effect; here we only need the
+            // findings text to drive the chat pipeline below.
+            let findings = await WoundAnalysisService.analyzeWound(images: attachedImageData).findings
+            guard !Task.isCancelled else {
+                handleCancelledGeneration(partialText: "", assistantIndex: assistantIndex)
+                return
+            }
+
+            // Findings drive RAG retrieval; the user's own note (if any) is appended so their
+            // stated concern still shapes retrieval alongside the VLM's visual observations.
+            let query = userNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                ? findings
+                : "\(findings)\n\nPatient note: \(userNote)"
+
+            // images: [] — the text LLM works from the VLM's findings text, not the raw photo;
+            // WoundAnalysisService has already swapped the resident model back to a text model.
+            let fullText = await streamResponse(
+                for: query,
+                images: [],
+                assistantIndex: assistantIndex,
+                sourcesBox: sourcesBox
+            )
             guard !Task.isCancelled else {
                 handleCancelledGeneration(partialText: fullText, assistantIndex: assistantIndex)
                 return
@@ -177,11 +257,16 @@ final class ChatViewModel: ObservableObject {
         return messages.count - 1
     }
 
-    private func streamResponse(for text: String, assistantIndex: Int, sourcesBox: SourcesBox) async -> String {
+    private func streamResponse(for text: String, images: [Data], assistantIndex: Int, sourcesBox: SourcesBox) async -> String {
         var fullText = ""
+        // dropLast(2) excludes the assistant placeholder AND the just-appended user message:
+        // the current turn travels separately as `text` + `images`, so leaving it in history
+        // would send the user's message to the LLM twice.
         let stream = chatService.processQuery(
             text,
-            history: Array(messages.dropLast()),
+            images: images,
+            history: Array(messages.dropLast(2)),
+            conversationId: currentConversationId,
             onSourcesRetrieved: { sourcesBox.set($0) }
         )
         for await token in stream {
@@ -202,7 +287,7 @@ final class ChatViewModel: ObservableObject {
         }
 
         if fullText.isEmpty {
-            messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.")
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: "Xin lỗi, tôi không thể trả lời lúc này. Vui lòng thử lại.".localized(for: .current))
         } else {
             messageDates[assistantIndex] = Date()
             let assistantItem = ChatItem(
@@ -275,7 +360,7 @@ final class ChatViewModel: ObservableObject {
             await refreshConversationHistory()
         } catch {
             await MainActor.run {
-                self.errorMessage = "Không thể xoá cuộc trò chuyện này."
+                self.errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
             }
         }
     }
