@@ -47,17 +47,20 @@ final class ChatService: ObservableObject {
     private let languageValidator: LanguageValidationService
     private let translationService: TranslationService
     private let emergencyDetector: EmergencyDetector
+    private let nameGuard: NameGuard
 
     init(
         orchestrator: MedicalChatOrchestrator,
         languageValidator: LanguageValidationService = LanguageValidationService(),
         translationService: TranslationService,
-        emergencyDetector: EmergencyDetector = EmergencyDetector()
+        emergencyDetector: EmergencyDetector = EmergencyDetector(),
+        nameGuard: NameGuard = NameGuard()
     ) {
         self.orchestrator = orchestrator
         self.languageValidator = languageValidator
         self.translationService = translationService
         self.emergencyDetector = emergencyDetector
+        self.nameGuard = nameGuard
     }
 
     // Called when AppConfig swaps the underlying LLM service.
@@ -85,39 +88,72 @@ final class ChatService: ObservableObject {
             let innerTask = Task { @MainActor [weak self] in
                 guard let self else { continuation.finish(); return }
 
+                let flow = ChatFlowLog()
+
+                // Pin the user's name from the RAW input, before refine can mangle it (the
+                // observed "I'm hanh" → "Haven't" corruption). The name is captured exactly as
+                // typed and protected end-to-end so no LLM transform re-accents or rewrites it.
+                let pinnedName = self.nameGuard.detectName(in: text)
+
                 // detect and refine both consume only the original text and are independent,
                 // so run them concurrently to remove one LLM round-trip from the critical
                 // path. Both are nonisolated LLM calls; the `async let` bindings start them
                 // immediately and we await both below. The UI shows "validating language"
                 // for the duration of this combined step (see processingState note below).
+                // Refine runs on name-protected text so the pinned name is never touched.
                 let llmService = AppConfig.llmService
+                let protectedInput = self.nameGuard.protect(text, name: pinnedName)
                 async let detectedResult = self.languageValidator.detect(text, using: llmService)
-                async let refinedResult = self.languageValidator.refine(text, using: llmService)
+                async let refinedResult = self.languageValidator.refine(protectedInput, using: llmService)
 
                 let detected = await detectedResult
+                flow.input(text, language: Self.languageTag(detected))
+                if let pinnedName { flow.stage("name pinned", pinnedName) }
 
-                if case .unsupported = detected {
+                // The language gate classifies TEXT only. An image-bearing turn often carries
+                // just a placeholder caption ("Image attached") or a short note, which the
+                // small on-device classifier tends to label "other" → .unsupported — wrongly
+                // rejecting the turn before the vision model ever sees the image. When images
+                // are attached, never refuse on language grounds: fall back to a supported
+                // language (Vietnamese if the caption shows any Vietnamese signal, else
+                // English) so the image still reaches the pipeline.
+                let effectiveDetected: DetectedLanguage
+                if case .unsupported = detected, !images.isEmpty {
+                    effectiveDetected = self.languageValidator.vietnameseDensity(text) > 0
+                        ? .vietnamese
+                        : .english
+                } else if case .unsupported = detected {
+                    // Text-only turn in a genuinely unsupported language: refuse as before.
                     // Discard the concurrently-running refine result; we're bailing out.
                     _ = await refinedResult
+                    flow.end("unsupported language")
                     self.processingState = .idle
                     continuation.yield(LanguageValidationService.unsupportedErrorMessage)
                     continuation.finish()
                     return
+                } else {
+                    effectiveDetected = detected
                 }
 
-                let refinedText = await refinedResult
+                // Restore the pinned name into the refined text, undoing the protective
+                // sentinel so downstream stages see natural text with the correct spelling.
+                let refinedText = self.nameGuard.restore(await refinedResult, name: pinnedName)
+                flow.stage("refine", refinedText, tag: Self.languageTag(effectiveDetected))
 
                 do {
                     try await self.runPipeline(
                         refinedText: refinedText,
                         images: images,
-                        detectedLanguage: detected,
+                        detectedLanguage: effectiveDetected,
+                        pinnedName: pinnedName,
                         history: history,
                         conversationId: conversationId,
                         onSourcesRetrieved: onSourcesRetrieved,
+                        flow: flow,
                         continuation: continuation
                     )
                 } catch {
+                    flow.end("error: \(error.localizedDescription)")
                     let msg = "Lỗi xử lý: \(error.localizedDescription)\n" +
                               "Processing error: \(error.localizedDescription)"
                     continuation.yield(msg)
@@ -143,9 +179,11 @@ final class ChatService: ObservableObject {
         refinedText: String,
         images: [Data],
         detectedLanguage: DetectedLanguage,
+        pinnedName: String?,
         history: [ChatMessage],
         conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
+        flow: ChatFlowLog,
         continuation: AsyncStream<String>.Continuation
     ) async throws {
         // Step 1: LLM refine — fix typos and unify code-switching, same language. This now
@@ -162,21 +200,28 @@ final class ChatService: ObservableObject {
         let emergency = emergencyDetector.detect(query: refinedText)
         if emergency.isEmergency {
             if let response = emergency.recommendation {
+                flow.stage("emergency", response, tag: Self.languageTag(detectedLanguage))
+                flow.output(response, language: Self.languageTag(detectedLanguage))
                 continuation.yield(response)
+            } else {
+                flow.end("emergency (no template)")
             }
             return
         }
 
         // Step 3: translate the refined input to English so the orchestrator only ever
-        // has to work in one language.
+        // has to work in one language. The name is protected across translation too, so
+        // Apple Translation can't localise/re-accent it on the way in.
         let englishQuery: String
         if detectedLanguage.requiresTranslation {
             processingState = .translatingInput
-            englishQuery = try await translationService.translateToEnglish(refinedText)
+            let protectedInput = nameGuard.protect(refinedText, name: pinnedName)
+            let translatedIn = try await translationService.translateToEnglish(protectedInput)
+            englishQuery = nameGuard.restore(translatedIn, name: pinnedName)
+            flow.stage("translate→en", englishQuery, tag: "en")
         } else {
             englishQuery = refinedText
         }
-        print("ChatService: englishQuery='\(englishQuery)'")
 
         guard !Task.isCancelled else { return }
 
@@ -194,29 +239,37 @@ final class ChatService: ObservableObject {
             guard !Task.isCancelled else { return }
             englishResponse += token
         }
+        flow.stage("generate→en", englishResponse, tag: "en")
 
         guard !Task.isCancelled else { return }
 
         // Step 5: translate the English response back to the user's original language.
         // LLM-first: the model produces a noticeably more natural, conversational tone than
-        // Apple Translation's fairly literal output.
+        // Apple Translation's fairly literal output. The name is protected across the LLM
+        // translation so it can't be re-accented (the observed "Hanh" → "Hạnh").
         var finalResponse = englishResponse
         if detectedLanguage.requiresTranslation {
             processingState = .translatingOutput
-            finalResponse = await languageValidator.translate(
-                englishResponse,
+            let protectedResponse = nameGuard.protect(englishResponse, name: pinnedName)
+            let translatedOut = await languageValidator.translate(
+                protectedResponse,
                 to: detectedLanguage,
                 using: AppConfig.llmService
             )
+            finalResponse = nameGuard.restore(translatedOut, name: pinnedName)
+            flow.stage("translate→vi", finalResponse, tag: "vi")
 
             guard !Task.isCancelled else { return }
 
-            // Step 6: verify the LLM translation. A small model can leak stray
-            // foreign-script words or run out of generation budget on long responses — a
-            // result much shorter than the source is treated as truncated. On failure, fall
-            // back to Apple's Translation framework: literal in tone, but it doesn't leak.
+            // Step 6: verify the LLM translation. A small model can (a) leak stray
+            // foreign-script words, (b) leave an English run untranslated — the "Tôi sorry…"
+            // code-switch — or (c) run out of generation budget on long responses, where a
+            // result much shorter than the source is treated as truncated. Any of these fails
+            // verification and falls back to Apple's Translation framework: literal in tone,
+            // but it neither leaks nor code-switches.
             let looksComplete = finalResponse.count > englishResponse.count / 3
-            let isValid = looksComplete
+            let hasEnglishLeak = languageValidator.containsEnglishLeak(finalResponse)
+            let isValid = looksComplete && !hasEnglishLeak
                 ? await languageValidator.matches(
                     finalResponse,
                     expected: detectedLanguage,
@@ -224,14 +277,36 @@ final class ChatService: ObservableObject {
                 )
                 : false
             if !isValid {
+                let reason = hasEnglishLeak ? "code-switch leak"
+                    : (looksComplete ? "language mismatch" : "truncated")
+                flow.note("verify", "fallback → Apple Translation (\(reason))")
                 // Best effort: if Apple Translation is also unavailable, ship the imperfect
-                // LLM translation rather than erroring out the whole response.
-                finalResponse = (try? await translationService.translateToVietnamese(englishResponse))
-                    ?? finalResponse
+                // LLM translation rather than erroring out the whole response. The name is
+                // protected here too so the fallback path can't re-accent it either.
+                if let appleOut = try? await translationService.translateToVietnamese(
+                    nameGuard.protect(englishResponse, name: pinnedName)
+                ) {
+                    finalResponse = nameGuard.restore(appleOut, name: pinnedName)
+                }
+            } else {
+                flow.note("verify", "ok (llm)")
             }
         }
 
         guard !Task.isCancelled else { return }
+        flow.output(finalResponse, language: Self.languageTag(detectedLanguage))
         continuation.yield(finalResponse)
+    }
+
+    // MARK: - Logging helpers
+
+    /// Short language tag for the flow log ("en", "vi", "mixed", or the raw unsupported label).
+    private static func languageTag(_ language: DetectedLanguage) -> String {
+        switch language {
+        case .vietnamese: return "vi"
+        case .english:    return "en"
+        case .mixed:      return "mixed"
+        case .unsupported(let detected): return detected
+        }
     }
 }

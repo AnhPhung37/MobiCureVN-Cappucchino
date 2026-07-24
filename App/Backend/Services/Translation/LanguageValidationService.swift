@@ -71,6 +71,29 @@ nonisolated final class LanguageValidationService {
         "nao", "cho", "khi", "roi", "nhung", "cung", "minh"
     ]
 
+    // How many common-English words in a row mark an untranslated fragment in Vietnamese
+    // output. Two is the smallest run that reliably signals a leaked clause ("I'm sorry",
+    // "so much") while letting a single loanword/brand/proper-noun pass. See
+    // `containsEnglishLeak`.
+    private static let englishLeakRunLength = 2
+
+    // High-frequency English function/filler words used to spot untranslated English runs in
+    // Vietnamese output. Deliberately excludes words that collide with valid accent-less
+    // Vietnamese tokens (e.g. "toi", "co", "la", "an") so genuine Vietnamese never registers as
+    // an English run. These are the words a small model is most likely to leave untranslated
+    // mid-sentence; medical nouns are omitted on purpose (a lone noun shouldn't trip the run).
+    private static let commonEnglishWords: Set<String> = [
+        "i", "im", "you", "your", "we", "they", "he", "she", "it", "is", "are", "was",
+        "were", "be", "been", "am", "the", "and", "but", "or", "if", "not", "no", "yes",
+        "do", "does", "did", "have", "has", "had", "will", "would", "should", "could",
+        "can", "may", "must", "sorry", "please", "thank", "thanks", "hello", "hi",
+        "sure", "okay", "ok", "very", "much", "more", "some", "any", "all", "with",
+        "for", "from", "this", "that", "these", "those", "here", "there", "what", "when",
+        "where", "which", "how", "why", "who", "about", "after", "before", "because",
+        "of", "to", "in", "on", "at", "by", "as", "so", "just", "now", "then", "still",
+        "help", "feel", "feeling", "hear", "sounds", "like", "please", "consult"
+    ]
+
     // MARK: - Public API
 
     /// Fast, deterministic check for foreign-script leakage (Chinese, Japanese, Korean, Thai, etc.)
@@ -82,6 +105,37 @@ nonisolated final class LanguageValidationService {
     func containsForeignScript(_ text: String) -> Bool {
         let pattern = "[\\p{Han}\\p{Hiragana}\\p{Katakana}\\p{Hangul}\\p{Thai}]"
         return text.range(of: pattern, options: .regularExpression) != nil
+    }
+
+    /// Detects English *leaking* into text that should be pure Vietnamese — the code-switch
+    /// failure seen as "Tôi sorry, tôi rất tiếc…", where a small model translated most of a
+    /// sentence but left an English word (or clause) untranslated. `containsForeignScript`
+    /// cannot catch this: English is Latin script, exactly like Vietnamese.
+    ///
+    /// The signal is a RUN of consecutive common-English words, not any single one. A lone
+    /// English token in Vietnamese is usually a legitimate loanword, brand, or proper noun
+    /// ("app", "email", a drug name) and must NOT trigger a fallback; but two or more common
+    /// English words in a row are almost always an untranslated fragment. This is the tolerant
+    /// "flag runs" policy — it caught the observed leak without over-firing on borrowed terms.
+    ///
+    /// A word counts as English only if it's in `commonEnglishWords` AND carries no Vietnamese
+    /// diacritic, so Vietnamese words that happen to share a spelling are never miscounted.
+    func containsEnglishLeak(_ text: String) -> Bool {
+        let words = Self.words(in: text)
+        guard words.count >= Self.englishLeakRunLength else { return false }
+
+        var run = 0
+        for word in words {
+            let isEnglish = Self.commonEnglishWords.contains(word)
+                && !word.contains(where: { Self.vietnameseDiacriticChars.contains($0) })
+            if isEnglish {
+                run += 1
+                if run >= Self.englishLeakRunLength { return true }
+            } else {
+                run = 0
+            }
+        }
+        return false
     }
 
     /// Classifies `text` as Vietnamese/English/unsupported. Detection is text-only and

@@ -103,7 +103,25 @@ nonisolated public final class ModelManager {
         let hasTokenizer = containsFile(in: directory, named: "tokenizer.json") || containsFile(in: directory, named: "tokenizer.model")
         let hasWeights = containsAnyFile(withExtensions: ["safetensors", "bin", "gguf"], in: directory)
 
-        return hasConfig && hasTokenizer && hasWeights
+        return hasConfig && hasTokenizer && hasWeights && hasChatTemplate(in: directory)
+    }
+
+    /// Whether a chat template is present, in either of the two forms a repo can ship it:
+    ///   • a standalone `chat_template.jinja` file (Qwen 3.5, Qwen 2.5-VL, newer exports), or
+    ///   • a `chat_template` key inside `tokenizer_config.json` (Qwen 2.5, Llama 3.2, Phi, …).
+    /// Without one, container.prepare throws "This tokenizer does not have a chat template."
+    /// at generation time — so a directory missing it is incomplete and must be re-downloaded.
+    /// This retroactively invalidates copies fetched before `.jinja` was an allowed download
+    /// extension, forcing a clean re-fetch that now includes the template file.
+    private func hasChatTemplate(in directory: URL) -> Bool {
+        if containsFile(in: directory, named: "chat_template.jinja") { return true }
+
+        let tokenizerConfig = directory.appendingPathComponent("tokenizer_config.json")
+        guard let data = try? Data(contentsOf: tokenizerConfig),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return false
+        }
+        return json["chat_template"] != nil
     }
 
     /// Ensure the model is downloaded, verified and extracted.
@@ -305,7 +323,12 @@ nonisolated public final class ModelManager {
 
         let modelInfo = try JSONDecoder().decode(HFModelInfo.self, from: data)
         let files = (modelInfo.siblings ?? []).map { $0.rfilename }
-        let allowedExtensions = ["json", "safetensors", "model", "txt", "md", "tiktoken"]
+        // `jinja` is essential: newer models (Qwen 3.5, Qwen 2.5-VL) ship their chat template
+        // as a standalone `chat_template.jinja` file rather than embedding `chat_template`
+        // inside tokenizer_config.json. Omitting it downloads a model whose tokenizer has no
+        // chat template, so container.prepare throws "This tokenizer does not have a chat
+        // template." at generation time — every reply becomes an [MLX error].
+        let allowedExtensions = ["json", "safetensors", "model", "txt", "md", "tiktoken", "jinja"]
         let downloadableFiles = files.filter { filename in
             let lower = filename.lowercased()
             return allowedExtensions.contains(where: { lower.hasSuffix(".\($0)") })
