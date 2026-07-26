@@ -12,6 +12,9 @@ struct CitationCard: View {
     let source: MedicalSource
     @State private var isExpanded = false
 
+    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
+    private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
+
     var body: some View {
         Button {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -32,7 +35,7 @@ struct CitationCard: View {
 
                     Spacer()
 
-                    Text("Tr. \(source.page)")
+                    Text(String(format: "Tr. %lld".localized(for: appLanguage), source.page))
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(.accentColor)
                         .padding(.horizontal, 6)
@@ -78,9 +81,12 @@ struct CitationCard: View {
 struct CitationsView: View {
     let sources: [MedicalSource]
 
+    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
+    private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label("Nguồn tài liệu", systemImage: "books.vertical.fill")
+            Label("Nguồn tài liệu".localized(for: appLanguage), systemImage: "books.vertical.fill")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(Color(.secondaryLabel))
                 .padding(.horizontal, 16)
