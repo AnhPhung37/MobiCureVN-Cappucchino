@@ -6,7 +6,7 @@ from pathlib import Path
 from .dataset import QueryItem, QrelItem
 from .metrics_ir import mrr, ndcg_at_k, recall_at_k
 from .metrics_qa import answer_similarity, faithfulness, safe_mean
-from .retriever import Embedder, SQLiteVecRetriever
+from .retriever import Embedder, HybridRetriever, SQLiteVecRetriever
 
 
 def _join_context(chunks: list[str]) -> str:
@@ -21,8 +21,23 @@ def run_experiment(
     embedder: Embedder,
     top_k: int,
     answerer=None,
+    retrieval: dict | None = None,
 ) -> dict:
-    retriever = SQLiteVecRetriever(db_path, embedder)
+    retrieval = retrieval or {}
+    mode = retrieval.get("mode", "hybrid")
+    if mode == "hybrid":
+        # Faithful port of the shipped app retriever (FTS + vec + RRF).
+        retriever = HybridRetriever(
+            db_path,
+            embedder,
+            candidate_multiplier=retrieval.get("candidate_multiplier", 3),
+            rrf_k=retrieval.get("rrf_k", 60.0),
+            min_token_length=retrieval.get("min_token_length", 3),
+        )
+    elif mode == "vector":
+        retriever = SQLiteVecRetriever(db_path, embedder)
+    else:
+        raise ValueError(f"Unknown retrieval mode: {mode}")
 
     per_query: list[dict] = []
     recall_scores: list[float] = []

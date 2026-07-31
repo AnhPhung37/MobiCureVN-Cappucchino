@@ -78,6 +78,20 @@ def build_index(
         """
     )
 
+    # Mirror the shipped index (ingestion/build_index.py): the app's retriever is
+    # hybrid FTS5 + vector, so the eval index must carry the same FTS5 table or the
+    # hybrid path silently degrades to vector-only.
+    conn.execute(
+        """
+        CREATE VIRTUAL TABLE chunks_fts USING fts5(
+            text,
+            content='chunks',
+            content_rowid='rowid',
+            tokenize='porter ascii'
+        )
+        """
+    )
+
     conn.execute("BEGIN")
     for chunk, vec in zip(chunks, embeddings):
         conn.execute(
@@ -104,6 +118,8 @@ def build_index(
             (rowid, _to_bytes(vec)),
         )
     conn.execute("COMMIT")
+    conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
+    conn.commit()
     conn.close()
 
     return len(chunks)

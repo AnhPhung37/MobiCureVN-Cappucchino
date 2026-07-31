@@ -12,6 +12,9 @@ struct CitationCard: View {
     let source: MedicalSource
     @State private var isExpanded = false
 
+    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
+    private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
+
     var body: some View {
         Button {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -22,18 +25,18 @@ struct CitationCard: View {
                 // Header row
                 HStack(spacing: 8) {
                     Image(systemName: "doc.text.fill")
-                        .font(.system(size: 12))
+                        .appFont(size: 12)
                         .foregroundColor(.accentColor)
 
                     Text(source.title)
-                        .font(.system(size: 13, weight: .semibold))
+                        .appFont(size: 13, weight: .semibold)
                         .foregroundColor(Color(.label))
                         .lineLimit(isExpanded ? nil : 1)
 
                     Spacer()
 
-                    Text("Tr. \(source.page)")
-                        .font(.system(size: 11, weight: .medium))
+                    Text(String(format: "Tr. %lld".localized(for: appLanguage), source.page))
+                        .appFont(size: 11, weight: .medium)
                         .foregroundColor(.accentColor)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
@@ -42,20 +45,20 @@ struct CitationCard: View {
                         )
 
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 11, weight: .semibold))
+                        .appFont(size: 11, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                 }
 
                 // Excerpt (expanded only)
                 if isExpanded {
                     Text(source.excerpt)
-                        .font(.system(size: 13))
+                        .appFont(size: 13)
                         .foregroundColor(Color(.secondaryLabel))
                         .fixedSize(horizontal: false, vertical: true)
                         .transition(.opacity.combined(with: .move(edge: .top)))
 
                     Text(source.documentName)
-                        .font(.system(size: 11, weight: .medium))
+                        .appFont(size: 11, weight: .medium)
                         .foregroundColor(Color(.tertiaryLabel))
                 }
             }
@@ -78,10 +81,13 @@ struct CitationCard: View {
 struct CitationsView: View {
     let sources: [MedicalSource]
 
+    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
+    private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label("Nguồn tài liệu", systemImage: "books.vertical.fill")
-                .font(.system(size: 12, weight: .semibold))
+            Label("Nguồn tài liệu".localized(for: appLanguage), systemImage: "books.vertical.fill")
+                .appFont(size: 12, weight: .semibold)
                 .foregroundColor(Color(.secondaryLabel))
                 .padding(.horizontal, 16)
 

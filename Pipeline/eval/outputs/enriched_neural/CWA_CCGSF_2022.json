@@ -1,0 +1,367 @@
+{
+  "doc_id": "CWA_CCGSF_2022",
+  "source_file": "Cancer_WA_Colorectal_Cancer_Guidelines_Short_Form_2022.md",
+  "chunk_count": 36,
+  "chunks": [
+    {
+      "chunk_id": "CWA_CCGSF_2022_c001",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n© Cancer Council Australia\n\nLast updated: January 2018\n\nThe Australian Government Department of Health commissioned and funded\nCancer Council Australia to develop this guideline. This is a short-form summary of the recommendations.The complete guidelines and technical documentation can be accessed online: wiki.cancer.org.au/australia/Guidelines:Colorectal_cancer. Please also access the guidelines website for the latest version of the short-form summary.\n\nThis work is copyright. Apart from any use as permitted under the Copyright Act 1968, no part may be reproduced by any process without prior written permission from\nCancer Council Australia. Requests and enquiries concerning reproduction and rights should be addressed to the Copyright Officer: Cancer Council Australia GPO Box 4708\nSydney NSW 2001 Australia; info@cancer.org.au",
+      "token_count": 171,
+      "section": null,
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c002",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\nThe guidelines are a general guide to appropriate practice, to be followed subject to the clinician’s judgment and the patient’s preference in each individual case. The guidelines are designed to provide information to assist in decision-making.\n",
+      "token_count": 48,
+      "section": null,
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c003",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\nThe development of the _Clinical practice guidelines for the prevention, early detection_\n_and management of colorectal cancer_ was undertaken by a non-remunerated Working\nParty. A membership list and disclosure of their interests is available in the long-form guidelines (online).\n\nSuggested citation: Cancer Council Australia Colorectal Cancer Guidelines Working\nParty. Clinical practice guidelines for the prevention, early detection and management of colorectal cancer. Short form summary of NHMRC approved recommendations. Sydney (2017). Available from: https://wiki.cancer.org.au/australia/Guidelines:Colorectal_cancer.\n\nThe guideline recommendations on pages 5–44 of this document were approved\n\n",
+      "token_count": 144,
+      "section": null,
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c004",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "Introduction\n\nColorectal cancer is a major cause of morbidity and mortality in Australia.\n\nIt is the second most common cancer diagnosed in both men and women, and is more common in those aged over 50 years. Colorectal cancer is also the second most common cause of cancer death and accounts for 9% of all cancer deaths. [[1]]\n\nThis profile of colorectal cancer in Australia highlights the need for guidelines to ensure clinical best practice in its prevention, detection and management.\n\n",
+      "token_count": 98,
+      "section": null,
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c005",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "SUMMARY\n\n## Summary of recommendations\n\nThis guideline includes evidence-based recommendations (EBR), consensus-based recommendations (CBR) and practice points (PP) as defined in the table below.\n\nRecommendations and practice points were developed by working party members and sub-committee members. Each EBR was assigned a grade by the expert working group, taking into account the volume, consistency, generalisability, applicability and clinical impact of the body of evidence according to _NHMRC Level and Grades for Recommendations for_\n_Guidelines Developers_ . [[1] ]\n\n",
+      "token_count": 124,
+      "section": "Summary of recommendations",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c006",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "NHMRC approved recommendation types and definitions\n\nSource : National Health and Medical Research Council. Procedures and requirements for meeting the NHMRC standard for clinical practice guidelines. Melbourne: National Health and Medical Research Council, 2011",
+      "token_count": 44,
+      "section": "Summary of recommendations",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c007",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\nEVIDENCE-BASED RECOMMENDATION GRADES\n\n|Grade of recommendation<br>A|Description<br>Body of evidence can be trusted to guide practice|\n|---|---|\n|B|Body of evidence can be trusted to guide practice in<br>most situations|\n|C|Body of evidence provides some support for<br>recommendation(s) but care should be taken in its application|\n|D|Body of evidence is weak and recommendation must<br>be applied with caution|\n\n",
+      "token_count": 115,
+      "section": "Summary of recommendations",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c008",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "Recommendations – PRIMARY PREVENTION\n\n## Primary prevention\n\n### Dietary and lifestyle strategies\n\n### The use of aspirin for prevention of colorectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For all people aged 50–70 years who are at average risk of colorectal cancer, aspirin should be actively<br>considered to prevent colorectal cancer. A low dose (100–300 mg per day) is recommended for at least 2.5<br>years, commencing at age 50 to 70 years. The beneft may extend to older ages with longer duration of use.<br>Beneft for cancer prevention (though shorter for cardiovascular risk) is evident only 10 years after initiation so a<br>life expectancy of at least 10 years should be taken into consideration in the advice to use aspirin.<br>The choice to take aspirin should be personalised based on age, sex and potential reduction in cardiovascular<br>events, cerebrovascular events and thrombotic stroke. The individual should take into account the potential<br>risks of taking aspirin. Aspirin should be avoided in patients with current dyspepsia, any history of peptic ulcer,<br>aspirin allergy, bleeding diathesis, an increased risk of gastrointestinal haemorrhage (such as associated with<br>use of oral anticoagulants or antiplatelet agents), or renal impairment.<br>The beneft in colorectal cancer risk reduction in women over 65 is less clear cut. However, based on limited<br>data available, older women with cardiovascular risk factors may derive a greater overall beneft than harm.|B|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|People who are at high risk of colorectal cancer due to Lynch Syndrome carrier status should be advised to<br>begin aspirin from the commencement of their colonoscopy screening (usually at age 25 years).|A|\n\nRecommendations – PRIMARY PREVENTION\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Non-syndromic familial cancer patients should be actively considered for aspirin, bearing in mind the possibility<br>of adverse events.<br>600 mg/day has been shown to be effective, but lower dose (100 mg /day) may be as effective and is<br>recommended based on the data available at the time of the systematic review.|B|\n\nRecommendations – POPULATION SCREENING FOR COLORECTAL CANCER\n\n## Population screening for colorectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Overall population screening strategy<br>The recommended strategy for population screening in Australia, directed at those at average risk of colorectal<br>cancer and without relevant symptoms, is immunochemical faecal occult blood testing every 2 years, starting at<br>age 50 years and continuing to age 74 years.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Primary screening test<br>An immunochemical faecal occult blood test is recommended as the screening modality for the detection of<br>colorectal cancer in the average-risk population.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Primary screening test<br>The emerging faecal, blood or serum tests for cancer-specifc biomarkers such as DNA are not recommended<br>as population screening modalities for colorectal cancer.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Primary screening test<br>The use of fexible sigmoidoscopy as a primary screening test is not recommended for population screening in<br>the average-risk population.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|frequency of testing<br>Population screening for colorectal cancer using immunochemical faecal blood testing every 2 years is<br>recommended. It is not recommended that the frequency of screening within the NBCSP be increased to yearly.|N/A|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|target age group<br>It is recommended that the age range for organised population screening continues to be 50–74 years.|N/A|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|target age group<br>Starting at age 40 is not recommended for population screening as it is unlikely to be cost-effective.|N/A|\n\nRecommendations – POPULATION SCREENING FOR COLORECTAL CANCER\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|target age group<br>Although modelling indicated that it may be cost-effective, starting screening at age 45 is not recommended for<br>population screening because there is a much less favourable ratio of benefts to harms than for 50–74 years.|N/A|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|target age group<br>Extending the age range to 79 or 84 years is not recommended for population screening as it is unlikely to be<br>cost-effective.|N/A|\n\nRecommendations – POPULATION SCREENING FOR COLORECTAL CANCER\n\nRecommendations – THE SYMPTOMATIC PATIENT\n\n## The symptomatic patient\n\n### Signs & symptoms predictive of colorectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|The urgency of colonoscopy to investigate symptoms suggestive of colorectal cancer should be based on an<br>assessment of patient age, symptom profle and results of simple investigations including full blood count, iron<br>studies and iFOBT (see Table 10.1 for consensus-based colonoscopy triage categories).|C|\n\nRecommendations – THE SYMPTOMATIC PATIENT\n\nOptimal maximum time from referral to diagnosis and treatment (diagnostic interval)\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with symptoms suggestive of colorectal cancer, the total time from frst healthcare presentation† <br>to diagnostic colonoscopy should be no more than 120 days. Diagnostic intervals greater than 120 days are<br>associated with poorer clinical outcomes.<br>† First healthcare presentation is defned as the date of presentation in general practice with symptoms suggestive of colorectal cancer or positive<br>iFOBT for screening.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|A diagnostic interval of 120 days should be the maximum time from frst healthcare presentation† to diagnostic<br>colonoscopy for triage Categories 1 and 2, whether it is for a patient with symptoms or after a positive iFOBT<br>used for colorectal cancer screening. Diagnostic intervals greater than 120 days are associated with poorer<br>clinical outcomes.<br>† First healthcare presentation is defned as the date of presentation in general practice with symptoms suggestive of colorectal cancer or positive<br>iFOBT for screening",
+      "token_count": 1475,
+      "section": "Primary prevention",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c009",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": ".|D|\n\nRecommendations – RISK AND SCREEning based on family history\n\n## Risk and screening based on family history\n\n### Strength of association between family history and colorectal cancer risk\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Category 1<br>People who have one relative with colorectal cancer diagnosed at age 55 or older should be advised that their<br>own risk of developing colorectal cancer could be up to twice the average risk, but is still not high enough to<br>justify CRC screening by colonoscopy.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Category 2<br>People should be advised that their risk of developing colorectal cancer is at least three times higher than<br>average, but could be up to six times higher than average, if they have any of the following:<br>• \t one frst-degree relative with colorectal cancer diagnosed before age 55 years<br>• \t two frst-degree relatives with colorectal cancer diagnosed at any age<br>• one frst-degree relative and at least two second-degree relative diagnosed with colorectal cancer at any age.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Category 3<br>People should be advised that their risk of colorectal cancer is at least seven times higher than average, but<br>could be up to 10 times higher than average, if they have either of the following:<br>• \t at least three frst-degree or second-degree relatives with colorectal cancer, with at least one diagnosed<br>before age 55 years<br>• \t at least three frst-degree relatives with colorectal cancer diagnosed at any age.|C|\n\nRecommendations – RISK AND SCREEning based on family history\n\nScreening strategies for people with a family history of colorectal cancer\n\nRecommendations – RISK AND SCREEning based on family history\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Category 1<br>For people with a family history of colorectal cancer who are assessed as having category 1 risk, iFOBT should<br>be performed every 2 years from age 50 to age 74.<br>See_Population screening for colorectal cancer_.<br>For those with one frst-degree relative with colorectal cancer, iFOBT every two years from age 45 should<br>be considered.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Category 2<br>For category 2 patients, offer iFOBT every 2 years starting at age 40, then colonoscopy every 5 years starting<br>at age 50. CT colonography may be offered if colonoscopy is contraindicated.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Category 3<br>For category 3 patients, offer iFOBT every two years starting at age 35, then colonoscopy every fve years<br>starting at age 45. CT colonography may be offered if colonoscopy is contraindicated",
+      "token_count": 653,
+      "section": "Risk and screening based on family history",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c010",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": ".|C|\n\nRecommendations – HIGH-RISK FAMILIAL SYNDROMES\n\n## High-risk familial syndromes\n\n### Familial adenomatous polyposis (FAP)\n\n### MUTYH-associated polyposis\n\nRecommendations – HIGH-RISK FAMILIAL SYNDROMES\n\n### Lynch syndrome\n\n### Juvenile polyposis syndrome\n\n### Serrated polyposis syndrome\n\nRecommendations – Imaging a patient with a diagnosis of colon/rectal adenocarcinoma\n\n## Imaging a patient with a diagnosis of colon/rectal adenocarcinoma\n\n### Imaging for colon cancer\n\nRecommendations – Imaging a patient with a diagnosis of colon/rectal adenocarcinoma\n\n### Imaging for rectal cancer\n\nRecommendations – Pathology and staging\n\n## Pathology and staging\n\n### Selection of a clinicopathological staging system\n\n### Additional information on pathology reporting\n\n### Optimal molecular profiling of colorectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|RAS mutation studies should be performed on patients with advanced (metastatic) colorectal cancer in whom<br>anti-EGFR treatment is being considered. Cetuximab and panitumumab should only be considered for the<br>treatment of patients with RAS wild-type metastatic colorectal cancer.|D|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|There is emerging evidence suggesting that BRAF mutation may be associated with poor response to<br>anti-EGFR treatment, and that BRAF mutation studies should therefore be performed on patients with<br>advanced (metastatic) colorectal cancer.|",
+      "token_count": 355,
+      "section": "High-risk familial syndromes",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c011",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\nRecommendations – Preparation for surgery and peri-operative optimisation\n\n## Preparation for surgery and peri-operative optimisation\n\n### Multidisciplinary meetings\n\n### Perioperative anaemia management\n\n### Thromboembolic prophylaxis\n\nRecommendations – Preparation for surgery and peri-operative optimisation\n\n### Stomal therapy\n\n### Body temperature\n\n### Enhanced recovery after surgery\n\n### Can peri operative management be optimised?\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Mechanical bowel preparation should not be used routinely in colonic surgery. It can be used selectively<br>according to individual patient and tumour characteristics, at the surgeon’s discretion.|",
+      "token_count": 151,
+      "section": "Preparation for surgery and peri-operative optimisation",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c012",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\nRecommendations – Elective and emergency surgery for colon and rectal cancer\n\n## Elective and emergency surgery for colon and rectal cancer\n\n### Optimal approach to resection of colon cancers\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Either an open approach or a laparoscopic approach can be used for the resection of colon cancer.|D|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Laparoscopic colectomy has post-operative advantages over open colectomy and should be performed when<br>the surgical expertise and hospital infrastructure are available.|",
+      "token_count": 128,
+      "section": "Elective and emergency surgery for colon and rectal cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c013",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\n### Optimal approach to resection of rectal cancers\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Open surgery is the standard approach for resection of rectal cancer. Laparoscopic resection can be<br>considered in selected cases if the surgical expertise (including advanced laparoscopic skills) and hospital<br>infrastructure are available noting that it is a technique that has yet to be proven safe and effcacious in all<br>patients for rectal cancer",
+      "token_count": 99,
+      "section": "Optimal approach to resection of rectal cancers",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c014",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": ".|C|\n\nRecommendations – Elective and emergency surgery for colon and rectal cancer\n\n### Effective treatment for early rectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with stage 1 rectal cancer (T1/2, N0, M0), cases should be discussed by a multidisciplinary team<br>to determine optimal management with respect to risk of local recurrence, avoidance of a permanent stoma,<br>and ftness for surgery.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with T1 tumours local excision can be considered, provided that the tumour can be removed with<br>clear margins and that the treating clinician counsels the patient that:<br>• \tthe risk of local recurrence increases as the T1 tumour stage progresses (from T1sm1 to T1sm2, or from<br>T1sm2 to T1sm3)<br>• \tradical resection may be required after histopathological review of the local excision specimen.|D|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with T2 tumours, consider radical resection as the frst option if they are ft for surgery.|C|\n\nRecommendations – Elective and emergency surgery for colon and rectal cancer\n\nStenting or colostomy vs. acute resection with primary anastomosis in acute obstruction due to left-sided colon or rectal carcinoma\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|In patients with acute obstruction due to left-sided colorectal cancer who are potentially curative, the use of<br>stenting as a bridge to surgery is not recommended as standard treatment, due to the potential risk of tumour<br>perforation and conversion of a curative case to a palliative case.|",
+      "token_count": 385,
+      "section": "Effective treatment for early rectal cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c015",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\nRecommendations – Elective and emergency surgery for colon and rectal cancer\n\nThe role for peritonectomy in the treatment of recurrent and primary colorectal cancer with peritoneal involvement\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with colorectal peritoneal metastases (either synchronous or metachronous to the primary),<br>consider cytoreduction with perioperative intraperitoneal chemotherapy. Where this procedure is suitable, offer<br>referral to a centre with the necessary expertise and infrastructure to perform this procedure.|D|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Cytoreduction surgery and perioperative intraperitoneal chemotherapy should only be offered after due<br>consideration of, and discussion with the patient about, the potential treatment-related mortality and morbidity.|",
+      "token_count": 170,
+      "section": "Effective treatment for early rectal cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c016",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\nRecommendations – Adjuvant therapy for colon cancer\n\n## Adjuvant therapy for colon cancer\n\n### Adjuvant therapy for stage III colon cancer\n\nEfficacy of adjuvant combination chemotherapy in elderly patients with colon cancer\n\n### Adjuvant therapy for stage II colon cancer\n\nRecommendations – Neoadjuvant and adjuvant therapy for rectal cancer\n\n## Neoadjuvant and adjuvant therapy for rectal cancer\n\n### Neoadjuvant therapy for rectal cancer\n\n### Short-course radiation treatment\n\nRecommendations – Neoadjuvant and adjuvant therapy for rectal cancer\n\nWhich patients with rectal cancer stage I-II could be considered for definitive chemoradiotherapy (no surgery), neo-adjuvant chemoradiotherapy or surgery alone?\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Consider neoadjuvant chemoradiation for patients with stage II-III rectal cancer where appropriate.|C|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with rectal cancer who have had a clinical complete response to neoadjuvant chemoradiation, and<br>planned resection according to the standard recommendation is either not possible or the patient declines it, a<br>‘watch and wait’ approach can be considered, provided that:<br>•\t the risks and benefts have been discussed with the multidisciplinary team and the patient<br>• \tthe patient is monitored closely for local recurrence<br>• \tthe patient is offered an appropriate surgical resection procedure if local recurrence is detected",
+      "token_count": 323,
+      "section": "Adjuvant therapy for colon cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c017",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": ".|D|\n\nRecommendations – Neoadjuvant and adjuvant therapy for rectal cancer\n\n### Neoadjuvant chemotherapy regimen\n\n### Optimal timing surgery after neoadjuvant therapy\n\nRecommendations – Neoadjuvant and adjuvant therapy for rectal cancer\n\n### Postoperative chemotherapy\n\n### Postoperative radiation treatment\n\nRecommendations – Management of resectable locally recurrent disease and metastatic disease\n## Management of resectable locally recurrent disease and metastatic disease\n\n### Investigation of recurrent cancer\n\nRecommendations – Management of resectable locally recurrent disease and metastatic disease\n\nPatients with locally recurrent colon or rectal cancer suitable for curative surgery\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with isolated local recurrence of rectal cancer, consider referral to a centre with the necessary<br>expertise to perform curative surgery (also known as pelvic exenteration).|D|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Re-operative surgery for locally recurrent rectal cancer should only be offered after due consideration of, and<br>discussion with the patient about, the potential survival advantage, quality-of-life outcomes, and potential<br>treatment-related morbidity",
+      "token_count": 255,
+      "section": "Neoadjuvant chemotherapy regimen",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c018",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": ".|D|\n\nPatients with resectable synchronous or metachronous metastatic colon or rectal cancer suitable for curative surgery\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|In patients with resectable liver metastases, liver resection should be offered, as this improves overall and<br>progression free survival.|D|\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Patients referred for liver resection should be counselled about the potential complications associated with liver<br>resection in comparison with non-curative treatments",
+      "token_count": 117,
+      "section": "Neoadjuvant chemotherapy regimen",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c019",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": ".|D|\n\nRecommendations – Management of resectable locally recurrent disease and metastatic disease\n\nRecommendations – Management of non-resectable locally recurrent disease and metastatic disease\n\n## Management of non-resectable locally recurrent disease and metastatic disease\n\n### Liver directed therapies in patients with incurable metastatic colorectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|For patients with non-resectable liver metastases of colorectal cancer, liver-directed therapies (selective internal<br>radiation treatment, radiofrequency ablation, hepatic arterial infusion of chemotherapy agents or transarterial<br>chemoembolisation) can be considered in centres with expertise in the specifc technique after multidisciplinary<br>team discussion, or in the context of a clinical trial.|",
+      "token_count": 166,
+      "section": "Management of non-resectable locally recurrent disease and metastatic disease",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c020",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\nRecommendations – Management of non-resectable locally recurrent disease and metastatic disease\n\n### Management synchronous primary in metastatic CRC\n\n## The role of systemic therapies in non-resectable metastatic disease\n\n### Molecular pathology and biomarkers – implications for systemic therapy\n\n### Systemic chemotherapy treatment options for first-line treatment\n\nRole of biological agents in first-line treatment of metastatic colorectal cancer\n\n### Subsequent treatment and the continuum-of-care model\n\n### Systemic options for second-line treatment\n\n### Systemic options for third-line treatment\n\nRecommendations – Follow-up after curative resection for colorectal cancer\n\n## Follow-up after curative resection for colorectal cancer\n\n### Rationale for follow-up\n\nOptimal intensity of follow up post curative resection of colorectal cancer\n\n|Evidence-based recommendation|Grade|\n|---|---|\n|Intensive follow-up after curative surgery for colorectal cancer should include CEA and CT scan, with the aim of<br>early detection of recurrence or residual disease where there is the possibility for curative resection.<br>PET/CT scan can be used as an effective adjunct for detection of recurrence, especially when the CEA and/or<br>CT scans are suggestive of recurrence.|",
+      "token_count": 266,
+      "section": "Management synchronous primary in metastatic CRC",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c021",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "D|\n\nRecommendations – Follow-up after curative resection for colorectal cancer\n\n### Health professionals performing follow-up and suggested follow-up schedule\n\nRecommendations – PsyCHOSOCIAL CARE\n\n## Psychosocial care\n\n## Working Party members and contributors\n\n### Management committee\n\n|Name|Affiliation|\n|---|---|\n|Professor<br>Timothy Price (Chair)|Chair, Management Committee and Colorectal Cancer Guidelines Revision Working Party<br>Medical Oncologist, The Queen Elizabeth Hospital, Adelaide|\n|Professor Sanchia Aranda|CEO, Cancer Council Australia|\n|Dr Cameron Bell|Gastroenterologist, Royal North Shore Hospital, Sydney|\n|Professor<br>Alexander (Sandy) Heriot|Consultant Colorectal Surgeon, Director Cancer Surgery, Peter MacCallum Cancer Centre<br>Director, Lower GI Tumour Stream, Victorian Comprehensive Cancer Centre|\n|Professor<br>Finlay Macrae AO|Gastroenterologist, Royal Melbourne Hospital, Melbourne|\n|Dr Elizabeth Murphy|Head, Colorectal Surgical Unit, Lyell McEwin Hospital Adelaide|\n|Professor<br>Michael Solomon|Colorectal Surgeon, Royal Prince Alfred Hospital, Sydney|\n|Professor<br>James St John AO|Emeritus Consultant Gastroenterologist, The Royal Melbourne Hospital; Honorary Senior<br>Associate, Cancer Council Victoria; Honorary Clinical Professorial Fellow, The University<br>of Melbourne|\n|Dr Bernie Towler|Principal Medical Adviser, Population Health Division, Department of Health, Canberra|\n|Ms Jutta Thwaites|Head, Clinical Guidelines Network (maternity leave from November 2016 – November 2017)|\n|Ms Laura Wuellner|Acting Head, Clinical Guidelines Network (from November 2016 – January 2018)|\n|Professor John R Zalcberg|Head of Cancer at the School of Public Health and Preventive Medicine,<br>Monash University, Melbourne|\n",
+      "token_count": 435,
+      "section": "Health professionals performing follow-up and suggested follow-up schedule",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c022",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n### Guideline section leaders\n\n|Name|Specialty|Section|\n|---|---|---|\n|Professor<br>Finlay Macrae AO|Gastroenterology|Primary prevention|\n|Professor<br>James St John AO|Gastroenterology|Population screening for colorectal cancer (co-lead)|\n|Dr Hooi Ee|Gastroenterology|Population screening for colorectal cancer (co-lead)|\n|Professor Mark Jenkins|Genetic epidemiology,<br>cancer epidemiology<br>(colorectal cancer,<br>Lynch syndrome,<br>genetic epidemiology)|Risk and screening based on family history|\n|Professor Jon Emery|General practice|The symptomatic patient|\n|Professor Phyllis Butow|Psycho-oncology|Psychosocial care|\n|Professor Barbara Leggett|Gastroenterology|High-risk familial syndromes|\n|Dr Kirsten Gormly|Radiology|Imaging a patient with a diagnosis of colon/rectal adenocarcinoma|\n|Dr Andrew Luck OAM|Colorectal surgery|Elective and emergency surgery colon|\n|Professor<br>Alexander (Sandy) Heriot|Colorectal surgery|Elective and emergency surgery for colon and rectal cancer|\n|Dr Elizabeth Murphy|Colorectal surgery|Preparation for surgery and peri-operative optimisation|\n|Professor Pierre Chapuis|Colorectal surgery|Pathology and staging (co-lead)|\n|A/Professor Charles Chan|Pathology|Pathology and staging (co-lead)|\n|A/Professor Peter Gibbs|Medical oncology|Adjuvant therapy for colon cancer|\n|Professor Desmond Yip|Medical oncology|Neoadjuvant and adjuvant therapy for rectal cancer (co-lead)|\n|Dr Kathryn Field|Medical oncology|Neoadjuvant and adjuvant therapy for rectal cancer (co-lead)|\n|Dr Peter J. Lee|Colorectal surgery|Follow up after curative resection for colorectal cancer|\n|Dr Cherry Koh|Colorectal surgery|Management of resectable locally recurrent disease and metastatic<br>disease|\n|Dr Louise Nott|Medical oncology|Management of non-resectable locally recurrent disease and<br>metastatic disease; The role of systemic therapies in non-<br>resectable metastatic disease|",
+      "token_count": 496,
+      "section": "Guideline section leaders",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c023",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n### Additional working party members\n\n|Name<br>Jeff Cuff|Specialty<br>Consumer representative|\n|---|---|\n|Jillian Arnott|Consumer representative|\n|Professor Karen Canfell|Director, Cancer Research Division, Cancer Council NSW (Epidemiology expert)|\n|Professor<br>Dianne O’Connell|Senior Epidemiologist, Manager, Cancer Research Division, Cancer Council NSW<br>(Epidemiology expert)|",
+      "token_count": 102,
+      "section": "Additional working party members",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c024",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n### Cancer Council Australia project team contributions\n\n|Name<br>Jutta Thwaites|Affiliation<br>Head, Clinical Guidelines Network, Cancer Council Australia (maternity leave from November<br>2016 – November 2017)|\n|---|---|\n|Laura Wuellner|Project Manager, Clinical Guidelines Network (until November 2016), Acting Head, Clinical<br>Guidelines Network, Cancer Council Australia<br>(from November 2016 – January 2018)|\n|Katrina Anderson|Project Manager, Clinical Guidelines Network (from November 2016 – December 2017)|\n|Dr Albert Chetcuti|Project Offcer, Systematic Literature Reviews, Colorectal Cancer Guidelines|\n|Ben Lee-Bates|Research Assistant, Colorectal Cancer Guidelines|\n|Victoria Freeman|Research Assistant, Colorectal Cancer Guidelines|\n|Melissa Chow|Research Assistant, Colorectal Cancer Guidelines|\n|Cecilia Taing|Research Assistant, Colorectal Cancer Guidelines|\n\n## Chapter details\n\n### Colorectal cancer in Australia\n\n|Name<br>Dr Prema Thavaneswaran*|Affiliation<br>Manager, Public Health Policy, Cancer Council Australia|\n|---|---|\n|Professor Jane Young|Executive Director, Research, Institute of Academic Surgery, Executive Director, Surgical<br>Outcomes Research Centre (SOuRCe) Royal Prince Alfred Hospital and University of Sydney,<br>Professor in Cancer Epidemiology, School of Public Health, University of Sydney|\n|Professor<br>Michael Solomon|Colorectal Surgeon, Royal Prince Alfred Hospital, Sydney|\n\n#### Primary prevention\n\n|Name|Affiliation|\n|---|---|\n|Professor<br>Finlay Macrae AO*|Gastroenterologist, Royal Melbourne Hospital, VIC|\n|Dr Julie Clarke|Senior Research Scientist, CSIRO Health and Biosecurity, Adelaide|\n|Professor Jon Emery|General Practitioner|\n|Professor Mark Jenkins|Risk and screening based on family history|\n|Dr Trevor Lockett|Group Leader Personalised Health, CSIRO, Adelaide|\n|Professor John McNeil|Head, Monash University School of Public Health & Preventive Medicine, Melbourne|\n|Professor Allan Spigelman|Professor of Surgery, UNSW St Vincent’s Clinical School, Sydney; Director, Cancer Genetics,<br>St Vincent’s Hospital, Sydney and Hunter Family Cancer Service, Newcastle & Regional NSW|\n|Dr Nicholas Pachter|Clinical Geneticist, Genetic Services of Western Australia, King Edward Memorial Hospital for<br>Women, Perth, Western Australia.|\n|Dr Aung Ko Win|Senior Research Fellow, Centre for Epidemiology & Biostatistics, The University of Melbourne|\n|A/Professor Robyn Woods|Associate Professor, Monash University|\n|Professor<br>Graeme Young AM|Matthew Flinders Distinguished Professor, Professor of Global Gastrointestinal Health,<br>Flinders Centre for Innovation in Cancer, College of Medicine and Public Health,<br>Flinders University|\n|Professor John R Zalcberg|Head of Cancer at the School of Public Health and Preventive Medicine,<br>Monash University, Melbourne|\n\n#### Population screening for colorectal cancer\n\n|Name<br>Professor<br>James St John AO*|Affiliation<br>Emeritus Consultant Gastroenterologist, The Royal Melbourne Hospital; Honorary Senior<br>Associate, Cancer Council Victoria; Honorary Clinical Professorial Fellow, The University<br>of Melbourne|\n|---|---|\n|Dr Hooi Ee*|Gastroenterologist, Sir Charles Gairdner Hospital, Perth|\n|Professor Jon Emery|Honorary Senior Visiting Research Fellow, Winthrop Professor of General Practice at the<br>Western University of Australia and Professor of Primary Care Cancer Research at the<br>University of Melbourne (also practising GP)|\n|Professor<br>Finlay Macrae AO|Gastroenterologist, Royal Melbourne Hospital, Melbourne|\n|Professor Mark Jenkins|Director of the Centre for Epidemiology & Biostatistics, University of Melbourne|\n|Paul Grogan|Director, Public Policy & Knowledge Management, Cancer Council Australia|\n|Professor Karen Canfell|Director, Cancer Research Division, Cancer Council NSW|\n|Ms Jie-Bin Lew|Senior Research Programmer, Cancer Council NSW|\n|Ms Rachel Mulqueeney|Cancer Screening Project Coordinator<br>Prevention Division Cancer Council Victoria|\n|Dr Albert Chetcuti|Senior Project Offcer, Cancer Council Australia|",
+      "token_count": 996,
+      "section": "Cancer Council Australia project team contributions",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c025",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### The symptomatic patient\n\n|Name<br>Professor Jon Emery*|Affiliation<br>General Practitioner|\n|---|---|\n|Dr Cameron Bell|Gastroenterologist – Royal North Shore Hospital, Sydney|\n|A/Professor<br>Gregor Brown|Head of Endoscopy, The Alfred Hospital, Melbourne|\n|Professor<br>Finlay Macrae AO|Gastroenterologist, Royal Melbourne Hospital, VIC|\n|Dr Iain Skinner|Colorectal surgeon|\n|A/Professor Justin Tse|Director of Medical Student Education (Clinical Dean) St Vincent’s Clinical School, The<br>University of Melbourne|",
+      "token_count": 145,
+      "section": "The symptomatic patient",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c026",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Risk and screening based on family history\n\n|Name<br>Professor Mark Jenkins*|Affiliation<br>Director of the Centre for Epidemiology & Biostatistics, University of Melbourne, Melbourne.|\n|---|---|\n|Professor Alex Boussioutas|GE at University of Melbourne, Peter MacCallum Cancer Centre and Royal Melbourne<br>Hospital, Melbourne|\n|Dr Driss Ait Quakrim|Research Fellow – Epidemiologist, Centre for Epidemiology and Biostatistics, University of<br>Melbourne, Melbourne|\n|Professor<br>John Hopper AM|Academic, School of Population and Global Health, The University of Melbourne|\n|Professor<br>James St John AO|Emeritus Consultant Gastroenterologist, The Royal Melbourne Hospital; Honorary Senior<br>Associate, Cancer Council Victoria; Honorary Clinical Professorial Fellow, The University<br>of Melbourne|\n|Dr Hooi Ee|Gastroenterologist, Sir Charles Gairdner Hospital, Perth|\n|Professor Jon Emery|Honorary Senior Visiting Research Fellow, Winthrop Professor of General Practice at the<br>Western University of Australia and Professor of Primary Care Cancer Research at the<br>University of Melbourne (also practising GP)|\n|Professor<br>Finlay Macrae AO|Gastroenterologist, Royal Melbourne Hospital, Melbourne|",
+      "token_count": 299,
+      "section": "Risk and screening based on family history",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c027",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### High-risk familial syndromes\n\n|Name|Affiliation|\n|---|---|\n|Professor<br>Barbara Leggett*|Gastroenterologist, Royal Brisbane and Womens Hospital; Professor of Medicine, School of<br>Medicine, University of Queensland; Honorary Group Leader, Queensland Institute of Medical<br>Research Berghofer|\n|Dr Nicola Poplawski|Clinical Geneticist, SA Pathology, South Australia|\n|Dr Nicholas Pachter|Clinical Geneticist, Genetic Services of Western Australia, King Edward Memorial Hospital<br>for Women, Perth, Western Australia.|\n|Dr Christophe Rosty|Anatomical Pathologist at Envoi Specialist Pathologist; Associate Professor, Molecular and<br>Cellular Pathology, University of Queensland; Associate Professor, Department of Pathology,<br>The University of Melbourne|\n|A/Prof Ian Norton|Head, Department of Gastroenterology, Royal North Shore Hospital|\n|Professor<br>Finlay Macrae AO|Gastroenterologist, Royal Melbourne Hospital, Melbourne|\n|A/Professor<br>Caroline Wright|Colorectal Surgeon, Royal Prince Alfred Hospital, Sydney|\n|Dr Aung Ko Win|Senior Research Fellow, Centre for Epidemiology & Biostatistics, The University of Melbourne|",
+      "token_count": 287,
+      "section": "High-risk familial syndromes",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c028",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Imaging a patient with a diagnosis of colon/rectal adenocarcinoma\n\n|Name|Affiliation|\n|---|---|\n|Dr Kirsten Gormly*|Radiologist, Dr Jones and Partners, SA|\n|Dr Wendy Brown|Senior Staff Specialist, Radiology Department, Royal Prince Alfred Hospital, Camperdown,<br>NSW|\n|Dr Damien Stella|Director of CT, Department of Radiology, University of Melbourne, Royal Melbourne Hospital,<br>VIC|\n|Professor Eva Segelov|Professor/Director of Oncology, Monash Health and Monash University, VIC|\n|Dr Elizabeth (Liz) Murphy*|Head, Colorectal Surgical Unit, Lyell McEwin Hospital Adelaide, SA|\n|Professor<br>Timothy (Tim) Price|Chair, Management Committee and Colorectal Cancer Guidelines Revision Working Party.<br>Medical Oncologist, The Queen Elizabeth Hospital, SA|",
+      "token_count": 213,
+      "section": "Imaging a patient with a diagnosis of colon/rectal adenocarcinoma",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c029",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Pathology and staging\n\n|Name|Affiliation|\n|---|---|\n|Professor Pierre Chapuis*|Head, Academic Surgery, the Concord Clinical School and Director of Postgraduate Surgical<br>Education, Discipline of Surgery, the University of Sydney|\n|Associate Professor<br>Charles Chan*|Senior Staff Specialist, Anatomical Pathology Department, Concord Repatriation General<br>Hospital; Clinical Associate Professor, Concord Clinical School, Discipline of Medicine;<br>School of Medical Sciences, Discipline of Biomedical Science, University of Sydney|\n|Dr Louise Nott|Medical Oncologist, Royal Hobart Hospital and St John’s Hospital|\n|A/Professor<br>Muhammad Khattak|Consultant Medical Oncologist, Fiona Stanley Hospital|\n|Professor<br>Timothy (Tim) Price|Chair, Management Committee and Colorectal Cancer Guidelines Revision Working Party<br>Medical Oncologist, The Queen Elizabeth Hospital, Adelaide, SA|\n|Dr Amanda Townsend|Oncologist, The Queen Elizabeth Hospital, Adelaide, SA|\n|Dr Albert Chetcuti|Senior Project Offcer, Cancer Council Australia|",
+      "token_count": 262,
+      "section": "Pathology and staging",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c030",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Preparation for surgery and peri-operative optimisation\n\n|Name|Affiliation|\n|---|---|\n|Dr Elizabeth (Liz) Murphy*|Head, Colorectal Surgical Unit, Lyell McEwin Hospital Adelaide, SA|\n|Dr Karen Barclay|Colorectal Surgeon and Senior Lecturer in Surgery, Acting Head of the Academic Surgical<br>Unit, NCHER, The Northern Hospital and the University of Melbourne, VIC|\n|Dr Kate Burbury|Lead Haematologist for Haemostasis and Thrombosis, Peter MacCallum Cancer Centre,<br>Melbourne, VIC|\n|Dr Bernd Froessler|Staff Specialist, Anaesthesia, Lyell McEwin Hospital; Clinical Senior Lecturer, University of<br>Adelaide|\n|Professor<br>Alexander (Sandy) Heriot*|Colorectal Surgeon, Peter MacCallum Cancer Centre, Melbourne, VIC|\n|Dr Cherry Koh|Colorectal surgeon, Royal Prince Alfred Hospital, Sydney|\n|Professor<br>Timothy (Tim) Price|Medical Oncologist, The Queen Elizabeth Hospital, Adelaide, SA|\n|Dr Kathryn Robinson|Transfusion medicine specialist, Australian Red Cross Blood Service, Haematologist,<br>The Queen Elizabeth Hospital, Adelaide, SA|",
+      "token_count": 290,
+      "section": "Preparation for surgery and peri-operative optimisation",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c031",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Elective and emergency surgery for colon and rectal cancer\n\n|Name|Affiliation|\n|---|---|\n|Professor<br>Alexander (Sandy) Heriot*|Colorectal Surgeon, Peter MacCallum Cancer Centre, Melbourne, VIC|\n|Dr Andrew Luck OAM*|Colorectal Surgeon, Lyell McEwin Hospital, Adelaide, SA|\n|Dr Cherry Koh*|Colorectal surgeon, Royal Prince Alfred Hospital, Sydney|\n|Dr Carina Chow|Colorectal Surgeon, Royal Brisbane Hospital, QLD|\n|Dr Chip Farmer|Colorectal Surgeon, The Alfred Hospital, Melbourne, VIC|\n|Dr Henry Hicks|General Surgeon, Wagga Wagga Specialist Medical Centre, NSW|\n|Professor<br>Cameron Platell|Director of Colorectal Cancer Research, St John of God Subiaco Hospital, WA|\n|Dr Bruce Stewart|Colorectal Surgeon, The Specialist Centre, Ballarat; Consultant Medical Oncologist, Peter<br>MacCallum Cancer Centre & Western Health Senior Research Fellow,<br>Walter and Eliza Hall Institute of Medical Research, VIC|\n|Dr Andrew Stevenson|Specialist Colorectal Surgeon, Head of Colorectal Surgery at Royal Brisbane and Womens<br>Hospital, Associate Professor, The University of Queensland, QLD|",
+      "token_count": 308,
+      "section": "Elective and emergency surgery for colon and rectal cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c032",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Adjuvant therapy for colon cancer\n\n|Name|Affiliation|\n|---|---|\n|Professor Peter Gibbs*|Laboratory Head, Walter & Eliza Hall, Institute of Medical Research, Melbourne, VIC|\n|Dr Margaret Lee|Medical Oncologist, Department of Medical Oncology, Eastern Health and<br>Western Health|\n|Dr Jeanne Tie|Consultant Medical Oncologist, Peter MacCallum Cancer Centre & Western Health Senior<br>Research Fellow, Walter and Eliza Hall Institute of Medical Research|\n|Professor<br>Timothy (Tim) Price|Medical Oncologist, The Queen Elizabeth Hospital, Adelaide, SA|\n\n*Section lead Author\n\n#### Neoadjuvant and adjuvant therapy for rectal cancer\n\n|Name|Affiliation|\n|---|---|\n|Professor Desmond Yip*|Medical Oncologist and Clinical Director, The Canberra Hospital, Australian National<br>University; Honorary Associate, Sydney Medical School, The University of Sydney, ACT|\n|Dr Kathryn Field*|Medical Oncologist, Peter MacCallum Cancer Centre|\n|Professor Les Bokey|Colorectal Surgeon, Liverpool Hospital, Sydney, NSW|\n|Associate Professor<br>George Hruby|Senior Staff Specialist Royal North Shore Hospital and Genesis Cancer Care|\n|Professor Ian Jones|Colorectal Surgeon, Royal Melbourne Hospital, VIC|\n|Professor<br>Christos Karapetis|Medical Oncologist, Flinders Medical Centre, Adelaide, SA|\n|Dr Elizabeth (Liz) Murphy|Head, Colorectal Surgical Unit, Lyell McEwin Hospital, Adelaide, SA|\n|A/Professor Sam Ngan|Head of the GI Unit of the Department of Radiation Oncology, Peter MacCallum Cancer<br>Centre, Melbourne, VIC|\n|Dr Kirsten Gormly*|Radiologist, Dr Jones and Partners Medical Imaging, Adelaide, SA|\n|Professor<br>Alexander (Sandy) Heriot|Colorectal Surgeon, Peter MacCallum Cancer Centre, Melbourne, VIC|",
+      "token_count": 461,
+      "section": "Adjuvant therapy for colon cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c033",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Management of resectable locally recurrent disease and metastatic disease\n\n|Name|Affiliation|\n|---|---|\n|Dr Cherry Koh*|Surgical Outcomes Research Centre (SOuRCe), Sydney, NSW|\n|Dr Andrew Luck OAM|Colorectal Surgeon, Lyell McEwin Hospital Adelaide|\n|Dr Nicholas O’Rourke|Surgeon (laparoscopic and hepatobiliary), Wesley Hospital, Brisbane, QLD|\n|Dr Kirsten Gormly|Radiologist, Dr Jones and Partners Medical Imaging, Adelaide|\n|Professor Tristan Yan|Consultant Cardiothoracic Surgeon, Professor of Cardiovascular and Thoracic Surgery at the<br>Macquarie University Hospital and Associate Clinical Professor at the University<br>of Sydney, Department of Cardiothoracic Surgery, Royal Prince Alfred Hospital,<br>Sydney, NSW|\n|Dr Peter Lee|Colorectal surgeon (visiting), Colorectal, Royal Prince Alfred Hospital, Chris O'Brien Lifehouse,<br>St Luke's Hospital, Sydney, NSW|\n|Professor<br>Alexander (Sandy) Heriot|Colorectal Surgeon, Peter MacCallum Cancer Centre, Melbourne, VIC|",
+      "token_count": 268,
+      "section": "Management of resectable locally recurrent disease and metastatic disease",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c034",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Management of non-resectable locally recurrent disease and metastatic disease\n\n|Name|Affiliation|\n|---|---|\n|Dr Louise Nott*|Medical Oncologist, Royal Hobart Hospital and St John's Hospital, TAS|\n|A/Prof<br>Muhammad Khattak|Consultant Medical Oncologist, Fiona Stanley Hospital|\n|Dr Amanda Townsend|Senior Medical Oncologist the Queen Elizabeth Hospital|\n|Professor<br>Timothy (Tim) Price|Medical Oncologist, The Queen Elizabeth Hospital, Adelaide, SA|\n\n- Section lead author\n\n#### The role of systemic therapies in non-resectable metastatic disease\n\n|Name|Affiliation|\n|---|---|\n|Dr Louise Nott*|Medical Oncologist, Royal Hobart Hospital and St John's Hospital, TAS|\n|A/Prof<br>Muhammad Khattak|Consultant Medical Oncologist, Fiona Stanley Hospital|\n|Dr Amanda Townsend|Senior Medical Oncologist the Queen Elizabeth Hospital|\n|Professor<br>Timothy (Tim) Price|Medical Oncologist, The Queen Elizabeth Hospital, Adelaide, SA|",
+      "token_count": 262,
+      "section": "Management of non-resectable locally recurrent disease and metastatic disease",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c035",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n### Follow up after curative resection for colorectal cancer\n\n|Name|Affiliation|\n|---|---|\n|Dr Peter J. Lee*|Colorectal surgeon (visiting), Colorectal, Royal Prince Alfred Hospital, Chris O'Brien Lifehouse,<br>St Luke's Hospital, Sydney, NSW|\n|Dr Andrew Gilmore|Head: Colorectal Unit Liverpool Hospital; Chairman: Complex Pelvic Surgery Liverpool<br>Hospital|\n|Professor Phillip Beale|Director, Cancer Services and Palliative Care, SLHD; Director Concord Cancer Centre; Head<br>of Medical Oncology, CRGH; University of Sydney|",
+      "token_count": 139,
+      "section": "Follow up after curative resection for colorectal cancer",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "CWA_CCGSF_2022_c036",
+      "doc_id": "CWA_CCGSF_2022",
+      "text": "\n\n#### Psychosocial care\n\n|Name|Affiliation|\n|---|---|\n|Professor Phyllis Butow*|Chair Psycho-Oncology Co-operative Research Group (PoCoG), and Co Director of the<br>Centre for Medical Psychology and Evidence-based Medicine (CeMPED) and of the Surgical<br>Outcomes Research Centre (SoURCe), University of Sydney|\n|Professor Afaf Girgis|Director, Psycho-Oncology Research Group, Centre for Oncology Education and Research<br>Translation, Ingham Institute for Applied Medical Research, South Western Sydney Clinical<br>School, University of NSW|\n\nLast updated: January 2018\n",
+      "token_count": 148,
+      "section": "Psychosocial care",
+      "doc_type": "guideline",
+      "source_org": "Cancer_WA",
+      "credibility_tier": 1
+    }
+  ]
+}

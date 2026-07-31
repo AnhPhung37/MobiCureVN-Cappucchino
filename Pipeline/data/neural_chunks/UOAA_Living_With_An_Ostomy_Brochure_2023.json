@@ -1,0 +1,69 @@
+{
+  "source_file": "UOAA_Living_With_An_Ostomy_Brochure_2023.md",
+  "source_path": "/Users/quannguyen/MobiCureVN-Cappucchino/Pipeline/data/cleaned_markdowns/UOAA_Living_With_An_Ostomy_Brochure_2023.md",
+  "chunker": "NeuralChunker",
+  "model": "mirth/chonky_modernbert_base_1",
+  "chunk_count": 12,
+  "chunks": [
+    {
+      "chunk_index": 1,
+      "text": "People have ostomy surgery for a wide variety of reasons. UOAA is the hub of a diverse community that can connect you to resources to help ease the physical and emotional changes ahead.\n\nThere are approximately 725,000 to 1 million people in the U.S. who have an ostomy: people who have had surgery to remove all or part of their intestines/bowels or bladders. Your ostomy can bring order out of a disorder that could have disrupted or ended your life.\n\n_“The Ostomy community can find many valuable resources through UOAA.”_\nDr. David E. Beck, M.D. (Past President, ASCRS)\n",
+      "token_count": 145
+    },
+    {
+      "chunk_index": 2,
+      "text": "\nUnited Ostomy Associations of America (UOAA) promotes quality of life for people with ostomies and continent diversions through information, support, advocacy and collaboration. Our 300+ affiliated ostomy support groups, organized by volunteers throughout the United States, provide the opportunity for local support.\n\nYour can turn to us with questions about anything from nutrition to intimacy, and to find useful knowledge about living with an ostomy or continent diversion.\n\nVisit our educational website: www.ostomy.org or call us at 800-826-0826.\n",
+      "token_count": 116
+    },
+    {
+      "chunk_index": 3,
+      "text": "\nHow can I cope with this change to my body?\nThere are many people just like you who find benefits from the peer support offered by UOAA affiliated support groups. You can gain confidence in managing your ostomy more quickly, and find comfort in public settings, by attending and participating in one of our local support groups. You can also find support from the thousands of people connected to our online discussion board and who follow us on social media.\n",
+      "token_count": 92
+    },
+    {
+      "chunk_index": 4,
+      "text": "\nWill my pouch be visible to the public?\nYour pouch may extend with gas or waste, but some people choose to wear tighter clothing to counteract this. You can expect to wear, with few exceptions, what you wore before surgery including formal wear and bathing suits!\n",
+      "token_count": 56
+    },
+    {
+      "chunk_index": 5,
+      "text": "\nWill my ostomy produce an odor?\nThanks to modern odor-proof pouching systems you will likely not notice a smell. For those concerned about odor when emptying their pouch, there are in-pouch deodorants that can be used to eliminate any odors. Making adjustments in your diet/avoiding specific foods may also be helpful.\n",
+      "token_count": 73
+    },
+    {
+      "chunk_index": 6,
+      "text": "\nWill I feel the waste my stoma discharges?\nFor those with a colostomy or ileostomy, there might be a slight pressure when waste leaves your body, but there should be no unpleasant sensations. Those with a urostomy will probably be unaware of any drainage.\n",
+      "token_count": 57
+    },
+    {
+      "chunk_index": 7,
+      "text": "\nWill I spend more time in the restroom?\nImmediately post-op you will spend more time in the bathroom than you will after your body recovers from surgery. The number of times an individual will empty their pouch varies, depending on the type of ostomy.\nSeek the help of an ostomy nurse or other professional to get the best pouching system for you. In some cases, you will be more free of the toilet than before surgery.\n\n_\"UOAA support groups can enhance the quality of life for people_\n_who have an ostomy surgery\"._\nMargaret T. Goldberg MSN, CWOCN (Past President, WOCN Society)\n",
+      "token_count": 144
+    },
+    {
+      "chunk_index": 8,
+      "text": "\nWill my ostomy make noises?\nEveryone produces gas. Your intestinal sounds that occur from time to time are no different from a gurgling stomach, and quite often your clothing will muffle any sounds.\n",
+      "token_count": 44
+    },
+    {
+      "chunk_index": 9,
+      "text": "\nHow will this affect what I can eat?\nIt depends. For guidance, follow your nurse or doctor’s orders at each stage of your post-op adjustment.\nIndividual sensitivity to certain foods varies greatly. You must determine, by trial, what is best for you. A good practice for all is to always hydrate properly.\n",
+      "token_count": 70
+    },
+    {
+      "chunk_index": 10,
+      "text": "\nHow will this affect my social life?\nPeople with bowel and urinary diversions date, marry and have babies (even twins). Expect to resume an active social life with your partner, friends and family.\n",
+      "token_count": 43
+    },
+    {
+      "chunk_index": 11,
+      "text": "\nCan my pouch get wet? Can I bathe and go swimming?\nYes, yes, and yes! With a securely attached pouching system you can shower, take a bath (even get into a hot tub), swim and surf.\n\nCan I exercise, do physical activity and participate in the sports\nI enjoy?\nPeople living with an with ostomy: bike, jog, play sports, do yardwork, play with their kids, and climb mountains. You name it, people with an ostomy can do it. Working people with bowel and urinary diversions do almost every job imaginable. Set no limits!\n",
+      "token_count": 129
+    },
+    {
+      "chunk_index": 12,
+      "text": "\nI have a continent diversion. Can UOAA help me?\nYes, you are a part of our support network at UOAA. Please contact us for information tailored just for you in our New Ostomy Patient Guide.\n",
+      "token_count": 48
+    }
+  ]
+}

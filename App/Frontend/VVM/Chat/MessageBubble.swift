@@ -29,7 +29,7 @@ struct MessageBubble: View {
 
                             if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 markdownText(message.content)
-                                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                                    .appFont(size: 16, weight: .regular, design: .rounded)
                                     .foregroundColor(.white)
                                     .textSelection(.enabled)
                             }
@@ -38,7 +38,7 @@ struct MessageBubble: View {
                         TypingIndicator()
                     } else {
                         markdownText(message.content)
-                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                            .appFont(size: 16, weight: .regular, design: .rounded)
                             .foregroundColor(Color(.label))
                             .textSelection(.enabled)
                     }

@@ -6,9 +6,9 @@
     {
       "chunk_id": "BCUK_ASR_2024_c001",
       "doc_id": "BCUK_ASR_2024",
-      "text": "\nThis factsheet is about having surgery to reverse your stoma. It explains what a stoma reversal is, possible complications and what to expect after the operation.",
-      "token_count": 33,
-      "section": null,
+      "text": "# About stoma reversal\n\nThis factsheet is about having surgery to reverse your stoma. It explains what a stoma reversal is, possible complications and what to expect after the operation.",
+      "token_count": 39,
+      "section": "About stoma reversal",
       "doc_type": "patient_education",
       "source_org": "BCUK",
       "credibility_tier": 2
@@ -18,7 +18,7 @@
       "doc_id": "BCUK_ASR_2024",
       "text": " What is a stoma?\n\nA stoma is where a section of bowel is brought out through an opening on your stomach area (abdomen). Your bowel movements (poo) are collected in a pouch or bag attached to the skin around your stoma. A stoma can be temporary or permanent.\n\nA temporary stoma is formed to allow the bowel to heal after surgery. Once the bowel has healed, a temporary stoma can usually be reversed.\n\nSome people can’t have a stoma reversal and the stoma will be permanent. You can read more about this on page 2.\n\n",
       "token_count": 127,
-      "section": null,
+      "section": "About stoma reversal",
       "doc_type": "patient_education",
       "source_org": "BCUK",
       "credibility_tier": 2
@@ -26,7 +26,7 @@
     {
       "chunk_id": "BCUK_ASR_2024_c003",
       "doc_id": "BCUK_ASR_2024",
-      "text": "### What is a stoma reversal?\n\nStoma reversal surgery involves re-joining the two healthy ends of your bowel and closing the stoma that was formed during your first operation. It means you’ll no longer need your stoma bag and you’ll empty your bowels by going to the toilet.\n\n",
+      "text": "## What is a stoma reversal?\n\nStoma reversal surgery involves re-joining the two healthy ends of your bowel and closing the stoma that was formed during your first operation. It means you’ll no longer need your stoma bag and you’ll empty your bowels by going to the toilet.\n\n",
       "token_count": 66,
       "section": "What is a stoma reversal?",
       "doc_type": "patient_education",
@@ -36,7 +36,7 @@
     {
       "chunk_id": "BCUK_ASR_2024_c004",
       "doc_id": "BCUK_ASR_2024",
-      "text": "### Ileostomy\n\nAn ileostomy is a stoma formed by bringing the end or a loop of the small bowel (ileum) onto the surface of the stomach area.\n\n### Colostomy\n\nA colostomy is a stoma formed by bringing part of the large bowel (colon and rectum) onto the surface of the stomach area.\n",
+      "text": "### Ileostomy\n\nAn ileostomy is a stoma formed by bringing the end or a loop of the small bowel (ileum) onto the surface of the stomach area.\n\n### Colostomy\n\nA colostomy is a stoma formed by bringing part of the large bowel (colon and rectum) onto the surface of the stomach area.\n\n",
       "token_count": 74,
       "section": "Ileostomy",
       "doc_type": "patient_education",
@@ -46,8 +46,8 @@
     {
       "chunk_id": "BCUK_ASR_2024_c005",
       "doc_id": "BCUK_ASR_2024",
-      "text": "\n### Who can have a stoma reversal?\n\nNot everyone can have their stoma reversed. Your surgeon will talk to you about whether a reversal is the right option for you.\n\nThey will want to make sure that:\n\n- the muscles in your anus are working. If your cancer removal surgery damaged the anal sphincter muscles, you may struggle to control your bowel movements and could have some leakage from your bottom\n- you have enough bowel left and it has healed\n- you’re fit and healthy enough for more surgery\n",
-      "token_count": 113,
+      "text": "### Who can have a stoma reversal?\n\nNot everyone can have their stoma reversed. Your surgeon will talk to you about whether a reversal is the right option for you.\n\nThey will want to make sure that:\n\n- the muscles in your anus are working. If your cancer removal surgery damaged the anal sphincter muscles, you may struggle to control your bowel movements and could have some leakage from your bottom\n- you have enough bowel left and it has healed\n- you’re fit and healthy enough for more surgery\n\n",
+      "token_count": 112,
       "section": "Who can have a stoma reversal?",
       "doc_type": "patient_education",
       "source_org": "BCUK",
@@ -56,8 +56,8 @@
     {
       "chunk_id": "BCUK_ASR_2024_c006",
       "doc_id": "BCUK_ASR_2024",
-      "text": "\n### When will you have your stoma reversed?\n\nIt’s possible to have a stoma reversal two to four months after your stoma was formed. But it’s more likely that you’ll wait much longer than this. You may need to wait for any swelling to go down or to recover from other treatment, such as chemotherapy. There may also be a waiting list for surgery.\n\nIn some cases, people can have a stoma for several years before having a reversal operation. Contact your healthcare team if you don’t receive a date for your operation.\n\n",
-      "token_count": 120,
+      "text": "### When will you have your stoma reversed?\n\nIt’s possible to have a stoma reversal two to four months after your stoma was formed. But it’s more likely that you’ll wait much longer than this. You may need to wait for any swelling to go down or to recover from other treatment, such as chemotherapy. There may also be a waiting list for surgery.\n\nIn some cases, people can have a stoma for several years before having a reversal operation. Contact your healthcare team if you don’t receive a date for your operation.\n\n",
+      "token_count": 119,
       "section": "When will you have your stoma reversed?",
       "doc_type": "patient_education",
       "source_org": "BCUK",

@@ -84,6 +84,7 @@ def main() -> None:
             embedder=embedder,
             top_k=cfg["evaluation"]["top_k"],
             answerer=answerer,
+            retrieval=cfg.get("retrieval"),
         )
         results["experiments"].append(result)
 

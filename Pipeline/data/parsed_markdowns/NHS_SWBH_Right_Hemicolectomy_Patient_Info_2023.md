@@ -1,0 +1,701 @@
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+This leaflet tells you about the procedure known as a Right Hemicolectomy.
+
+
+It explains what is involved, and some of the common complications associated with this
+procedure that you need to be aware of. It does not replace the discussion between you and
+your doctor but helps you to understand more about what is discussed.
+
+
+During your treatment you may be offered a research trial, if this is appropriate to you the
+Specialist Research Nurses or Consultant will discuss this with you.
+
+### **The Digestive System**
+
+To understand your operation it helps to have some knowledge of how your body works (see
+diagram below).
+
+
+When food is eaten it passes from the mouth down the oesophagus (food pipe) into the
+stomach. Here it is broken down and becomes semi-liquid. It then continues through the small
+intestine (small bowel), a coiled tube many feet long where food is digested and nutrients are
+absorbed.
+
+
+The semi formed liquid is then passed into the colon (large bowel), a wider, shorter tube, where
+it becomes faeces (stools). The main job of the colon is to absorb water into our bodies making
+stools more solid. The stools then enter a storage area called the rectum. When the rectum is
+full, we get the urge to open our bowels. The stools are passed through the anus (back passage)
+when going to the toilet.
+
+
+_© Cancer Research UK [2002] All rights reserved. Information taken 01/12/22._
+_https://www.cancerresearchuk.org/about-cancer/bowel-cancer/about-bowel-cancer_
+
+
+Page 1
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+
+## **Your Operation Explained**
+
+### **What is a Right Hemicolectomy**
+
+is diseased. The operation removes a piece of your bowel from
+the right side of your colon.
+
+
+A cut will be made in your abdomen (tummy). The surgeon will
+remove the diseased area of the bowel and a length
+of normal bowel either side of it. This is
+to help ensure a clear margin; - meaning
+all the cancer in the bowel is removed and
+none is left behind at the edges. Lymph nodes that are close to
+the bowel will also be removed. The lymph nodes are glands
+that collect toxins including cancer cells.
+
+
+
+_(This image was produced by Macmillan_
+_Cancer Support and is reused with permission)._
+
+
+
+The two ends of the healthy bowel are then joined by stitching or stapling them together, this
+join is called an anastomosis.
+
+
+A small plastic tube called a drain which will take the fluid out the tummy after surgery may be
+passed through the skin and be stitched in place.
+
+
+The wound on the abdomen will be closed either with clips or stitches. Most stitches are
+dissolvable and do not have to be removed but occasionally non-dissolvable stitches or clips are
+used and any visible stitches or clips are removed after 7 to 12 days.
+
+
+It may also be necessary to have a temporary stoma to divert stools away from the surgical join
+in the bowel whilst it heals. A stoma is an opening onto the skin which is formed during surgery
+by stitching a section of the bowel onto the abdomen. Stools that come out of the stoma are
+collected in a bag that covers it. A colorectal nurse will discuss this with you beforehand and
+also mark a suitable site on your abdomen in case a stoma is necessary.
+
+
+Should a stoma be necessary, a second operation to reverse the stoma may be performed so the
+stools pass through your anus in the normal way again. The timing of the reversal is variable
+but is often a few months after your first operation. The timing will be discussed with yourself,
+the surgeon and the colorectal nurse.
+
+
+Before your operation, your surgeon and colorectal nurse will carefully explain the procedure
+involved, although details will vary according to each individual case. You will need to sign a
+consent form to confirm that you have understood and agree to have surgery.
+
+
+Page 2
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+Right hemicolectomy may be offered as a laparoscopic surgery, also known as keyhole surgery
+known as keyhole surgery. The aim of this type of surgery is to:
+
+  - Reduce your hospital stay
+
+  - Reduce discomfort following surgery
+
+  - Minimise scarring.
+
+
+The risks remain the same as that of open surgery.
+
+### **What are the benefits of this procedure?**
+
+The operation aims to remove the diseased bowel.
+In most cases this will give you the best chance of a cure or significant improvement in your
+bowel problems. Your surgeon will discuss this with you in more detail.
+
+### **What are the alternatives?**
+
+If the treatment has been recommended by your surgeon as the best treatment, not having this
+surgery may lead to further worsening of your health. Depending upon what is wrong with
+you, you may develop a blockage of the bowel, leakage from the bowel into the abdomen or
+an abscess all of which can be life threatening. If you have cancer the longer it remains the
+more likely it will spread and be incurable.
+
+
+For most of the conditions where this surgery is advised the only alternative is medical
+treatment with drugs. Where there is a cancer of the bowel, drug treatment alone will not cure
+the disease. Your surgeon will discuss any queries you may have.
+
+### **What risks are there in having this procedure?**
+
+Most people will not experience any serious complications from their surgery. However, risks do
+increase with age and for those who already have heart, chest or other medical conditions such
+as diabetes or those overweight or smoke.
+
+
+Removing part of the bowel is a major operation. As with any surgery there are risks with the
+operation which include:
+
+
+**•** **Anastomotic leak**
+Sometimes the anastomosis (join in the bowel) leaks. Treatment with antibiotics and resting
+the bowel are generally enough. This may be a serious complication which needs further
+surgery and formation of a stoma.
+
+
+Page 3
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+**•** **Ileus (paralysis of the bowel)**
+Sometimes the bowel is slow to start working after surgery which causes vomiting and
+delays you from eating and drinking normally in hospital. If this happens the bowel may
+need to be rested and a drip (a tube in your vein in your arm) is used to replace fluids
+(instead of drinking). In addition, you may need a nasogastric tube (tube in your nose which
+passes into your stomach) so that fluid in your stomach can be drawn off. This helps to
+prevent nausea and vomiting and remains in place until the bowel recovers.
+
+
+Sometimes further surgery is required but this will be discussed with you if it becomes
+necessary.
+
+### **Risks following major surgery**
+
+**•** **Bleeding**
+A blood transfusion may be needed during or after surgery. Very rarely, further surgery may
+be required.
+
+
+**•** **Chest Infection**
+You can help by practising deep breathing exercises and following the instructions of the
+physiotherapists. If you smoke, we strongly advise you to stop. For advice and guidance
+please call stop smoking helpline on 0300 123 1044.
+
+
+**•** **Wound infection**
+There is a risk that your wound becomes infected. Antibiotics are given to reduce the risk of
+this happening.
+
+
+**•** **Thrombosis (blood clot in the leg)**
+Major surgery carries a risk of a clot forming in the leg. A small dose of a blood thinning
+medication will be given by injection (Clexane), until 28 days after your surgery. You will be
+given a supply to take home. The nurses will teach you or a relative how to do this or you
+may have a district nurse.
+
+You can help by moving around as much as you are able and in particular regularly
+exercising your legs. You will also be fitted with some support stockings for the duration of
+your hospital stay.
+
+
+**•** **Pulmonary embolism (blood clot in the lung)**
+Rarely a blood clot from the leg can break off, and become lodged in the lungs.
+
+
+**•** **Risk to life**
+Surgery for bowel cancer is classified as major surgery. It can carry a risk to your life. Your
+surgeon will discuss this risk with you.
+Page 4
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained** **Bowel Function**
+### **If you require a stoma**
+
+Your surgeon should have discussed with you whether you need a stoma as part of your surgery,
+either on a temporary or permanent basis. If this is necessary you will meet the stoma care
+specialist nurses before your operation who will give you information on the type of stoma and
+how to look after it. They will meet you on the morning of your operation and mark a suitable
+site for your stoma. This will guide the surgeons where to position your stoma.
+
+
+The stoma care team and the ward staff will support you regularly on the ward during your
+hospital stay and teach you how to look after your stoma, give you supplies, and explain how to
+obtain further supplies of equipment on discharge. If you have any problems please contact the
+colorectal nurses on 0121 507 3376.
+
+## **Before your operation**
+### **What can you do? (Pre-habilitation)**
+
+While you are waiting for your operation, it is important you try to prepare yourself physically.
+If you can, try and eat a well-balanced diet including meat, fruit and vegetables. Take gentle
+exercise such as walking and get plenty of fresh air. If you smoke, we strongly advise you to
+stop.
+
+### **What to Expect at the Hospital**
+
+**Pre-Admission clinic**
+To plan your operation and stay in hospital you may be asked to attend the hospital for a
+health check a week or two before your admission. This can take about two hours. If you are
+taking any medication please bring them with you.
+
+
+A doctor or nurse will listen to your chest, check your blood pressure and may send you for
+other tests, for example, a chest X-ray and ECG (electrocardiograph-a tracing of your heart).
+This information will help the anaesthetist plan the best general anaesthetic for you. Blood
+will also be taken to check for any abnormalities so that these can be corrected before your
+operation.
+
+
+A nurse may ask you questions relating to your health and to your home circumstances. If you
+live alone and have no friends or family to help you, please let us know and we will try and
+organise some help or care for you. A social worker may come to discuss these arrangements
+with you.
+
+
+Page 5
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+**Anaesthetic Pre-Assessment Clinic**
+Pain relief will be discussed with you by the anaesthetist. You may be given analgesia
+(painkillers) through an epidural (tube in your back) or through a drip in your arm in the form
+of a PCA (patient controlled analgesia) hand held pump. This means you control the amount of
+painkiller you require. If you would like to talk about this further, please ask the wards staff to
+contact one of the pain management nurses.
+
+
+**Preparing your Bowel for an Operation**
+There are a number of different ways to prepare your bowel for the operation. Your doctor will
+discuss which option is best for you.
+
+  - You may be asked to follow a special diet for a few days.
+
+  - You may need to take a mild laxative for a couple of days.
+
+  - You may need a stronger laxative the day before surgery.
+
+  - You may be given supplements drink.
+
+  - You may be given an enema on the morning of your operation.
+
+  - You may not need any of the above.
+
+  - It is important that you drink plenty during this time to prevent dehydration. Unless
+you are advised otherwise, you must stop eating 6 hours before your surgery and can
+then drink clear fluids ( such as water or squash) until 2 hours before your surgery. This
+is to allow your stomach to empty and prevent vomiting during the operation. Any
+important medication needed within 2 hours of surgery may still be given with a small
+amount of water.
+
+### **Day of your surgery**
+
+You will usually be asked to attend the SDU (surgical Day Unit) at Sandwell Hospital the
+morning of your surgery, unless your surgeon or anaesthetist decides otherwise, in which case
+they will provide you with the details.
+
+
+You will be checked by the ward nursing team and meet the surgeon and the team – colorectal
+CNS (clinical nurse specialist), anaesthetist, and research nurse.
+
+
+A ward nurse will take you to theatre, where the surgically team will go through the surgically
+safety checklist with you.
+Your operation will usually take between 2 and 4 hours.
+
+
+Page 6
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+### **After you operation**
+
+After your operation you may be on an Enhanced recovery programme. The programme aims
+to help you to recover from your bowel surgery and regain your independence as quickly as
+possible.
+
+
+There is good and well researched evidence that eating, drinking, moving around soon after
+your operation and having good control of your pain helps with and speeds up your recovery.
+The programme emphasises these aspects of your recovery and focuses on how you can help
+yourself after your surgery. It aims to help you leave hospital and return to your normal
+activities sooner than you would have if not following the programme. You will not be going
+home until you are deemed fit to do so by both your medical and nursing teams.
+
+
+Immediately after your surgery you may have a number of tubes attached to your body, you
+may have:
+
+  - An intravenous infusion (drip tube), usually in your arm to give you fluids and often to
+give drugs as well.
+
+  - A catheter (tube) in your bladder to drain urine.
+
+  - A tube either in your arms (PCA) or in your back (epidural), slowly releasing painkillers.
+
+  - Drainage tubes at the site of your operation to clear away any oozing fluids around the
+operation site inside.
+
+  - Continuous oxygen by the face mask or small tube placed to your nose.
+
+
+Most of the tubes are put in place while you’re under anaesthetic. Over a period of two to
+three days many or all of these tubes will be removed. People recover from surgery at different
+rates. The average stay in hospital is four to eight days but you may need to stay in longer. This
+will be discussed with you by your surgeon or colorectal nurse.
+
+### **When can I start to eat?**
+
+Most patients should be able to have a drink when they wake and should be allowed to eat
+soon after. If you have any questions about your diet, please ask your colorectal nurse who can
+advise you. Eating a balanced healthy diet after your surgery will help your recovery. You will be
+given additional supplement drinks to make sure you are getting all the energy and nutrients
+you need.
+
+### **When can I start to move?**
+
+You will be encouraged to move as soon as you wake up and you feel comfortable to do so. If
+you are uncomfortable, members of staff will be on hand to help get you more comfortable
+and to give any pain killers to help with this. Moving early after an operation can help stimulate
+
+Page 7
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+your bowel to work and reduce the risk of the muscle weakness, infection and blood clots. The
+ward physiotherapy team will review you after the operation and help with movement of your
+muscles and lungs.
+
+### **Intensive Care**
+
+Some patients who have existing medical and health problems will be admitted to the intensive
+care unit after their operation. This is for close monitoring of particular body systems such as
+your heart, lungs and kidneys that can be affected by your surgery and anaesthetic. You will
+usually be seen in advance of your surgery by a specialist anaesthetist to discuss this in more
+detail if it is necessary.
+
+### **Discharge home**
+
+Following your operation you may feel weak and tired but there is no need to stay in hospital
+as a full recovery may take several months. Many people report that they feel better sooner at
+home. However, it will be necessary to make sure that there is someone to help with getting
+meals, cleaning your home and shopping.
+
+
+Following your surgery you may have a 28 day course of Clexane injections to help thin your
+blood. You will begin the course of injections in hospital and you will be discharge with the
+remainder of the dose to administer at home. The ward staff will either teach you or a relative
+to administer these. For those that can’t, a district nurse will be arranged on discharge. Please
+discuss with the ward staff or colorectal nurses if any problems.
+
+
+For the first week or so at home you may find that you tire easily. Try to alternate light activity
+with periods of rest. A short rest in the day is often helpful during the first 2 to 3 weeks after
+being home. It is unwise to stay in bed for too long as this slows down the circulation of the
+blood and increases the risk of developing a thrombosis.
+
+
+Try to take some gentle exercise, like walking around the home or garden. For the first 6 weeks
+do not lift anything heavy such as shopping or wet washing, or do anything strenuous like
+digging the garden or mowing the lawn.
+
+
+You should not drive until you can safely do an emergency stop. You may wish to discuss with
+you GP, before driving again. It is also advisable to check your car insurance policy, as there may
+be a clause in it about driving after operations.
+
+### **Pain and discomfort**
+
+You may feel some pain and ‘twinges’ around your wound for several months. This is normal
+as it takes a while for full healing to take place. Taking a mild pain killer regularly will help
+
+
+Page 8
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+you feel better and aid your recovery. If the pain does not seem to improve or you are worried,
+contact your GP or colorectal nurse.
+
+### **Returning to normal activities**
+
+The length of time between your return to work following this type of surgery will depend
+upon the type of work you do. Ask your GP or surgeon for advice.
+
+
+You may resume sexual activity when comfortable for you. If you are unsure, please speak to
+your GP, surgeon or colorectal nurse.
+
+### **Follow-up**
+
+Within a few weeks you will normally be sent an appointment to see your surgeon. If the results
+on the piece of bowel removed during the operation are not available to give to you before
+you go home, an earlier outpatient appointment may be arranged or a telephone consultation
+can be arranged.
+
+
+If you experience any problems please contact the colorectal nurses or your GP.
+
+### **Contact Details**
+
+Sandwell and West Birmingham NHS Hospital Trust
+Lyndon
+West Bromwich
+B71 4HJ
+0121 553 1831
+
+
+**Colorectal/Stoma Department**
+Direct contact number 0121 507 3376 (answer machine service)
+Monday – Friday 8am-4pm
+
+
+**Consultant Secretary Numbers**
+Monday – Friday 8am – 4pm
+
+
+Mr Peravali - Wendy Blackford 0121 507 3393
+Mr Thompson - Jayne Vaughan 0121 507 3394
+Mr Thumbe - Jane Jones 0121 507 3459
+Mr George - Lesley Jordan 0121 507 3226
+Mr Rout - Ofsana Parveen 0121 507 3399
+Mr Sarma - Wendy Blackford 0121 507 3393
+Mr Mankotia - Michelle Hadley 0121 507 3968
+
+Page 9
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+### **Support Groups**
+
+**Bowel Cancer UK**
+Bowel Cancer UK provide medical advice to patients through a specialist nurse advisor line.
+Telephone: 020 7940 1760
+Email: _nurse@bowelcanceruk.org.uk_
+Website: _https://www.bowelcanceruk.org.uk/_
+
+
+**Macmillan Cancer Support**
+Telephone: 0808 808 00 00
+Website: _www.macmillan.org.uk_
+
+### **Patient Voices**
+
+The patient voices group is part of Bowel Cancer UK and is the only UK national patientto-patient network for people with bowel cancer. The group has also expanded to include
+close relatives of bowel cancer including patient to patient support, raising awareness, and
+fundraising.
+Telephone: 020 7940 1760
+Website: _http://www.bowelcanceruk.org.uk/how-we-can-help/real-life-stories/_
+The association of Coloproctology of Great Britain & Ireland (2022). _Right hemicolectomy_ .
+Available at: https://www.acpgbi.org.uk/patients/procedures/5/right_hemicolectomy (Accessed
+31 January 2022).
+
+### **Local sources of further information**
+
+**Sandwell and West Birmingham Hospitals NHS Trust**
+The Courtyard Centre
+Sandwell General Hospital (main reception)
+Lyndon
+West Bromwich
+B71 4HJ
+
+0121 507 3792
+
+At the centre, we offer free information and access to support services for anyone affected by,
+or concerned about cancer.
+
+
+**Whitehouse support Group**
+The White House
+10 Ednam Road
+Dudley
+DY1 1JX
+Page 10
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+01384 231232
+
+_info@support4cancer.org.uk_
+
+White House Cancer Support are a charity providing practical help, emotional support and
+information to people with cancer, their families, friends and carers across the Black Country.
+Our service is co-ordinated by a small staff team assisted by volunteers, some of whom have
+personal experience of cancer.
+
+
+**The Patrick Room**
+Cancer Centre
+Queen Elizabeth Hospital
+Mindelsohn Way
+Edgbaston
+B15 2GW
+0121 371 3539
+_cancerinfo@uhb.nhs.uk_
+
+
+The Patrick Room, at the Cancer Centre at the Queen Elizabeth Hospital, provides information
+and support to people with cancer and their families in a relaxed and friendly atmosphere. A
+professional and experienced team, which is supported by trained volunteers that deliver the
+service.
+
+
+The Patrick Room is a drop in centre which provides a comprehensive library with leaflets and
+books as well as access to the internet.
+
+
+The centre is open 10:00-16:00, Monday to Friday.
+
+
+**Shine Cancer Support**
+Website: _https://shinecancersupport.org/_
+Email: _hi@shinecancersupport.org_
+Telephone: 07804479413
+
+
+Shine is a UK charity that supports adults in their 20s, 30s and 40s who have experienced a
+cancer diagnosis. There is never a good time to have cancer, but we know that younger adults
+face different issues than their older or younger counterparts – and that many of these are not
+dealt with by traditional cancer support charities and services. Every adult in the UK living with
+cancer in their 20s, 30s or 40s can access the help and support that they need in a way that suits
+their lifestyle, and that they are part of a confident, supportive and empowered community
+of young adults living with cancer. We do this through a range of activities including lunches
+and drinks evenings, beach walks, multi-day getaways, workshops, online networking, and
+mentoring.
+
+Page 11
+
+
+#### **Sandwell and West Birmingham**
+
+**NHS Trust**
+
+# **Right Hemicolectomy**
+
+**Information and advice for patients**
+
+## **Your Operation Explained**
+
+
+We are a smoke-free site: smoking will not be allowed anywhere on the hospital site. Anyone
+smoking on the site will be issued with a £50 fine, and this includes smoking in cars on our
+premises.
+
+
+For advice and support in quitting, contact your GP or the free NHS stop smoking helpline on
+0800 011 4656 for Patients living in Sandwell, for patients living in Birmingham please contact
+your GP practice for smoking cessation.
+
+
+If you would like to suggest any amendments or improvements to this leaflet please contact SWB Library Services
+on ext 3587 or email _swbh.library@nhs.net_ .
+
+
+**A Teaching Trust of The University of Birmingham**
+Incorporating City, Sandwell and Rowley Regis Hospitals
+
+
+
+ML6095
+Issue Date: July 2023
+Review Date: July 2026
+
+
+
+Page 12
+
+

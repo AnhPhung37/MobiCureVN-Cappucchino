@@ -1,0 +1,177 @@
+{
+  "doc_id": "NCA_CSFU_2024",
+  "source_file": "Northern_Cancer_Alliance_Colorectal_Stratified_Follow_Up_2024.md",
+  "chunk_count": 17,
+  "chunks": [
+    {
+      "chunk_id": "NCA_CSFU_2024_c001",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "Northern Cancer Alliance Colorectal Personalised Stratified Follow Up Clinical Review and Surveillance Guidelines Developed and endorsed by the Northern Cancer Alliance Colorectal Pathway Group\n\n|arch 2024|Col2|Col3|Col4|Col5|Col6|\n|---|---|---|---|---|---|\n|Title:|Title:|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|NCA Colorectal Stratified Follow Up Clinical Review<br>and Surveillance Guidelines|\n|Authors:|Authors:|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|Peter Coyne, Colorectal Surgeon<br>Paul O’Loughlin, Colorectal Surgeon|\n|Circulation List:|Circulation List:|Colorectal Pathway Group<br>Personalised Care Working Group|Colorectal Pathway Group<br>Personalised Care Working Group|Colorectal Pathway Group<br>Personalised Care Working Group|Colorectal Pathway Group<br>Personalised Care Working Group|\n|Prepared by|Prepared by|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|Vicky Wester, Delivery Lead – Personalised Care<br>Victoria.wester1@nhs.net|",
+      "token_count": 423,
+      "section": null,
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c002",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n|<br>_Version History:_|<br>_Version History:_|<br>_Version History:_|<br>_Version History:_|<br>_Version History:_|<br>_Version History:_|\n|Date:|28.01.2020|Version:|V1 [final]|Review Date:|28.01.2021|\n||20.02.2020||V1.1||28.02.2021|\n||26.02.2020||V1.2 [final]||28.02.2021|\n||11.03.2021||V1.3 [final]||11.03.2022|\n||20.07.2021||V1.4 [final]||11.03.2022|\n||26.07.2021||V1.5 [final]||11.03.2022|\n||01.12.2021||V1.6 [final]||01.12.2022|\n||01.03.2024||V1.7 [final]||01.03.2024|\n\nGuidelines agreed by:\n\nColorectal Pathway Group members agreed the Guidelines on: 01.03.2024\n\nReview Date: 01.03.2025\n\n### Contents\n\nSTRATIFIED FOLLOW-UP TESTS ........................................................................... 5\n\nCEA ........................................................................................................................ 5\n\nFBC ........................................................................................................................ 5\n\nColonoscopy ......................................................................................................... 5\n\nLiver imaging ........................................................................................................ 5\n\nMINIMUM FOLLOW-UP SCHEDULE ........................................................................ 6\n\nDISCHARGE FROM SERVICE ................................................................................. 7\n\nAPPENDIX ................................................................................................................. 8\n\n",
+      "token_count": 389,
+      "section": "Contents",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c003",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "INTRODUCTION\n\nFollowing the production of the Clinical Advice to Cancer Alliances for the Commissioning of the Whole Bowel Cancer Pathway in November 2017 this section has been updated to reflect the Cancer Alliances responsibility to promote the use of Personalised Stratified Follow Up (PSFU) pathways and remote or self-care follow-up along the lines of the National Cancer\nSurvivorship Initiative [NCSI].\n\nThis document provides regional guidelines to complement existing National Institute for\nHealth and Care Excellence (NICE) and NCA tumour specific guidance. This guideline does not override the individual responsibility of healthcare professionals in making decisions appropriate to the circumstances of the individual patient.\n\nIt is not anticipated that the guidelines will cover all clinical situations in all patients, but where unusual circumstances exist, it is expected that such treatments would be discussed in the appropriate MDT.\n\nThe guidelines will be reviewed on an annual basis. Where new treatments are introduced between revisions they will be added as an addendum to the current guideline.\n\nPatients with colorectal cancer will be considered for PSFU assuming they meet the inclusion criteria outlined below.\n\nStratified follow-up can lead to a reduction of routine appointments in a patient’s pathway.\nFollowing treatment, aftercare is discussed with the patient and the appropriate pathway assigned. Patients may move between pathways as their needs change.\n\nThe pathways are as follows:\n",
+      "token_count": 288,
+      "section": "Contents",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c004",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\nPersonalised stratified follow-up (PSFU) - is where patients continue to have all the cancer surveillance scans and tests they need, but a proportion follow a ‘self-managed’ pathway mitigating the need for hospital-led appointments.\n\nAt the present time individuals should remain in PSFU for a period of 5 years.\n\nHospital led face-to-face/telephone follow up: Clinician led follow up where the individual will receive surveillance tests as per the clinical guidelines. Clinic appointments are scheduled as required and can be face to face or telephone consultations, and with a suitable clinician.\n\nThis arrangement should be reviewed regularly and when appropriate the individual can be transferred to PSFU. Local arrangements as to where follow-up takes place should be considered i.e. following adjuvant radiotherapy people are referred-back to their surgical team for follow-up which can continue following implementation of these guidelines.\nIndividual choice should also be offered as to where this takes place i.e. local hospital or centre.",
+      "token_count": 207,
+      "section": "Contents",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c005",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n\nSupportive/end of life care services : Clinician led with palliative care input as required, when no further treatment options are available, attending hospital appointments is potentially difficult for people. Transfer of care to the G.P. and palliative care services should\n\n3 be discussed and the G.P. made aware of this discussion. Community palliative care teams should be involved with the consent of the individual.\n\nPatients suitable for PSFU should be offered a 1:1 appointment with a Cancer Nurse Specialist (CNS) at the end of their primary treatment to explain how PSFU works and to ensure the patient knows how to contact the service if there are any concerns or symptoms in between surveillance testing. This could be done at the same time as the end of treatment summary and review of the Holistic Needs Assessment (HNA). Further detail on this below.\n\nA system must be developed for rapid re-entry of patients to the specialist cancer service as required.\n\nColorectal cancer patients who are suitable for PSFU must meet the following inclusion criteria.\n",
+      "token_count": 219,
+      "section": "Contents",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c006",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n|Tumour type: Adenocarcinoma|Col2|\n|---|---|\n|Marker|Inclusion|\n|Dukes Stage|A/B/C|\n|T Stage|T1-4|\n|N Stage|N0-2|\n|M Stage|Non-metastatic|\n|EMVI / EMLI +ve|Yes or No|\n|Differentiation of tumour|Any|\n|Adverse features|Any|\n|Resection status|R0|\n\nThe option of PSFU should be available for all individuals who meet the above criteria; however, this pathway is not suitable for everybody, and some may continue to need hospitalbased aftercare.\n\nAny individual participating in a clinical trial should be followed-up as per trial protocol.\n",
+      "token_count": 169,
+      "section": "Contents",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c007",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\nFollowing the multidisciplinary meeting (MDT) individuals should be reviewed and made aware of their future management plan. Decisions regarding PSFU can be discussed in the MDT but are only confirmed when a discussion has taken place with individuals. The chosen pathway is then documented in the medical notes and should be communicated to the G.P, preferably via the treatment summary. Regardless of follow-up pathway all individuals should be offered\n\n4 a treatment summary and holistic needs assessment with their CNS or community service if available.\n\n",
+      "token_count": 104,
+      "section": "Contents",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c008",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "### STRATIFIED FOLLOW-UP TESTS\n\nThough PSFU involves reduction of routine outpatient appointments from the pathway, routine surveillance tests will still be completed as outlined below. The following suggestions are made:\n",
+      "token_count": 44,
+      "section": "STRATIFIED FOLLOW-UP TESTS",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c009",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\nCEA\n\n- CEA to be measured on every patient pre-operatively and on every follow- up visit until end of year 2 and then yearly thereafter in-line with the shared care agreement until discharge at end of year 5. If the value of CEA doubles or rises continually a CT scan of the abdomen and chest or a CT scan of the abdomen plus a chest x-ray will be performed.\n\nFBC\n\n- To be measured on every patient pre-operatively and on every follow up visit until the end of year 2 and then yearly thereafter in-line with the shared care agreement until discharge at end of year 5. If the value is abnormal, results should be flagged to the trust key worker.\n",
+      "token_count": 150,
+      "section": "STRATIFIED FOLLOW-UP TESTS",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c010",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\nColonoscopy\n\n- Patients will receive a Colonoscopy request at 1 and 4 years post-operatively\n- Further colonoscopy after this may be required depending on age, genetic profile, and risk\n- Patients should also be encouraged to enter the national bowel cancer screening program",
+      "token_count": 56,
+      "section": "STRATIFIED FOLLOW-UP TESTS",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c011",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n\nLiver imaging\n\n- A CT scan of the liver is the preferred investigation of choice for liver screening. There should be a minimum of 2 CT scans of the chest, abdomen and pelvis in the first 3 years of follow-up. These should be done at end of year 1 and end of year 2.\n- All patients who have had a Total Mesorectal Excision as a potentially curative resection should be followed up for the purpose of auditing the surgeon’s performance of the technique.\n- Audit of the outcome of treatment requires accurate and complete collection of data which may be difficult to obtain by postal questionnaire or through the general practitioner. Follow-up may be justified for this reason alone.\n\nThe results will be reviewed by appropriately qualified or trained staff and the patient and GP informed of the results. This information may trigger a recall of the patient back to specialist services as required.\n\nPatients with stomas, bowel function, and other late effects of treatment [surgical or chemotherapy] may initially need planned hospital follow-up or in the community by trained staff. The frequency of follow up investigations delivered either remotely or in secondary care will depend upon the risk of recurrence and should be intended to pick up recurrence before symptoms develop.\n\nScreening for genetic or familial conditions such as HNPCC or FAP should be done outside of these guidelines.",
+      "token_count": 278,
+      "section": "STRATIFIED FOLLOW-UP TESTS",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c012",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n\n### MINIMUM FOLLOW-UP SCHEDULE\n\nColorectal cancer follow-up is the shared responsibility of the specialist team, primary care and the patient. A minimum follow-up schedule should be agreed. It should include at least 2\nCT scans of the chest, abdomen and pelvis and a colonoscopy within the first three years after surgery. A completion colonoscopy should be performed as soon as practicably possible in those patients who had an incomplete examination before surgery. Teams may choose to supplement this with regular CEA tests, which may continue for five years post-treatment.\n\nAfter 5 years, patients may have further surveillance colonoscopies and if not, should be encouraged to join the national screening program. Tests should be delivered irrespective of whether a patient is seen in the clinic. The follow-up schedule may be conducted in the form of telephone clinics or virtual clinics in place of conventional clinical visits for patients.\n",
+      "token_count": 193,
+      "section": "MINIMUM FOLLOW-UP SCHEDULE",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c013",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n|Test/Year|0 – 1|1 – 2|2-3|3 – 4|4 - 5|\n|---|---|---|---|---|---|\n|Clinical review|3 monthly<br>nurse led<br>after 1st|6 monthly|Shared care<br>at year 3|Shared care|Shared care|\n|CEA|3 monthly|6 monthly|Annually|Annually|Annually|\n|FBC|3 monthly|6 monthly|Annually|Annually|Annually|\n|Endoscopy|If not had<br>completion<br>pre-<br>operative<br>done as<br>baseline|Colonoscopy<br>or CTC [may<br>be combined<br>with CT i.e.<br>CTC<br>instead]||Colonoscopy<br>or CTC [may<br>be combined<br>with CT i.e.<br>CTC<br>instead]||\n|CT C/A/P|Pre-<br>operative<br>[completed if<br>not e.g.<br>emergency]|End Year 1|End Year 2|||\n\n*Some trusts may require urea and electrolytes (U+E) checking to help when requesting CT",
+      "token_count": 274,
+      "section": "MINIMUM FOLLOW-UP SCHEDULE",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c014",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "s\n\nIt is advised that the ‘clock starts’ for all patients on a colorectal PSFU pathway at the ‘date of first treatment’ i.e. a patient will have their annual follow up investigations scheduled from this date. It is recognised that this won’t be suitable for all patients e.g. those that may still be on active treatment. In these instances, the clinical team may wish to delay the patients first (and subsequent) surveillance tests. This should be clearly documented in the End of Treatment summary.\n\nPatients who contact any member of the colorectal specialist team with worrying symptoms will be seen by the appropriate team within two weeks and if necessary, the case will be discussed at the MDT meeting.\n\nAll patients following initial treatment for colorectal cancer, will be given information about selfcare and surveillance. A list of symptoms that could be a cause for concern and a contact number for the Colorectal CNS will be given as part of the information pack developed by\nTrusts.\n\nGPs and patients should also be given information on symptoms which may indicate recurrence.\n\nShared care follow up should follow local policies devised by the Trusts and Commissioners.\n\nA treatment summary should be sent to the GP and patient within 6 weeks following primary treatment - surgery, chemotherapy or radiotherapy. The National Cancer Survivorship Initiative treatment summary template should be utilised. Follow up after surgery should focus on postoperative issues, promoting and sustaining recovery (including early detection and management of late effects), future planning, and stoma management.\n\nPatients’ emotional and practical needs should be assessed, using an HNA undertaken by a\nCNS to identify specific needs, and appropriate care has or needs to be provided.\n",
+      "token_count": 349,
+      "section": "MINIMUM FOLLOW-UP SCHEDULE",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c015",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\n#### DISCHARGE FROM SERVICE\n\nAll patients on a PSFU pathway will be discharged back to the care of their GP at 5 years (unless they are palliative and may be discharged sooner) and will have to re-access the service via their GP. Written information will be given to the patient/GP on the patient’s end of treatment summary to advise them regarding this date.\n\nAt this point:\n\n- For patients between 50-74 they will receive a NHS bowel cancer screening kit every 2 years as part of the national screening programme\n- For patients <50 they will be discharged to the care of their GP unless e.g. due to genetics, they would require ongoing surveillance tests/monitoring.\n\n### APPENDIX\n\n1.1 CLINICAL RESPONSIBILITIES AND ROLES\n\nStratification\nThe clinical team / consultant is responsible for identifying patients suitable for supported selfmanagement. The decision should be made based on holistic needs assessment, clinical judgement and discussion with the patient, then recorded appropriately within the Trust clinical systems.\n",
+      "token_count": 225,
+      "section": "DISCHARGE FROM SERVICE",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c016",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\nStratified Follow up Consultation\nThe CNS will manage the stratified follow up consultation. They will ensure that the patient is provided with written information, a treatment summary has been completed and a copy has been sent/given to the patient and sent to the GP. A holistic needs assessment will also be carried out and action taken as necessary. All surveillance and scans should be in place and patients are aware of how results will be received.\n",
+      "token_count": 89,
+      "section": "DISCHARGE FROM SERVICE",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    },
+    {
+      "chunk_id": "NCA_CSFU_2024_c017",
+      "doc_id": "NCA_CSFU_2024",
+      "text": "\nRe- access to Services\nPatients will receive verbal and written information about how to re access the service if they have a problem or concern at the consultation appointment with the CNS. Patients should contact their clinical team via telephone who will give them verbal advice or arrange a clinic appointment. Patients can also re-access the service via their GP.\n\n",
+      "token_count": 69,
+      "section": "DISCHARGE FROM SERVICE",
+      "doc_type": "guideline",
+      "source_org": "NCA",
+      "credibility_tier": 1
+    }
+  ]
+}
