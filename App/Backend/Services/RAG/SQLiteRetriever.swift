@@ -456,11 +456,29 @@ final class SQLiteRetriever {
             return MedicalSource(
                 id: docID,
                 title: title,
-                excerpt: String(row.info.text.prefix(120)),
+                excerpt: Self.plainExcerpt(from: row.info.text, maxLength: 160),
                 page: row.info.pageStart,
                 documentName: "\(row.info.sourceOrg) — \(row.info.docType)"
             )
         }
+    }
+
+    /// Chunk text in `chunks.text` is stored as raw Markdown (headings, bullets, `[1, 2]`
+    /// citation brackets) so it retains structure when fed to the LLM as passage context
+    /// (see the `content: row.info.text` usage above). The citation card excerpt is a plain
+    /// prose preview, not LLM context, so it strips that syntax rather than showing it verbatim.
+    private static func plainExcerpt(from markdown: String, maxLength: Int) -> String {
+        var text = markdown
+        text = text.replacingOccurrences(of: #"(?m)^#{1,6}\s*"#, with: "", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"(?m)^[-*]\s+"#, with: "", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"\[\s*[\d,\s]+\]"#, with: "", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"\*\*|\*|__|_"#, with: "", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+        text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard text.count > maxLength else { return text }
+        let cutoff = text.index(text.startIndex, offsetBy: maxLength)
+        return text[..<cutoff].trimmingCharacters(in: .whitespaces) + "…"
     }
 
     // MARK: - SQLite Helpers

@@ -136,15 +136,15 @@ struct ChatWorkspaceView: View {
                     .fill(Color.blue)
                     .frame(width: 46, height: 46)
                 Image(systemName: "waveform.path.ecg")
-                    .font(.system(size: 20, weight: .semibold))
+                    .appFont(size: 20, weight: .semibold)
                     .foregroundColor(.white)
             }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("MobiCure VN")
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .appFont(size: 18, weight: .bold, design: .rounded)
                 Text("v2.4 · Ngoại tuyến")
-                    .font(.system(size: 12, weight: .medium))
+                    .appFont(size: 12, weight: .medium)
                     .foregroundColor(Color(.secondaryLabel))
             }
 
@@ -158,7 +158,7 @@ struct ChatWorkspaceView: View {
             statusRow(icon: "wifi.slash", text: "Không cần Internet", color: .green)
             statusRow(icon: "lock.shield.fill", text: "Dữ liệu không rời khỏi thiết bị này", color: .green)
         }
-        .font(.system(size: 13, weight: .medium))
+        .appFont(size: 13, weight: .medium)
     }
 
     private func statusRow(icon: String, text: LocalizedStringKey, color: Color) -> some View {
@@ -182,7 +182,7 @@ struct ChatWorkspaceView: View {
                     .fontWeight(.semibold)
                 Spacer()
             }
-            .font(.system(size: 15, weight: .semibold))
+            .appFont(size: 15, weight: .semibold)
             .foregroundColor(.white)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
@@ -199,21 +199,21 @@ struct ChatWorkspaceView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 12) {
                 Text("CUỘC TRÒ CHUYỆN GẦN ĐÂY")
-                    .font(.system(size: 11, weight: .bold))
+                    .appFont(size: 11, weight: .bold)
                     .foregroundColor(Color(.secondaryLabel))
                     .textCase(.uppercase)
                     .padding(.horizontal, 8)
 
                 if viewModel.conversationSections.isEmpty {
                     Text("Chưa có cuộc trò chuyện nào.")
-                        .font(.system(size: 13))
+                        .appFont(size: 13)
                         .foregroundColor(Color(.secondaryLabel))
                         .padding(.horizontal, 8)
                 } else {
                     ForEach(filteredConversationSections) { section in
                         VStack(alignment: .leading, spacing: 8) {
                             Text(LocalizedStringKey(section.title))
-                                .font(.system(size: 12, weight: .semibold))
+                                .appFont(size: 12, weight: .semibold)
                                 .foregroundColor(Color(.secondaryLabel))
                                 .padding(.horizontal, 8)
 
@@ -224,22 +224,22 @@ struct ChatWorkspaceView: View {
                                     HStack(alignment: .center, spacing: 12) {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(conversation.title.isEmpty ? "Chat" : conversation.title)
-                                                .font(.system(size: 14, weight: .semibold))
+                                                .appFont(size: 14, weight: .semibold)
                                                 .foregroundColor(Color(.label))
                                                 .lineLimit(1)
                                             (conversation.preview.isEmpty ? Text("No preview") : Text(conversation.preview))
-                                                .font(.system(size: 12))
+                                                .appFont(size: 12)
                                                 .foregroundColor(Color(.secondaryLabel))
                                                 .lineLimit(2)
                                         }
                                         Spacer(minLength: 6)
                                         VStack(alignment: .trailing, spacing: 4) {
                                             Text(relativeDate(conversation.lastMessageDate))
-                                                .font(.system(size: 11, weight: .medium))
+                                                .appFont(size: 11, weight: .medium)
                                                 .foregroundColor(Color(.secondaryLabel))
                                             if viewModel.currentConversationId == conversation.id {
                                                 Text("Đang mở")
-                                                    .font(.system(size: 10, weight: .semibold))
+                                                    .appFont(size: 10, weight: .semibold)
                                                     .padding(.horizontal, 8)
                                                     .padding(.vertical, 4)
                                                     .background(Capsule().fill(Color.blue.opacity(0.12)))
@@ -272,7 +272,7 @@ struct ChatWorkspaceView: View {
             Image(systemName: "phone.fill")
                 .foregroundColor(.red)
             Text("Khẩn cấp: gọi 115 hoặc liên hệ bác sĩ.")
-                .font(.system(size: 12, weight: .medium))
+                .appFont(size: 12, weight: .medium)
                 .foregroundColor(Color(.secondaryLabel))
             Spacer(minLength: 0)
         }
@@ -346,7 +346,7 @@ struct ChatWorkspaceView: View {
                     }
                 } label: {
                     Image(systemName: "line.3.horizontal")
-                        .font(.system(size: 15, weight: .semibold))
+                        .appFont(size: 15, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 36, height: 36)
                         .background(Circle().fill(Color(.secondarySystemBackground)))
@@ -362,7 +362,7 @@ struct ChatWorkspaceView: View {
                     cycleAppearanceMode()
                 } label: {
                     Image(systemName: appearanceMode.iconName)
-                        .font(.system(size: 14, weight: .semibold))
+                        .appFont(size: 14, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 34, height: 34)
                         .background(Circle().fill(Color(.tertiarySystemBackground)))
@@ -382,7 +382,7 @@ struct ChatWorkspaceView: View {
             isShowingProfile = true
         } label: {
             Image(systemName: "person.crop.circle.fill")
-                .font(.system(size: 20, weight: .semibold))
+                .appFont(size: 20, weight: .semibold)
                 .foregroundColor(.blue)
                 .frame(width: 34, height: 34)
                 .background(Circle().fill(Color.blue.opacity(0.12)))
@@ -441,9 +441,9 @@ struct ChatWorkspaceView: View {
             // open the menu just to check which model is in use.
             HStack(spacing: 6) {
                 Image(systemName: "cpu")
-                    .font(.system(size: 14, weight: .semibold))
+                    .appFont(size: 14, weight: .semibold)
                 Text(verbatim: selectedModel.shortName)
-                    .font(.system(size: 13, weight: .semibold))
+                    .appFont(size: 13, weight: .semibold)
                     .lineLimit(1)
             }
             .foregroundColor(Color(.secondaryLabel))
@@ -491,7 +491,7 @@ struct ChatWorkspaceView: View {
             appLanguageRaw = language.rawValue
         } label: {
             Text(verbatim: label)
-                .font(.system(size: 13, weight: .bold))
+                .appFont(size: 13, weight: .bold)
                 .foregroundColor(isSelected ? .white : Color(.secondaryLabel))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -501,7 +501,7 @@ struct ChatWorkspaceView: View {
 
     private func tagPill(_ text: String, color: Color) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .semibold))
+            .appFont(size: 13, weight: .semibold)
             .foregroundColor(color)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
@@ -517,9 +517,9 @@ struct ChatWorkspaceView: View {
         HStack(alignment: .top, spacing: 16) {
             // VStack(alignment: .leading, spacing: 6) {
             //     // Text(viewModel.currentConversationId == UUID() ? "Cuộc trò chuyện mới" : currentTitle)
-            //     //     .font(.system(size: 28, weight: .bold, design: .rounded))
+            //     //     .appFont(size: 28, weight: .bold, design: .rounded)
             //     Text("Trợ lý Phục hồi Đại trực tràng")
-            //         .font(.system(size: 15, weight: .medium))
+            //         .appFont(size: 15, weight: .medium)
             //         .foregroundColor(Color(.secondaryLabel))
             // }
 
@@ -529,7 +529,7 @@ struct ChatWorkspaceView: View {
                 statusChip
                 Button(action: {}) {
                     Image(systemName: "mic.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .appFont(size: 14, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 42, height: 42)
                         .background(Circle().fill(Color(.secondarySystemBackground)))
@@ -550,10 +550,10 @@ struct ChatWorkspaceView: View {
                 .fill(statusColor(for: viewModel.backendStatus))
                 .frame(width: 8, height: 8)
             Text(LocalizedStringKey(statusLabel(for: viewModel.backendStatus)))
-                .font(.system(size: 13, weight: .semibold))
+                .appFont(size: 13, weight: .semibold)
             if viewModel.backendStatus == .loading, viewModel.downloadProgress > 0 {
                 Text(verbatim: "\(Int(viewModel.downloadProgress * 100))%")
-                    .font(.system(size: 13, weight: .semibold))
+                    .appFont(size: 13, weight: .semibold)
             }
         }
         .foregroundColor(Color(.secondaryLabel))
@@ -570,10 +570,10 @@ struct ChatWorkspaceView: View {
     private var firstTimeModelSetupNotice: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "info.circle")
-                .font(.system(size: 14, weight: .semibold))
+                .appFont(size: 14, weight: .semibold)
                 .foregroundColor(.accentColor)
             Text(LocalizedStringKey("Lần đầu tải model có thể mất vài phút, tuỳ theo tốc độ mạng và thiết bị. Các lần sau sẽ nhanh hơn nhiều."))
-                .font(.system(size: 12))
+                .appFont(size: 12)
                 .foregroundColor(Color(.secondaryLabel))
         }
         .padding(.horizontal, 14)
@@ -587,7 +587,7 @@ struct ChatWorkspaceView: View {
     private var emptyHero: some View {
         VStack(spacing: 16) {
             Text("Hỗ trợ phục hồi sau phẫu thuật ung thư đại trực tràng")
-                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .appFont(size: 22, weight: .semibold, design: .rounded)
                 .multilineTextAlignment(.center)
                 .foregroundColor(Color(.label))
                 .padding(.top, 4)
@@ -598,7 +598,7 @@ struct ChatWorkspaceView: View {
                 infoChip(text: "Dữ liệu không rời khỏi thiết bị này")
             }
             .foregroundColor(.green)
-            .font(.system(size: 13, weight: .semibold))
+            .appFont(size: 13, weight: .semibold)
             .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -615,7 +615,7 @@ struct ChatWorkspaceView: View {
     private var quickQuestionSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("CÂU HỎI THƯỜNG GẶP")
-                .font(.system(size: 13, weight: .bold))
+                .appFont(size: 13, weight: .bold)
                 .foregroundColor(Color(.secondaryLabel))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 10)
@@ -645,17 +645,17 @@ struct ChatWorkspaceView: View {
                         .fill(Color.blue.opacity(0.12))
                         .frame(width: 38, height: 38)
                     Image(systemName: question.icon)
-                        .font(.system(size: 16, weight: .semibold))
+                        .appFont(size: 16, weight: .semibold)
                         .foregroundColor(.blue)
                 }
                 Spacer()
             }
 
             Text(LocalizedStringKey(question.title))
-                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .appFont(size: 16, weight: .bold, design: .rounded)
                 .foregroundColor(Color(.label))
             Text(LocalizedStringKey(question.prompt))
-                .font(.system(size: 13))
+                .appFont(size: 13)
                 .foregroundColor(Color(.secondaryLabel))
                 .multilineTextAlignment(.leading)
             Spacer(minLength: 0)
@@ -675,7 +675,7 @@ struct ChatWorkspaceView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(LocalizedStringKey(section.title))
                         .textCase(.uppercase)
-                        .font(.system(size: 12, weight: .bold))
+                        .appFont(size: 12, weight: .bold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 8)
@@ -698,7 +698,7 @@ struct ChatWorkspaceView: View {
                     isShowingAttachmentSheet = true
                 } label: {
                     Image(systemName: "photo.on.rectangle.angled")
-                        .font(.system(size: 16, weight: .semibold))
+                        .appFont(size: 16, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 38, height: 38)
                         .background(Circle().fill(Color(.secondarySystemBackground)))
@@ -706,7 +706,7 @@ struct ChatWorkspaceView: View {
                 .accessibilityLabel("Attach image")
 
                 TextField("Mô tả triệu chứng hoặc đặt câu hỏi...", text: $viewModel.inputText, axis: .vertical)
-                    .font(.system(size: 16))
+                    .appFont(size: 16)
                     .lineLimit(1...5)
                     .focused($inputFocused)
                     .padding(.horizontal, 14)
@@ -725,7 +725,7 @@ struct ChatWorkspaceView: View {
                     }
                 } label: {
                     Image(systemName: viewModel.isLoading ? "stop.fill" : "paperplane.fill")
-                        .font(.system(size: 16, weight: .semibold))
+                        .appFont(size: 16, weight: .semibold)
                         .foregroundColor(.white)
                         .frame(width: 44, height: 44)
                         .background(Circle().fill(viewModel.isLoading || canSubmitDraft ? Color.blue : Color(.tertiaryLabel)))
@@ -735,7 +735,7 @@ struct ChatWorkspaceView: View {
 
             HStack {
                 Text("MobiCure AI cung cấp hỗ trợ lâm sàng, không thay thế tư vấn y tế chuyên nghiệp.")
-                    .font(.system(size: 12))
+                    .appFont(size: 12)
                     .foregroundColor(Color(.secondaryLabel))
                 Spacer()
                 Image(systemName: "questionmark.circle.fill")
@@ -820,9 +820,9 @@ struct ChatWorkspaceView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(images.count == 1 ? "1 ảnh đã đính kèm" : "\(images.count) ảnh đã đính kèm")
-                        .font(.system(size: 14, weight: .semibold))
+                        .appFont(size: 14, weight: .semibold)
                     Text("Bạn có thể gửi kèm ảnh cùng câu hỏi.")
-                        .font(.system(size: 12))
+                        .appFont(size: 12)
                         .foregroundColor(Color(.secondaryLabel))
                 }
                 Spacer()
@@ -830,7 +830,7 @@ struct ChatWorkspaceView: View {
                     clearDraftAttachments()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
+                        .appFont(size: 12, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 28, height: 28)
                         .background(Circle().fill(Color(.tertiarySystemBackground)))
@@ -852,7 +852,7 @@ struct ChatWorkspaceView: View {
                                 attachedImages.remove(at: index)
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 18, weight: .semibold))
+                                    .appFont(size: 18, weight: .semibold)
                                     .foregroundColor(.white)
                             }
                             .offset(x: 6, y: -6)
@@ -956,7 +956,7 @@ private struct ErrorView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.orange)
             Text(message)
-                .font(.system(size: 14))
+                .appFont(size: 14)
                 .foregroundColor(Color(.label))
             Spacer()
             Button(action: onDismiss) {

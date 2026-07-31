@@ -89,7 +89,7 @@ struct HomeContentView: View {
     private var menuButton: some View {
         Button(action: {}) {
             Image(systemName: "line.3.horizontal")
-                .font(.system(size: 24, weight: .medium))
+                .appFont(size: 24, weight: .medium)
                 .foregroundColor(Color(.label))
         }
     }
@@ -100,16 +100,16 @@ struct HomeContentView: View {
         HStack(spacing: 5) {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Chào Nam,")
-                    .font(.system(size: 28, weight: .bold))
+                    .appFont(size: 28, weight: .bold)
                     .foregroundColor(.white)
 
                 Text("Hôm nay bạn cảm thấy\nnhư thế nào ?")
-                    .font(.system(size: 16, weight: .medium))
+                    .appFont(size: 16, weight: .medium)
                     .foregroundColor(.white.opacity(0.95))
 
                 Button(action: {}) {
                     Text("Xem phân tích")
-                        .font(.system(size: 15, weight: .semibold))
+                        .appFont(size: 15, weight: .semibold)
                         .foregroundColor(Color(.label))
                         .padding(.horizontal)
                         .padding(.vertical, 12)
@@ -178,7 +178,7 @@ struct HomeContentView: View {
             Spacer()
 
             Text(monthYearString(for: displayedDate))
-                .font(.system(size: 20, weight: .bold))
+                .appFont(size: 20, weight: .bold)
                 .foregroundColor(Color(.label))
 
             Spacer()
@@ -198,7 +198,7 @@ struct HomeContentView: View {
         HStack(spacing: 0) {
             ForEach(["mo", "tu", "we", "th", "fr", "sa", "su"], id: \.self) { day in
                 Text(day)
-                    .font(.system(size: 12, weight: .medium))
+                    .appFont(size: 12, weight: .medium)
                     .foregroundColor(Color(.secondaryLabel))
                     .frame(maxWidth: .infinity)
             }
@@ -232,7 +232,7 @@ struct HomeContentView: View {
         let dayDate = dateFor(day: dayNumber, in: displayedDate)
         return VStack(spacing: 4) {
             Text("\(dayNumber)")
-                .font(.system(size: 14, weight: todayMark ? .bold : .regular))
+                .appFont(size: 14, weight: todayMark ? .bold : .regular)
                 .foregroundColor(todayMark ? .accentColor : Color(.label))
                 .frame(maxWidth: .infinity)
                 .frame(height: 28)
@@ -261,28 +261,28 @@ struct HomeContentView: View {
     private var appointmentCard: some View {
         HStack(spacing: 12) {
             Image(systemName: "bell.fill")
-                .font(.system(size: 24))
+                .appFont(size: 24)
                 .foregroundColor(.orange)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Appointment")
-                    .font(.system(size: 14, weight: .semibold))
+                    .appFont(size: 14, weight: .semibold)
                     .foregroundColor(Color(.label))
                 Text("Dr. Schmitz")
-                    .font(.system(size: 12))
+                    .appFont(size: 12)
                     .foregroundColor(Color(.secondaryLabel))
                 Text("11:30 - 12:00")
-                    .font(.system(size: 11))
+                    .appFont(size: 11)
                     .foregroundColor(Color(.tertiaryLabel))
             }
 
             Spacer()
 
             Image(systemName: "calendar")
-                .font(.system(size: 20))
+                .appFont(size: 20)
                 .foregroundColor(.accentColor)
             Text("Done")
-                .font(.system(size: 12, weight: .medium))
+                .appFont(size: 12, weight: .medium)
                 .foregroundColor(.green)
         }
         .padding(12)
@@ -311,10 +311,10 @@ struct HomeContentView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("256 days STRONG")
-                    .font(.system(size: 20, weight: .bold))
+                    .appFont(size: 20, weight: .bold)
                     .foregroundColor(Color(.label))
                 Text("Tuyệt vời, hãy tiếp tục nhé!")
-                    .font(.system(size: 14))
+                    .appFont(size: 14)
                     .foregroundColor(Color(.secondaryLabel))
             }
 
@@ -335,7 +335,7 @@ struct HomeContentView: View {
                 .fill(Color(.separator))
                 .frame(height: 1)
             Text(title)
-                .font(.system(size: 18, weight: .semibold))
+                .appFont(size: 18, weight: .semibold)
                 .foregroundColor(Color(.label))
                 .padding(.horizontal, 12)
             Rectangle()
