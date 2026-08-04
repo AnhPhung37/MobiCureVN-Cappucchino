@@ -57,8 +57,12 @@ final class MedicalChatOrchestrator {
         conversationId: UUID,
         responseLanguage: DetectedLanguage = .english,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
-    ) -> AsyncStream<String> {
-        return AsyncStream<String> { continuation in
+    ) -> AsyncStream<ChatStreamEvent> {
+        // Only the newest event is worth keeping: previews are cumulative snapshots, so a
+        // consumer that falls behind should skip to the current one rather than replay every
+        // intermediate frame it missed. The `.final` is safe from the policy — it is yielded
+        // last, and this buffer only ever discards elements older than the newest.
+        return AsyncStream<ChatStreamEvent>(bufferingPolicy: .bufferingNewest(1)) { continuation in
             let task = Task {
                 // Stage-timing: measure each pipeline stage so slow steps (long prefill,
                 // extra LLM passes, buffered generation) show up in the console. Uses a
@@ -75,10 +79,13 @@ final class MedicalChatOrchestrator {
                 stageMark = Self.logStage("1 · InputGuardRail", since: stageMark)
                 switch inputResult.status {
                 case .blocked(let reason):
-                    continuation.yield("❌ \(reason)\n\n")
+                    // One `.final` per turn, so the refusal and its reason ship together
+                    // rather than as two events that would overwrite each other.
+                    var refusal = "❌ \(reason)\n\n"
                     if let violation = inputResult.violations.first {
-                        continuation.yield("Reason: \(violation)")
+                        refusal += "Reason: \(violation)"
                     }
+                    continuation.yield(.final(refusal))
                     continuation.finish()
                     return
                 case .allowed:
@@ -108,11 +115,13 @@ final class MedicalChatOrchestrator {
                 )
                 stageMark = Self.logStage("3 · Prompt build (+facts)", since: stageMark)
 
-                // Step 4: Generate LLM response. This is buffered rather than streamed live
-                // because outputGuardRail.validate (Step 5) inspects the COMPLETE response —
-                // hallucination detection, unsafe dosage detection, and citation enforcement
-                // all need the full text and can replace it outright. There is no safe way to
-                // show tokens before that check runs.
+                // Step 4: Generate LLM response. The ANSWER is still buffered rather than
+                // streamed, because outputGuardRail.validate (Step 5) inspects the COMPLETE
+                // response — hallucination detection, unsafe dosage detection, and citation
+                // enforcement all need the full text and can replace it outright. Tokens are
+                // additionally emitted as `.preview` events purely so the UI can show the reply
+                // being written; they are explicitly unvalidated and get replaced by the
+                // `.final` event below (see ChatStreamEvent).
                 //
                 // The LLM writes directly in `responseLanguage`, so a Vietnamese turn costs one
                 // decode pass rather than two. ChatService still verifies the result actually
@@ -126,7 +135,8 @@ final class MedicalChatOrchestrator {
                         userMessage: enrichedPrompt.userMessage,
                         conversationHistory: enrichedPrompt.history,
                         images: images
-                    ))
+                    )),
+                    previewingTo: continuation
                 )
                 stageMark = Self.logStage(
                     "4 · LLM generation", since: stageMark, detail: generationStats.summary
@@ -145,13 +155,13 @@ final class MedicalChatOrchestrator {
                 switch outputResult.status {
                 case .blocked:
                     if let filtered = outputResult.filteredResponse {
-                        continuation.yield(filtered)
-                        continuation.yield(responseLanguage.requiresTranslation
+                        let notice = responseLanguage.requiresTranslation
                             ? "\n\n⚠️ [Nội dung đã được lọc vì lý do an toàn]"
-                            : "\n\n⚠️ [Response filtered for safety]")
+                            : "\n\n⚠️ [Response filtered for safety]"
+                        continuation.yield(.final(filtered + notice))
                     }
                 case .allowed:
-                    continuation.yield(accumulatedResponse)
+                    continuation.yield(.final(accumulatedResponse))
                 }
 
                 // Step 6: Extract durable facts the user stated this turn and merge them into
@@ -196,19 +206,36 @@ final class MedicalChatOrchestrator {
         }
     }
 
+    /// How often the draft-so-far is pushed to the UI while decoding. The model emits chunks
+    /// faster than anyone can read them, and each snapshot costs a hop to the main actor plus a
+    /// re-layout of the whole message list, so they are coalesced: ~20 updates a second still
+    /// looks continuous while keeping the cost independent of decode speed.
+    private static let previewInterval: TimeInterval = 0.05
+
     /// Drains an LLM token stream into a single string, recording time-to-first-token and
-    /// chunk count alongside it.
+    /// chunk count alongside it, and emitting the text-so-far as `.preview` events on the way.
+    ///
+    /// The previews are the raw decoder output — no guardrail has run yet. They are display
+    /// only; the caller replaces them with a `.final` once Step 5 has validated the whole thing.
     private static func accumulate(
-        stream: AsyncStream<String>
+        stream: AsyncStream<String>,
+        previewingTo continuation: AsyncStream<ChatStreamEvent>.Continuation
     ) async -> (text: String, stats: GenerationStats) {
         let start = DispatchTime.now()
         var firstTokenAt: DispatchTime?
+        var lastPreviewAt = start
         var result = ""
         var chunkCount = 0
         for await token in stream {
             if firstTokenAt == nil { firstTokenAt = DispatchTime.now() }
             result += token
             chunkCount += 1
+
+            let now = DispatchTime.now()
+            if seconds(from: lastPreviewAt, to: now) >= previewInterval {
+                lastPreviewAt = now
+                continuation.yield(.preview(result))
+            }
         }
         let end = DispatchTime.now()
         let ttft = seconds(from: start, to: firstTokenAt ?? end)
@@ -244,16 +271,24 @@ final class MedicalChatOrchestrator {
     private struct EnrichedPrompt {
         let systemPrompt: String
         let userMessage: String
-        /// History trimmed to `maxHistoryTurns` so the LLM prompt stays compact.
+        /// History trimmed to `historyTokenBudget`, with assistant turns condensed.
         let history: [ChatMessage]
     }
-    
+
     // Token budget for RAG context injected into the system prompt.
     // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
     private static let contextTokenBudget = 600
-    // Maximum number of past turns included in the conversation history sent to the LLM.
-    // Each turn = 1 user + 1 assistant message. Older turns are dropped to limit prompt length.
-    private static let maxHistoryTurns = 4
+    // Token budget for the replayed conversation history, mirroring `contextTokenBudget`.
+    // A turn count is the wrong unit here: four turns of one-line greetings and four turns of
+    // full medical answers differ by an order of magnitude in prefill cost, and it is the
+    // tokens — not the turns — that the model has to re-read on every message. Budgeting by
+    // tokens bounds history growth directly, whatever shape the conversation takes.
+    private static let historyTokenBudget = 500
+    // Word cap applied to an assistant turn before it is replayed to the model. The full text
+    // stays in the UI and in storage; only the copy fed back into the prompt is shortened.
+    // Continuity needs the gist of what was already said, not the markdown headings, bullet
+    // lists, and disclaimers that make up most of a long answer's length.
+    private static let assistantReplayWordCap = 60
 
     private func buildEnrichedPrompt(
         userQuery: String,
@@ -354,14 +389,12 @@ final class MedicalChatOrchestrator {
         REMINDER — \(languageInstruction)
         """
 
-        // Cap history to the most recent N turns so the prompt stays short.
-        // Older context is less useful for a 3B model and significantly increases prefill time.
-        let maxMessages = Self.maxHistoryTurns * 2
-        let trimmedHistory = history.count > maxMessages
-            ? Array(history.suffix(maxMessages))
-            : history
+        // Trim history by token budget rather than turn count, so a few long answers cost the
+        // same prefill as many short ones. Older context is less useful for a 3B model and
+        // significantly increases prefill time.
+        let budgetedHistory = applyHistoryBudget(history, budget: Self.historyTokenBudget)
 
-        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: trimmedHistory)
+        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
     }
 
     private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
@@ -369,7 +402,7 @@ final class MedicalChatOrchestrator {
         var selected: [ContextChunk] = []
 
         for chunk in chunks {
-            let estimate = chunk.content.split { $0.isWhitespace }.count
+            let estimate = Self.estimateTokens(chunk.content)
             if usedTokens + estimate > budget { break }
             usedTokens += estimate
             selected.append(chunk)
@@ -377,7 +410,87 @@ final class MedicalChatOrchestrator {
 
         return selected
     }
-    
+
+    /// Selects as many of the most recent messages as fit within `budget`, condensing assistant
+    /// turns on the way in. Walks newest → oldest — the opposite of `applyContextBudget`, which
+    /// walks a relevance-ranked list — because recency is what makes a past turn worth replaying,
+    /// so the oldest messages are the ones to drop when the budget runs out.
+    ///
+    /// Only text is metered. An image attached to a past user turn is replayed untouched (the
+    /// vision path in LLMService needs it) and its prefill cost is not visible to this budget.
+    private func applyHistoryBudget(_ history: [ChatMessage], budget: Int) -> [ChatMessage] {
+        var usedTokens = 0
+        var selected: [ChatMessage] = []
+
+        for message in history.reversed() {
+            let replayable = Self.condenseForReplay(message)
+            let estimate = Self.estimateTokens(replayable.content)
+            if usedTokens + estimate > budget { break }
+            usedTokens += estimate
+            selected.append(replayable)
+        }
+
+        var ordered = Array(selected.reversed())
+        // The cut can land between an assistant reply and the user turn it answered, leaving
+        // history starting on an assistant message — a shape the chat template never sees in
+        // real conversation. Drop that orphan so replayed history always opens with a user turn.
+        if ordered.first?.role.lowercased() == "assistant" {
+            ordered.removeFirst()
+        }
+        return ordered
+    }
+
+    /// Shortens an assistant turn to the gist before it is replayed. User turns are returned
+    /// unchanged: they are short already, and they are the part the model most needs verbatim
+    /// (symptoms, numbers, the exact question being followed up on).
+    ///
+    /// The assistant's own formatting is the first thing to go. Headings, bullet markers, and
+    /// emphasis carry no information the model needs to continue the conversation, but they
+    /// account for a large share of a long answer's tokens.
+    private static func condenseForReplay(_ message: ChatMessage) -> ChatMessage {
+        guard message.role.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "assistant"
+        else { return message }
+
+        let stripped = message.content
+            // Leading markdown structure: "## ", "- ", "* ", "1. ", blockquotes.
+            .replacingOccurrences(
+                of: "(?m)^\\s*(#{1,6}|[-*+]|\\d+\\.|>)\\s+",
+                with: "",
+                options: .regularExpression
+            )
+            // Inline emphasis and code markers.
+            .replacingOccurrences(of: "[*_`]", with: "", options: .regularExpression)
+            // Collapse the whitespace the removals leave behind into single spaces.
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let words = stripped.split { $0.isWhitespace }
+        guard words.count > assistantReplayWordCap else {
+            return ChatMessage(
+                role: message.role,
+                content: stripped,
+                sources: message.sources,
+                imageData: message.imageData
+            )
+        }
+
+        let condensed = words.prefix(assistantReplayWordCap).joined(separator: " ") + " […]"
+        return ChatMessage(
+            role: message.role,
+            content: condensed,
+            sources: message.sources,
+            imageData: message.imageData
+        )
+    }
+
+    /// Rough token estimate: whitespace-separated word count. Deliberately not the tokenizer —
+    /// this runs on every turn for budgeting only, where being cheap matters more than being
+    /// exact, and word count under-counts consistently enough to keep the budget conservative.
+    private static func estimateTokens(_ text: String) -> Int {
+        text.split { $0.isWhitespace }.count
+    }
+
+
     private func formatContextChunks(_ chunks: [ContextChunk]) -> String {
         guard !chunks.isEmpty else {
             return "[No relevant medical context found]"

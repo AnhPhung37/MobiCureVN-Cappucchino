@@ -334,8 +334,11 @@ struct ChatView: View {
                                 .padding(.horizontal, 16)
                                 .padding(.top, 8)
                             ForEach(section.items) { item in
-                                MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData))
-                                    .padding(.vertical, 4)
+                                MessageBubble(
+                                    message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData),
+                                    isStreaming: item.id == viewModel.streamingMessageID
+                                )
+                                .padding(.vertical, 4)
                             }
                         }
                     }
@@ -359,8 +362,15 @@ struct ChatView: View {
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: viewModel.messages.last?.content) { _, _ in
-                withAnimation(.easeOut(duration: 0.2)) {
+                // While a reply streams this fires every ~50ms. Animating each of those would
+                // stack twenty interrupted 0.2s scrolls a second and read as stutter, so the
+                // draft is followed directly and only settled messages animate into place.
+                if viewModel.streamingMessageID != nil {
                     proxy.scrollTo("bottom", anchor: .bottom)
+                } else {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        proxy.scrollTo("bottom", anchor: .bottom)
+                    }
                 }
             }
             .onAppear {

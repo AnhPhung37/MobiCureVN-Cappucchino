@@ -42,8 +42,12 @@ enum ChatProcessingState: Equatable {
 // be repaired by re-translating — it is passed through and logged instead. Only a full drift
 // into English has a clean repair path.
 //
-// NOTE: MedicalChatOrchestrator buffers the full LLM output so the output guardrail can
-// validate/redact it before delivery — the response arrives as one chunk, not token-by-token.
+// NOTE: the ANSWER is still buffered — MedicalChatOrchestrator holds the full LLM output so the
+// output guardrail can validate/redact it before delivery, and the drift check below needs the
+// whole text too. What the stream carries is therefore two different things (see
+// ChatStreamEvent): `.preview` snapshots of the raw decode, forwarded straight through so the UI
+// can show the reply being written, and exactly one `.final` carrying the validated answer that
+// replaces them. Previews are never verified, translated, or persisted.
 @MainActor
 final class ChatService: ObservableObject {
 
@@ -85,10 +89,13 @@ final class ChatService: ObservableObject {
         history: [ChatMessage],
         conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
-    ) -> AsyncStream<String> {
+    ) -> AsyncStream<ChatStreamEvent> {
         processingState = .validatingLanguage
 
-        return AsyncStream<String> { [weak self] continuation in
+        // Newest-only, for the same reason as the orchestrator's stream: a dropped preview
+        // costs nothing (the next snapshot supersedes it) and the single `.final` is yielded
+        // last, so it can never be the element discarded.
+        return AsyncStream<ChatStreamEvent>(bufferingPolicy: .bufferingNewest(1)) { [weak self] continuation in
             guard let self else { continuation.finish(); return }
 
             let innerTask = Task { @MainActor [weak self] in
@@ -132,27 +139,51 @@ final class ChatService: ObservableObject {
                 // language (Vietnamese if the caption shows any Vietnamese signal, else
                 // English) so the image still reaches the pipeline.
                 let effectiveDetected: DetectedLanguage
+                // Set only by the unsupported-recovery path below, where a forced refine
+                // produced a cleaner input than the (skipped) gated one. Supersedes
+                // `refinedResult` downstream.
+                var recoveredText: String?
+
                 if case .unsupported = detected, !images.isEmpty {
                     effectiveDetected = self.languageValidator.vietnameseDensity(text) > 0
                         ? .vietnamese
                         : .english
                 } else if case .unsupported = detected {
-                    // Text-only turn in a genuinely unsupported language: refuse as before.
-                    // Discard the concurrently-running refine result; we're bailing out.
+                    // Discard the concurrently-running refine result: either the gate skipped
+                    // it (so it's just the input back) or it ran and still didn't help.
                     _ = await refinedResult
-                    Self.logStage("TOTAL per-message (unsupported)", since: pipelineStart)
-                    flow.end("unsupported language")
-                    self.processingState = .idle
-                    continuation.yield(LanguageValidationService.unsupportedErrorMessage)
-                    continuation.finish()
-                    return
+
+                    if let salvaged = await self.recoverUnsupported(
+                        rawText: text,
+                        protectedInput: protectedInput,
+                        pinnedName: pinnedName,
+                        llmService: llmService,
+                        flow: flow
+                    ) {
+                        effectiveDetected = salvaged.language
+                        recoveredText = salvaged.text
+                    } else {
+                        // Text-only turn in a genuinely unsupported language: refuse as before.
+                        Self.logStage("TOTAL per-message (unsupported)", since: pipelineStart)
+                        flow.end("unsupported language")
+                        self.processingState = .idle
+                        continuation.yield(.final(LanguageValidationService.unsupportedErrorMessage))
+                        continuation.finish()
+                        return
+                    }
                 } else {
                     effectiveDetected = detected
                 }
 
                 // Restore the pinned name into the refined text, undoing the protective
                 // sentinel so downstream stages see natural text with the correct spelling.
-                let refinedText = self.nameGuard.restore(await refinedResult, name: pinnedName)
+                // The recovery path has already restored its own text.
+                let refinedText: String
+                if let recoveredText {
+                    refinedText = recoveredText
+                } else {
+                    refinedText = self.nameGuard.restore(await refinedResult, name: pinnedName)
+                }
                 // detect + refine ran concurrently, so this single elapsed covers both LLM
                 // passes (the longer of the two dominates), measured from pipeline start.
                 stageMark = Self.logStage("A · detect+refine (LLM, concurrent)", since: stageMark)
@@ -176,7 +207,7 @@ final class ChatService: ObservableObject {
                     flow.end("error: \(error.localizedDescription)")
                     let msg = "Lỗi xử lý: \(error.localizedDescription)\n" +
                               "Processing error: \(error.localizedDescription)"
-                    continuation.yield(msg)
+                    continuation.yield(.final(msg))
                 }
 
                 self.processingState = .idle
@@ -188,6 +219,69 @@ final class ChatService: ObservableObject {
                 innerTask.cancel()
             }
         }
+    }
+
+    // MARK: - Unsupported-language recovery
+
+    /// Last-chance rescue before refusing a turn as an unsupported language.
+    ///
+    /// `needsRefinement` is deterministic and can only see signals the text actually carries.
+    /// Heavily-mangled telex — "Tui themf traf suxwa" for "Tôi thèm trà sữa" — carries none:
+    /// no diacritics, no recognisable Vietnamese function words, so density reads 0 and the gate
+    /// concludes "plain English, nothing to unify". That is exactly backwards; this is the input
+    /// class refine exists for. The classifier then sees a word salad and answers "other", and
+    /// the user gets a refusal for a perfectly ordinary Vietnamese sentence.
+    ///
+    /// Rather than keep widening the gate's heuristics until they catch every mangling, recover
+    /// here: run refine once with the gate bypassed, then re-detect. This spends LLM time only on
+    /// the rare rejection path — where the alternative is refusing the user outright — instead of
+    /// requiring the gate to be perfect on every turn.
+    ///
+    /// Returns the refined text and its language, or `nil` when re-detection still says
+    /// unsupported (a genuinely unsupported language, which refine cannot and should not fix).
+    private func recoverUnsupported(
+        rawText: String,
+        protectedInput: String,
+        pinnedName: String?,
+        llmService: LLMServiceProtocol,
+        flow: ChatFlowLog
+    ) async -> (text: String, language: DetectedLanguage)? {
+        // If the gate already let refine run, the LLM has had its shot at this text and the
+        // verdict stands — retrying would just buy the same answer for another round-trip.
+        guard !languageValidator.needsRefinement(rawText) else {
+            flow.note("recover", "skipped (refine already ran)")
+            return nil
+        }
+
+        let mark = DispatchTime.now()
+        processingState = .refiningInput
+
+        let forced = nameGuard.restore(
+            await languageValidator.refine(protectedInput, using: llmService, force: true),
+            name: pinnedName
+        )
+
+        guard !Task.isCancelled else { return nil }
+
+        // No usable rewrite: refine returned the input essentially unchanged (including its own
+        // degenerate-output fallback), so re-detecting would ask the same question twice.
+        guard forced.trimmingCharacters(in: .whitespacesAndNewlines)
+                != rawText.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            Self.logStage("A2 · forced refine (no change)", since: mark)
+            flow.note("recover", "refine returned input unchanged")
+            return nil
+        }
+
+        let redetected = await languageValidator.detect(forced, using: llmService)
+        Self.logStage("A2 · forced refine + re-detect (LLM)", since: mark)
+
+        if case .unsupported = redetected {
+            flow.note("recover", "still unsupported after refine")
+            return nil
+        }
+
+        flow.stage("recover", forced, tag: Self.languageTag(redetected))
+        return (forced, redetected)
     }
 
     // MARK: - Pipeline
@@ -206,7 +300,7 @@ final class ChatService: ObservableObject {
         flow: ChatFlowLog,
         pipelineStart: DispatchTime,
         sinceMark: DispatchTime,
-        continuation: AsyncStream<String>.Continuation
+        continuation: AsyncStream<ChatStreamEvent>.Continuation
     ) async throws {
         var stageMark = sinceMark
 
@@ -226,7 +320,7 @@ final class ChatService: ObservableObject {
             if let response = emergency.recommendation {
                 flow.stage("emergency", response, tag: Self.languageTag(detectedLanguage))
                 flow.output(response, language: Self.languageTag(detectedLanguage))
-                continuation.yield(response)
+                continuation.yield(.final(response))
             } else {
                 flow.end("emergency (no template)")
             }
@@ -252,11 +346,16 @@ final class ChatService: ObservableObject {
         guard !Task.isCancelled else { return }
 
         // Step 4: the orchestrator generates directly in the user's language. Guardrails and
-        // RAG still run in English on `englishQuery`; only the answer changes language. The
-        // buffered response is delivered as a single item at the end (see class-level NOTE).
+        // RAG still run in English on `englishQuery`; only the answer changes language.
+        //
+        // Draft snapshots are forwarded to the caller as they arrive so the reply can be watched
+        // being written; the validated answer arrives as a single `.final` at the end (see the
+        // class-level NOTE). Forwarding the drafts untouched is what makes them cheap — and it
+        // is only safe to show them at all because generation is now native: the drafts are
+        // already in the user's language rather than English awaiting a translation pass.
         processingState = .generating
         var generatedResponse = ""
-        for await token in orchestrator.processQuery(
+        for await event in orchestrator.processQuery(
             englishQuery,
             images: images,
             conversationHistory: history,
@@ -265,7 +364,12 @@ final class ChatService: ObservableObject {
             onSourcesRetrieved: onSourcesRetrieved
         ) {
             guard !Task.isCancelled else { return }
-            generatedResponse += token
+            switch event {
+            case .preview(let draft):
+                continuation.yield(.preview(draft))
+            case .final(let answer):
+                generatedResponse = answer
+            }
         }
         // Whole orchestrator round-trip (its own ⏱️ lines break this down further internally).
         stageMark = Self.logStage("C · generation (orchestrator)", since: stageMark)
@@ -317,7 +421,7 @@ final class ChatService: ObservableObject {
 
         guard !Task.isCancelled else { return }
         flow.output(finalResponse, language: Self.languageTag(detectedLanguage))
-        continuation.yield(finalResponse)
+        continuation.yield(.final(finalResponse))
         _ = Self.logStage("TOTAL per-message", since: pipelineStart)
     }
 

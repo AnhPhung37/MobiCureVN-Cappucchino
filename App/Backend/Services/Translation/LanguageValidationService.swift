@@ -286,6 +286,12 @@ nonisolated final class LanguageValidationService {
     /// Everything else — clean accented Vietnamese, plain English, very short fragments —
     /// skips the pass. English typos are no longer corrected up front; the model handles them
     /// in context, and an English turn never goes through translation anyway.
+    ///
+    /// KNOWN BLIND SPOT: badly-mangled telex ("Tui themf traf suxwa" for "Tôi thèm trà sữa")
+    /// has no diacritics AND no recognisable function words, so its density is 0 and the guard
+    /// below reads it as plain English — skipping the very input refine exists to fix. Rather
+    /// than keep widening the deterministic signal to catch every mangling, callers recover on
+    /// the rejection path: see `refine(_:using:force:)` and ChatService's unsupported branch.
     func needsRefinement(_ text: String) -> Bool {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let words = Self.words(in: trimmed)
@@ -313,11 +319,21 @@ nonisolated final class LanguageValidationService {
     ///
     /// Gated by `needsRefinement`: most turns are already clean and return immediately without
     /// touching the LLM.
-    func refine(_ text: String, using llmService: LLMServiceProtocol) async -> String {
+    ///
+    /// - Parameter force: bypasses the gate and always runs the pass. Reserved for the recovery
+    ///   path taken when detection has already come back unsupported — at that point the turn is
+    ///   about to be refused outright, so one extra round-trip is cheap insurance against the
+    ///   gate's blind spot (see `needsRefinement`). Never set this on the happy path; doing so
+    ///   puts the LLM round-trip back on every turn, which is what the gate removed.
+    func refine(
+        _ text: String,
+        using llmService: LLMServiceProtocol,
+        force: Bool = false
+    ) async -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return text }
 
-        guard needsRefinement(trimmed) else {
+        guard force || needsRefinement(trimmed) else {
             print("LanguageValidation: refine skipped (input already clean)")
             return text
         }
