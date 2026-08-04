@@ -94,6 +94,57 @@ nonisolated final class LanguageValidationService {
         "help", "feel", "feeling", "hear", "sounds", "like", "please", "consult"
     ]
 
+    // MARK: - Generated-output language check
+
+    /// Outcome of checking that a generated response actually came out in the language the
+    /// model was asked to write in.
+    enum OutputLanguageCheck: Equatable {
+        /// The response is in the expected language.
+        case ok
+        /// A non-Vietnamese/English script (CJK, Thai, …) leaked into the response.
+        case foreignScript
+        /// The response is in the wrong language outright — asked for Vietnamese, wrote English.
+        case wrongLanguage
+        /// Predominantly the right language, but a run of untranslated English leaked through.
+        case codeSwitched
+
+        var reason: String {
+            switch self {
+            case .ok:            return "ok"
+            case .foreignScript: return "foreign-script leak"
+            case .wrongLanguage: return "wrong language"
+            case .codeSwitched:  return "code-switch leak"
+            }
+        }
+    }
+
+    /// Verifies a generated response is in `expected`. Purely deterministic — script scan plus
+    /// Vietnamese density plus English-run detection — so it costs no LLM time.
+    ///
+    /// This replaces the old LLM verification pass that ran after translating an English answer
+    /// into Vietnamese. Now that the model writes Vietnamese directly, the only failure worth
+    /// catching is drift: a small model told to answer in Vietnamese can slip back into English,
+    /// usually because the retrieved medical context it is drawing on is English. Density
+    /// separates that case cleanly — a genuine Vietnamese answer sits far above the threshold,
+    /// an English one sits at essentially zero — and no model round-trip is needed to see it.
+    func checkGeneratedLanguage(_ text: String, expected: DetectedLanguage) -> OutputLanguageCheck {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return .ok }
+
+        if containsForeignScript(trimmed) { return .foreignScript }
+
+        let density = vietnameseDensity(trimmed)
+        guard expected.requiresTranslation else {
+            // Expected English: a Vietnamese-dominant answer means the model ignored the
+            // instruction. Anything below the dominance bar is treated as fine, since English
+            // answers legitimately mention Vietnamese place names and terms.
+            return density >= Self.vietnameseDensityThreshold ? .wrongLanguage : .ok
+        }
+
+        guard density >= Self.vietnameseDensityThreshold else { return .wrongLanguage }
+        return containsEnglishLeak(trimmed) ? .codeSwitched : .ok
+    }
+
     // MARK: - Public API
 
     /// Fast, deterministic check for foreign-script leakage (Chinese, Japanese, Korean, Thai, etc.)
@@ -218,14 +269,58 @@ nonisolated final class LanguageValidationService {
         return hasVietnameseSignal ? .vietnamese : .unsupported(detected: normalized)
     }
 
+    /// Whether `text` is messy enough to be worth an LLM refine pass.
+    ///
+    /// Refine is a full LLM round-trip charged to every single turn, and for most inputs it
+    /// returns the text essentially unchanged — Apple's Translation framework already copes
+    /// with ordinary typos, and clean Vietnamese or clean English needs no unification. Gating
+    /// it on the two cases where it demonstrably earns its cost removes that round-trip from
+    /// the majority of turns:
+    ///
+    ///   1. Code-switching — Vietnamese text carrying a run of English words. Unifying it into
+    ///      one language before translation is exactly what refine is for.
+    ///   2. Accent-less Vietnamese ("toi bi dau bung") — Vietnamese signal present but zero
+    ///      diacritics, i.e. typed without tone marks. Restoring the accents materially
+    ///      improves what Apple Translation produces downstream.
+    ///
+    /// Everything else — clean accented Vietnamese, plain English, very short fragments —
+    /// skips the pass. English typos are no longer corrected up front; the model handles them
+    /// in context, and an English turn never goes through translation anyway.
+    func needsRefinement(_ text: String) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let words = Self.words(in: trimmed)
+        // Too short to have structure worth fixing, and the shortest inputs are where a
+        // refine pass is most likely to hallucinate a rewrite rather than correct one.
+        guard words.count >= 3 else { return false }
+
+        guard vietnameseDensity(trimmed) >= Self.vietnameseMinSignalThreshold else {
+            // No Vietnamese signal at all: plain English. Nothing to unify.
+            return false
+        }
+
+        // Case 1: Vietnamese carrying an untranslated English run.
+        if containsEnglishLeak(trimmed) { return true }
+
+        // Case 2: Vietnamese signal came entirely from accent-less function words.
+        return vietnameseDiacriticDensity(trimmed) == 0
+    }
+
     /// Asks the LLM to clean up the user's raw input — fix typos, unify Vietnamese/English
     /// code-switching into one language, tidy grammar — while strictly preserving the
     /// original language and meaning. This runs before translation so Apple's Translation
     /// framework receives a clean, single-language source string instead of a typo-ridden
     /// or code-switched one.
+    ///
+    /// Gated by `needsRefinement`: most turns are already clean and return immediately without
+    /// touching the LLM.
     func refine(_ text: String, using llmService: LLMServiceProtocol) async -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return text }
+
+        guard needsRefinement(trimmed) else {
+            print("LanguageValidation: refine skipped (input already clean)")
+            return text
+        }
 
         let prompt = """
         Rewrite the TEXT below to fix typos, spelling, and grammar, and if it mixes two \

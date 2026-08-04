@@ -1,10 +1,18 @@
 import Foundation
 
-/// MedicalChatOrchestrator: full pipeline orchestration (English-only)
+/// MedicalChatOrchestrator: full pipeline orchestration
 /// English Query → Input GuardRail → RAG Retriever →
 /// LLM Generation → Output GuardRail → Response
 ///
-/// Emergency detection and language conversion live one layer up in ChatService,
+/// Everything up to generation runs in English: the query arrives translated, the guardrails
+/// and the RAG corpus are English, and the retrieved context is injected in English. Only the
+/// GENERATION step is language-aware — the model is told to answer in `responseLanguage`, so a
+/// Vietnamese turn is written in Vietnamese in one pass instead of being generated in English
+/// and then re-decoded by a second LLM translation pass (which cost more than the answer
+/// itself). The output guardrail rules are bilingual to match; see GuardRailRules' output
+/// section.
+///
+/// Emergency detection and input-language conversion live one layer up in ChatService,
 /// which runs on the user's original-language text before this orchestrator is invoked.
 final class MedicalChatOrchestrator {
     
@@ -33,27 +41,38 @@ final class MedicalChatOrchestrator {
 
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
     /// - Parameter userQuery: The query in English. ChatService runs emergency detection on
-    ///   the original-language text and translates it to English before calling this, then
-    ///   translates the (always-English) response back afterward — this orchestrator only
-    ///   ever sees/generates English.
+    ///   the original-language text and translates it to English before calling this, so the
+    ///   guardrails and RAG retrieval always operate on English.
     /// - Parameter images: images attached to this user turn. Text guardrails and RAG run on
     ///   the query text only; the images ride along into the LLM request (multimodal chat
     ///   convention) and are used when the loaded model supports vision.
+    /// - Parameter responseLanguage: the language the LLM should ANSWER in — the user's
+    ///   original language. Defaults to English. This is the only stage that differs by
+    ///   language; the retrieved context stays English regardless and the model translates
+    ///   the facts it uses as it writes.
     func processQuery(
         _ userQuery: String,
         images: [Data] = [],
         conversationHistory: [ChatMessage],
         conversationId: UUID,
+        responseLanguage: DetectedLanguage = .english,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
     ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
             let task = Task {
+                // Stage-timing: measure each pipeline stage so slow steps (long prefill,
+                // extra LLM passes, buffered generation) show up in the console. Uses a
+                // monotonic clock so it's unaffected by wall-clock adjustments.
+                let pipelineStart = DispatchTime.now()
+                var stageMark = pipelineStart
+
                 // Step 1: Input GuardRail — dangerous/injection/PII checks, plus semantic
                 // relevance. userQuery is always English by this point.
                 let inputResult = inputGuardRail.validate(
                     query: userQuery,
                     englishQuery: userQuery
                 )
+                stageMark = Self.logStage("1 · InputGuardRail", since: stageMark)
                 switch inputResult.status {
                 case .blocked(let reason):
                     continuation.yield("❌ \(reason)\n\n")
@@ -70,6 +89,7 @@ final class MedicalChatOrchestrator {
 
                 // Step 2: RAG Pipeline — sanitizedQuery is always English by this point.
                 let retrievedContext = await ragService.process(userQuery: sanitizedQuery)
+                stageMark = Self.logStage("2 · RAG retrieval", since: stageMark)
                 // Surface retrieved sources so the UI can show citations without a
                 // second, redundant retrieval pass.
                 onSourcesRetrieved?(retrievedContext.sources)
@@ -83,8 +103,10 @@ final class MedicalChatOrchestrator {
                     userQuery: sanitizedQuery,
                     context: retrievedContext,
                     history: conversationHistory,
-                    rememberedFacts: rememberedFacts
+                    rememberedFacts: rememberedFacts,
+                    responseLanguage: responseLanguage
                 )
+                stageMark = Self.logStage("3 · Prompt build (+facts)", since: stageMark)
 
                 // Step 4: Generate LLM response. This is buffered rather than streamed live
                 // because outputGuardRail.validate (Step 5) inspects the COMPLETE response —
@@ -92,13 +114,13 @@ final class MedicalChatOrchestrator {
                 // all need the full text and can replace it outright. There is no safe way to
                 // show tokens before that check runs.
                 //
-                // The LLM only ever generates English here — ChatService handles translating
-                // the user's original-language input to English beforehand and the English
-                // response back afterward, so there's no language-matching/retry step needed
-                // at this layer.
+                // The LLM writes directly in `responseLanguage`, so a Vietnamese turn costs one
+                // decode pass rather than two. ChatService still verifies the result actually
+                // came out in the requested language and falls back to Apple Translation if the
+                // model drifted — a deterministic check, not another LLM call.
                 // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
                 // so the total prompt length stays within the model's sweet spot.
-                let accumulatedResponse = await Self.accumulate(
+                let (accumulatedResponse, generationStats) = await Self.accumulate(
                     stream: llmService.stream(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
@@ -106,20 +128,27 @@ final class MedicalChatOrchestrator {
                         images: images
                     ))
                 )
+                stageMark = Self.logStage(
+                    "4 · LLM generation", since: stageMark, detail: generationStats.summary
+                )
 
                 print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
 
                 // Step 5: Final Output GuardRail Check
                 let outputResult = outputGuardRail.validate(
                     response: accumulatedResponse,
-                    retrievedContext: retrievedContext
+                    retrievedContext: retrievedContext,
+                    responseLanguage: responseLanguage
                 )
+                stageMark = Self.logStage("5 · OutputGuardRail", since: stageMark)
 
                 switch outputResult.status {
                 case .blocked:
                     if let filtered = outputResult.filteredResponse {
                         continuation.yield(filtered)
-                        continuation.yield("\n\n⚠️ [Response filtered for safety]")
+                        continuation.yield(responseLanguage.requiresTranslation
+                            ? "\n\n⚠️ [Nội dung đã được lọc vì lý do an toàn]"
+                            : "\n\n⚠️ [Response filtered for safety]")
                     }
                 case .allowed:
                     continuation.yield(accumulatedResponse)
@@ -132,8 +161,10 @@ final class MedicalChatOrchestrator {
                 if !Task.isCancelled {
                     let newFacts = await factExtractor.extract(from: sanitizedQuery, using: llmService)
                     await factStore.merge(newFacts, into: conversationId)
+                    stageMark = Self.logStage("6 · Fact extraction (LLM)", since: stageMark)
                 }
 
+                _ = Self.logStage("TOTAL pipeline", since: pipelineStart)
                 continuation.finish()
             }
 
@@ -145,13 +176,69 @@ final class MedicalChatOrchestrator {
     
     // MARK: - Private Helpers
 
-    /// Drains an LLM token stream into a single string.
-    private static func accumulate(stream: AsyncStream<String>) async -> String {
-        var result = ""
-        for await token in stream {
-            result += token
+    /// Timing captured while draining an LLM token stream. `ttft` isolates prefill cost
+    /// (time-to-first-token) from decode; `chunkCount` approximates throughput. Because the
+    /// orchestrator buffers the whole response before display, this is where the felt latency
+    /// lives — the numbers here explain most of the app-vs-terminal gap.
+    private struct GenerationStats {
+        let ttft: TimeInterval
+        let total: TimeInterval
+        let chunkCount: Int
+
+        /// e.g. "ttft 0.82s, 143 chunks, 18.4 chunk/s (decode)".
+        var summary: String {
+            let decode = max(total - ttft, 0)
+            let rate = decode > 0 ? Double(max(chunkCount - 1, 0)) / decode : 0
+            return String(
+                format: "ttft %.2fs, %d chunks, %.1f chunk/s (decode)",
+                ttft, chunkCount, rate
+            )
         }
-        return result
+    }
+
+    /// Drains an LLM token stream into a single string, recording time-to-first-token and
+    /// chunk count alongside it.
+    private static func accumulate(
+        stream: AsyncStream<String>
+    ) async -> (text: String, stats: GenerationStats) {
+        let start = DispatchTime.now()
+        var firstTokenAt: DispatchTime?
+        var result = ""
+        var chunkCount = 0
+        for await token in stream {
+            if firstTokenAt == nil { firstTokenAt = DispatchTime.now() }
+            result += token
+            chunkCount += 1
+        }
+        let end = DispatchTime.now()
+        let ttft = seconds(from: start, to: firstTokenAt ?? end)
+        let stats = GenerationStats(
+            ttft: ttft,
+            total: seconds(from: start, to: end),
+            chunkCount: chunkCount
+        )
+        return (result, stats)
+    }
+
+    // MARK: - Stage Timing
+
+    /// Logs the elapsed time for a pipeline stage and returns "now" so the caller can chain
+    /// the next measurement. `detail` appends extra context (e.g. generation throughput).
+    @discardableResult
+    private static func logStage(
+        _ name: String,
+        since mark: DispatchTime,
+        detail: String? = nil
+    ) -> DispatchTime {
+        let now = DispatchTime.now()
+        let elapsed = seconds(from: mark, to: now)
+        let suffix = detail.map { " — \($0)" } ?? ""
+        print(String(format: "⏱️ [Orchestrator] %@: %.3fs%@", name, elapsed, suffix))
+        return now
+    }
+
+    private static func seconds(from start: DispatchTime, to end: DispatchTime) -> TimeInterval {
+        Double(end.uptimeNanoseconds &- start.uptimeNanoseconds) / 1_000_000_000
     }
 
     private struct EnrichedPrompt {
@@ -172,9 +259,26 @@ final class MedicalChatOrchestrator {
         userQuery: String,
         context: RetrievedContext,
         history: [ChatMessage],
-        rememberedFacts: String? = nil
+        rememberedFacts: String? = nil,
+        responseLanguage: DetectedLanguage = .english
     ) -> EnrichedPrompt {
-        let languageInstruction = "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
+        let answersInVietnamese = responseLanguage.requiresTranslation
+        let languageInstruction = answersInVietnamese
+            ? "Respond ONLY in Vietnamese (tiếng Việt). Do NOT use English, Chinese, or any other language under any circumstances."
+            : "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
+
+        // The RAG corpus is English, so the retrieved context below stays English even when the
+        // answer must be Vietnamese. Say so explicitly — otherwise a small model tends to mirror
+        // the language of the context it is quoting and drifts back into English mid-answer.
+        let contextLanguageNote = answersInVietnamese ? """
+
+        - The Retrieved Medical Context below is written in ENGLISH. Translate any fact you use
+          from it into natural, everyday Vietnamese. Never quote it in English. Keep source
+          titles and citation markers as they are, but write all of your own prose in Vietnamese.
+        - Use plain Vietnamese a patient would use, not clinical loan-words, and keep medical
+          terms accurate. Where a Vietnamese term is uncommon, put the English term in brackets
+          after it once.
+        """ : ""
 
         // Apply token budget to RAG chunks so the system prompt stays compact.
         let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
@@ -219,6 +323,15 @@ final class MedicalChatOrchestrator {
         - \(languageInstruction)
         - You are NOT a licensed physician and cannot provide medical diagnosis or treatment plans.
         - Prefer the Retrieved Medical Context below when it is available — cite it and use it as the primary source.
+        - The Retrieved Medical Context describes colorectal care in general; it is NOT this patient's
+          record. Never state or imply that they have had a particular procedure, have a stoma, or are on
+          a particular treatment unless they said so in this conversation or it is listed under known facts.
+        - When the context is specific to a procedure or device the patient has not mentioned, keep that
+          guidance conditional ("if you have had bowel surgery…", "if you have a stoma…") instead of
+          asserting it as their situation. This applies to warning signs too — a red flag that only matters
+          for one procedure must be framed for that procedure, not issued as a general alarm.
+        - If the answer would differ materially depending on which procedure the patient had, ask one short
+          clarifying question rather than guessing.
         - If the Retrieved Medical Context shows '[No relevant medical context found]', you may still answer common health and lifestyle questions (nutrition, diet, hydration, rest, activity) from your general medical knowledge, but clearly label the answer as general guidance and advise the user to confirm with their healthcare provider.
         - If — and only if — a question is genuinely unrelated to health, medicine, or the patient's care
           (e.g. coding help, math homework, general trivia), don't refuse coldly. Gently steer back:
@@ -228,7 +341,7 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)\(memorySection)
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(contextLanguageNote)\(noContextInstruction)\(memorySection)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
