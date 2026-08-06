@@ -334,8 +334,22 @@ struct ChatView: View {
                                 .padding(.horizontal, 16)
                                 .padding(.top, 8)
                             ForEach(section.items) { item in
-                                MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData))
-                                    .padding(.vertical, 4)
+                                MessageBubble(
+                                    message: ChatMessage(
+                                        role: item.role,
+                                        content: item.content,
+                                        sources: item.sources,
+                                        imageData: item.imageData,
+                                        profileUpdateProposals: item.profileUpdateProposals
+                                    ),
+                                    onAcceptProfileUpdate: { update in
+                                        Task { await viewModel.acceptProfileUpdate(update) }
+                                    },
+                                    onDismissProfileUpdate: { update in
+                                        Task { await viewModel.dismissProfileUpdate(update) }
+                                    }
+                                )
+                                .padding(.vertical, 4)
                             }
                         }
                     }

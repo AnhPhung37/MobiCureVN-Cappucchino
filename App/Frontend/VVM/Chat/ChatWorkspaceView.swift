@@ -86,7 +86,7 @@ struct ChatWorkspaceView: View {
                 // conversation — the same block injected into the live system prompt.
                 ProfileView(
                     viewModel: ProfileViewModel(
-                        repository: MockProfileRepository(),
+                        repository: AppConfig.profileRepository,
                         conversationId: viewModel.currentConversationId
                     )
                 )

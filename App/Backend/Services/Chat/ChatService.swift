@@ -78,7 +78,8 @@ final class ChatService: ObservableObject {
         images: [Data] = [],
         history: [ChatMessage],
         conversationId: UUID,
-        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil,
+        onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)? = nil
     ) -> AsyncStream<String> {
         processingState = .validatingLanguage
 
@@ -149,6 +150,7 @@ final class ChatService: ObservableObject {
                         history: history,
                         conversationId: conversationId,
                         onSourcesRetrieved: onSourcesRetrieved,
+                        onProfileUpdateProposed: onProfileUpdateProposed,
                         flow: flow,
                         continuation: continuation
                     )
@@ -183,6 +185,7 @@ final class ChatService: ObservableObject {
         history: [ChatMessage],
         conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
+        onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)?,
         flow: ChatFlowLog,
         continuation: AsyncStream<String>.Continuation
     ) async throws {
@@ -234,7 +237,8 @@ final class ChatService: ObservableObject {
             images: images,
             conversationHistory: history,
             conversationId: conversationId,
-            onSourcesRetrieved: onSourcesRetrieved
+            onSourcesRetrieved: onSourcesRetrieved,
+            onProfileUpdateProposed: onProfileUpdateProposed
         ) {
             guard !Task.isCancelled else { return }
             englishResponse += token

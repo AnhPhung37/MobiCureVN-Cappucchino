@@ -14,6 +14,9 @@ final class MedicalChatOrchestrator {
     private let llmService: LLMServiceProtocol
     private let factStore: SessionFactStore
     private let factExtractor: SessionFactExtractor
+    private let profileRepository: ProfileRepository
+    private let profileUpdateExtractor: ProfileUpdateExtractor
+    private let profileUpdateStore: ProfileUpdateRepository
 
     init(
         llmService: LLMServiceProtocol,
@@ -21,7 +24,10 @@ final class MedicalChatOrchestrator {
         outputGuardRail: OutputGuardRail = OutputGuardRail(),
         ragService: RAGService = RAGService(),
         factStore: SessionFactStore = AppConfig.sessionFactStore,
-        factExtractor: SessionFactExtractor = SessionFactExtractor()
+        factExtractor: SessionFactExtractor = SessionFactExtractor(),
+        profileRepository: ProfileRepository = AppConfig.profileRepository,
+        profileUpdateExtractor: ProfileUpdateExtractor = ProfileUpdateExtractor(),
+        profileUpdateStore: ProfileUpdateRepository = AppConfig.profileUpdateStore
     ) {
         self.llmService = llmService
         self.inputGuardRail = inputGuardRail
@@ -29,6 +35,9 @@ final class MedicalChatOrchestrator {
         self.ragService = ragService
         self.factStore = factStore
         self.factExtractor = factExtractor
+        self.profileRepository = profileRepository
+        self.profileUpdateExtractor = profileUpdateExtractor
+        self.profileUpdateStore = profileUpdateStore
     }
 
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
@@ -44,7 +53,8 @@ final class MedicalChatOrchestrator {
         images: [Data] = [],
         conversationHistory: [ChatMessage],
         conversationId: UUID,
-        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil,
+        onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)? = nil
     ) -> AsyncStream<String> {
         return AsyncStream<String> { continuation in
             let task = Task {
@@ -79,11 +89,16 @@ final class MedicalChatOrchestrator {
                 // relying on the trimmed history) is what lets an early-mentioned detail — a
                 // name, an allergy — survive after it scrolls out of the short history window.
                 let rememberedFacts = await factStore.promptBlock(for: conversationId)
+                // The confirmed, cross-conversation profile — a best-effort read; a fetch
+                // failure just means this turn runs without profile personalization rather
+                // than failing the whole response.
+                let confirmedProfile = try? await profileRepository.fetchProfile()
                 let enrichedPrompt = buildEnrichedPrompt(
                     userQuery: sanitizedQuery,
                     context: retrievedContext,
                     history: conversationHistory,
-                    rememberedFacts: rememberedFacts
+                    rememberedFacts: rememberedFacts,
+                    confirmedProfile: confirmedProfile
                 )
 
                 // Step 4: Generate LLM response. This is buffered rather than streamed live
@@ -134,6 +149,30 @@ final class MedicalChatOrchestrator {
                     await factStore.merge(newFacts, into: conversationId)
                 }
 
+                // Step 7: propose durable, cross-conversation profile updates from this turn,
+                // diffed against the confirmed profile already fetched in Step 3. This never
+                // writes the profile directly — proposals are staged for explicit patient
+                // confirmation (see ProfileUpdateRepository). Runs after the answer is
+                // delivered, same rationale as Step 6.
+                if !Task.isCancelled, let currentProfile = confirmedProfile {
+                    let proposals = await profileUpdateExtractor.extract(
+                        from: sanitizedQuery, currentProfile: currentProfile, using: llmService
+                    )
+                    if !proposals.isEmpty {
+                        let candidates = proposals.map {
+                            ProposedProfileUpdate(
+                                proposal: $0,
+                                currentProfile: currentProfile,
+                                conversationId: conversationId,
+                                sourceExcerpt: String(sanitizedQuery.prefix(200))
+                            )
+                        }
+                        if let enqueued = try? await profileUpdateStore.enqueue(candidates), !enqueued.isEmpty {
+                            onProfileUpdateProposed?(enqueued)
+                        }
+                    }
+                }
+
                 continuation.finish()
             }
 
@@ -164,6 +203,9 @@ final class MedicalChatOrchestrator {
     // Token budget for RAG context injected into the system prompt.
     // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
     private static let contextTokenBudget = 600
+    // Token budget for the persisted patient profile block. Smaller than the RAG budget —
+    // these are compact structured facts, not prose.
+    private static let profileTokenBudget = 200
     // Maximum number of past turns included in the conversation history sent to the LLM.
     // Each turn = 1 user + 1 assistant message. Older turns are dropped to limit prompt length.
     private static let maxHistoryTurns = 4
@@ -172,12 +214,22 @@ final class MedicalChatOrchestrator {
         userQuery: String,
         context: RetrievedContext,
         history: [ChatMessage],
-        rememberedFacts: String? = nil
+        rememberedFacts: String? = nil,
+        confirmedProfile: PatientProfile? = nil
     ) -> EnrichedPrompt {
         let languageInstruction = "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
 
         // Apply token budget to RAG chunks so the system prompt stays compact.
         let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+
+        // The confirmed, cross-conversation profile — durable baseline, persists across chats.
+        // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install).
+        let formattedProfile = confirmedProfile.map { formatProfile($0, budget: Self.profileTokenBudget) } ?? ""
+        let profileSection = formattedProfile.isEmpty ? "" : """
+
+        Confirmed patient profile (persisted, may be from an earlier conversation):
+        \(formattedProfile)
+        """
 
         // Facts the user has stated earlier this session (name, allergies, wound location, …).
         // Injected so they survive past the short history window; omitted entirely when empty.
@@ -185,6 +237,13 @@ final class MedicalChatOrchestrator {
 
         Known facts about this patient (stated earlier in this conversation — use them, and do NOT ask for information already listed here):
         \(rememberedFacts!)
+        """ : ""
+
+        // Two memory tiers can disagree (e.g. the profile says one wound location, the
+        // conversation states a newer one) — tell the model which one to trust.
+        let conflictInstruction = (!profileSection.isEmpty && !memorySection.isEmpty) ? """
+
+        If the confirmed patient profile and the facts stated earlier in this conversation conflict, trust the conversation facts as more current.
         """ : ""
 
         let noContextFound = budgetedChunks.isEmpty
@@ -228,7 +287,7 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)\(memorySection)
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(noContextInstruction)\(profileSection)\(memorySection)\(conflictInstruction)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
@@ -249,6 +308,53 @@ final class MedicalChatOrchestrator {
             : history
 
         return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: trimmedHistory)
+    }
+
+    /// Formats the confirmed profile as compact bullet lines, prioritized identity → clinical
+    /// basics → clinical lists → care guidance → free-text summary, and truncated to `budget`
+    /// (word-count estimate, same approach as `applyContextBudget`) so the least
+    /// turn-to-turn-useful fields (report summary, then care notes/warning signs) are the
+    /// first dropped when the profile has grown large.
+    private func formatProfile(_ profile: PatientProfile, budget: Int) -> String {
+        func line(_ label: String, _ value: String) -> String? {
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            return "- \(label): \(trimmed)"
+        }
+        func bulletList(_ label: String, _ items: [String]) -> String? {
+            guard !items.isEmpty else { return nil }
+            return "- \(label): " + items.joined(separator: "; ")
+        }
+
+        var sections: [String] = []
+        if !profile.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            sections.append("- Name: \(profile.name)")
+        }
+        if profile.age > 0 { sections.append("- Age: \(profile.age)") }
+        if let l = line("Gender", profile.gender) { sections.append(l) }
+        if let l = line("Diagnosis", profile.diagnosis) { sections.append(l) }
+        if let l = line("Procedure", profile.procedure) { sections.append(l) }
+        if let l = line("Recovery stage", profile.recoveryStage) { sections.append(l) }
+        if let location = profile.currentWoundLocation, let l = line("Current wound location", location) {
+            sections.append(l)
+        }
+        if let l = bulletList("Allergies", profile.allergies) { sections.append(l) }
+        if let l = bulletList("Medications", profile.medications) { sections.append(l) }
+        if let l = bulletList("Conditions", profile.conditions) { sections.append(l) }
+        if let l = bulletList("Care notes", profile.careNotes) { sections.append(l) }
+        if let l = bulletList("Warning signs", profile.warningSigns) { sections.append(l) }
+        if let l = line("Report summary", profile.reportSummary) { sections.append(l) }
+
+        var usedTokens = 0
+        var selected: [String] = []
+        for section in sections {
+            let estimate = section.split { $0.isWhitespace }.count
+            if usedTokens + estimate > budget { break }
+            usedTokens += estimate
+            selected.append(section)
+        }
+
+        return selected.joined(separator: "\n")
     }
 
     private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {

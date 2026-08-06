@@ -35,6 +35,8 @@ struct ProfileView: View {
                         notesCard(title: "Care notes", items: profile.careNotes, icon: "checkmark.circle.fill")
                         notesCard(title: "Warning signs", items: profile.warningSigns, icon: "exclamationmark.triangle.fill")
                         rememberedFactsCard
+                        pendingUpdatesCard
+                        highStakesHistoryCard
                         woundPhotosCard
                         sourceCard(profile)
                     } else if let error = viewModel.errorMessage {
@@ -241,6 +243,117 @@ struct ProfileView: View {
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
+        )
+    }
+
+    // MARK: - Pending Profile Updates
+    //
+    // AI-proposed updates from chat, awaiting confirmation. The durable fallback surface — a
+    // proposal shown here even if the patient never acted on the inline chat card, since this
+    // reads straight from AppConfig.profileUpdateStore rather than the current conversation.
+
+    @ViewBuilder
+    private var pendingUpdatesCard: some View {
+        if !viewModel.pendingUpdates.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "wand.and.stars")
+                        .foregroundColor(.cyan)
+                    Text(t("Đề xuất cập nhật hồ sơ"))
+                        .font(.headline)
+                    Spacer()
+                    Text("\(viewModel.pendingUpdates.count)")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.cyan)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Capsule().fill(Color.cyan.opacity(0.15)))
+                }
+
+                Text(t("Trợ lý nhận thấy những thông tin này từ cuộc trò chuyện. Xác nhận để cập nhật hồ sơ của bạn."))
+                    .font(.system(size: 12))
+                    .foregroundColor(Color(.secondaryLabel))
+                    .fixedSize(horizontal: false, vertical: true)
+
+                VStack(spacing: 8) {
+                    ForEach(viewModel.pendingUpdates) { update in
+                        ProfileUpdateRow(
+                            update: update,
+                            onAccept: { Task { await viewModel.accept($0) } },
+                            onDismiss: { Task { await viewModel.dismiss($0) } }
+                        )
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            )
+        }
+    }
+
+    // MARK: - Clinical Change History
+    //
+    // Audit trail for high-stakes fields (diagnosis/procedure/recovery stage): every resolved
+    // proposal, so a bad edit can be caught after the fact even though nothing after Accept
+    // requires a clinician's sign-off.
+
+    @ViewBuilder
+    private var highStakesHistoryCard: some View {
+        if !viewModel.highStakesHistory.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .foregroundColor(.orange)
+                    Text(t("Lịch sử thay đổi lâm sàng"))
+                        .font(.headline)
+                }
+
+                VStack(spacing: 8) {
+                    ForEach(viewModel.highStakesHistory) { update in
+                        highStakesHistoryRow(update)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            )
+        }
+    }
+
+    private func highStakesHistoryRow(_ update: ProposedProfileUpdate) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(update.field.displayLabel)
+                    .font(.system(size: 13, weight: .semibold))
+                Text(update.status == .accepted ? t("Đã xác nhận") : t("Đã bỏ qua"))
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(update.status == .accepted ? .cyan : Color(.tertiaryLabel))
+                Spacer()
+                Text(Self.dateFormatter.string(from: update.createdAt))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(.secondaryLabel))
+            }
+            if let previous = update.previousValue {
+                Text("\(previous) → \(update.newValue)")
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundColor(Color(.secondaryLabel))
+            } else {
+                Text(update.newValue)
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundColor(Color(.secondaryLabel))
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color(.systemBackground))
         )
     }
 

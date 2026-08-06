@@ -11,6 +11,8 @@ import SwiftUI
 struct MessageBubble: View {
 
     let message: ChatMessage
+    var onAcceptProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
+    var onDismissProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
 
     private var isUser: Bool { message.role.lowercased() == "user" }
 
@@ -49,6 +51,14 @@ struct MessageBubble: View {
 
                 if !isUser && !message.sources.isEmpty {
                     CitationsView(sources: message.sources)
+                }
+
+                if !isUser && !message.profileUpdateProposals.isEmpty {
+                    ProfileUpdateConfirmationCard(
+                        updates: message.profileUpdateProposals,
+                        onAccept: onAcceptProfileUpdate,
+                        onDismiss: onDismissProfileUpdate
+                    )
                 }
             }
 

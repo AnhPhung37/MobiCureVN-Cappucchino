@@ -50,7 +50,9 @@ struct AppConfig {
     /// schema keeps the store consistent.
     static let modelContainer: ModelContainer? = {
         do {
-            return try ModelContainer(for: ChatRecord.self, WoundLogRecord.self)
+            return try ModelContainer(
+                for: ChatRecord.self, WoundLogRecord.self, PatientProfileRecord.self, ProposedProfileUpdateRecord.self
+            )
         } catch {
             assertionFailure("Failed to create shared SwiftData container: \(error)")
             return nil
@@ -74,6 +76,32 @@ struct AppConfig {
         } catch {
             assertionFailure("Failed to create SwiftData wound log repository: \(error)")
             return InMemoryWoundLogRepository()
+        }
+    }()
+
+    /// The single, real, persisted patient profile for this device — see `localPatientID`.
+    /// Injected into the LLM system prompt every turn (`MedicalChatOrchestrator`) and shown
+    /// in the Profile tab. `MockProfileRepository` is used only for SwiftUI previews/tests.
+    static let profileRepository: ProfileRepository = {
+        do {
+            guard let modelContainer else { return InMemoryProfileRepository() }
+            return try SwiftDataProfileRepository(container: modelContainer)
+        } catch {
+            assertionFailure("Failed to create SwiftData profile repository: \(error)")
+            return InMemoryProfileRepository()
+        }
+    }()
+
+    /// AI-proposed profile field updates awaiting patient confirmation — see
+    /// `ProfileUpdateRepository`. Single-profile-per-device, so (like `profileRepository`)
+    /// this needs no id parameter anywhere.
+    static let profileUpdateStore: ProfileUpdateRepository = {
+        do {
+            guard let modelContainer else { return InMemoryProfileUpdateRepository() }
+            return try SwiftDataProfileUpdateRepository(container: modelContainer)
+        } catch {
+            assertionFailure("Failed to create SwiftData profile update repository: \(error)")
+            return InMemoryProfileUpdateRepository()
         }
     }()
 
