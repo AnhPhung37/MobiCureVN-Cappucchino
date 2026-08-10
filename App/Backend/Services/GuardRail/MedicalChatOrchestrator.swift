@@ -125,7 +125,7 @@ final class MedicalChatOrchestrator {
                     context: retrievedContext,
                     history: conversationHistory,
                     rememberedFacts: rememberedFacts,
-                    confirmedProfile: confirmedProfile
+                    confirmedProfile: confirmedProfile,
                     responseLanguage: responseLanguage
                 )
                 stageMark = Self.logStage("3 · Prompt build (+facts)", since: stageMark)
@@ -340,7 +340,7 @@ final class MedicalChatOrchestrator {
         context: RetrievedContext,
         history: [ChatMessage],
         rememberedFacts: String? = nil,
-        confirmedProfile: PatientProfile? = nil
+        confirmedProfile: PatientProfile? = nil,
         responseLanguage: DetectedLanguage = .english
     ) -> EnrichedPrompt {
         let answersInVietnamese = responseLanguage.requiresTranslation

@@ -364,7 +364,7 @@ final class ChatService: ObservableObject {
             conversationHistory: history,
             conversationId: conversationId,
             onSourcesRetrieved: onSourcesRetrieved,
-            onProfileUpdateProposed: onProfileUpdateProposed
+            onProfileUpdateProposed: onProfileUpdateProposed,
             responseLanguage: detectedLanguage
         ) {
             guard !Task.isCancelled else { return }
