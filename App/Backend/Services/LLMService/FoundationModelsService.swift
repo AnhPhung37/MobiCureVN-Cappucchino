@@ -19,6 +19,7 @@ import FoundationModels
 ///
 /// Text-only: `LLMRequest.images` are ignored. Image-bearing requests belong on the MLX VLM
 /// path (`WoundAnalysisService`).
+@available(iOS 26.0, *)
 nonisolated final class FoundationModelsService: @unchecked Sendable, LLMServiceProtocol {
 
     /// Whether the system model can serve a request *right now*. Re-checked per call because

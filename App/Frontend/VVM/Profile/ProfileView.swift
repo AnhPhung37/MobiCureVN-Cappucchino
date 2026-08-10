@@ -310,8 +310,8 @@ struct ProfileView: View {
                     ForEach(viewModel.pendingUpdates) { update in
                         ProfileUpdateRow(
                             update: update,
-                            onAccept: { Task { await viewModel.accept($0) } },
-                            onDismiss: { Task { await viewModel.dismiss($0) } }
+                            onAccept: { proposal in Task { await viewModel.accept(proposal) } },
+                            onDismiss: { proposal in Task { await viewModel.dismiss(proposal) } }
                         )
                     }
                 }

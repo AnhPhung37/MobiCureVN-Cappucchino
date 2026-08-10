@@ -194,7 +194,7 @@ final class ChatViewModel: ObservableObject {
                 return
             }
             await finalizeResponse(
-                fullText,
+                outcome.finalText,
                 sources: sourcesBox.get(),
                 profileUpdateProposals: profileUpdatesBox.get(),
                 assistantIndex: assistantIndex
@@ -253,7 +253,7 @@ final class ChatViewModel: ObservableObject {
                 return
             }
             await finalizeResponse(
-                fullText,
+                outcome.finalText,
                 sources: sourcesBox.get(),
                 profileUpdateProposals: profileUpdatesBox.get(),
                 assistantIndex: assistantIndex
