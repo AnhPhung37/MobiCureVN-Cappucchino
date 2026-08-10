@@ -48,12 +48,20 @@ struct AppConfig {
     /// each create only their own tables — whichever opens first wins, and the other reports
     /// `no such table: ZCHATRECORD` / `ZWOUNDLOGRECORD` I/O errors. One container over the full
     /// schema keeps the store consistent.
+    ///
+    /// Everything in this store is patient health data, so the store files are raised to
+    /// `.completeUnlessOpen` right after opening — see `StoreFileProtection`. This is applied on
+    /// every launch rather than once: SQLite deletes the `-wal` on a clean close and recreates it
+    /// on the next open, and a recreated file would otherwise fall back to the app's default
+    /// protection class.
     static let modelContainer: ModelContainer? = {
         do {
-            return try ModelContainer(
+            let container = try ModelContainer(
                 for: ChatRecord.self, ChatConversationRecord.self, WoundLogRecord.self,
                 PatientProfileRecord.self, ProposedProfileUpdateRecord.self
             )
+            StoreFileProtection.apply(toStoreAt: container.configurations.first?.url)
+            return container
         } catch {
             assertionFailure("Failed to create shared SwiftData container: \(error)")
             return nil
@@ -117,13 +125,15 @@ struct AppConfig {
     /// lets the Profile screen read the very facts being injected into the live system prompt.
     static let sessionFactStore = SessionFactStore()
 
-    /// Stable, device-local patient identity used to scope wound-log entries.
+    /// Stable, device-local patient identity. Scopes wound-log entries and, since the profile
+    /// became persistent, *is* `PatientProfile.id` for the one real profile on this device — so
+    /// the profile and the photo history describe the same patient without a migration step.
     ///
-    /// This is a single-user app today — there is no real per-patient profile identity yet
-    /// (`PatientProfile.id` is regenerated on every fetch). Rather than block the wound log on
-    /// that, we persist one UUID in `UserDefaults` on first access and reuse it for the life of
-    /// the install, so a patient's photo history stays coherent across launches. When real
-    /// profiles land, migrate existing entries from this id to the profile id.
+    /// This is a single-user app: one UUID is persisted in `UserDefaults` on first access and
+    /// reused for the life of the install. It is deliberately not in SwiftData — it must be
+    /// readable before the container opens, since `SwiftDataProfileRepository` needs it to know
+    /// which row to fetch. Losing it (a reinstall) orphans the old rows rather than corrupting
+    /// them. If real multi-patient accounts ever land, this becomes the local fallback identity.
     private static let localPatientIDKey = "AppConfigLocalPatientID"
     static var localPatientID: UUID = {
         let defaults = UserDefaults.standard

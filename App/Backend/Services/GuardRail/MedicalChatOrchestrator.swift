@@ -104,8 +104,18 @@ final class MedicalChatOrchestrator {
 
                 let sanitizedQuery = inputResult.sanitizedQuery ?? userQuery
 
+                // The confirmed, cross-conversation profile. Fetched before retrieval (not just
+                // before prompt building) because Step 2 uses the patient's diagnosis and
+                // procedure to bias what comes back — a question asked by someone with an
+                // ileostomy should surface ileostomy chunks. A best-effort read: a fetch failure
+                // just means this turn runs without personalization rather than failing outright.
+                let confirmedProfile = try? await profileRepository.fetchProfile()
+
                 // Step 2: RAG Pipeline — sanitizedQuery is always English by this point.
-                let retrievedContext = await ragService.process(userQuery: sanitizedQuery)
+                let retrievedContext = await ragService.process(
+                    userQuery: sanitizedQuery,
+                    profileTerms: confirmedProfile.map(Self.retrievalTerms) ?? []
+                )
                 stageMark = Self.logStage("2 · RAG retrieval", since: stageMark)
                 // Surface retrieved sources so the UI can show citations without a
                 // second, redundant retrieval pass.
@@ -116,10 +126,6 @@ final class MedicalChatOrchestrator {
                 // relying on the trimmed history) is what lets an early-mentioned detail — a
                 // name, an allergy — survive after it scrolls out of the short history window.
                 let rememberedFacts = await factStore.promptBlock(for: conversationId)
-                // The confirmed, cross-conversation profile — a best-effort read; a fetch
-                // failure just means this turn runs without profile personalization rather
-                // than failing the whole response.
-                let confirmedProfile = try? await profileRepository.fetchProfile()
                 let enrichedPrompt = buildEnrichedPrompt(
                     userQuery: sanitizedQuery,
                     context: retrievedContext,
@@ -334,6 +340,10 @@ final class MedicalChatOrchestrator {
     // Token budget for the persisted patient profile block. Smaller than the RAG budget —
     // these are compact structured facts, not prose.
     private static let profileTokenBudget = 200
+    // Word cap on the report summary before it enters the profile block. The only free-text
+    // field in the profile, and the one least useful turn to turn; capping it keeps the
+    // structured fields (diagnosis, procedure, allergies) inside the budget above.
+    private static let reportSummaryWordCap = 40
     // Maximum number of past turns included in the conversation history sent to the LLM.
     // Each turn = 1 user + 1 assistant message. Older turns are dropped to limit prompt length.
     private static let maxHistoryTurns = 4
@@ -379,7 +389,14 @@ final class MedicalChatOrchestrator {
         let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
 
         // The confirmed, cross-conversation profile — durable baseline, persists across chats.
-        // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install).
+        // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install), so a
+        // blank profile produces the exact prompt this code produced before profiles existed.
+        //
+        // Placed in the STABLE part of the prompt — after the fixed persona and constraints,
+        // before the per-turn sections (retrieval note, session facts) and before the retrieved
+        // chunks further down. The profile only changes when the patient edits it or accepts a
+        // proposal, so keeping it ahead of everything volatile lets the KV cache reuse the whole
+        // prefix across turns instead of re-prefilling from the first personalized token.
         let formattedProfile = confirmedProfile.map { formatProfile($0, budget: Self.profileTokenBudget) } ?? ""
         let profileSection = formattedProfile.isEmpty ? "" : """
 
@@ -452,7 +469,7 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(contextLanguageNote)\(noContextInstruction)\(memorySection)\(profileSection)\(conflictInstruction)
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(contextLanguageNote)\(profileSection)\(noContextInstruction)\(memorySection)\(conflictInstruction)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
@@ -506,7 +523,12 @@ final class MedicalChatOrchestrator {
         if let l = bulletList("Conditions", profile.conditions) { sections.append(l) }
         if let l = bulletList("Care notes", profile.careNotes) { sections.append(l) }
         if let l = bulletList("Warning signs", profile.warningSigns) { sections.append(l) }
-        if let l = line("Report summary", profile.reportSummary) { sections.append(l) }
+        // Excerpted, not included whole. A clinician report summary is prose and can run to
+        // hundreds of words — long enough to consume the entire budget on its own and push out
+        // the structured fields above it, which are what actually change the model's answer.
+        if let l = line("Report summary", Self.excerpt(profile.reportSummary, words: Self.reportSummaryWordCap)) {
+            sections.append(l)
+        }
 
         var usedTokens = 0
         var selected: [String] = []
@@ -518,6 +540,38 @@ final class MedicalChatOrchestrator {
         }
 
         return selected.joined(separator: "\n")
+    }
+
+    /// The profile fields worth biasing retrieval toward: what the patient has, what was done to
+    /// them, and where their wound is. These are the terms that decide whether a chunk is about
+    /// this patient's situation at all — "leakage" retrieves very different guidance for a
+    /// colostomy than for a surgical incision.
+    ///
+    /// Deliberately not the whole profile. Care notes and warning signs are *advice already given
+    /// to* the patient rather than descriptions of their condition, and OR-ing them into the FTS
+    /// query would match chunks that merely repeat that advice. Empty for a blank profile, which
+    /// leaves retrieval byte-identical to its behavior before profiles existed.
+    ///
+    /// Values are passed as whole phrases: `SQLiteRetriever.tokenizeForFTS` splits, strips
+    /// punctuation, and drops stopwords, so no pre-tokenizing is needed here.
+    ///
+    /// Internal rather than private so `PatientProfilePersonalizationTests` can assert the
+    /// blank-profile case returns nothing — the guard that keeps retrieval unchanged for a
+    /// patient who has never filled in a profile.
+    static func retrievalTerms(_ profile: PatientProfile) -> [String] {
+        let candidates = [profile.diagnosis, profile.procedure, profile.currentWoundLocation ?? ""]
+        var seen = Set<String>()
+        return candidates
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && seen.insert($0.lowercased()).inserted }
+    }
+
+    /// First `words` whitespace-separated words of `text`, with an ellipsis when truncated.
+    /// Returns "" unchanged for empty input so callers can keep using emptiness as "omit this".
+    private static func excerpt(_ text: String, words: Int) -> String {
+        let parts = text.split { $0.isWhitespace }
+        guard parts.count > words else { return text }
+        return parts.prefix(words).joined(separator: " ") + " […]"
     }
 
     private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
