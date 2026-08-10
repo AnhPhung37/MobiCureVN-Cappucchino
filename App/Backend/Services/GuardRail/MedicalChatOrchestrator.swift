@@ -64,9 +64,9 @@ final class MedicalChatOrchestrator {
         images: [Data] = [],
         conversationHistory: [ChatMessage],
         conversationId: UUID,
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil,
         onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)? = nil,
-        responseLanguage: DetectedLanguage = .english,
-        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
+        responseLanguage: DetectedLanguage = .english
     ) -> AsyncStream<ChatStreamEvent> {
         // Only the newest event is worth keeping: previews are cumulative snapshots, so a
         // consumer that falls behind should skip to the current one rather than replay every

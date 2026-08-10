@@ -90,7 +90,7 @@ final class ChatService: ObservableObject {
         conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil,
         onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)? = nil
-    ) -> AsyncStream<String> {
+    ) -> AsyncStream<ChatStreamEvent> {
         processingState = .validatingLanguage
 
         // Newest-only, for the same reason as the orchestrator's stream: a dropped preview
