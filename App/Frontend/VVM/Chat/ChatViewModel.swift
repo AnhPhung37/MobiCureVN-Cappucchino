@@ -48,6 +48,10 @@ final class ChatViewModel: ObservableObject {
     @Published var sections: [ChatSection] = []
     @Published var conversationSections: [ChatConversationSection] = []
 
+    /// Identifies the bubble currently showing unvalidated draft text, so the view can mark it
+    /// as still being written. `nil` whenever nothing is streaming.
+    @Published private(set) var streamingMessageID: UUID?
+
     // MARK: - Dependencies
 
     private var chatService: ChatService
@@ -58,6 +62,11 @@ final class ChatViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 
     private var messageDates: [Date] = []
+    /// Stable identity per message, kept in step with `messages`/`messageDates`. `ChatItem` is
+    /// rebuilt from scratch on every `rebuildSections()` — which now happens ~20×/second while
+    /// a reply streams — so minting a fresh UUID there would give every row a new identity on
+    /// each frame and make SwiftUI tear down and rebuild the whole list instead of diffing it.
+    private var messageIDs: [UUID] = []
 
     // MARK: - Init
 
@@ -128,14 +137,18 @@ final class ChatViewModel: ObservableObject {
     // MARK: - Chat History Grouping
 
     private func itemsAsChatItems() -> [ChatItem] {
-        zip(messages, messageDates).map {
-            ChatItem(
+        messages.indices.compactMap { index in
+            guard messageDates.indices.contains(index),
+                  messageIDs.indices.contains(index) else { return nil }
+            let message = messages[index]
+            return ChatItem(
+                id: messageIDs[index],
                 conversationId: currentConversationId,
-                role: $0.0.role,
-                content: $0.0.content,
-                date: $0.1,
-                sources: $0.0.sources,
-                imageData: $0.0.imageData
+                role: message.role,
+                content: message.content,
+                date: messageDates[index],
+                sources: message.sources,
+                imageData: message.imageData
             )
         }
     }
@@ -163,20 +176,21 @@ final class ChatViewModel: ObservableObject {
         // without a second retrieval (the orchestrator already retrieved this context).
         let sourcesBox = SourcesBox()
         streamingTask = Task {
-            let fullText = await streamResponse(
+            let outcome = await streamResponse(
                 for: text,
                 images: attachedImageData,
                 assistantIndex: assistantIndex,
                 sourcesBox: sourcesBox
             )
-            // The orchestrator buffers and delivers the whole response at the end, so a
-            // cancel (Stop button / clear / switch) leaves fullText empty. Don't run the
-            // normal finalize — it would overwrite the bubble with an error and persist it.
+            // The validated answer only arrives at the very end, so a cancel (Stop button /
+            // clear / switch) leaves `finalText` empty even when draft text was on screen.
+            // Don't run the normal finalize — it would overwrite the bubble with an error and
+            // persist it; keep whatever draft the user already saw instead.
             guard !Task.isCancelled else {
-                handleCancelledGeneration(partialText: fullText, assistantIndex: assistantIndex)
+                handleCancelledGeneration(partialText: outcome.interruptedText, assistantIndex: assistantIndex)
                 return
             }
-            await finalizeResponse(fullText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+            await finalizeResponse(outcome.finalText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
         }
     }
 
@@ -218,17 +232,17 @@ final class ChatViewModel: ObservableObject {
 
             // images: [] — the text LLM works from the VLM's findings text, not the raw photo;
             // WoundAnalysisService has already swapped the resident model back to a text model.
-            let fullText = await streamResponse(
+            let outcome = await streamResponse(
                 for: query,
                 images: [],
                 assistantIndex: assistantIndex,
                 sourcesBox: sourcesBox
             )
             guard !Task.isCancelled else {
-                handleCancelledGeneration(partialText: fullText, assistantIndex: assistantIndex)
+                handleCancelledGeneration(partialText: outcome.interruptedText, assistantIndex: assistantIndex)
                 return
             }
-            await finalizeResponse(fullText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+            await finalizeResponse(outcome.finalText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
         }
     }
 
@@ -236,6 +250,7 @@ final class ChatViewModel: ObservableObject {
         let userMessage = ChatMessage(role: "user", content: text, imageData: imageData)
         messages.append(userMessage)
         messageDates.append(Date())
+        messageIDs.append(UUID())
         inputText = ""
         errorMessage = nil
         isLoading = true
@@ -254,11 +269,26 @@ final class ChatViewModel: ObservableObject {
     private func appendAssistantPlaceholder() -> Int {
         messages.append(ChatMessage(role: "assistant", content: ""))
         messageDates.append(Date())
+        messageIDs.append(UUID())
         return messages.count - 1
     }
 
-    private func streamResponse(for text: String, images: [Data], assistantIndex: Int, sourcesBox: SourcesBox) async -> String {
-        var fullText = ""
+    /// What a streamed turn produced. `draftText` is raw decoder output that no guardrail has
+    /// seen — it is only ever kept when the user cancels mid-reply, so the bubble shows what
+    /// they were already reading instead of blanking. `finalText` is the validated answer and
+    /// the only text that gets persisted.
+    private struct StreamOutcome {
+        var finalText: String = ""
+        var draftText: String = ""
+
+        /// What to leave on screen when the turn is cut short. Normally the last draft, but a
+        /// Stop tapped in the moment between the answer landing and the task noticing the
+        /// cancellation must not roll the bubble back to an older draft.
+        var interruptedText: String { finalText.isEmpty ? draftText : finalText }
+    }
+
+    private func streamResponse(for text: String, images: [Data], assistantIndex: Int, sourcesBox: SourcesBox) async -> StreamOutcome {
+        var outcome = StreamOutcome()
         // dropLast(2) excludes the assistant placeholder AND the just-appended user message:
         // the current turn travels separately as `text` + `images`, so leaving it in history
         // would send the user's message to the LLM twice.
@@ -269,15 +299,34 @@ final class ChatViewModel: ObservableObject {
             conversationId: currentConversationId,
             onSourcesRetrieved: { sourcesBox.set($0) }
         )
-        for await token in stream {
+        defer { streamingMessageID = nil }
+
+        for await event in stream {
             guard !Task.isCancelled else { break }
-            fullText += token
+
+            let bubbleText: String
+            let isDraft: Bool
+            switch event {
+            case .preview(let draft):
+                outcome.draftText = draft
+                bubbleText = draft
+                isDraft = true
+            case .final(let answer):
+                outcome.finalText = answer
+                bubbleText = answer
+                isDraft = false
+            }
+
             // The conversation can be cleared/switched mid-stream; never index past the end.
-            guard messages.indices.contains(assistantIndex) else { break }
-            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText)
+            guard messages.indices.contains(assistantIndex),
+                  messageIDs.indices.contains(assistantIndex) else { break }
+            // Marked streaming for previews only — once the final answer lands the bubble is a
+            // finished reply, not a draft, and `finalizeResponse` attaches its citations.
+            streamingMessageID = isDraft ? messageIDs[assistantIndex] : nil
+            messages[assistantIndex] = ChatMessage(role: "assistant", content: bubbleText)
             rebuildSections()
         }
-        return fullText
+        return outcome
     }
 
     private func finalizeResponse(_ fullText: String, sources: [MedicalSource], assistantIndex: Int) async {
@@ -321,6 +370,9 @@ final class ChatViewModel: ObservableObject {
             if messageDates.indices.contains(assistantIndex) {
                 messageDates.remove(at: assistantIndex)
             }
+            if messageIDs.indices.contains(assistantIndex) {
+                messageIDs.remove(at: assistantIndex)
+            }
         } else {
             messages[assistantIndex] = ChatMessage(role: "assistant", content: partialText)
         }
@@ -330,6 +382,7 @@ final class ChatViewModel: ObservableObject {
     func cancelStreaming() {
         streamingTask?.cancel()
         streamingTask = nil
+        streamingMessageID = nil
         isLoading = false
     }
 
@@ -337,6 +390,7 @@ final class ChatViewModel: ObservableObject {
         cancelStreaming()
         messages = []
         messageDates = []
+        messageIDs = []
         sections = []
         errorMessage = nil
         currentConversationId = UUID()
@@ -392,6 +446,10 @@ final class ChatViewModel: ObservableObject {
     private func applyLoadedHistory(_ items: [ChatItem]) {
         self.messages = items.map { ChatMessage(role: $0.role, content: $0.content, sources: $0.sources, imageData: $0.imageData) }
         self.messageDates = items.map { $0.date }
+        // Reuse the stored ids rather than minting new ones, so a loaded conversation keeps
+        // stable row identity too.
+        self.messageIDs = items.map { $0.id }
+        self.streamingMessageID = nil
         self.rebuildSections()
     }
 

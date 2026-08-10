@@ -254,6 +254,29 @@ final class LanguageValidationServiceTests: XCTestCase {
         XCTAssertEqual(result, "")
     }
 
+    // MARK: - Refine gate blind spot + forced recovery
+
+    /// Documents the gate's known blind spot: heavily-mangled telex ("Tui themf traf suxwa" for
+    /// "Tôi thèm trà sữa") has no diacritics and no recognisable function words, so density reads
+    /// 0 and the gate concludes there is nothing to unify — skipping the very input refine is for.
+    /// ChatService recovers from this on the rejection path rather than the gate catching it.
+    func testNeedsRefinementMissesMangledTelex() {
+        XCTAssertFalse(sut.needsRefinement("Tui themf traf suxwa"))
+    }
+
+    func testRefineSkipsMangledTelexWithoutForce() async {
+        let input = "Tui themf traf suxwa"
+        let result = await sut.refine(input, using: llmService)
+        XCTAssertEqual(result, input, "The gate should skip this input — that is the blind spot.")
+    }
+
+    func testForcedRefineBypassesTheGate() async {
+        let input = "Tui themf traf suxwa"
+        let result = await sut.refine(input, using: llmService, force: true)
+        XCTAssertNotEqual(result, input, "force: true must run the LLM pass the gate skipped.")
+        XCTAssertFalse(result.isEmpty)
+    }
+
     // MARK: - Matches
 
     func testMatchesReturnsTrueForEmptyText() async {

@@ -125,12 +125,22 @@ struct GuardRailRules {
     ]
     
     // MARK: - Output Rules
-    
+    //
+    // These rules are matched against the LLM's *response*. Since the model now answers
+    // directly in the user's language (Vietnamese responses are generated, not translated
+    // from English — see MedicalChatOrchestrator's `responseLanguage`), every output rule
+    // must carry Vietnamese patterns alongside the English ones. An English-only list would
+    // leave the guardrail blind on exactly the responses most patients receive.
+    //
+    // Matching is done on `lowercased()` text; Swift lower-cases Vietnamese diacritics
+    // correctly (Đ → đ), so the Vietnamese entries are written lower-case throughout.
+
     /// Confidence threshold for medical advice (0.0 - 1.0)
     static let minMedicalConfidenceThreshold: Double = 0.65
-    
+
     /// Patterns indicating hallucinated advice
     static let hallucinationIndicators = [
+        // English
         "definitely cure",
         "100% effective",
         "take \\d+ pill",
@@ -138,18 +148,91 @@ struct GuardRailRules {
         "will definitely",
         "guaranteed to",
         "miraculous",
-        "instant relief"
+        "instant relief",
+
+        // Vietnamese — same claims: guaranteed cures, absolute certainty, instant results.
+        "chắc chắn khỏi",
+        "chắc chắn chữa khỏi",
+        "khỏi hoàn toàn",
+        "chữa khỏi hoàn toàn",
+        "hiệu quả 100",
+        "100% hiệu quả",
+        "uống \\d+ viên",
+        "tiêm \\d+ mg",
+        "chắc chắn sẽ",
+        "sẽ chắc chắn",
+        "đảm bảo khỏi",
+        "cam kết khỏi",
+        "thần kỳ",
+        "kỳ diệu",
+        "khỏi ngay lập tức",
+        "hết ngay lập tức"
     ]
-    
+
     /// Unsafe dosage patterns to flag
     static let unsafeDosagePatterns = [
+        // English. Drug names are spelled identically in Vietnamese clinical text, so these
+        // three cover both languages; only the surrounding instruction words differ.
         "ibuprofen.*1000", // > 1000mg
         "paracetamol.*5000", // > 5000mg
         "aspirin.*2000", // > 2000mg
         "take all",
-        "maximum dose"
+        "maximum dose",
+
+        // Vietnamese
+        "uống hết",
+        "uống tất cả",
+        "liều tối đa",
+        "liều cao nhất"
     ]
-    
+
+    /// Phrases showing a response references where its information came from. Used to satisfy
+    /// the citation requirement.
+    ///
+    /// Deliberately SPECIFIC on the Vietnamese side: a bare "theo" (according to) or "nguồn"
+    /// (source) would match everyday medical prose — "theo dõi" (to monitor), "nguồn đạm"
+    /// (protein source) — and silently satisfy the citation check on responses that cite
+    /// nothing. Over-matching here weakens the guardrail, so each entry is a phrase that only
+    /// appears when the response is genuinely pointing at a source.
+    static let citationKeywords = [
+        // English
+        "source", "according to", "based on", "reference", "study", "research",
+        "doi:", "pubmed",
+
+        // Vietnamese
+        "nguồn:", "nguồn tài liệu", "tài liệu tham khảo", "tham khảo",
+        "theo tài liệu", "theo nghiên cứu", "theo hướng dẫn",
+        "dựa trên", "nghiên cứu cho thấy"
+    ]
+
+    /// Phrases marking a response as specific medical advice (rather than general information),
+    /// which triggers the citation and confidence requirements.
+    ///
+    /// The Vietnamese entries are scoped to MEDICATION on purpose. Vietnamese uses the same
+    /// verb ("uống") for taking medicine and for drinking anything at all, so an unscoped
+    /// "bạn nên uống" would fire on ordinary hydration and diet answers — which are the most
+    /// common questions this app receives. Requiring "thuốc" (medicine) mirrors how the
+    /// English list says "you should take" rather than "you should drink".
+    static let medicalAdvicePhrases = [
+        // English
+        "you should take", "you must take", "take this medication",
+        "i recommend taking", "i recommend you take",
+        "you should stop", "stop taking", "do not take",
+        "the dose is", "dosage of", "mg per day", "mg daily",
+        "apply this", "inject", "administer",
+
+        // Vietnamese
+        "bạn nên uống thuốc", "bạn phải uống thuốc", "hãy uống thuốc",
+        "bạn nên dùng thuốc", "bạn phải dùng thuốc",
+        "uống thuốc này", "dùng thuốc này",
+        "tôi khuyên bạn nên uống", "tôi khuyên bạn nên dùng",
+        "ngừng uống thuốc", "ngừng dùng thuốc", "dừng uống thuốc",
+        "không được uống thuốc", "không nên dùng thuốc",
+        "liều dùng là", "liều lượng là", "liều là",
+        "mg mỗi ngày", "mg một ngày", "mg/ngày",
+        "bôi thuốc này", "tiêm"
+    ]
+
     // MARK: - Emergency Symptoms
     
     static let emergencySymptomPatterns: [String: EmergencySymptomType] = [
