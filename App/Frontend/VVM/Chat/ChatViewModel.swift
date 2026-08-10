@@ -480,14 +480,44 @@ final class ChatViewModel: ObservableObject {
     func deleteConversation(_ conversationId: UUID) async {
         do {
             try await historyRepository.deleteConversation(id: conversationId)
+            // Facts the assistant remembered for this session are part of the conversation the
+            // patient just deleted — drop them too, or they'd keep feeding the system prompt.
+            await AppConfig.sessionFactStore.reset(conversationId)
             if currentConversationId == conversationId {
                 clearConversation()
             }
             await refreshConversationHistory()
         } catch {
-            await MainActor.run {
-                self.errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
+            errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
+        }
+    }
+
+    /// Wipes all stored conversations and starts a fresh, empty one.
+    func deleteAllConversations() async {
+        // Capture the ids before the wipe so each session's remembered facts can be cleared;
+        // the store is keyed by conversation id and has no "remove everything" entry point.
+        let existingIds = conversationSections.flatMap { $0.items.map(\.id) }
+        do {
+            try await historyRepository.deleteAllConversations()
+            for id in existingIds {
+                await AppConfig.sessionFactStore.reset(id)
             }
+            await AppConfig.sessionFactStore.reset(currentConversationId)
+            clearConversation()
+            await refreshConversationHistory()
+        } catch {
+            errorMessage = "Không thể xoá lịch sử trò chuyện.".localized(for: .current)
+        }
+    }
+
+    /// Renames a conversation. A blank title clears the override, restoring the automatic
+    /// title taken from the conversation's first message.
+    func renameConversation(_ conversationId: UUID, to title: String) async {
+        do {
+            try await historyRepository.renameConversation(id: conversationId, title: title)
+            await refreshConversationHistory()
+        } catch {
+            errorMessage = "Không thể đổi tên cuộc trò chuyện này.".localized(for: .current)
         }
     }
 

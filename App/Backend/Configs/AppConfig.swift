@@ -51,7 +51,8 @@ struct AppConfig {
     static let modelContainer: ModelContainer? = {
         do {
             return try ModelContainer(
-                for: ChatRecord.self, WoundLogRecord.self, PatientProfileRecord.self, ProposedProfileUpdateRecord.self
+                for: ChatRecord.self, ChatConversationRecord.self, WoundLogRecord.self,
+                PatientProfileRecord.self, ProposedProfileUpdateRecord.self
             )
         } catch {
             assertionFailure("Failed to create shared SwiftData container: \(error)")

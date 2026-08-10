@@ -141,13 +141,27 @@ nonisolated struct ProfileUpdateExtractor {
         guard let raw = try? JSONDecoder().decode([RawProposal].self, from: data) else { return [] }
 
         return raw.compactMap { item in
-            guard let field = FieldProposal.Field(rawValue: item.field.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()) else {
-                return nil
-            }
+            guard let field = field(named: item.field) else { return nil }
             let value = item.value.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !value.isEmpty else { return nil }
             return FieldProposal(field: field, newValue: value)
         }
+    }
+
+    /// Resolve a model-emitted field name to a `Field`, ignoring case and `_`/`-` separators.
+    /// A plain `Field(rawValue:)` is too strict in both directions: the camelCase raw values
+    /// (`recoveryStage`, `reportSummary`) never survive lowercasing, and the snake_case ones
+    /// (`wound_location`, `care_note_add`) are just as often emitted as `woundLocation`.
+    /// Comparing on a separator-stripped, lowercased key matches every spelling the model
+    /// actually produces.
+    private static func field(named raw: String) -> FieldProposal.Field? {
+        let key = normalize(raw)
+        guard !key.isEmpty else { return nil }
+        return FieldProposal.Field.allCases.first { normalize($0.rawValue) == key }
+    }
+
+    private static func normalize(_ text: String) -> String {
+        text.lowercased().filter { $0.isLetter || $0.isNumber }
     }
 
     /// A model may emit a numeric age, so decode `value` leniently as string-or-number.

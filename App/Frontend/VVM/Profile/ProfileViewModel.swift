@@ -83,6 +83,23 @@ final class ProfileViewModel {
         isLoading = false
     }
 
+    // MARK: - Direct Patient Edits
+
+    /// Write the patient's hand-entered identity fields (photo/name/age/gender) straight
+    /// through. Unlike an AI proposal this needs no confirmation step — the patient typed it
+    /// themselves, and it cannot touch a clinical field (see `PatientProfile.Edits`).
+    @MainActor
+    func saveEdits(_ edits: PatientProfile.Edits) async {
+        guard let currentProfile = profile else { return }
+        let updated = currentProfile.applying(edits)
+        do {
+            try await repository.save(updated)
+            profile = updated
+        } catch {
+            errorMessage = "Không thể lưu thay đổi hồ sơ. Vui lòng thử lại.".localized(for: .current)
+        }
+    }
+
     // MARK: - Profile Update Confirmation
 
     /// Patient confirmed a proposed profile change: writes it through to the persisted

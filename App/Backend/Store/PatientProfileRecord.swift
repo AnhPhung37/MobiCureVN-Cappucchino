@@ -20,6 +20,10 @@ final class PatientProfileRecord {
     var medicationsData: Data?
     var conditionsData: Data?
     var currentWoundLocation: String?
+    /// Patient avatar JPEG. Optional, so adding it to an existing store is a SwiftData
+    /// lightweight migration. `.externalStorage` keeps the blob out of the SQLite row — the
+    /// same reason wound photos aren't stored inline either.
+    @Attribute(.externalStorage) var photoData: Data?
     var sourceName: String
     var lastUpdated: Date
 
@@ -38,6 +42,7 @@ final class PatientProfileRecord {
         medicationsData: Data? = nil,
         conditionsData: Data? = nil,
         currentWoundLocation: String? = nil,
+        photoData: Data? = nil,
         sourceName: String,
         lastUpdated: Date = Date()
     ) {
@@ -55,6 +60,7 @@ final class PatientProfileRecord {
         self.medicationsData = medicationsData
         self.conditionsData = conditionsData
         self.currentWoundLocation = currentWoundLocation
+        self.photoData = photoData
         self.sourceName = sourceName
         self.lastUpdated = lastUpdated
     }

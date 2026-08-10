@@ -2,10 +2,19 @@ import Foundation
 
 actor InMemoryChatHistoryRepository: ChatHistoryRepository {
     private var items: [ChatItem] = []
+    /// Patient renames keyed by conversation id — mirrors `ChatConversationRecord` in the
+    /// SwiftData store. Only renamed conversations have an entry.
+    private var customTitles: [UUID: String] = [:]
 
     func loadConversations() async throws -> [ChatConversationSummary] {
         let grouped = Dictionary(grouping: items) { $0.conversationId }
-        return ChatConversationSummary.summarizing(grouped, date: \.date, role: \.role, content: \.content)
+        return ChatConversationSummary.summarizing(
+            grouped,
+            customTitles: customTitles,
+            date: \.date,
+            role: \.role,
+            content: \.content
+        )
     }
 
     func loadHistory(conversationId: UUID) async throws -> [ChatItem] {
@@ -20,5 +29,16 @@ actor InMemoryChatHistoryRepository: ChatHistoryRepository {
 
     func deleteConversation(id: UUID) async throws {
         items.removeAll { $0.conversationId == id }
+        customTitles[id] = nil
+    }
+
+    func deleteAllConversations() async throws {
+        items.removeAll()
+        customTitles.removeAll()
+    }
+
+    func renameConversation(id: UUID, title: String?) async throws {
+        let trimmed = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        customTitles[id] = trimmed.isEmpty ? nil : trimmed
     }
 }

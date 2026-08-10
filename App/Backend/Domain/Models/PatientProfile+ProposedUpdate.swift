@@ -57,6 +57,67 @@ extension PatientProfile {
             medications: medications ?? self.medications,
             conditions: conditions ?? self.conditions,
             currentWoundLocation: currentWoundLocation ?? self.currentWoundLocation,
+            photoData: photoData,
+            sourceName: sourceName,
+            lastUpdated: Date()
+        )
+    }
+}
+
+// MARK: - Direct Patient Edits
+
+extension PatientProfile {
+    /// The identity fields the patient may edit by hand on the Profile screen. Deliberately
+    /// excludes every clinical field: those only ever change via a clinician report or an
+    /// explicitly confirmed `ProposedProfileUpdate`, so there is no path where a stray tap
+    /// rewrites a diagnosis.
+    struct Edits: Equatable {
+        var name: String
+        var age: Int
+        var gender: String
+        /// `nil` clears the avatar — distinct from "unchanged", which is why the whole struct
+        /// is passed rather than a set of optional overrides.
+        var photoData: Data?
+
+        init(name: String, age: Int, gender: String, photoData: Data?) {
+            self.name = name
+            self.age = age
+            self.gender = gender
+            self.photoData = photoData
+        }
+
+        init(from profile: PatientProfile) {
+            self.init(
+                name: profile.name,
+                age: profile.age,
+                gender: profile.gender,
+                photoData: profile.photoData
+            )
+        }
+    }
+
+    var edits: Edits { Edits(from: self) }
+
+    /// Returns the profile with the patient's hand-entered identity fields applied. Name and
+    /// gender are trimmed; a non-positive age is stored as 0, which every display path already
+    /// treats as "not set".
+    func applying(_ edits: Edits) -> PatientProfile {
+        PatientProfile(
+            id: id,
+            name: edits.name.trimmingCharacters(in: .whitespacesAndNewlines),
+            age: max(edits.age, 0),
+            gender: edits.gender.trimmingCharacters(in: .whitespacesAndNewlines),
+            diagnosis: diagnosis,
+            procedure: procedure,
+            recoveryStage: recoveryStage,
+            reportSummary: reportSummary,
+            careNotes: careNotes,
+            warningSigns: warningSigns,
+            allergies: allergies,
+            medications: medications,
+            conditions: conditions,
+            currentWoundLocation: currentWoundLocation,
+            photoData: edits.photoData,
             sourceName: sourceName,
             lastUpdated: Date()
         )

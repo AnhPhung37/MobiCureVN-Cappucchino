@@ -43,10 +43,23 @@ struct MessageBubble: View {
                     } else if message.content.isEmpty {
                         TypingIndicator()
                     } else {
-                        markdownText(message.content, showsCaret: isStreaming)
-                            .appFont(size: 16, weight: .regular, design: .rounded)
-                            .foregroundColor(Color(.label))
-                            .textSelection(.enabled)
+                        // Proposals live INSIDE the bubble, under the reply text, so an offer to
+                        // remember something reads as part of what the assistant just said
+                        // rather than as a separate widget parked underneath it.
+                        VStack(alignment: .leading, spacing: 0) {
+                            markdownText(message.content, showsCaret: isStreaming)
+                                .appFont(size: 16, weight: .regular, design: .rounded)
+                                .foregroundColor(Color(.label))
+                                .textSelection(.enabled)
+
+                            if !message.profileUpdateProposals.isEmpty {
+                                ProfileUpdateConfirmationCard(
+                                    updates: message.profileUpdateProposals,
+                                    onAccept: onAcceptProfileUpdate,
+                                    onDismiss: onDismissProfileUpdate
+                                )
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 14)
@@ -55,14 +68,6 @@ struct MessageBubble: View {
 
                 if !isUser && !message.sources.isEmpty {
                     CitationsView(sources: message.sources)
-                }
-
-                if !isUser && !message.profileUpdateProposals.isEmpty {
-                    ProfileUpdateConfirmationCard(
-                        updates: message.profileUpdateProposals,
-                        onAccept: onAcceptProfileUpdate,
-                        onDismiss: onDismissProfileUpdate
-                    )
                 }
             }
 

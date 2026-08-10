@@ -68,6 +68,7 @@ final class SwiftDataProfileRepository: ProfileRepository {
         record.medicationsData = Self.encode(profile.medications)
         record.conditionsData = Self.encode(profile.conditions)
         record.currentWoundLocation = profile.currentWoundLocation
+        record.photoData = profile.photoData
         record.sourceName = profile.sourceName
         record.lastUpdated = profile.lastUpdated
 
@@ -100,6 +101,7 @@ final class SwiftDataProfileRepository: ProfileRepository {
             medications: decode(record.medicationsData),
             conditions: decode(record.conditionsData),
             currentWoundLocation: record.currentWoundLocation,
+            photoData: record.photoData,
             sourceName: record.sourceName,
             lastUpdated: record.lastUpdated
         )

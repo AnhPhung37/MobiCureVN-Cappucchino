@@ -198,6 +198,7 @@ final class MedicalChatOrchestrator {
                     let proposals = await profileUpdateExtractor.extract(
                         from: sanitizedQuery, currentProfile: currentProfile, using: llmService
                     )
+                    var enqueuedCount = 0
                     if !proposals.isEmpty {
                         let candidates = proposals.map {
                             ProposedProfileUpdate(
@@ -208,9 +209,22 @@ final class MedicalChatOrchestrator {
                             )
                         }
                         if let enqueued = try? await profileUpdateStore.enqueue(candidates), !enqueued.isEmpty {
+                            enqueuedCount = enqueued.count
                             onProfileUpdateProposed?(enqueued)
                         }
                     }
+                    // This step is a second LLM pass that fails closed at three separate points
+                    // (nothing proposed / unparseable reply / enqueue deduped), all of which look
+                    // identical from the UI: no card. Report which one happened.
+                    _ = Self.logStage(
+                        "7 · Profile update proposals", since: stageMark,
+                        detail: "\(proposals.count) proposed, \(enqueuedCount) staged"
+                    )
+                } else if !Task.isCancelled {
+                    _ = Self.logStage(
+                        "7 · Profile update proposals", since: stageMark,
+                        detail: "skipped — profile fetch failed"
+                    )
                 }
 
                 _ = Self.logStage("TOTAL pipeline", since: pipelineStart)
