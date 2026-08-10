@@ -13,6 +13,10 @@ struct MessageBubble: View {
     let message: ChatMessage
     var onAcceptProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
     var onDismissProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
+    /// True while this bubble is showing draft text the model is still writing. The text is raw
+    /// decoder output that no guardrail has validated yet and will be replaced wholesale by the
+    /// final answer, so it is marked with a caret rather than presented as a finished reply.
+    var isStreaming: Bool = false
 
     private var isUser: Bool { message.role.lowercased() == "user" }
 
@@ -21,9 +25,9 @@ struct MessageBubble: View {
             if isUser { Spacer(minLength: 48) }
 
             VStack(alignment: isUser ? .trailing : .leading, spacing: 6) {
-                // Bubble — while an assistant reply is still empty, show a typing indicator.
-                // Responses are buffered (validated by the output guardrail before display),
-                // so without this the bubble would sit blank for the whole generation.
+                // Bubble — until the first draft tokens arrive there is nothing to show, so an
+                // empty assistant reply gets the typing indicator. That gap covers the language
+                // and retrieval stages, which run before the model writes anything.
                 Group {
                     if isUser {
                         VStack(alignment: .leading, spacing: 10) {
@@ -31,7 +35,7 @@ struct MessageBubble: View {
 
                             if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 markdownText(message.content)
-                                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                                    .appFont(size: 16, weight: .regular, design: .rounded)
                                     .foregroundColor(.white)
                                     .textSelection(.enabled)
                             }
@@ -39,8 +43,8 @@ struct MessageBubble: View {
                     } else if message.content.isEmpty {
                         TypingIndicator()
                     } else {
-                        markdownText(message.content)
-                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                        markdownText(message.content, showsCaret: isStreaming)
+                            .appFont(size: 16, weight: .regular, design: .rounded)
                             .foregroundColor(Color(.label))
                             .textSelection(.enabled)
                     }
@@ -69,13 +73,22 @@ struct MessageBubble: View {
 
     // MARK: - Sub-views
 
-    @ViewBuilder
-    private func markdownText(_ content: String) -> some View {
+    /// Renders `content` as inline markdown. Draft text arrives mid-sentence, so its markdown is
+    /// routinely unbalanced (`**bold` with no closing pair) — `AttributedString` renders those
+    /// markers literally instead of failing, and the final answer re-renders cleanly once it
+    /// replaces the draft.
+    ///
+    /// Returns `Text` rather than `some View` so the caret can be concatenated inline: it has to
+    /// sit at the end of the last line and flow with it, which an adjacent view cannot do.
+    private func markdownText(_ content: String, showsCaret: Bool = false) -> Text {
+        let rendered: Text
         if let attributed = try? AttributedString(markdown: content, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
-            Text(attributed)
+            rendered = Text(attributed)
         } else {
-            Text(content)
+            rendered = Text(content)
         }
+        guard showsCaret else { return rendered }
+        return rendered + Text(" ▌").foregroundStyle(Color(.tertiaryLabel))
     }
 
     @ViewBuilder
@@ -122,8 +135,9 @@ struct MessageBubble: View {
 
 // MARK: - Typing Indicator
 
-/// Three pulsing dots shown inside an assistant bubble while its reply is still being
-/// generated (responses are buffered, so the bubble would otherwise sit empty).
+/// Three pulsing dots shown inside an assistant bubble before the model has written anything —
+/// the language, guardrail and retrieval stages that run ahead of generation. Once draft tokens
+/// start arriving the text itself takes over as the progress cue.
 private struct TypingIndicator: View {
     @State private var phase = 0
 
@@ -157,6 +171,10 @@ private struct TypingIndicator: View {
             role: "assistant",
             content: "Dựa trên tài liệu y tế, các dấu hiệu nhiễm trùng vết mổ bao gồm: đỏ, sưng, nóng..."
         ))
+        MessageBubble(
+            message: ChatMessage(role: "assistant", content: "Dựa trên tài liệu y tế, các dấu hiệu nhiễm"),
+            isStreaming: true
+        )
     }
     .padding(.vertical)
 }

@@ -23,11 +23,17 @@ final class OutputGuardRail {
     /// Parameters:
     /// - response: raw LLM output
     /// - retrievedContext: context chunks + confidence score from retrieval
+    /// - responseLanguage: language the response was generated in. Only affects the text this
+    ///   guardrail *appends* (citation reminders, warnings, redaction markers) — the detection
+    ///   rules themselves are bilingual. Without it a Vietnamese answer would come back with
+    ///   an English warning stapled to the end.
     func validate(
         response: String,
-        retrievedContext: RetrievedContext?
+        retrievedContext: RetrievedContext?,
+        responseLanguage: DetectedLanguage = .english
     ) -> OutputGuardRailResult {
         var issues: [String] = []
+        let vi = responseLanguage.requiresTranslation
 
         // Emergency is already handled upstream in MedicalChatOrchestrator before the
         // LLM is ever called, so we skip it here to avoid a redundant check.
@@ -41,7 +47,7 @@ final class OutputGuardRail {
         let hasCitations = responseMentionsCitations(response) || (retrievedContext?.sources.count ?? 0) > 0
         if !hasCitations && isMedicalAdvice(response) {
             issues.append("Medical advice without citations")
-            let enhancedResponse = addCitationReminder(response, context: retrievedContext)
+            let enhancedResponse = addCitationReminder(response, context: retrievedContext, vietnamese: vi)
             return OutputGuardRailResult(
                 status: .blocked(reason: "Medical advice requires citations"),
                 originalResponse: response,
@@ -55,7 +61,7 @@ final class OutputGuardRail {
         let confidenceScore = retrievedContext?.confidenceScore ?? 0.5
         if confidenceScore < GuardRailRules.minMedicalConfidenceThreshold && isMedicalAdvice(response) {
             issues.append("Low confidence: \(String(format: "%.2f", confidenceScore)) < \(GuardRailRules.minMedicalConfidenceThreshold)")
-            let cautionResponse = addLowConfidenceWarning(response)
+            let cautionResponse = addLowConfidenceWarning(response, vietnamese: vi)
             return OutputGuardRailResult(
                 status: .blocked(reason: "Insufficient retrieval confidence"),
                 originalResponse: response,
@@ -68,7 +74,7 @@ final class OutputGuardRail {
         // Check 3: Hallucination Detection
         if let hallucinationIssue = detectHallucination(response) {
             issues.append(hallucinationIssue)
-            let filteredResponse = removeHallucinatedClaims(response)
+            let filteredResponse = removeHallucinatedClaims(response, vietnamese: vi)
             return OutputGuardRailResult(
                 status: .blocked(reason: "Hallucinated medical advice detected"),
                 originalResponse: response,
@@ -81,7 +87,7 @@ final class OutputGuardRail {
         // Check 4: Unsafe Dosage Detection
         if let unsafeDosageIssue = detectUnsafeDosage(response) {
             issues.append(unsafeDosageIssue)
-            let filteredResponse = removeUnsafeDosage(response)
+            let filteredResponse = removeUnsafeDosage(response, vietnamese: vi)
             return OutputGuardRailResult(
                 status: .blocked(reason: "Unsafe dosage information detected"),
                 originalResponse: response,
@@ -127,75 +133,84 @@ final class OutputGuardRail {
         return nil
     }
     
-    /// Check if response mentions citations
+    /// Check if response mentions citations. Keyword list lives in GuardRailRules so it stays
+    /// bilingual alongside the other output rules — responses reach this check in Vietnamese
+    /// as well as English now that the model answers in the user's language directly.
     private func responseMentionsCitations(_ response: String) -> Bool {
-        let citationKeywords = ["source", "according to", "based on", "reference", "study", "research", "doi:", "pubmed"]
         let lower = response.lowercased()
-        
-        return citationKeywords.contains(where: { lower.contains($0) })
+        return GuardRailRules.citationKeywords.contains(where: { lower.contains($0) })
     }
-    
-    /// Check if response is giving specific medical advice (not just general information)
+
+    /// Check if response is giving specific medical advice (not just general information).
+    /// Phrase list lives in GuardRailRules for the same bilingual reason as above.
     private func isMedicalAdvice(_ response: String) -> Bool {
-        let advicePhrases = [
-            "you should take", "you must take", "take this medication",
-            "i recommend taking", "i recommend you take",
-            "you should stop", "stop taking", "do not take",
-            "the dose is", "dosage of", "mg per day", "mg daily",
-            "apply this", "inject", "administer"
-        ]
         let lower = response.lowercased()
-        return advicePhrases.contains(where: { lower.contains($0) })
+        return GuardRailRules.medicalAdvicePhrases.contains(where: { lower.contains($0) })
     }
     
     // MARK: - Response Modifiers
     
     /// Add reminder to include citations
-    private func addCitationReminder(_ response: String, context: RetrievedContext?) -> String {
-        let citationNote = """
-        
+    private func addCitationReminder(
+        _ response: String, context: RetrievedContext?, vietnamese: Bool
+    ) -> String {
+        let citationNote = vietnamese ? """
+
+        ⚠️ **Lưu ý quan trọng**: Thông tin y tế này cần được xác nhận với nhân viên y tế của bạn và dựa trên các nguồn y khoa đáng tin cậy.
+        """ : """
+
         ⚠️ **Important**: This medical information should be verified with your healthcare provider and based on authoritative medical sources.
         """
-        
+
         var result = response + citationNote
-        
+
         if let sources = context?.sources, !sources.isEmpty {
-            result += "\n\n**Sources:**\n"
+            result += vietnamese ? "\n\n**Nguồn tài liệu:**\n" : "\n\n**Sources:**\n"
             for source in sources {
-                result += "- \(source.title) (Page \(source.page))\n"
+                let page = vietnamese ? "Trang \(source.page)" : "Page \(source.page)"
+                result += "- \(source.title) (\(page))\n"
             }
         }
-        
+
         return result
     }
-    
+
     /// Add warning for low confidence
-    private func addLowConfidenceWarning(_ response: String) -> String {
-        let warning = """
-        
+    private func addLowConfidenceWarning(_ response: String, vietnamese: Bool) -> String {
+        let warning = vietnamese ? """
+
+        ⚠️ **Giới hạn**: Tôi không có đủ thông tin y khoa đáng tin cậy để trả lời chắc chắn. Vui lòng tham khảo ý kiến nhân viên y tế để được tư vấn chính xác.
+        """ : """
+
         ⚠️ **Limitation**: I don't have enough reliable medical context to provide a confident answer. Please consult with a healthcare professional for accurate medical advice.
         """
         return warning + response
     }
-    
+
     /// Remove hallucinated claims from response
-    private func removeHallucinatedClaims(_ response: String) -> String {
+    private func removeHallucinatedClaims(_ response: String, vietnamese: Bool) -> String {
+        let marker = vietnamese
+            ? "[đã lược bỏ: thông tin chưa được kiểm chứng]"
+            : "[removed: unverified claim]"
         var filtered = response
         for regex in Self.hallucinationRegexes {
             let range = NSRange(filtered.startIndex..<filtered.endIndex, in: filtered)
             filtered = regex.stringByReplacingMatches(in: filtered, options: [], range: range,
-                                                      withTemplate: "[removed: unverified claim]")
+                                                      withTemplate: marker)
         }
         return filtered
     }
 
     /// Remove unsafe dosage information
-    private func removeUnsafeDosage(_ response: String) -> String {
+    private func removeUnsafeDosage(_ response: String, vietnamese: Bool) -> String {
+        let marker = vietnamese
+            ? "[đã lược bỏ thông tin liều lượng - vui lòng hỏi nhân viên y tế]"
+            : "[dosage information removed - consult healthcare provider]"
         var filtered = response
         for regex in Self.unsafeDosageRegexes {
             let range = NSRange(filtered.startIndex..<filtered.endIndex, in: filtered)
             filtered = regex.stringByReplacingMatches(in: filtered, options: [], range: range,
-                                                      withTemplate: "[dosage information removed - consult healthcare provider]")
+                                                      withTemplate: marker)
         }
         return filtered
     }

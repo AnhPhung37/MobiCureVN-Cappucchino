@@ -138,7 +138,7 @@ struct ChatView: View {
                             }
                         } label: {
                             Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .semibold))
+                                .appFont(size: 14, weight: .semibold)
                                 .foregroundColor(Color(.secondaryLabel))
                                 .frame(width: 30, height: 30)
                                 .background(Circle().fill(Color(.tertiarySystemBackground)))
@@ -149,9 +149,9 @@ struct ChatView: View {
                         if viewModel.conversationSections.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("No chat history yet.")
-                                    .font(.system(size: 15, weight: .semibold))
+                                    .appFont(size: 15, weight: .semibold)
                                 Text("Start a chat and your saved messages will show here.")
-                                    .font(.system(size: 13))
+                                    .appFont(size: 13)
                                     .foregroundColor(Color(.secondaryLabel))
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -180,11 +180,11 @@ struct ChatView: View {
                                                 } label: {
                                                     VStack(alignment: .leading, spacing: 4) {
                                                         Text(conversation.title.isEmpty ? "Chat" : conversation.title)
-                                                            .font(.system(size: 14, weight: .semibold))
+                                                            .appFont(size: 14, weight: .semibold)
                                                             .foregroundColor(Color(.label))
                                                             .lineLimit(1)
                                                         Text(conversation.preview.isEmpty ? "No preview" : conversation.preview)
-                                                            .font(.system(size: 13))
+                                                            .appFont(size: 13)
                                                             .foregroundColor(Color(.secondaryLabel))
                                                             .lineLimit(2)
                                                     }
@@ -207,7 +207,7 @@ struct ChatView: View {
                                                     }
                                                 } label: {
                                                     Image(systemName: "trash")
-                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .appFont(size: 14, weight: .semibold)
                                                         .foregroundColor(.red)
                                                         .frame(width: 34, height: 34)
                                                         .background(Circle().fill(Color.red.opacity(0.12)))
@@ -252,7 +252,7 @@ struct ChatView: View {
                 .scaleEffect(0.75)
                 .tint(.accentColor)
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .appFont(size: 12, weight: .medium)
                 .foregroundColor(Color(.secondaryLabel))
             Spacer()
         }
@@ -272,7 +272,7 @@ struct ChatView: View {
                 .scaleEffect(0.75)
                 .tint(.accentColor)
             Text("Đang tải gói ngôn ngữ Việt↔Anh... / Downloading Vietnamese↔English language packs...")
-                .font(.system(size: 13, weight: .medium))
+                .appFont(size: 13, weight: .medium)
                 .foregroundColor(Color(.secondaryLabel))
             Spacer()
         }
@@ -291,10 +291,10 @@ struct ChatView: View {
                 Image(systemName: "arrow.down.circle")
                     .foregroundColor(.accentColor)
                 Text("Đang tải model...")
-                    .font(.system(size: 13, weight: .medium))
+                    .appFont(size: 13, weight: .medium)
                 Spacer()
                 Text("\(percent)%")
-                    .font(.system(size: 12, weight: .semibold))
+                    .appFont(size: 12, weight: .semibold)
                     .foregroundColor(Color(.secondaryLabel))
                     .monospacedDigit()
             }
@@ -304,7 +304,7 @@ struct ChatView: View {
 
             if viewModel.isFirstTimeModelSetup {
                 Text(LocalizedStringKey("Lần đầu tải model có thể mất vài phút, tuỳ theo tốc độ mạng và thiết bị. Các lần sau sẽ nhanh hơn nhiều."))
-                    .font(.system(size: 11))
+                    .appFont(size: 11)
                     .foregroundColor(Color(.secondaryLabel))
             }
         }
@@ -347,7 +347,8 @@ struct ChatView: View {
                                     },
                                     onDismissProfileUpdate: { update in
                                         Task { await viewModel.dismissProfileUpdate(update) }
-                                    }
+                                    },
+                                    isStreaming: item.id == viewModel.streamingMessageID
                                 )
                                 .padding(.vertical, 4)
                             }
@@ -373,8 +374,15 @@ struct ChatView: View {
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: viewModel.messages.last?.content) { _, _ in
-                withAnimation(.easeOut(duration: 0.2)) {
+                // While a reply streams this fires every ~50ms. Animating each of those would
+                // stack twenty interrupted 0.2s scrolls a second and read as stutter, so the
+                // draft is followed directly and only settled messages animate into place.
+                if viewModel.streamingMessageID != nil {
                     proxy.scrollTo("bottom", anchor: .bottom)
+                } else {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        proxy.scrollTo("bottom", anchor: .bottom)
+                    }
                 }
             }
             .onAppear {
@@ -391,10 +399,10 @@ struct ChatView: View {
             if translationService.isReady {
                 HStack(spacing: 4) {
                     Image(systemName: "globe")
-                        .font(.system(size: 10))
+                        .appFont(size: 10)
                         .foregroundColor(Color(.tertiaryLabel))
                     Text("Hỗ trợ tiếng Việt & English / Supports Vietnamese & English")
-                        .font(.system(size: 10))
+                        .appFont(size: 10)
                         .foregroundColor(Color(.tertiaryLabel))
                     Spacer()
                 }
@@ -414,7 +422,7 @@ struct ChatView: View {
                         isShowingAttachmentSheet = true
                     } label: {
                         Image(systemName: "camera.fill")
-                            .font(.system(size: 16, weight: .semibold))
+                            .appFont(size: 16, weight: .semibold)
                             .foregroundColor(.accentColor)
                             .frame(width: 36, height: 36)
                             .background(
@@ -427,7 +435,7 @@ struct ChatView: View {
                     TextField("Hỏi về quá trình hồi phục... / Ask about recovery...",
                               text: $viewModel.inputText,
                               axis: .vertical)
-                        .font(.system(size: 16))
+                        .appFont(size: 16)
                         .lineLimit(1...5)
                         .focused($inputFocused)
                         .padding(.horizontal, 14)
@@ -449,7 +457,7 @@ struct ChatView: View {
                         }
                     } label: {
                         Image(systemName: viewModel.isLoading ? "stop.fill" : "arrow.up")
-                            .font(.system(size: 16, weight: .semibold))
+                            .appFont(size: 16, weight: .semibold)
                             .foregroundColor(.white)
                             .frame(width: 36, height: 36)
                             .background(
@@ -551,9 +559,9 @@ struct ChatView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(images.count == 1 ? "1 image attached" : "\(images.count) images attached")
-                        .font(.system(size: 14, weight: .semibold))
+                        .appFont(size: 14, weight: .semibold)
                     Text("Add a question to send them with your message.")
-                        .font(.system(size: 12))
+                        .appFont(size: 12)
                         .foregroundColor(Color(.secondaryLabel))
                         .lineLimit(2)
                 }
@@ -568,7 +576,7 @@ struct ChatView: View {
                     }
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
+                        .appFont(size: 12, weight: .semibold)
                         .foregroundColor(Color(.secondaryLabel))
                         .frame(width: 28, height: 28)
                         .background(Circle().fill(Color(.tertiarySystemBackground)))
@@ -585,7 +593,7 @@ struct ChatView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "bandage.fill")
                     Text("Phân tích vết thương / Analyze Wound")
-                        .font(.system(size: 13, weight: .semibold))
+                        .appFont(size: 13, weight: .semibold)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
@@ -613,7 +621,7 @@ struct ChatView: View {
                                 attachedImages.remove(at: index)
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 18, weight: .semibold))
+                                    .appFont(size: 18, weight: .semibold)
                                     .foregroundColor(.white)
                                     .shadow(radius: 3)
                             }
@@ -636,15 +644,15 @@ struct ChatView: View {
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "cross.case.fill")
-                .font(.system(size: 48))
+                .appFont(size: 48)
                 .foregroundColor(.accentColor.opacity(0.8))
                 .padding(.bottom, 4)
 
             Text("Xin chào!")
-                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .appFont(size: 22, weight: .bold, design: .rounded)
 
             Text("Tôi có thể giúp bạn về quá trình\nhồi phục sau phẫu thuật.")
-                .font(.system(size: 15))
+                .appFont(size: 15)
                 .foregroundColor(Color(.secondaryLabel))
                 .multilineTextAlignment(.center)
 
@@ -656,7 +664,7 @@ struct ChatView: View {
                         submitCurrentMessage()
                     } label: {
                         Text(suggestion)
-                            .font(.system(size: 14))
+                            .appFont(size: 14)
                             .foregroundColor(.accentColor)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
@@ -687,7 +695,7 @@ struct ChatView: View {
             }
         } label: {
             Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 16))
+                .appFont(size: 16)
         }
         .accessibilityLabel("Chat history")
     }
@@ -701,7 +709,7 @@ struct ChatView: View {
             }
         } label: {
             Image(systemName: "square.and.pencil")
-                .font(.system(size: 16))
+                .appFont(size: 16)
         }
         .accessibilityLabel("New chat")
         .disabled(viewModel.messages.isEmpty)
@@ -715,7 +723,7 @@ struct ChatView: View {
                 .foregroundColor(statusColor(for: status))
                 .animation(.easeInOut(duration: 0.3), value: status)
             Text(statusLabel(for: status))
-                .font(.system(size: 12, weight: .medium))
+                .appFont(size: 12, weight: .medium)
                 .foregroundColor(Color(.secondaryLabel))
                 .lineLimit(1)
         }
@@ -773,7 +781,7 @@ private struct ErrorView: View {
                 .foregroundColor(.orange)
             
             Text(message)
-                .font(.system(size: 14))
+                .appFont(size: 14)
                 .foregroundColor(Color(.label))
             
             Spacer()

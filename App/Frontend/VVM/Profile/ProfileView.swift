@@ -13,6 +13,10 @@ struct ProfileView: View {
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
 
+    /// Backs the Text Size picker directly with the raw stored value so `Picker(selection:)`
+    /// can bind to it without an extra `TextSizeOption` <-> `String` translation layer.
+    @AppStorage(TextSizeOption.storageKey) private var textSizeRaw = TextSizeOption.large.rawValue
+
     /// Resolve a catalog key in the chosen UI language. Keys are the Vietnamese source strings,
     /// matching the rest of the app's `Localizable.xcstrings` convention.
     private func t(_ key: String) -> String { key.localized(for: appLanguage) }
@@ -31,6 +35,7 @@ struct ProfileView: View {
                             .padding(.vertical, 40)
                     } else if let profile = viewModel.profile {
                         headerCard(profile)
+                        textSizeCard
                         profileDetails(profile)
                         notesCard(title: "Care notes", items: profile.careNotes, icon: "checkmark.circle.fill")
                         notesCard(title: "Warning signs", items: profile.warningSigns, icon: "exclamationmark.triangle.fill")
@@ -67,7 +72,7 @@ struct ProfileView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 22))
+                            .appFont(size: 22)
                             .foregroundColor(Color(.tertiaryLabel))
                     }
                     .accessibilityLabel(t("Đóng"))
@@ -89,19 +94,19 @@ struct ProfileView: View {
                     .fill(Color.cyan.opacity(0.15))
                     .frame(width: 64, height: 64)
                 Text(String(profile.name.prefix(1)))
-                    .font(.system(size: 24, weight: .bold))
+                    .appFont(size: 24, weight: .bold)
                     .foregroundColor(.cyan)
             }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(profile.name)
-                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .appFont(size: 22, weight: .bold, design: .rounded)
                 Text(profile.diagnosis)
-                    .font(.system(size: 14))
+                    .appFont(size: 14)
                     .foregroundColor(Color(.secondaryLabel))
                     .lineLimit(2)
                 Text(profile.recoveryStage)
-                    .font(.system(size: 12, weight: .semibold))
+                    .appFont(size: 12, weight: .semibold)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
                     .background(Capsule().fill(Color.cyan.opacity(0.15)))
@@ -117,6 +122,32 @@ struct ProfileView: View {
         )
     }
 
+    // MARK: - Text Size
+
+    private var textSizeCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "textformat.size")
+                    .foregroundColor(.cyan)
+                Text(t("Cỡ chữ"))
+                    .font(.headline)
+            }
+
+            Picker(t("Cỡ chữ"), selection: $textSizeRaw) {
+                ForEach(TextSizeOption.allCases, id: \.rawValue) { option in
+                    Text(t(option.displayName)).tag(option.rawValue)
+                }
+            }
+            .pickerStyle(.segmented)
+            .tint(.cyan)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+    }
+
     private func profileDetails(_ profile: PatientProfile) -> some View {
         VStack(spacing: 12) {
             detailRow(label: t("Age"), value: "\(profile.age)")
@@ -127,7 +158,7 @@ struct ProfileView: View {
                 Text(t("Report summary"))
                     .font(.headline)
                 Text(profile.reportSummary)
-                    .font(.system(size: 14))
+                    .appFont(size: 14)
                     .foregroundColor(Color(.secondaryLabel))
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -149,7 +180,7 @@ struct ProfileView: View {
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.trailing)
         }
-        .font(.system(size: 14))
+        .appFont(size: 14)
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -173,7 +204,7 @@ struct ProfileView: View {
                         .frame(width: 7, height: 7)
                         .padding(.top, 6)
                     Text(item)
-                        .font(.system(size: 14))
+                        .appFont(size: 14)
                         .foregroundColor(Color(.label))
                 }
             }
@@ -201,7 +232,7 @@ struct ProfileView: View {
             }
 
             Text(t("Những thông tin bạn đã chia sẻ trong cuộc trò chuyện này. Trợ lý dùng chúng để trả lời phù hợp hơn."))
-                .font(.system(size: 12))
+                .appFont(size: 12)
                 .foregroundColor(Color(.secondaryLabel))
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -210,10 +241,10 @@ struct ProfileView: View {
                     ForEach(Array(viewModel.rememberedFacts.enumerated()), id: \.offset) { _, fact in
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text("\(fact.label):")
-                                .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                                .appFont(size: 13, weight: .semibold, design: .monospaced)
                                 .foregroundColor(.cyan)
                             Text(fact.value)
-                                .font(.system(size: 13, design: .monospaced))
+                                .appFont(size: 13, design: .monospaced)
                                 .foregroundColor(Color(.label))
                                 .fixedSize(horizontal: false, vertical: true)
                             Spacer(minLength: 0)
@@ -228,7 +259,7 @@ struct ProfileView: View {
                 )
             } else {
                 Text(t("Chưa có thông tin nào được ghi nhớ. Hãy chia sẻ về tình trạng của bạn trong khi trò chuyện."))
-                    .font(.system(size: 13))
+                    .appFont(size: 13)
                     .foregroundColor(Color(.secondaryLabel))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
@@ -369,7 +400,7 @@ struct ProfileView: View {
                 Spacer()
                 if !viewModel.woundEntries.isEmpty {
                     Text("\(viewModel.woundEntries.count)")
-                        .font(.system(size: 13, weight: .semibold))
+                        .appFont(size: 13, weight: .semibold)
                         .foregroundColor(.cyan)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
@@ -379,7 +410,7 @@ struct ProfileView: View {
 
             if viewModel.woundEntries.isEmpty {
                 Text(t("Chưa có ảnh nào. Dùng nút “Phân tích vết thương” trong màn hình trò chuyện để thêm."))
-                    .font(.system(size: 13))
+                    .appFont(size: 13)
                     .foregroundColor(Color(.secondaryLabel))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
@@ -410,13 +441,13 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
                     Text(Self.dateFormatter.string(from: entry.capturedAt))
-                        .font(.system(size: 13, weight: .semibold))
+                        .appFont(size: 13, weight: .semibold)
                     if entry.flaggedForReview {
                         HStack(spacing: 3) {
                             Image(systemName: "exclamationmark.triangle.fill")
                             Text(t("Cần theo dõi"))
                         }
-                        .font(.system(size: 10, weight: .semibold))
+                        .appFont(size: 10, weight: .semibold)
                         .foregroundColor(.orange)
                         .padding(.horizontal, 7)
                         .padding(.vertical, 3)
@@ -444,10 +475,10 @@ struct ProfileView: View {
         if value != WoundFindingsParser.notReported {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text("\(label):")
-                    .font(.system(size: 12, weight: .medium))
+                    .appFont(size: 12, weight: .medium)
                     .foregroundColor(Color(.secondaryLabel))
                 Text(value)
-                    .font(.system(size: 12))
+                    .appFont(size: 12)
                     .foregroundColor(Color(.label))
                     .lineLimit(2)
             }
@@ -481,7 +512,7 @@ struct ProfileView: View {
                 Text(t("Data source"))
                     .font(.headline)
                 Text(profile.sourceName)
-                    .font(.system(size: 14))
+                    .appFont(size: 14)
                     .foregroundColor(Color(.secondaryLabel))
             }
             Spacer()

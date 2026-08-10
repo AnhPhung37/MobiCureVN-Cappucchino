@@ -201,7 +201,8 @@ struct AppConfig {
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
             useRealKey: true,
-            AppearanceMode.storageKey: AppearanceMode.light.rawValue
+            AppearanceMode.storageKey: AppearanceMode.light.rawValue,
+            TextSizeOption.storageKey: TextSizeOption.large.rawValue
         ])
     }
 
