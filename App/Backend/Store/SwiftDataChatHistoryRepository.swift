@@ -15,7 +15,7 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
             // Full schema: this store is shared with WoundLogRecord. Opening a container over
             // only ChatRecord would create a store missing the wound-log table (and vice versa),
             // producing `no such table` I/O errors. Prefer AppConfig.modelContainer at call sites.
-            self.container = try ModelContainer(for: ChatRecord.self, WoundLogRecord.self)
+            self.container = try ModelContainer(for: ChatRecord.self, ChatConversationRecord.self, WoundLogRecord.self)
         }
     }
 
@@ -35,7 +35,19 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         let grouped = Dictionary(grouping: records) { record -> UUID in
             record.conversationId ?? Self.legacyConversationId
         }
-        return ChatConversationSummary.summarizing(grouped, date: \.date, role: \.role, content: \.content)
+        return ChatConversationSummary.summarizing(
+            grouped,
+            customTitles: try customTitles(),
+            date: \.date,
+            role: \.role,
+            content: \.content
+        )
+    }
+
+    /// Patient renames keyed by conversation id. Only renamed conversations have a record.
+    private func customTitles() throws -> [UUID: String] {
+        let records = try container.mainContext.fetch(FetchDescriptor<ChatConversationRecord>())
+        return Dictionary(records.map { ($0.conversationId, $0.title) }, uniquingKeysWith: { _, latest in latest })
     }
 
     func loadHistory(conversationId: UUID) async throws -> [ChatItem] {
@@ -90,6 +102,49 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         for record in records where (record.conversationId ?? Self.legacyConversationId) == id {
             container.mainContext.delete(record)
         }
+        // The rename record would otherwise outlive the messages and re-title a future
+        // conversation that happened to reuse the id.
+        for record in try titleRecords(for: id) {
+            container.mainContext.delete(record)
+        }
         try container.mainContext.save()
+    }
+
+    func deleteAllConversations() async throws {
+        for record in try container.mainContext.fetch(FetchDescriptor<ChatRecord>()) {
+            container.mainContext.delete(record)
+        }
+        for record in try container.mainContext.fetch(FetchDescriptor<ChatConversationRecord>()) {
+            container.mainContext.delete(record)
+        }
+        try container.mainContext.save()
+    }
+
+    func renameConversation(id: UUID, title: String?) async throws {
+        let trimmed = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let existing = try titleRecords(for: id)
+
+        guard !trimmed.isEmpty else {
+            // Clearing the title drops the override; the conversation goes back to being
+            // titled by its first user message.
+            for record in existing {
+                container.mainContext.delete(record)
+            }
+            try container.mainContext.save()
+            return
+        }
+
+        if let record = existing.first {
+            record.title = trimmed
+            record.updatedAt = Date()
+        } else {
+            container.mainContext.insert(ChatConversationRecord(conversationId: id, title: trimmed))
+        }
+        try container.mainContext.save()
+    }
+
+    private func titleRecords(for id: UUID) throws -> [ChatConversationRecord] {
+        let predicate = #Predicate<ChatConversationRecord> { $0.conversationId == id }
+        return try container.mainContext.fetch(FetchDescriptor(predicate: predicate))
     }
 }

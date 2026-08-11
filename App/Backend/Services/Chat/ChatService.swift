@@ -88,7 +88,8 @@ final class ChatService: ObservableObject {
         images: [Data] = [],
         history: [ChatMessage],
         conversationId: UUID,
-        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil,
+        onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)? = nil
     ) -> AsyncStream<ChatStreamEvent> {
         processingState = .validatingLanguage
 
@@ -198,6 +199,7 @@ final class ChatService: ObservableObject {
                         history: history,
                         conversationId: conversationId,
                         onSourcesRetrieved: onSourcesRetrieved,
+                        onProfileUpdateProposed: onProfileUpdateProposed,
                         flow: flow,
                         pipelineStart: pipelineStart,
                         sinceMark: stageMark,
@@ -297,6 +299,7 @@ final class ChatService: ObservableObject {
         history: [ChatMessage],
         conversationId: UUID,
         onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)?,
+        onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)?,
         flow: ChatFlowLog,
         pipelineStart: DispatchTime,
         sinceMark: DispatchTime,
@@ -360,8 +363,9 @@ final class ChatService: ObservableObject {
             images: images,
             conversationHistory: history,
             conversationId: conversationId,
-            responseLanguage: detectedLanguage,
-            onSourcesRetrieved: onSourcesRetrieved
+            onSourcesRetrieved: onSourcesRetrieved,
+            onProfileUpdateProposed: onProfileUpdateProposed,
+            responseLanguage: detectedLanguage
         ) {
             guard !Task.isCancelled else { return }
             switch event {

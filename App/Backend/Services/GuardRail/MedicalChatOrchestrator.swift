@@ -22,6 +22,9 @@ final class MedicalChatOrchestrator {
     private let llmService: LLMServiceProtocol
     private let factStore: SessionFactStore
     private let factExtractor: SessionFactExtractor
+    private let profileRepository: ProfileRepository
+    private let profileUpdateExtractor: ProfileUpdateExtractor
+    private let profileUpdateStore: ProfileUpdateRepository
 
     init(
         llmService: LLMServiceProtocol,
@@ -29,7 +32,10 @@ final class MedicalChatOrchestrator {
         outputGuardRail: OutputGuardRail = OutputGuardRail(),
         ragService: RAGService = RAGService(),
         factStore: SessionFactStore = AppConfig.sessionFactStore,
-        factExtractor: SessionFactExtractor = SessionFactExtractor()
+        factExtractor: SessionFactExtractor = SessionFactExtractor(),
+        profileRepository: ProfileRepository = AppConfig.profileRepository,
+        profileUpdateExtractor: ProfileUpdateExtractor = ProfileUpdateExtractor(),
+        profileUpdateStore: ProfileUpdateRepository = AppConfig.profileUpdateStore
     ) {
         self.llmService = llmService
         self.inputGuardRail = inputGuardRail
@@ -37,6 +43,9 @@ final class MedicalChatOrchestrator {
         self.ragService = ragService
         self.factStore = factStore
         self.factExtractor = factExtractor
+        self.profileRepository = profileRepository
+        self.profileUpdateExtractor = profileUpdateExtractor
+        self.profileUpdateStore = profileUpdateStore
     }
 
     /// Full orchestrated pipeline: query → guarded → retrieved → generated → guarded → stream
@@ -55,8 +64,9 @@ final class MedicalChatOrchestrator {
         images: [Data] = [],
         conversationHistory: [ChatMessage],
         conversationId: UUID,
-        responseLanguage: DetectedLanguage = .english,
-        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil
+        onSourcesRetrieved: (@Sendable ([MedicalSource]) -> Void)? = nil,
+        onProfileUpdateProposed: (@Sendable ([ProposedProfileUpdate]) -> Void)? = nil,
+        responseLanguage: DetectedLanguage = .english
     ) -> AsyncStream<ChatStreamEvent> {
         // Only the newest event is worth keeping: previews are cumulative snapshots, so a
         // consumer that falls behind should skip to the current one rather than replay every
@@ -94,8 +104,18 @@ final class MedicalChatOrchestrator {
 
                 let sanitizedQuery = inputResult.sanitizedQuery ?? userQuery
 
+                // The confirmed, cross-conversation profile. Fetched before retrieval (not just
+                // before prompt building) because Step 2 uses the patient's diagnosis and
+                // procedure to bias what comes back — a question asked by someone with an
+                // ileostomy should surface ileostomy chunks. A best-effort read: a fetch failure
+                // just means this turn runs without personalization rather than failing outright.
+                let confirmedProfile = try? await profileRepository.fetchProfile()
+
                 // Step 2: RAG Pipeline — sanitizedQuery is always English by this point.
-                let retrievedContext = await ragService.process(userQuery: sanitizedQuery)
+                let retrievedContext = await ragService.process(
+                    userQuery: sanitizedQuery,
+                    profileTerms: confirmedProfile.map(Self.retrievalTerms) ?? []
+                )
                 stageMark = Self.logStage("2 · RAG retrieval", since: stageMark)
                 // Surface retrieved sources so the UI can show citations without a
                 // second, redundant retrieval pass.
@@ -111,6 +131,7 @@ final class MedicalChatOrchestrator {
                     context: retrievedContext,
                     history: conversationHistory,
                     rememberedFacts: rememberedFacts,
+                    confirmedProfile: confirmedProfile,
                     responseLanguage: responseLanguage
                 )
                 stageMark = Self.logStage("3 · Prompt build (+facts)", since: stageMark)
@@ -172,6 +193,44 @@ final class MedicalChatOrchestrator {
                     let newFacts = await factExtractor.extract(from: sanitizedQuery, using: llmService)
                     await factStore.merge(newFacts, into: conversationId)
                     stageMark = Self.logStage("6 · Fact extraction (LLM)", since: stageMark)
+                }
+
+                // Step 7: propose durable, cross-conversation profile updates from this turn,
+                // diffed against the confirmed profile already fetched in Step 3. This never
+                // writes the profile directly — proposals are staged for explicit patient
+                // confirmation (see ProfileUpdateRepository). Runs after the answer is
+                // delivered, same rationale as Step 6.
+                if !Task.isCancelled, let currentProfile = confirmedProfile {
+                    let proposals = await profileUpdateExtractor.extract(
+                        from: sanitizedQuery, currentProfile: currentProfile, using: llmService
+                    )
+                    var enqueuedCount = 0
+                    if !proposals.isEmpty {
+                        let candidates = proposals.map {
+                            ProposedProfileUpdate(
+                                proposal: $0,
+                                currentProfile: currentProfile,
+                                conversationId: conversationId,
+                                sourceExcerpt: String(sanitizedQuery.prefix(200))
+                            )
+                        }
+                        if let enqueued = try? await profileUpdateStore.enqueue(candidates), !enqueued.isEmpty {
+                            enqueuedCount = enqueued.count
+                            onProfileUpdateProposed?(enqueued)
+                        }
+                    }
+                    // This step is a second LLM pass that fails closed at three separate points
+                    // (nothing proposed / unparseable reply / enqueue deduped), all of which look
+                    // identical from the UI: no card. Report which one happened.
+                    _ = Self.logStage(
+                        "7 · Profile update proposals", since: stageMark,
+                        detail: "\(proposals.count) proposed, \(enqueuedCount) staged"
+                    )
+                } else if !Task.isCancelled {
+                    _ = Self.logStage(
+                        "7 · Profile update proposals", since: stageMark,
+                        detail: "skipped — profile fetch failed"
+                    )
                 }
 
                 _ = Self.logStage("TOTAL pipeline", since: pipelineStart)
@@ -278,6 +337,16 @@ final class MedicalChatOrchestrator {
     // Token budget for RAG context injected into the system prompt.
     // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
     private static let contextTokenBudget = 600
+    // Token budget for the persisted patient profile block. Smaller than the RAG budget —
+    // these are compact structured facts, not prose.
+    private static let profileTokenBudget = 200
+    // Word cap on the report summary before it enters the profile block. The only free-text
+    // field in the profile, and the one least useful turn to turn; capping it keeps the
+    // structured fields (diagnosis, procedure, allergies) inside the budget above.
+    private static let reportSummaryWordCap = 40
+    // Maximum number of past turns included in the conversation history sent to the LLM.
+    // Each turn = 1 user + 1 assistant message. Older turns are dropped to limit prompt length.
+    private static let maxHistoryTurns = 4
     // Token budget for the replayed conversation history, mirroring `contextTokenBudget`.
     // A turn count is the wrong unit here: four turns of one-line greetings and four turns of
     // full medical answers differ by an order of magnitude in prefill cost, and it is the
@@ -295,6 +364,7 @@ final class MedicalChatOrchestrator {
         context: RetrievedContext,
         history: [ChatMessage],
         rememberedFacts: String? = nil,
+        confirmedProfile: PatientProfile? = nil,
         responseLanguage: DetectedLanguage = .english
     ) -> EnrichedPrompt {
         let answersInVietnamese = responseLanguage.requiresTranslation
@@ -318,12 +388,35 @@ final class MedicalChatOrchestrator {
         // Apply token budget to RAG chunks so the system prompt stays compact.
         let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
 
+        // The confirmed, cross-conversation profile — durable baseline, persists across chats.
+        // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install), so a
+        // blank profile produces the exact prompt this code produced before profiles existed.
+        //
+        // Placed in the STABLE part of the prompt — after the fixed persona and constraints,
+        // before the per-turn sections (retrieval note, session facts) and before the retrieved
+        // chunks further down. The profile only changes when the patient edits it or accepts a
+        // proposal, so keeping it ahead of everything volatile lets the KV cache reuse the whole
+        // prefix across turns instead of re-prefilling from the first personalized token.
+        let formattedProfile = confirmedProfile.map { formatProfile($0, budget: Self.profileTokenBudget) } ?? ""
+        let profileSection = formattedProfile.isEmpty ? "" : """
+
+        Confirmed patient profile (persisted, may be from an earlier conversation):
+        \(formattedProfile)
+        """
+
         // Facts the user has stated earlier this session (name, allergies, wound location, …).
         // Injected so they survive past the short history window; omitted entirely when empty.
         let memorySection = (rememberedFacts?.isEmpty == false) ? """
 
         Known facts about this patient (stated earlier in this conversation — use them, and do NOT ask for information already listed here):
         \(rememberedFacts!)
+        """ : ""
+
+        // Two memory tiers can disagree (e.g. the profile says one wound location, the
+        // conversation states a newer one) — tell the model which one to trust.
+        let conflictInstruction = (!profileSection.isEmpty && !memorySection.isEmpty) ? """
+
+        If the confirmed patient profile and the facts stated earlier in this conversation conflict, trust the conversation facts as more current.
         """ : ""
 
         let noContextFound = budgetedChunks.isEmpty
@@ -376,7 +469,7 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(contextLanguageNote)\(noContextInstruction)\(memorySection)
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(contextLanguageNote)\(profileSection)\(noContextInstruction)\(memorySection)\(conflictInstruction)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
@@ -395,6 +488,90 @@ final class MedicalChatOrchestrator {
         let budgetedHistory = applyHistoryBudget(history, budget: Self.historyTokenBudget)
 
         return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
+    }
+
+    /// Formats the confirmed profile as compact bullet lines, prioritized identity → clinical
+    /// basics → clinical lists → care guidance → free-text summary, and truncated to `budget`
+    /// (word-count estimate, same approach as `applyContextBudget`) so the least
+    /// turn-to-turn-useful fields (report summary, then care notes/warning signs) are the
+    /// first dropped when the profile has grown large.
+    private func formatProfile(_ profile: PatientProfile, budget: Int) -> String {
+        func line(_ label: String, _ value: String) -> String? {
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            return "- \(label): \(trimmed)"
+        }
+        func bulletList(_ label: String, _ items: [String]) -> String? {
+            guard !items.isEmpty else { return nil }
+            return "- \(label): " + items.joined(separator: "; ")
+        }
+
+        var sections: [String] = []
+        if !profile.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            sections.append("- Name: \(profile.name)")
+        }
+        if profile.age > 0 { sections.append("- Age: \(profile.age)") }
+        if let l = line("Gender", profile.gender) { sections.append(l) }
+        if let l = line("Diagnosis", profile.diagnosis) { sections.append(l) }
+        if let l = line("Procedure", profile.procedure) { sections.append(l) }
+        if let l = line("Recovery stage", profile.recoveryStage) { sections.append(l) }
+        if let location = profile.currentWoundLocation, let l = line("Current wound location", location) {
+            sections.append(l)
+        }
+        if let l = bulletList("Allergies", profile.allergies) { sections.append(l) }
+        if let l = bulletList("Medications", profile.medications) { sections.append(l) }
+        if let l = bulletList("Conditions", profile.conditions) { sections.append(l) }
+        if let l = bulletList("Care notes", profile.careNotes) { sections.append(l) }
+        if let l = bulletList("Warning signs", profile.warningSigns) { sections.append(l) }
+        // Excerpted, not included whole. A clinician report summary is prose and can run to
+        // hundreds of words — long enough to consume the entire budget on its own and push out
+        // the structured fields above it, which are what actually change the model's answer.
+        if let l = line("Report summary", Self.excerpt(profile.reportSummary, words: Self.reportSummaryWordCap)) {
+            sections.append(l)
+        }
+
+        var usedTokens = 0
+        var selected: [String] = []
+        for section in sections {
+            let estimate = section.split { $0.isWhitespace }.count
+            if usedTokens + estimate > budget { break }
+            usedTokens += estimate
+            selected.append(section)
+        }
+
+        return selected.joined(separator: "\n")
+    }
+
+    /// The profile fields worth biasing retrieval toward: what the patient has, what was done to
+    /// them, and where their wound is. These are the terms that decide whether a chunk is about
+    /// this patient's situation at all — "leakage" retrieves very different guidance for a
+    /// colostomy than for a surgical incision.
+    ///
+    /// Deliberately not the whole profile. Care notes and warning signs are *advice already given
+    /// to* the patient rather than descriptions of their condition, and OR-ing them into the FTS
+    /// query would match chunks that merely repeat that advice. Empty for a blank profile, which
+    /// leaves retrieval byte-identical to its behavior before profiles existed.
+    ///
+    /// Values are passed as whole phrases: `SQLiteRetriever.tokenizeForFTS` splits, strips
+    /// punctuation, and drops stopwords, so no pre-tokenizing is needed here.
+    ///
+    /// Internal rather than private so `PatientProfilePersonalizationTests` can assert the
+    /// blank-profile case returns nothing — the guard that keeps retrieval unchanged for a
+    /// patient who has never filled in a profile.
+    static func retrievalTerms(_ profile: PatientProfile) -> [String] {
+        let candidates = [profile.diagnosis, profile.procedure, profile.currentWoundLocation ?? ""]
+        var seen = Set<String>()
+        return candidates
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && seen.insert($0.lowercased()).inserted }
+    }
+
+    /// First `words` whitespace-separated words of `text`, with an ellipsis when truncated.
+    /// Returns "" unchanged for empty input so callers can keep using emptiness as "omit this".
+    private static func excerpt(_ text: String, words: Int) -> String {
+        let parts = text.split { $0.isWhitespace }
+        guard parts.count > words else { return text }
+        return parts.prefix(words).joined(separator: " ") + " […]"
     }
 
     private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {

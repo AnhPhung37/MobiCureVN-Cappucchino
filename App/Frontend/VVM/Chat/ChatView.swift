@@ -335,7 +335,19 @@ struct ChatView: View {
                                 .padding(.top, 8)
                             ForEach(section.items) { item in
                                 MessageBubble(
-                                    message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData),
+                                    message: ChatMessage(
+                                        role: item.role,
+                                        content: item.content,
+                                        sources: item.sources,
+                                        imageData: item.imageData,
+                                        profileUpdateProposals: item.profileUpdateProposals
+                                    ),
+                                    onAcceptProfileUpdate: { update in
+                                        Task { await viewModel.acceptProfileUpdate(update) }
+                                    },
+                                    onDismissProfileUpdate: { update in
+                                        Task { await viewModel.dismissProfileUpdate(update) }
+                                    },
                                     isStreaming: item.id == viewModel.streamingMessageID
                                 )
                                 .padding(.vertical, 4)

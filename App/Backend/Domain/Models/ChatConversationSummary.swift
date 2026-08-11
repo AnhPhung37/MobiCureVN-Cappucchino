@@ -6,20 +6,26 @@ nonisolated struct ChatConversationSummary: Identifiable, Sendable {
     let preview: String
     let lastMessageDate: Date
     let messageCount: Int
+    /// True when `title` came from a patient rename rather than the first user message. The
+    /// rename sheet uses it to decide whether "restore the automatic title" is on offer.
+    let hasCustomTitle: Bool
 
-    init(id: UUID, title: String, preview: String, lastMessageDate: Date, messageCount: Int) {
+    init(id: UUID, title: String, preview: String, lastMessageDate: Date, messageCount: Int, hasCustomTitle: Bool = false) {
         self.id = id
         self.title = title
         self.preview = preview
         self.lastMessageDate = lastMessageDate
         self.messageCount = messageCount
+        self.hasCustomTitle = hasCustomTitle
     }
 
     // Shared by SwiftDataChatHistoryRepository and InMemoryChatHistoryRepository so both
     // build conversation summaries — sorted newest-first — the same way regardless of the
-    // underlying storage's message type.
+    // underlying storage's message type. `customTitles` holds patient renames keyed by
+    // conversation id; a conversation without an entry is titled by its first user message.
     static func summarizing<Message>(
         _ grouped: [UUID: [Message]],
+        customTitles: [UUID: String] = [:],
         date: (Message) -> Date,
         role: (Message) -> String,
         content: (Message) -> String
@@ -27,13 +33,16 @@ nonisolated struct ChatConversationSummary: Identifiable, Sendable {
         grouped.map { conversationId, messages in
             let sorted = messages.sorted { date($0) < date($1) }
             let preview = sorted.last.map(content) ?? ""
-            let title = sorted.first(where: { role($0).lowercased() == "user" }).map(content) ?? preview
+            let derivedTitle = sorted.first(where: { role($0).lowercased() == "user" }).map(content) ?? preview
+            let customTitle = customTitles[conversationId]
+            let title = customTitle ?? (derivedTitle.isEmpty ? "Chat" : derivedTitle)
             return ChatConversationSummary(
                 id: conversationId,
-                title: title.isEmpty ? "Chat" : title,
+                title: title,
                 preview: preview,
                 lastMessageDate: sorted.last.map(date) ?? Date(),
-                messageCount: sorted.count
+                messageCount: sorted.count,
+                hasCustomTitle: customTitle != nil
             )
         }
         .sorted { $0.lastMessageDate > $1.lastMessageDate }
