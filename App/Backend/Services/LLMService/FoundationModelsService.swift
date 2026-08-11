@@ -27,13 +27,24 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
     static var isAvailable: Bool {
         switch SystemLanguageModel.default.availability {
         case .available:
+            logAvailabilityChange("available")
             return true
         case .unavailable(let reason):
-            print("FoundationModelsService: system model unavailable — \(reason)")
+            logAvailabilityChange("unavailable — \(reason)")
             return false
         @unknown default:
+            logAvailabilityChange("unavailable — unrecognized availability case")
             return false
         }
+    }
+
+    /// `isAvailable` is polled on every utility call, so log only when the answer flips —
+    /// otherwise a device without Apple Intelligence floods the console.
+    private static var lastLoggedAvailability: String?
+    private static func logAvailabilityChange(_ state: String) {
+        guard lastLoggedAvailability != state else { return }
+        lastLoggedAvailability = state
+        print("FoundationModelsService: system model \(state)")
     }
 
     // MARK: - LLMServiceProtocol

@@ -40,6 +40,31 @@ struct AppConfig {
         }
     }
 
+    /// Lazily-built shared `FoundationModelsService`, held behind the protocol so this stored
+    /// property carries no iOS 26 availability of its own (the app deploys back to 18.6). The
+    /// service is stateless — a session is created per request — so one instance is enough.
+    private static var foundationModelsService: LLMServiceProtocol?
+
+    /// Service for short auxiliary LLM work (language checks, session-fact extraction) that
+    /// shouldn't tie up the MLX chat model. Prefers Apple's on-device Foundation model, which
+    /// the OS owns and keeps out of our memory budget; falls back to `llmService` whenever the
+    /// system model can't serve — pre-iOS 26, unsupported device, Apple Intelligence off, or
+    /// assets still downloading. Re-evaluated per access because that changes at runtime.
+    ///
+    /// The chat and wound-analysis paths deliberately keep using `llmService` (MLX): they need
+    /// the larger models and, for wounds, the image input the system model doesn't take.
+    static var utilityLLMService: LLMServiceProtocol {
+        if #available(iOS 26.0, *) {
+            if FoundationModelsService.isAvailable {
+                if let existing = foundationModelsService { return existing }
+                let service = FoundationModelsService()
+                foundationModelsService = service
+                return service
+            }
+        }
+        return llmService
+    }
+
     /// Single SwiftData container shared by every repository.
     ///
     /// All `@Model` types MUST be registered here. SwiftData derives the SQLite schema from
