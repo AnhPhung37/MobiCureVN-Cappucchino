@@ -23,6 +23,11 @@ nonisolated struct SessionFactExtractor {
     ) async -> [SessionFactStore.SessionFact] {
         let trimmed = userText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
+        // Deterministic gate before the LLM, mirroring how LanguageValidationService gates
+        // `refine`. This call is a second full generation on every single turn, and on a turn
+        // that states nothing about the patient it can only ever return `[]` — but it still
+        // holds the one ModelContainer, so the user's NEXT message queues behind it.
+        guard Self.statesDurableFact(trimmed) else { return [] }
 
         let prompt = """
         Extract durable facts the user states ABOUT THEMSELVES from the MESSAGE below — \
@@ -48,6 +53,39 @@ nonisolated struct SessionFactExtractor {
         }
 
         return Self.parse(reply)
+    }
+
+    // MARK: - Gate
+
+    /// Cues that a turn may state something durable about the patient, in Vietnamese and
+    /// English. Matched case-insensitively as substrings, deliberately over-inclusively: a
+    /// false positive costs one generation that returns `[]` (exactly today's behaviour), while
+    /// a false negative silently forgets a fact — so this list errs toward running.
+    ///
+    /// `MedicalChatOrchestrator` calls this with the translated ENGLISH text, so the English
+    /// cues carry the weight in practice. The Vietnamese cues (with and without diacritics,
+    /// since patients type both) are here because nothing in the type's signature enforces
+    /// that language, and a caller passing original-language text must not silently lose facts.
+    private static let disclosureCues: [String] = [
+        // Vietnamese — self-reference and possession
+        "tôi", "toi ", "tui", "mình", "minh ", "em ", "cháu", "chau ", "con ",
+        "của tôi", "cua toi", "nhà tôi", "tên", "ten toi", "tuổi", "tuoi",
+        // Vietnamese — clinical self-report
+        "bị", "bi ", "dị ứng", "di ung", "đang dùng", "dang dung", "đang uống", "dang uong",
+        "vừa mổ", "vua mo", "phẫu thuật", "phau thuat", "mổ", "hậu môn nhân tạo",
+        // English — self-reference
+        "i'm", "i am", "im ", "my ", "me ", "i've", "i have", "i had", "i was",
+        // English — clinical self-report
+        "allerg", "diagnos", "surgery", "operation", "stoma", "taking ", "prescribed",
+        "years old", "year-old",
+    ]
+
+    /// Whether `text` looks like it could state a durable fact about the patient. Purely
+    /// deterministic — no model call — so a turn that is plainly a question ("what should I
+    /// eat?" still matches on "i " forms; "khi nào nên tái khám?" does not) skips the pass.
+    static func statesDurableFact(_ text: String) -> Bool {
+        let haystack = text.lowercased()
+        return disclosureCues.contains { haystack.contains($0) }
     }
 
     // MARK: - Private
