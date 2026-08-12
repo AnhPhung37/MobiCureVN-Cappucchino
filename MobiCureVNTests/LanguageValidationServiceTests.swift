@@ -277,39 +277,12 @@ final class LanguageValidationServiceTests: XCTestCase {
         XCTAssertFalse(result.isEmpty)
     }
 
-    // MARK: - Matches
-
-    func testMatchesReturnsTrueForEmptyText() async {
-        let result = await sut.matches("", expected: .vietnamese, using: llmService)
-        XCTAssertTrue(result)
-    }
-
-    func testMatchesReturnsFalseForForeignScriptLeak() async {
-        let result = await sut.matches("Tránh thức ăn 油腻 và khó tiêu hóa", expected: .vietnamese, using: llmService)
-        XCTAssertFalse(result)
-    }
-
-    func testMatchesReturnsTrueForCorrectVietnamese() async {
-        let result = await sut.matches("Sau phẫu thuật, bạn nên ăn thức ăn dễ tiêu hóa.", expected: .vietnamese, using: llmService)
-        XCTAssertTrue(result)
-    }
-
-    func testMatchesReturnsTrueForCorrectEnglish() async {
-        let result = await sut.matches("You should eat easily digestible food after surgery.", expected: .english, using: llmService)
-        XCTAssertTrue(result)
-    }
-
-    // MARK: - LLM Translate
-
-    func testTranslateReturnsNonEmptyResult() async {
-        let result = await sut.translate("You should rest after surgery.", to: .vietnamese, using: llmService)
-        XCTAssertFalse(result.isEmpty)
-    }
-
-    func testTranslateReturnsOriginalForEmptyInput() async {
-        let result = await sut.translate("", to: .vietnamese, using: llmService)
-        XCTAssertEqual(result, "")
-    }
+    // NOTE: the tests for `matches`, `confirmLanguage` and `translate` were removed together
+    // with those methods. They had no production call site left once generation became native
+    // (the output-language check is the deterministic `checkGeneratedLanguage`), so these
+    // tests were the only thing keeping three LLM round-trips compiled into the app.
+    // Output-language coverage lives in LanguageDriftTests, which exercises
+    // `checkGeneratedLanguage` directly. See Docs/BE/optimizationChecklist.md B4.1.
 }
 
 /// Minimal LLM stub that always yields a fixed reply, letting a test force a specific
