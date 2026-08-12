@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - GuardRail Rules
 
-struct GuardRailRules {
+nonisolated struct GuardRailRules {
 
     // MARK: - Semantic Medical Anchors (NLEmbedding)
 
@@ -302,7 +302,7 @@ struct GuardRailRules {
 
 // MARK: - Emergency Response Templates
 
-struct EmergencyResponses {
+nonisolated struct EmergencyResponses {
     static let templates: [EmergencySymptomType: String] = [
         .chestPain: "🚨 **EMERGENCY**: Chest pain can be a sign of a serious medical condition. CALL EMERGENCY SERVICES (119 in Vietnam) or visit the nearest emergency room immediately. Do not wait. This requires immediate professional medical evaluation.",
         

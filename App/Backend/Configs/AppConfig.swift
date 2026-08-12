@@ -79,7 +79,17 @@ struct AppConfig {
 
     /// Shared SQLiteRetriever — opening a SQLite connection is expensive; reuse one instance
     /// across the RAGService (inside MedicalChatOrchestrator) and ChatViewModel citation lookup.
-    static let retriever = SQLiteRetriever()
+    ///
+    /// `nonisolated(unsafe)` is load-bearing, not a formality. `AppConfig` inherits the target's
+    /// `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, so without this the property is main-actor
+    /// isolated and *every* touch of it hops to the main thread — including the launch warm-up
+    /// in `MobiCureVNApp`, whose entire purpose is to open SQLite and load the CoreML embedder
+    /// OFF the main thread, and including every retrieval during a chat turn.
+    ///
+    /// "unsafe" is accepted here because the type is not `Sendable` but its concurrent use is
+    /// already serialized below the Swift level: the connection is opened with
+    /// `SQLITE_OPEN_FULLMUTEX`, and `QueryEmbedder` guards CoreML inference with its own lock.
+    nonisolated(unsafe) static let retriever = SQLiteRetriever()
 
     /// Shared session-fact store. A `MedicalChatOrchestrator` is recreated on every model swap
     /// (see `ChatViewModel.bindLLMStatusUpdates`); if each carried its own fact store, remembered
@@ -277,11 +287,16 @@ struct AppConfig {
         if let realService = llmService as? LLMService {
             realService.unload()
         }
-        llmService = MockLLMService()
 
         updateStatus(.loading)
         updateDownloadProgress(1)
 
+        // Assigned once, not twice. This used to publish `MockLLMService()` first and the real
+        // service immediately afterwards, with no `await` in between — so nothing could ever
+        // observe the mock, but `llmService`'s `didSet` fired twice and every observer
+        // (ChatViewModel, ChatService) rebuilt its orchestrator for a state that never existed.
+        // An un-initialized LLMService already answers with placeholder text, which is exactly
+        // what the mock was standing in for during the load below.
         let service = LLMService(modelPath: modelURL.path, useMock: false)
         llmService = service
         updateStatus(.mockWithDownloadedModel)

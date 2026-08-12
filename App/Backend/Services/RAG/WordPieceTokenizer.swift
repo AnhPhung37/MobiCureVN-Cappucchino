@@ -2,7 +2,7 @@ import Foundation
 
 /// Minimal WordPiece tokenizer matching BERT/BGE-small tokenisation.
 /// Requires vocab.txt bundled as an app resource (one token per line, index = token ID).
-final class WordPieceTokenizer {
+nonisolated final class WordPieceTokenizer {
 
     private let vocab: [String: Int32]
     private let maxSeqLen: Int

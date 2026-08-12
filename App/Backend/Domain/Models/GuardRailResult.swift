@@ -2,12 +2,12 @@ import Foundation
 
 // MARK: - GuardRail Results
 
-enum GuardRailStatus {
+nonisolated enum GuardRailStatus {
     case allowed
     case blocked(reason: String)
 }
 
-struct InputGuardRailResult {
+nonisolated struct InputGuardRailResult {
     let status: GuardRailStatus
     let originalQuery: String
     let sanitizedQuery: String?
@@ -21,7 +21,7 @@ struct InputGuardRailResult {
     }
 }
 
-struct OutputGuardRailResult {
+nonisolated struct OutputGuardRailResult {
     let status: GuardRailStatus
     let originalResponse: String
     let filteredResponse: String?
@@ -37,7 +37,7 @@ struct OutputGuardRailResult {
     }
 }
 
-struct RetrievedContext {
+nonisolated struct RetrievedContext {
     let chunks: [ContextChunk]
     let confidenceScore: Double
     let sources: [MedicalSource]
@@ -49,7 +49,7 @@ struct RetrievedContext {
     }
 }
 
-struct ContextChunk {
+nonisolated struct ContextChunk {
     let id: String
     let content: String
     let section: String
@@ -65,7 +65,7 @@ struct ContextChunk {
     }
 }
 
-struct EmergencyDetectionResult {
+nonisolated struct EmergencyDetectionResult {
     let isEmergency: Bool
     let symptomType: EmergencySymptomType?
     let recommendation: String?
@@ -77,7 +77,7 @@ struct EmergencyDetectionResult {
     }
 }
 
-enum EmergencySymptomType: String {
+nonisolated enum EmergencySymptomType: String {
     case chestPain = "chest_pain"
     case difficultyBreathing = "difficulty_breathing"
     case seizure = "seizure"

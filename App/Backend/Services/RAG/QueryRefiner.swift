@@ -5,12 +5,12 @@ import Foundation
 /// 1. Normalize Vietnamese → English medical terminology
 /// 2. Expand abbreviations
 /// 3. Rewrite into standardized medical search terms
-struct RefinedQuery {
+nonisolated struct RefinedQuery {
     let baseQuery: String
     let enrichedTerms: [String]
 }
 
-final class QueryRefiner {
+nonisolated final class QueryRefiner {
 
     init() {}
 

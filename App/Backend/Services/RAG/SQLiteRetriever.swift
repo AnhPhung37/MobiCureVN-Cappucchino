@@ -7,11 +7,17 @@ private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.sel
 ///
 /// Hybrid retrieval:
 ///   1. FTS5 keyword search (BM25) — always run, cheap.
-///   2. vec_chunks KNN via the CoreML query embedder — run only when FTS is thin
-///      (see `retrieve`), since on-device embedding is the most expensive step per query.
+///   2. vec_chunks KNN via the CoreML query embedder — also always run, and the single most
+///      expensive step of a turn's retrieval. It used to be conditional ("only when FTS is
+///      thin"), but a natural-language question saturates the FTS candidate budget on virtually
+///      every query, so the vector signal was almost never used; `retrieve` carries the eval
+///      that justified making it unconditional.
 /// Results from both are fused with Reciprocal Rank Fusion. When the vec index or the
 /// embedder is unavailable the retriever degrades gracefully to FTS-only.
-final class SQLiteRetriever {
+///
+/// `nonisolated`: pure IO and computation, no UI state. Left implicit (i.e. main-actor-isolated
+/// under this target's default) it would run SQLite and CoreML inference on the UI thread.
+nonisolated final class SQLiteRetriever {
 
     private var db: OpaquePointer?
     private var hasFTSIndex: Bool = false
@@ -385,18 +391,43 @@ final class SQLiteRetriever {
         var result: [ScoredRow] = []
 
         for row in rows {
-            let normalized = row.info.text
-                .lowercased()
-                .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let fingerprint = String(normalized.prefix(200))
-
+            let fingerprint = Self.contentFingerprint(row.info.text, length: 200)
             if seen.insert(fingerprint).inserted {
                 result.append(row)
             }
         }
 
         return result
+    }
+
+    /// Lowercased, whitespace-folded prefix of a chunk, used only to spot two rows carrying the
+    /// same passage.
+    ///
+    /// Done by hand rather than with `replacingOccurrences(options: .regularExpression)`: the
+    /// regex version ran over the *entire* chunk body — which can be thousands of characters —
+    /// for every candidate row of every query, just to produce a 200-character key. This walks
+    /// the string once and stops as soon as the key is long enough.
+    private static func contentFingerprint(_ text: String, length: Int) -> String {
+        var out = ""
+        out.reserveCapacity(length)
+        var pendingSpace = false
+
+        for character in text {
+            if character.isWhitespace {
+                // Leading whitespace is dropped entirely; interior runs collapse to one space.
+                pendingSpace = !out.isEmpty
+                continue
+            }
+            if pendingSpace {
+                out.append(" ")
+                pendingSpace = false
+                if out.count >= length { break }
+            }
+            out += character.lowercased()
+            if out.count >= length { break }
+        }
+
+        return String(out.prefix(length))
     }
 
     private func floatArrayToData(_ values: [Float]) -> Data {

@@ -13,7 +13,7 @@ import Foundation
 /// Rule Group 2: Dangerous requests (self-harm, violence, illegal) → hard block
 /// Rule Group 3: Prompt injection/jailbreak → hard block
 /// Rule Group 4: PII detection + masking
-final class InputGuardRail {
+nonisolated final class InputGuardRail {
 
     // Precompiled once — recreating NSRegularExpression per query is wasteful (and can
     // fail under load). Mirrors the precompilation already done in OutputGuardRail.
@@ -55,12 +55,18 @@ final class InputGuardRail {
             )
         }
 
-        // Rule Group 4: PII Detection + Masking
-        sanitizedQuery = maskPII(sanitizedQuery)
-        let piiIssues = detectPII(query)
-        if !piiIssues.isEmpty {
-            violations.append(contentsOf: piiIssues)
-            print("InputGuardRail: PII detected and masked: \(piiIssues)")
+        // Rule Group 4: PII Detection + Masking — a single pass over the regexes produces both
+        // the masked text and the per-label counts. This used to run every PII regex twice
+        // (once to mask, once to report), over the same query, on every turn.
+        let pii = Self.maskAndDetectPII(in: sanitizedQuery)
+        sanitizedQuery = pii.masked
+        if !pii.issues.isEmpty {
+            violations.append(contentsOf: pii.issues)
+            // DEBUG-only: the labels name which KIND of PII was found, never the value, but a
+            // release build has no reason to log anything about the patient's message.
+            #if DEBUG
+            print("InputGuardRail: PII detected and masked: \(pii.issues)")
+            #endif
         }
 
         // NOTE: No topic/medical-relevance gate here by design. Benign conversational turns
@@ -79,54 +85,60 @@ final class InputGuardRail {
 
     /// Rule Group 2: Check for dangerous/harmful requests
     private func checkDangerousRequests(_ query: String) -> String? {
-        let lower = query.lowercased()
-        
-        for pattern in GuardRailRules.dangerousPatterns {
-            if lower.contains(pattern.lowercased()) {
-                return "Dangerous request detected: \(pattern)"
-            }
-        }
-        
-        return nil
+        Self.firstMatch(of: GuardRailRules.dangerousPatterns, in: query)
+            .map { "Dangerous request detected: \($0)" }
     }
-    
+
     /// Rule Group 3: Detect prompt injection / jailbreak attempts
     private func checkPromptInjection(_ query: String) -> String? {
-        let lower = query.lowercased()
-        
-        for pattern in GuardRailRules.injectionPatterns {
-            if lower.contains(pattern.lowercased()) {
-                return "Potential injection: \(pattern)"
-            }
+        Self.firstMatch(of: GuardRailRules.injectionPatterns, in: query)
+            .map { "Potential injection: \($0)" }
+    }
+
+    /// First pattern from `patterns` that occurs in `query`, compared case-insensitively.
+    ///
+    /// Both callers used to allocate a lowercased copy of the query AND a lowercased copy of
+    /// every pattern, on every keystroke-length message, on every turn.
+    /// `range(of:options:.caseInsensitive)` folds case during the comparison instead, so no
+    /// copies are made at all.
+    ///
+    /// Deliberately NOT cached in a `static let` of pre-lowercased patterns, the way
+    /// `piiRegexes` is: these two lists are the safety-critical ones and are overridable at
+    /// launch from `GuardRailRules.json`, so a cache that captured the built-in defaults before
+    /// the override loaded would silently enforce the wrong policy. That is a safety bug, not a
+    /// performance win.
+    private static func firstMatch(of patterns: [String], in query: String) -> String? {
+        patterns.first { pattern in
+            !pattern.isEmpty && query.range(of: pattern, options: .caseInsensitive) != nil
         }
-        
-        return nil
     }
     
-    /// Rule Group 4: Detect PII in query
-    private func detectPII(_ query: String) -> [String] {
-        var piiFound: [String] = []
-        
-        let range = NSRange(query.startIndex..<query.endIndex, in: query)
-        for (regex, label) in Self.piiRegexes {
-            let matches = regex.matches(in: query, options: [], range: range)
-            if !matches.isEmpty {
-                piiFound.append("Found \(label): \(matches.count) instance(s)")
-            }
-        }
-        
-        return piiFound
-    }
-    
-    /// Rule Group 4: Mask PII in query
-    private func maskPII(_ query: String) -> String {
+    /// Rule Group 4: mask PII and report what was found, in one scan per pattern.
+    ///
+    /// This replaces a `maskPII` + `detectPII` pair that each ran the full regex list over the
+    /// query separately — twice the scanning for one answer. Each pattern is now matched once
+    /// and the same match set is used both to count and to substitute.
+    ///
+    /// Substitution walks the matches in reverse so earlier ranges stay valid as later ones are
+    /// replaced. Counting against the progressively-masked text (rather than the pristine
+    /// query) also means one piece of PII nested inside another is reported once rather than
+    /// twice — the previous behaviour was double-reporting, not extra detection.
+    private static func maskAndDetectPII(in query: String) -> (masked: String, issues: [String]) {
         var masked = query
-        
-        for (regex, _) in Self.piiRegexes {
+        var issues: [String] = []
+
+        for (regex, label) in piiRegexes {
             let range = NSRange(masked.startIndex..<masked.endIndex, in: masked)
-            masked = regex.stringByReplacingMatches(in: masked, options: [], range: range, withTemplate: "[MASKED]")
+            let matches = regex.matches(in: masked, options: [], range: range)
+            guard !matches.isEmpty else { continue }
+
+            issues.append("Found \(label): \(matches.count) instance(s)")
+            for match in matches.reversed() {
+                guard let matchRange = Range(match.range, in: masked) else { continue }
+                masked.replaceSubrange(matchRange, with: "[MASKED]")
+            }
         }
-        
-        return masked
+
+        return (masked, issues)
     }
 }

@@ -9,7 +9,7 @@ import CoreML
 ///
 /// When either resource is absent, init() returns nil and SQLiteRetriever
 /// silently skips vector search, falling back to FTS-only retrieval.
-final class QueryEmbedder {
+nonisolated final class QueryEmbedder {
 
     private let model:     MLModel
     private let tokenizer: WordPieceTokenizer
