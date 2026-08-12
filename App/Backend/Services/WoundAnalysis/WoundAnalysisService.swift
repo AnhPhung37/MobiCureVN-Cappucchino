@@ -79,7 +79,10 @@ final class WoundAnalysisService {
         let request = LLMRequest(
             systemPrompt: Self.findingsSystemPrompt,
             userMessage: "Describe the visual findings in this photo.",
-            images: images
+            images: images,
+            // The KEY: value line set is a contract WoundFindingsParser reads positionally, so
+            // decode close to greedily — a renamed or reordered key yields empty fields.
+            options: .structuredDescription
         )
         let findings = await accumulate(stream: vlmService.stream(request: request))
         vlmService.unload()
