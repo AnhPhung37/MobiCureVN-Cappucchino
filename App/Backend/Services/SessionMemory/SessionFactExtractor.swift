@@ -46,7 +46,13 @@ nonisolated struct SessionFactExtractor {
         MESSAGE: \(trimmed)
         """
 
-        let stream = llmService.stream(request: LLMRequest(userMessage: prompt))
+        // Short JSON array, parsed strictly — greedy decoding, and a ceiling far below the
+        // answering budget so a model that starts explaining itself instead of emitting JSON is
+        // cut off rather than holding the shared ModelContainer for 1024 tokens.
+        let stream = llmService.stream(request: LLMRequest(
+            userMessage: prompt,
+            options: .extraction
+        ))
         var reply = ""
         for await token in stream {
             reply += token

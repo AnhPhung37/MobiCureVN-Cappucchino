@@ -241,20 +241,23 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                             height: Self.visionInputSide
                         )
                         let lmInput = try await container.prepare(input: input)
-                        // Lower temperature/topP than default: this is a medical Q&A assistant where
-                        // deterministic, on-language output matters more than lexical variety. Higher
-                        // values let the small multilingual model drift into English/Chinese/Thai mid-reply.
+                        // Sampling is per-REQUEST, not per-app. A user-facing answer keeps the
+                        // lower-than-default temperature/topP this assistant was tuned around
+                        // (higher values let the small multilingual model drift into
+                        // English/Chinese/Thai mid-reply); a one-word language classification or a
+                        // JSON extraction asks for a greedy, cheap preset instead of silently
+                        // inheriting a 1024-token answering budget. See `GenerationOptions`.
                         //
                         // KV-cache quantization and prefill step size are NOT set here yet. Their
                         // `GenerateParameters` field names have to be confirmed against the pinned
                         // mlx-swift-lm before they can be trusted — the values are already carried in
                         // `InferenceTuning.generation` so that wiring them is a one-line change per
                         // field. Follow Docs/BE/mlxApiVerification.md.
-                        let generation = Self.tuning.generation
+                        let options = request.options
                         let params = GenerateParameters(
-                            maxTokens: generation.maxTokens,
-                            temperature: generation.temperature,
-                            topP: generation.topP
+                            maxTokens: options.maxTokens,
+                            temperature: options.temperature,
+                            topP: options.topP
                         )
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
