@@ -148,7 +148,8 @@ final class ChatViewModel: ObservableObject {
                 content: message.content,
                 date: messageDates[index],
                 sources: message.sources,
-                imageData: message.imageData
+                imageData: message.imageData,
+                profileUpdateProposals: message.profileUpdateProposals
             )
         }
     }
@@ -175,12 +176,14 @@ final class ChatViewModel: ObservableObject {
         // Captures the sources retrieved during generation so citations can be attached
         // without a second retrieval (the orchestrator already retrieved this context).
         let sourcesBox = SourcesBox()
+        let profileUpdatesBox = ProfileUpdateProposalsBox()
         streamingTask = Task {
             let outcome = await streamResponse(
                 for: text,
                 images: attachedImageData,
                 assistantIndex: assistantIndex,
-                sourcesBox: sourcesBox
+                sourcesBox: sourcesBox,
+                profileUpdatesBox: profileUpdatesBox
             )
             // The validated answer only arrives at the very end, so a cancel (Stop button /
             // clear / switch) leaves `finalText` empty even when draft text was on screen.
@@ -190,7 +193,12 @@ final class ChatViewModel: ObservableObject {
                 handleCancelledGeneration(partialText: outcome.interruptedText, assistantIndex: assistantIndex)
                 return
             }
-            await finalizeResponse(outcome.finalText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+            await finalizeResponse(
+                outcome.finalText,
+                sources: sourcesBox.get(),
+                profileUpdateProposals: profileUpdatesBox.get(),
+                assistantIndex: assistantIndex
+            )
         }
     }
 
@@ -213,6 +221,7 @@ final class ChatViewModel: ObservableObject {
         rebuildSections()
 
         let sourcesBox = SourcesBox()
+        let profileUpdatesBox = ProfileUpdateProposalsBox()
         streamingTask = Task {
             processingState = .generating
             // analyzeWound also persists a structured WoundLogEntry (parsed findings + saved
@@ -236,13 +245,19 @@ final class ChatViewModel: ObservableObject {
                 for: query,
                 images: [],
                 assistantIndex: assistantIndex,
-                sourcesBox: sourcesBox
+                sourcesBox: sourcesBox,
+                profileUpdatesBox: profileUpdatesBox
             )
             guard !Task.isCancelled else {
                 handleCancelledGeneration(partialText: outcome.interruptedText, assistantIndex: assistantIndex)
                 return
             }
-            await finalizeResponse(outcome.finalText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+            await finalizeResponse(
+                outcome.finalText,
+                sources: sourcesBox.get(),
+                profileUpdateProposals: profileUpdatesBox.get(),
+                assistantIndex: assistantIndex
+            )
         }
     }
 
@@ -287,7 +302,13 @@ final class ChatViewModel: ObservableObject {
         var interruptedText: String { finalText.isEmpty ? draftText : finalText }
     }
 
-    private func streamResponse(for text: String, images: [Data], assistantIndex: Int, sourcesBox: SourcesBox) async -> StreamOutcome {
+    private func streamResponse(
+        for text: String,
+        images: [Data],
+        assistantIndex: Int,
+        sourcesBox: SourcesBox,
+        profileUpdatesBox: ProfileUpdateProposalsBox
+    ) async ->  StreamOutcome {
         var outcome = StreamOutcome()
         // dropLast(2) excludes the assistant placeholder AND the just-appended user message:
         // the current turn travels separately as `text` + `images`, so leaving it in history
@@ -297,7 +318,8 @@ final class ChatViewModel: ObservableObject {
             images: images,
             history: Array(messages.dropLast(2)),
             conversationId: currentConversationId,
-            onSourcesRetrieved: { sourcesBox.set($0) }
+            onSourcesRetrieved: { sourcesBox.set($0) },
+            onProfileUpdateProposed: { profileUpdatesBox.set($0) }
         )
         defer { streamingMessageID = nil }
 
@@ -329,7 +351,12 @@ final class ChatViewModel: ObservableObject {
         return outcome
     }
 
-    private func finalizeResponse(_ fullText: String, sources: [MedicalSource], assistantIndex: Int) async {
+    private func finalizeResponse(
+        _ fullText: String,
+        sources: [MedicalSource],
+        profileUpdateProposals: [ProposedProfileUpdate],
+        assistantIndex: Int
+    ) async {
         guard messages.indices.contains(assistantIndex) else {
             isLoading = false
             return
@@ -347,7 +374,12 @@ final class ChatViewModel: ObservableObject {
                 sources: sources
             )
             Task { try? await historyRepository.append(assistantItem) }
-            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: sources)
+            messages[assistantIndex] = ChatMessage(
+                role: "assistant",
+                content: fullText,
+                sources: sources,
+                profileUpdateProposals: profileUpdateProposals
+            )
         }
 
         rebuildSections()
@@ -375,6 +407,46 @@ final class ChatViewModel: ObservableObject {
             }
         } else {
             messages[assistantIndex] = ChatMessage(role: "assistant", content: partialText)
+        }
+        rebuildSections()
+    }
+
+    // MARK: - Profile Update Confirmation
+
+    /// Patient confirmed a proposed profile change: writes it through to the persisted
+    /// profile, resolves the pending record, and updates the inline card's local state.
+    func acceptProfileUpdate(_ update: ProposedProfileUpdate) async {
+        do {
+            let current = try await AppConfig.profileRepository.fetchProfile()
+            try await AppConfig.profileRepository.save(current.applying(update))
+            try await AppConfig.profileUpdateStore.resolve(id: update.id, status: .accepted)
+            updateLocalProposalStatus(id: update.id, status: .accepted)
+        } catch {
+            errorMessage = "Không thể lưu thay đổi hồ sơ. Vui lòng thử lại.".localized(for: .current)
+        }
+    }
+
+    /// Patient declined a proposed profile change — nothing is written to the profile.
+    func dismissProfileUpdate(_ update: ProposedProfileUpdate) async {
+        try? await AppConfig.profileUpdateStore.resolve(id: update.id, status: .dismissed)
+        updateLocalProposalStatus(id: update.id, status: .dismissed)
+    }
+
+    /// Finds the message carrying `id` among its proposals and marks it resolved, so the
+    /// inline card reflects the decision without re-fetching the whole conversation.
+    private func updateLocalProposalStatus(id: UUID, status: ProposedProfileUpdate.Status) {
+        for index in messages.indices {
+            guard let proposalIndex = messages[index].profileUpdateProposals.firstIndex(where: { $0.id == id }) else { continue }
+            var updatedProposals = messages[index].profileUpdateProposals
+            updatedProposals[proposalIndex].status = status
+            messages[index] = ChatMessage(
+                role: messages[index].role,
+                content: messages[index].content,
+                sources: messages[index].sources,
+                imageData: messages[index].imageData,
+                profileUpdateProposals: updatedProposals
+            )
+            break
         }
         rebuildSections()
     }
@@ -408,14 +480,44 @@ final class ChatViewModel: ObservableObject {
     func deleteConversation(_ conversationId: UUID) async {
         do {
             try await historyRepository.deleteConversation(id: conversationId)
+            // Facts the assistant remembered for this session are part of the conversation the
+            // patient just deleted — drop them too, or they'd keep feeding the system prompt.
+            await AppConfig.sessionFactStore.reset(conversationId)
             if currentConversationId == conversationId {
                 clearConversation()
             }
             await refreshConversationHistory()
         } catch {
-            await MainActor.run {
-                self.errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
+            errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
+        }
+    }
+
+    /// Wipes all stored conversations and starts a fresh, empty one.
+    func deleteAllConversations() async {
+        // Capture the ids before the wipe so each session's remembered facts can be cleared;
+        // the store is keyed by conversation id and has no "remove everything" entry point.
+        let existingIds = conversationSections.flatMap { $0.items.map(\.id) }
+        do {
+            try await historyRepository.deleteAllConversations()
+            for id in existingIds {
+                await AppConfig.sessionFactStore.reset(id)
             }
+            await AppConfig.sessionFactStore.reset(currentConversationId)
+            clearConversation()
+            await refreshConversationHistory()
+        } catch {
+            errorMessage = "Không thể xoá lịch sử trò chuyện.".localized(for: .current)
+        }
+    }
+
+    /// Renames a conversation. A blank title clears the override, restoring the automatic
+    /// title taken from the conversation's first message.
+    func renameConversation(_ conversationId: UUID, to title: String) async {
+        do {
+            try await historyRepository.renameConversation(id: conversationId, title: title)
+            await refreshConversationHistory()
+        } catch {
+            errorMessage = "Không thể đổi tên cuộc trò chuyện này.".localized(for: .current)
         }
     }
 
@@ -478,6 +580,22 @@ private nonisolated final class SourcesBox: @unchecked Sendable {
     }
 
     func get() -> [MedicalSource] {
+        lock.lock(); defer { lock.unlock() }; return value
+    }
+}
+
+/// Thread-safe holder that carries the profile-update proposals generated on the (background)
+/// generation task back to this @MainActor view model once streaming completes. Mirrors
+/// `SourcesBox`.
+private nonisolated final class ProfileUpdateProposalsBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: [ProposedProfileUpdate] = []
+
+    func set(_ newValue: [ProposedProfileUpdate]) {
+        lock.lock(); value = newValue; lock.unlock()
+    }
+
+    func get() -> [ProposedProfileUpdate] {
         lock.lock(); defer { lock.unlock() }; return value
     }
 }

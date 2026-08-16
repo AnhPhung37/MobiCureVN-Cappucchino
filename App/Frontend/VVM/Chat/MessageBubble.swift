@@ -11,6 +11,8 @@ import SwiftUI
 struct MessageBubble: View {
 
     let message: ChatMessage
+    var onAcceptProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
+    var onDismissProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
     /// True while this bubble is showing draft text the model is still writing. The text is raw
     /// decoder output that no guardrail has validated yet and will be replaced wholesale by the
     /// final answer, so it is marked with a caret rather than presented as a finished reply.
@@ -41,10 +43,23 @@ struct MessageBubble: View {
                     } else if message.content.isEmpty {
                         TypingIndicator()
                     } else {
-                        markdownText(message.content, showsCaret: isStreaming)
-                            .appFont(size: 16, weight: .regular, design: .rounded)
-                            .foregroundColor(Color(.label))
-                            .textSelection(.enabled)
+                        // Proposals live INSIDE the bubble, under the reply text, so an offer to
+                        // remember something reads as part of what the assistant just said
+                        // rather than as a separate widget parked underneath it.
+                        VStack(alignment: .leading, spacing: 0) {
+                            markdownText(message.content, showsCaret: isStreaming)
+                                .appFont(size: 16, weight: .regular, design: .rounded)
+                                .foregroundColor(Color(.label))
+                                .textSelection(.enabled)
+
+                            if !message.profileUpdateProposals.isEmpty {
+                                ProfileUpdateConfirmationCard(
+                                    updates: message.profileUpdateProposals,
+                                    onAccept: onAcceptProfileUpdate,
+                                    onDismiss: onDismissProfileUpdate
+                                )
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 14)
