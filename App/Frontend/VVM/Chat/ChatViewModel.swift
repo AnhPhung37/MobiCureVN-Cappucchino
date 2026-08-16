@@ -52,13 +52,22 @@ final class ChatViewModel: ObservableObject {
     /// as still being written. `nil` whenever nothing is streaming.
     @Published private(set) var streamingMessageID: UUID?
 
+    /// True while the mic is actively listening and transcribing into `inputText`.
+    @Published private(set) var isListening: Bool = false
+
     // MARK: - Dependencies
 
     private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
+    private let speechService: SpeechRecognitionServiceProtocol
     @Published private(set) var currentConversationId: UUID = UUID()
 
     private var streamingTask: Task<Void, Never>?
+    private var voiceTask: Task<Void, Never>?
+    /// `inputText` as it stood right before the mic started — voice input appends to it (like
+    /// iOS's own keyboard dictation) rather than clobbering an in-progress draft, since each
+    /// yielded transcript is the FULL current utterance and gets concatenated onto this base.
+    private var voiceInputBaseText: String = ""
     private var cancellables: Set<AnyCancellable> = []
 
     private var messageDates: [Date] = []
@@ -72,7 +81,8 @@ final class ChatViewModel: ObservableObject {
 
     init(
         llmService: LLMServiceProtocol? = nil,
-        historyRepository: ChatHistoryRepository? = nil
+        historyRepository: ChatHistoryRepository? = nil,
+        speechService: SpeechRecognitionServiceProtocol? = nil
     ) {
         let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.chatService = ChatService(
@@ -80,6 +90,7 @@ final class ChatViewModel: ObservableObject {
             translationService: AppConfig.translationService
         )
         self.historyRepository = historyRepository ?? AppConfig.chatHistoryRepository
+        self.speechService = speechService ?? SpeechRecognitionService()
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
@@ -167,6 +178,7 @@ final class ChatViewModel: ObservableObject {
     ) {
         let text = (prompt ?? inputText).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isLoading else { return }
+        stopVoiceInput()
 
         let bubbleText = (displayContent ?? text).trimmingCharacters(in: .whitespacesAndNewlines)
         appendUserMessage(bubbleText, imageData: attachedImageData)
@@ -460,6 +472,7 @@ final class ChatViewModel: ObservableObject {
 
     func clearConversation() {
         cancelStreaming()
+        stopVoiceInput()
         messages = []
         messageDates = []
         messageIDs = []
@@ -468,7 +481,57 @@ final class ChatViewModel: ObservableObject {
         currentConversationId = UUID()
     }
 
+    // MARK: - Voice Input
+
+    func toggleVoiceInput() {
+        if isListening {
+            stopVoiceInput()
+        } else {
+            startVoiceInput()
+        }
+    }
+
+    private func startVoiceInput() {
+        guard !isListening, !isLoading else { return }
+
+        let existing = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        voiceInputBaseText = existing.isEmpty ? "" : existing + " "
+
+        voiceTask = Task {
+            guard await speechService.requestAuthorization() else {
+                errorMessage = "Cần quyền micro và nhận dạng giọng nói để dùng tính năng này.".localized(for: .current)
+                return
+            }
+            guard !Task.isCancelled else { return }
+
+            isListening = true
+            // Vietnamese/English only, matching the app's language toggle — there's no third
+            // UI language to speak in.
+            let locale = Locale(identifier: AppLanguage.current == .vietnamese ? "vi-VN" : "en-US")
+            do {
+                for try await transcript in speechService.startTranscribing(locale: locale) {
+                    guard !Task.isCancelled else { break }
+                    inputText = voiceInputBaseText + transcript
+                }
+            } catch {
+                if !Task.isCancelled {
+                    errorMessage = error.localizedDescription
+                }
+            }
+            isListening = false
+        }
+    }
+
+    func stopVoiceInput() {
+        guard isListening else { return }
+        speechService.stop()
+        voiceTask?.cancel()
+        voiceTask = nil
+        isListening = false
+    }
+
     func loadConversation(_ conversationId: UUID) async {
+        stopVoiceInput()
         currentConversationId = conversationId
         let items = (try? await historyRepository.loadHistory(conversationId: conversationId)) ?? []
         await MainActor.run {

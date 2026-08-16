@@ -845,7 +845,22 @@ struct ChatWorkspaceView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 8)
                     ForEach(section.items) { item in
-                        MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData))
+                        MessageBubble(
+                            message: ChatMessage(
+                                role: item.role,
+                                content: item.content,
+                                sources: item.sources,
+                                imageData: item.imageData,
+                                profileUpdateProposals: item.profileUpdateProposals
+                            ),
+                            onAcceptProfileUpdate: { update in
+                                Task { await viewModel.acceptProfileUpdate(update) }
+                            },
+                            onDismissProfileUpdate: { update in
+                                Task { await viewModel.dismissProfileUpdate(update) }
+                            },
+                            isStreaming: item.id == viewModel.streamingMessageID
+                        )
                     }
                 }
             }
@@ -870,7 +885,23 @@ struct ChatWorkspaceView: View {
                 }
                 .accessibilityLabel("Attach image")
 
-                TextField("Mô tả triệu chứng hoặc đặt câu hỏi...", text: $viewModel.inputText, axis: .vertical)
+                Button {
+                    viewModel.toggleVoiceInput()
+                } label: {
+                    Image(systemName: viewModel.isListening ? "waveform" : "mic.fill")
+                        .appFont(size: 16, weight: .semibold)
+                        .foregroundColor(viewModel.isListening ? .white : Color(.secondaryLabel))
+                        .frame(width: 38, height: 38)
+                        .background(Circle().fill(viewModel.isListening ? Color.red : Color(.secondarySystemBackground)))
+                        .symbolEffect(.variableColor.iterative, isActive: viewModel.isListening)
+                }
+                // Recording while the model is mid-answer would fight the same audio session
+                // for no benefit, so the mic is only available when the composer is otherwise
+                // usable.
+                .disabled(viewModel.isLoading)
+                .accessibilityLabel(viewModel.isListening ? "Dừng nhập giọng nói" : "Nhập bằng giọng nói")
+
+                TextField(viewModel.isListening ? "Đang nghe..." : "Mô tả triệu chứng hoặc đặt câu hỏi...", text: $viewModel.inputText, axis: .vertical)
                     .appFont(size: 16)
                     .lineLimit(1...5)
                     .focused($inputFocused)

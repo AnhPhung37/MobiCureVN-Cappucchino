@@ -42,7 +42,6 @@ struct ProfileView: View {
                         notesCard(title: "Care notes", items: profile.careNotes, icon: "checkmark.circle.fill")
                         notesCard(title: "Warning signs", items: profile.warningSigns, icon: "exclamationmark.triangle.fill")
                         rememberedFactsCard
-                        pendingUpdatesCard
                         highStakesHistoryCard
                         woundPhotosCard
                         sourceCard(profile)
@@ -316,54 +315,6 @@ struct ProfileView: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
         )
-    }
-
-    // MARK: - Pending Profile Updates
-    //
-    // AI-proposed updates from chat, awaiting confirmation. The durable fallback surface — a
-    // proposal shown here even if the patient never acted on the inline chat card, since this
-    // reads straight from AppConfig.profileUpdateStore rather than the current conversation.
-
-    @ViewBuilder
-    private var pendingUpdatesCard: some View {
-        if !viewModel.pendingUpdates.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 8) {
-                    Image(systemName: "wand.and.stars")
-                        .foregroundColor(.cyan)
-                    Text(t("Đề xuất cập nhật hồ sơ"))
-                        .font(.headline)
-                    Spacer()
-                    Text("\(viewModel.pendingUpdates.count)")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.cyan)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Capsule().fill(Color.cyan.opacity(0.15)))
-                }
-
-                Text(t("Trợ lý nhận thấy những thông tin này từ cuộc trò chuyện. Xác nhận để cập nhật hồ sơ của bạn."))
-                    .font(.system(size: 12))
-                    .foregroundColor(Color(.secondaryLabel))
-                    .fixedSize(horizontal: false, vertical: true)
-
-                VStack(spacing: 8) {
-                    ForEach(viewModel.pendingUpdates) { update in
-                        ProfileUpdateRow(
-                            update: update,
-                            onAccept: { proposal in Task { await viewModel.accept(proposal) } },
-                            onDismiss: { proposal in Task { await viewModel.dismiss(proposal) } }
-                        )
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
-        }
     }
 
     // MARK: - Clinical Change History
