@@ -1,0 +1,30 @@
+{
+  "profileName": "bundled-default",
+  "generation": {
+    "maxTokens": 1024,
+    "temperature": 0.3,
+    "topP": 0.85,
+    "auxiliaryMaxTokens": 64,
+    "kvBits": null,
+    "kvGroupSize": null,
+    "quantizedKVStart": null,
+    "maxKVSize": null,
+    "prefillStepSize": null
+  },
+  "prompt": {
+    "contextTokenBudget": 600,
+    "historyTokenBudget": 500,
+    "assistantReplayWordCap": 60,
+    "wordsToTokensRatio": 1.4
+  },
+  "vision": {
+    "inputSide": 512,
+    "historyImageTurnCap": 2
+  },
+  "memory": {
+    "metalCacheFraction": 0.08,
+    "metalCacheFloorMB": 256,
+    "metalCacheCeilingMB": 1024,
+    "tokenStreamBufferLimit": 512
+  }
+}
