@@ -163,7 +163,12 @@ final class MedicalChatOrchestrator {
                     "4 · LLM generation", since: stageMark, detail: generationStats.summary
                 )
 
+                // The complete answer is patient-facing medical text derived from the user's own
+                // message; it must not be written to the device log in a release build. Even in
+                // DEBUG, ChatFlowLog's elided one-line sample is usually the better tool.
+                #if DEBUG
                 print("=== LLM Response ===\n\(accumulatedResponse)\n====================")
+                #endif
 
                 // Step 5: Final Output GuardRail Check
                 let outputResult = outputGuardRail.validate(
@@ -310,6 +315,10 @@ final class MedicalChatOrchestrator {
 
     /// Logs the elapsed time for a pipeline stage and returns "now" so the caller can chain
     /// the next measurement. `detail` appends extra context (e.g. generation throughput).
+    ///
+    /// DEBUG-only output, matching the rule `ChatFlowLog` already applies to itself: a release
+    /// build should not pay for `String(format:)` plus a console write on every stage of every
+    /// turn. The mark is still returned in release, so call-site chaining is identical.
     @discardableResult
     private static func logStage(
         _ name: String,
@@ -317,9 +326,11 @@ final class MedicalChatOrchestrator {
         detail: String? = nil
     ) -> DispatchTime {
         let now = DispatchTime.now()
+        #if DEBUG
         let elapsed = seconds(from: mark, to: now)
         let suffix = detail.map { " — \($0)" } ?? ""
         print(String(format: "⏱️ [Orchestrator] %@: %.3fs%@", name, elapsed, suffix))
+        #endif
         return now
     }
 
@@ -333,6 +344,11 @@ final class MedicalChatOrchestrator {
         /// History trimmed to `historyTokenBudget`, with assistant turns condensed.
         let history: [ChatMessage]
     }
+
+    /// Prompt budgets come from `InferenceTuning`, which loads them from a JSON file at launch
+    /// rather than compiling them in — so a sweep over context/history size is a file edit and
+    /// a relaunch, not a rebuild. See `Docs/BE/inferenceTuning.md`.
+    private static var tuning: InferenceTuning.Prompt { InferenceTuning.current.prompt }
 
     // Token budget for RAG context injected into the system prompt.
     // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
@@ -352,12 +368,12 @@ final class MedicalChatOrchestrator {
     // full medical answers differ by an order of magnitude in prefill cost, and it is the
     // tokens — not the turns — that the model has to re-read on every message. Budgeting by
     // tokens bounds history growth directly, whatever shape the conversation takes.
-    private static let historyTokenBudget = 500
+    private static var historyTokenBudget: Int { tuning.historyTokenBudget }
     // Word cap applied to an assistant turn before it is replayed to the model. The full text
     // stays in the UI and in storage; only the copy fed back into the prompt is shortened.
     // Continuity needs the gist of what was already said, not the markdown headings, bullet
     // lists, and disclaimers that make up most of a long answer's length.
-    private static let assistantReplayWordCap = 60
+    private static var assistantReplayWordCap: Int { tuning.assistantReplayWordCap }
 
     private func buildEnrichedPrompt(
         userQuery: String,
@@ -431,9 +447,47 @@ final class MedicalChatOrchestrator {
         - Do NOT answer questions that are clearly unrelated to health or medicine.
         """ : ""
 
+        // The system prompt is assembled from three segments, in increasing order of how often
+        // they change. Keeping that order — and keeping the invariant block genuinely invariant
+        // — is what makes a prefix KV cache possible later; until then it at least stops the
+        // prompt from being one 2k-token string that has to be re-read to be understood.
+        //
+        //   1. languageDirective — changes only when the user switches language
+        //   2. Self.invariantSystemPrompt — never changes at runtime
+        //   3. everything below — changes every single turn (context, facts, confidence)
         let systemPrompt = """
         LANGUAGE: \(languageInstruction)
 
+        \(Self.invariantSystemPrompt)\(contextLanguageNote)\(noContextInstruction)\(memorySection)
+
+        Retrieved Medical Context:
+        \(formatContextChunks(budgetedChunks))
+
+        Sources:
+        \(formatSources(context.sources))
+
+        Confidence Score: \(String(format: "%.0f%%", context.confidenceScore * 100))
+
+        REMINDER — \(languageInstruction)
+        """
+
+        // Trim history by token budget rather than turn count, so a few long answers cost the
+        // same prefill as many short ones. Older context is less useful for a 3B model and
+        // significantly increases prefill time.
+        let budgetedHistory = applyHistoryBudget(history, budget: Self.historyTokenBudget)
+
+        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
+    }
+
+    /// Segment 2 of the system prompt: persona and constraints that never vary at runtime.
+    ///
+    /// The language directive deliberately does NOT appear here. It used to be stated three
+    /// times (opening line, a constraint bullet, and the closing reminder); the middle copy was
+    /// dropped because the opening and the reminder are the two positions a small model
+    /// actually attends to, and the third repetition was paying tokens on every turn for the
+    /// same instruction. `LanguageDriftTests` / `OutputGuardRailVietnameseTests` are the
+    /// regression check if this turns out to have been load-bearing.
+    private static let invariantSystemPrompt = """
         You are a warm, supportive medical informational assistant for colorectal cancer patients
         and their families — many of them elderly or recovering from surgery. Speak naturally and
         kindly, the way a caring nurse would. Your role is to provide educational health information.
@@ -448,7 +502,6 @@ final class MedicalChatOrchestrator {
           as continuations of the current health topic.
 
         IMPORTANT CONSTRAINTS:
-        - \(languageInstruction)
         - You are NOT a licensed physician and cannot provide medical diagnosis or treatment plans.
         - Prefer the Retrieved Medical Context below when it is available — cite it and use it as the primary source.
         - The Retrieved Medical Context describes colorectal care in general; it is NOT this patient's
@@ -660,11 +713,24 @@ final class MedicalChatOrchestrator {
         )
     }
 
-    /// Rough token estimate: whitespace-separated word count. Deliberately not the tokenizer —
-    /// this runs on every turn for budgeting only, where being cheap matters more than being
-    /// exact, and word count under-counts consistently enough to keep the budget conservative.
+    /// Words-to-tokens ratio used to convert a cheap word count into a token estimate.
+    ///
+    /// English medical prose runs roughly 1.3–1.5 subword tokens per whitespace word on a
+    /// Qwen-class tokenizer (clinical vocabulary and numbers split more than everyday text),
+    /// and Vietnamese runs higher still. 1.4 is the middle of that range.
+    private static var wordsToTokensRatio: Double { tuning.wordsToTokensRatio }
+
+    /// Rough token estimate. Deliberately not the real tokenizer — this runs on every turn for
+    /// budgeting only, where being cheap matters more than being exact.
+    ///
+    /// It used to return the raw word count, which meant the "600-token" context budget was
+    /// really letting through ~840 tokens and the "500-token" history budget ~700. The budgets
+    /// now mean what they say, which does trim what reaches the model — that is the intended
+    /// prefill saving, and it is the number to re-tune (not the estimator) if retrieval quality
+    /// drops. See Docs/BE/optimizationChecklist.md B2.6.
     private static func estimateTokens(_ text: String) -> Int {
-        text.split { $0.isWhitespace }.count
+        let words = text.split { $0.isWhitespace }.count
+        return Int((Double(words) * wordsToTokensRatio).rounded(.up))
     }
 
 
@@ -673,14 +739,13 @@ final class MedicalChatOrchestrator {
             return "[No relevant medical context found]"
         }
         
-        return chunks.enumerated().map { index, chunk in
+        // One short label per chunk instead of a rule line plus a numbered heading: the model
+        // needs to know where one passage ends and the next begins, not that this is passage
+        // three of five. The old form spent tens of tokens per turn on that framing.
+        return chunks.map { chunk in
             let sectionLabel = chunk.section.isEmpty ? "General" : chunk.section
-            return """
-            ---
-            Context \(index + 1) (\(sectionLabel)):
-            \(chunk.content)
-            """
-        }.joined(separator: "\n")
+            return "[\(sectionLabel)]\n\(chunk.content)"
+        }.joined(separator: "\n\n")
     }
     
     private func formatSources(_ sources: [MedicalSource]) -> String {

@@ -50,7 +50,10 @@ final class WoundAnalysisService {
     /// Runs the VLM over the attached photo(s), returns its structured findings text, and
     /// persists a structured `WoundLogEntry` to `repository`.
     ///
-    /// Sequencing: unloads whatever model is currently resident in `AppConfig.llmService`,
+    /// Sequencing: when the resident model is itself vision-capable there is no swap at all —
+    /// the photo goes straight to it. Only a text-only resident model triggers the swap below.
+    ///
+    /// Swap path: unloads whatever model is currently resident in `AppConfig.llmService`,
     /// loads the wound VLM and awaits it, runs inference, unloads the VLM, then reloads
     /// `AppConfig.selectedModel` (the user's chosen text model) and awaits that too before
     /// returning — so by the time this call completes, `AppConfig.llmService` is back to a
@@ -67,6 +70,34 @@ final class WoundAnalysisService {
     ) async -> AnalysisResult {
         guard !images.isEmpty else { return AnalysisResult(findings: "", entry: nil) }
 
+        let request = LLMRequest(
+            systemPrompt: Self.findingsSystemPrompt,
+            userMessage: "Describe the visual findings in this photo.",
+            images: images,
+            // The KEY: value line set is a contract WoundFindingsParser reads positionally, so
+            // decode close to greedily — a renamed or reordered key yields empty fields.
+            options: .structuredDescription
+        )
+
+        // Fast path: the resident model can already see, so there is nothing to swap. The
+        // catalog default (Qwen 3.5 4B) is vision-capable, which makes this the common case —
+        // and the swap it avoids is not cheap: unload, read a multi-GB model off disk, init
+        // Metal, generate, unload, then read the text model back in. `isVisionModel` is read
+        // from the loaded weights' own config.json rather than from the catalog, so this
+        // follows what is actually resident even if the catalog metadata drifts.
+        if let resident = AppConfig.llmService as? LLMService, resident.isVisionModel {
+            let findings = await accumulate(stream: resident.stream(request: request))
+            return await finish(
+                findings: findings,
+                images: images,
+                modelUsed: AppConfig.selectedModel.repoID,
+                patientID: patientID,
+                repository: repository
+            )
+        }
+
+        // Slow path: a text-only model is resident. Borrow the VLM, then put the user's chosen
+        // text model back so the caller can run a normal chat turn straight afterwards.
         let previousModel = AppConfig.selectedModel
 
         guard let vlmService = await loadModel(Self.woundVLM) else {
@@ -79,13 +110,35 @@ final class WoundAnalysisService {
         let request = LLMRequest(
             systemPrompt: Self.findingsSystemPrompt,
             userMessage: "Describe the visual findings in this photo.",
-            images: images
+            images: images,
+            // The KEY: value line set is a contract WoundFindingsParser reads positionally, so
+            // decode close to greedily — a renamed or reordered key yields empty fields.
+            options: .structuredDescription
         )
         let findings = await accumulate(stream: vlmService.stream(request: request))
         vlmService.unload()
 
         _ = await loadModel(previousModel)
 
+        return await finish(
+            findings: findings,
+            images: images,
+            modelUsed: Self.woundVLM.repoID,
+            patientID: patientID,
+            repository: repository
+        )
+    }
+
+    /// Shared tail of both paths above: bail out on empty findings, otherwise persist and
+    /// return. `modelUsed` is recorded on the entry, so it must name the model that actually
+    /// produced `findings` — which is no longer always `woundVLM`.
+    private static func finish(
+        findings: String,
+        images: [Data],
+        modelUsed: String,
+        patientID: UUID,
+        repository: WoundLogRepository
+    ) async -> AnalysisResult {
         guard !findings.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return AnalysisResult(findings: findings, entry: nil)
         }
@@ -93,6 +146,7 @@ final class WoundAnalysisService {
         let entry = await persistEntry(
             findings: findings,
             photo: images[0],
+            modelUsed: modelUsed,
             patientID: patientID,
             repository: repository
         )
@@ -105,6 +159,7 @@ final class WoundAnalysisService {
     private static func persistEntry(
         findings: String,
         photo: Data,
+        modelUsed: String,
         patientID: UUID,
         repository: WoundLogRepository
     ) async -> WoundLogEntry? {
@@ -132,7 +187,7 @@ final class WoundAnalysisService {
             otherObservations: parsed.otherObservations,
             rawDescription: findings,
             flaggedForReview: parsed.flaggedForReview,
-            modelUsed: Self.woundVLM.repoID
+            modelUsed: modelUsed
         )
 
         do {

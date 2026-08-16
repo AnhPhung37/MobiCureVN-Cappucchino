@@ -227,7 +227,12 @@ nonisolated final class LanguageValidationService {
         TEXT: \(trimmed)
         """
 
-        let stream = llmService.stream(request: LLMRequest(userMessage: prompt))
+        // One word is the whole expected output; `.classification` is greedy and capped
+        // accordingly instead of inheriting a 1024-token answering budget.
+        let stream = llmService.stream(request: LLMRequest(
+            userMessage: prompt,
+            options: .classification
+        ))
         var reply = ""
         for await token in stream {
             reply += token
@@ -354,7 +359,12 @@ nonisolated final class LanguageValidationService {
         TEXT: \(trimmed)
         """
 
-        let stream = llmService.stream(request: LLMRequest(userMessage: prompt))
+        // A rewrite is about as long as its input, so the ceiling scales with it rather than
+        // sitting at the answering budget.
+        let stream = llmService.stream(request: LLMRequest(
+            userMessage: prompt,
+            options: .rewrite(inputLength: trimmed.count)
+        ))
         var reply = ""
         for await token in stream {
             reply += token
