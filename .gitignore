@@ -11,7 +11,11 @@ DerivedData/
 # Swift Package Manager
 .build/
 .swiftpm/
-Package.resolved
+# Package.resolved is intentionally NOT ignored: the MLX packages are pinned only to a major
+# version (upToNextMajorVersion), so without the lockfile two machines can resolve different
+# minor versions — which makes on-device performance numbers non-reproducible across the team.
+# Commit the file Xcode generates at
+# MobiCureVN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 # Python / MLX Environments
 env/
