@@ -52,19 +52,14 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
     func stream(request: LLMRequest) -> AsyncStream<String> {
         AsyncStream<String>(bufferingPolicy: .unbounded) { continuation in
             let task = Task {
-                let instructions = request.systemPrompt
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                // Instructions carry the developer prompt; the session's own transcript stays
-                // empty because we build a fresh session per request (each request is
-                // self-contained and already carries the history it wants).
-                let session = instructions.isEmpty
-                    ? LanguageModelSession()
-                    : LanguageModelSession(instructions: instructions)
-
-                let prompt = Self.buildPrompt(
-                    history: request.conversationHistory,
-                    user: request.userMessage
+                // Each request is self-contained — callers trim and enrich the history
+                // themselves — so a fresh session is built per request, seeded with that
+                // history rather than carrying its own across calls.
+                let session = Self.makeSession(
+                    instructions: request.systemPrompt,
+                    history: request.conversationHistory
                 )
+                let prompt = request.userMessage
 
                 do {
                     // Snapshots are cumulative — the protocol's consumers concatenate what they
@@ -94,19 +89,47 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
 
     // MARK: - Private
 
-    /// Flatten prior turns into the prompt. `LanguageModelSession` normally keeps history in its
-    /// own transcript, but `LLMRequest` is the source of truth here (callers trim and enrich the
-    /// history themselves), so each request gets a fresh session and carries its context inline.
-    private static func buildPrompt(history: [ChatMessage], user: String) -> String {
-        let turns = history.compactMap { msg -> String? in
-            let content = msg.content.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !content.isEmpty else { return nil }
-            let role = msg.role.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            return role == "assistant" ? "Assistant: \(content)" : "User: \(content)"
+    /// Builds a session carrying `instructions` in the developer role and `history` as real
+    /// prior turns.
+    ///
+    /// This previously flattened history into the prompt as literal `"User: …\nAssistant: …"`
+    /// text. That reads to the model as a single user turn *quoting a transcript*, not as a
+    /// conversation: role boundaries become ordinary words the model can ignore, contradict, or
+    /// continue in the wrong voice, and any user text containing "Assistant:" is indistinguishable
+    /// from a real turn. Seeding a `Transcript` keeps each turn in its own role — the same thing
+    /// the MLX path has always done via `Chat.Message` in `LLMService.buildChat`.
+    private static func makeSession(
+        instructions: String,
+        history: [ChatMessage]
+    ) -> LanguageModelSession {
+        var entries: [Transcript.Entry] = []
+
+        let trimmedInstructions = instructions.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedInstructions.isEmpty {
+            entries.append(.instructions(Transcript.Instructions(
+                segments: [.text(Transcript.TextSegment(content: trimmedInstructions))],
+                toolDefinitions: []
+            )))
         }
 
-        guard !turns.isEmpty else { return user }
-        return turns.joined(separator: "\n") + "\nUser: \(user)"
+        for message in history {
+            let content = message.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !content.isEmpty else { continue }
+            let segment = Transcript.Segment.text(Transcript.TextSegment(content: content))
+            let role = message.role.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            // Only user/assistant turns belong in a transcript; anything else is coerced to a
+            // prompt so no unknown role reaches the model — mirrors `LLMService.buildChat`.
+            if role == "assistant" {
+                entries.append(.response(Transcript.Response(assetIDs: [], segments: [segment])))
+            } else {
+                entries.append(.prompt(Transcript.Prompt(segments: [segment])))
+            }
+        }
+
+        // `init(transcript:)` and `init(instructions:)` are mutually exclusive — instructions
+        // travel as the transcript's first entry above, which is the same thing the string
+        // initializer does internally.
+        return LanguageModelSession(transcript: Transcript(entries: entries))
     }
 
     /// New text in `snapshot` relative to what was already emitted. Streaming is append-only in
@@ -118,5 +141,30 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
         }
         let common = snapshot.commonPrefix(with: previous)
         return String(snapshot.dropFirst(common.count))
+    }
+}
+
+// MARK: - StructuredLLMService
+
+@available(iOS 26.0, *)
+extension FoundationModelsService: StructuredLLMService {
+
+    /// Guided generation: the decoder is constrained to `Content`'s schema, so the result always
+    /// decodes. No `<think>` stripping, no brace-balancing to find the JSON, no tolerant decoding
+    /// of string-or-number — the failure modes those guard against cannot occur here.
+    func respond<Content: Generable>(
+        to prompt: String,
+        instructions: String,
+        generating: Content.Type
+    ) async throws -> Content {
+        let session = Self.makeSession(instructions: instructions, history: [])
+        let response = try await session.respond(
+            to: prompt,
+            generating: Content.self,
+            // Extraction, not composition: the same message must yield the same facts on every
+            // run, so sampling is pinned to greedy rather than left at the framework default.
+            options: GenerationOptions(sampling: .greedy)
+        )
+        return response.content
     }
 }

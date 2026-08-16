@@ -54,6 +54,33 @@ nonisolated struct ProfileUpdateExtractor {
         var isHighStakes: Bool { field == .diagnosis || field == .procedure || field == .recoveryStage }
     }
 
+    /// The field rules, minus any output-format instructions — the schema supplies those on the
+    /// guided path. Developer-role content, so a message that quotes instructions (or names a
+    /// field it wants set) can't override them.
+    ///
+    /// The `currentProfile` summary deliberately stays in the *user* turn rather than here: it is
+    /// per-turn data, not a rule, and keeping instructions constant is what lets the framework
+    /// reuse its prefix across calls.
+    private static let guidedInstructions = """
+    The patient has just sent a message. Identify any information about the patient that should \
+    update their profile — ONLY when the user is explicitly stating a new fact about themselves, \
+    a correction, or something a clinician told them. Do NOT propose a change for information \
+    that already matches what's on file, general questions, greetings, or symptom talk that \
+    isn't a stated fact.
+
+    Field rules:
+    - "diagnosis", "procedure", "recoveryStage" may ONLY be proposed when the user is stating an \
+    EXPLICIT correction or a clinician-reported update (e.g. "my doctor changed my diagnosis \
+    to...", "the surgery was actually a..."). NEVER infer these from symptoms, feelings, or \
+    casual remarks.
+    - "wound_location" replaces the current wound location.
+    - "care_note_add", "warning_sign_add", "allergy_add", "medication_add", "condition_add" each \
+    propose ADDING one new item to that list — never propose replacing or repeating the whole list.
+    - "name", "age", "gender", "reportSummary" replace the current value.
+
+    When nothing qualifies, return no updates at all rather than inventing any.
+    """
+
     /// Propose zero or more profile-field updates from `userText`, given the profile currently
     /// on file. Returns `[]` when nothing durable/new is stated, when the model returns
     /// unparseable output, or when generation fails.
@@ -64,6 +91,23 @@ nonisolated struct ProfileUpdateExtractor {
     ) async -> [FieldProposal] {
         let trimmed = userText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
+
+        // Guided path — see the equivalent block in `SessionFactExtractor.extract` for the
+        // rationale and the fallback contract.
+        if #available(iOS 26.0, *), let structured = llmService as? any StructuredLLMService {
+            if let extracted = try? await structured.respond(
+                to: """
+                The patient's CURRENT profile on file:
+                \(Self.summarize(currentProfile))
+
+                MESSAGE: \(trimmed)
+                """,
+                instructions: Self.guidedInstructions,
+                generating: ExtractedProfileUpdates.self
+            ) {
+                return Self.proposals(from: extracted)
+            }
+        }
 
         let prompt = """
         The patient's CURRENT profile on file:
@@ -106,6 +150,19 @@ nonisolated struct ProfileUpdateExtractor {
     }
 
     // MARK: - Private
+
+    /// Map a schema-constrained result onto `FieldProposal`. Reuses `field(named:)` so both paths
+    /// resolve field names identically; the schema has already restricted generation to the known
+    /// names, so the `nil` branch here is unreachable in practice rather than a real failure mode.
+    @available(iOS 26.0, *)
+    private static func proposals(from extracted: ExtractedProfileUpdates) -> [FieldProposal] {
+        extracted.updates.compactMap { item in
+            guard let field = field(named: item.field) else { return nil }
+            let value = item.value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !value.isEmpty else { return nil }
+            return FieldProposal(field: field, newValue: value)
+        }
+    }
 
     /// Compact, human-readable summary of the current profile for the extraction prompt —
     /// empty fields are omitted so a mostly-blank profile doesn't pad the prompt.

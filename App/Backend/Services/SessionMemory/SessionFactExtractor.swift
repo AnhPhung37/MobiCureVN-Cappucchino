@@ -15,6 +15,26 @@ import Foundation
 /// remembered profile.
 nonisolated struct SessionFactExtractor {
 
+    /// The fact categories this extractor recognizes. Shared by both paths: the guided schema
+    /// constrains generation to exactly these (see `ExtractedSessionFact`), and the free-text
+    /// prompt below lists them.
+    static let factKeys = [
+        "name", "age", "sex", "allergy", "wound_location", "medication", "condition"
+    ]
+
+    /// Extraction rules, minus any output-format instructions — the schema supplies those on the
+    /// guided path. Developer-role content, so a message that quotes instructions can't override
+    /// them.
+    private static let guidedInstructions = """
+    Extract durable facts the user states ABOUT THEMSELVES from the message: their name, age, \
+    sex, allergies, current wound or injury location, ongoing medications, and relevant medical \
+    conditions.
+
+    Only include facts the user explicitly states about themselves. Ignore general questions, \
+    greetings, and anything not about the user. When the message states no such facts, return \
+    no facts at all rather than inventing any.
+    """
+
     /// Extract zero or more facts from `userText`. Returns `[]` when the turn states nothing
     /// durable, when the model returns unparseable output, or when generation fails.
     func extract(
@@ -24,6 +44,20 @@ nonisolated struct SessionFactExtractor {
         let trimmed = userText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
 
+        // Guided path: schema-constrained decoding, so the result always parses. Only available
+        // when the backend is Apple's system model (`AppConfig.utilityLLMService` picks it when
+        // it can serve). Any throw — guardrail refusal, context overflow, assets unavailable —
+        // falls through to the text path below rather than failing the turn.
+        if #available(iOS 26.0, *), let structured = llmService as? any StructuredLLMService {
+            if let extracted = try? await structured.respond(
+                to: "MESSAGE: \(trimmed)",
+                instructions: Self.guidedInstructions,
+                generating: ExtractedSessionFacts.self
+            ) {
+                return Self.facts(from: extracted)
+            }
+        }
+
         let prompt = """
         Extract durable facts the user states ABOUT THEMSELVES from the MESSAGE below — \
         their name, age, sex, allergies, current wound or injury location, ongoing \
@@ -32,9 +66,8 @@ nonisolated struct SessionFactExtractor {
         the user.
 
         Reply with a JSON array of objects, each having a "key" and a "value". Use these \
-        lowercase snake_case keys where they apply: name, age, sex, allergy, wound_location, \
-        medication, condition. Keep each value short. If the message states no such facts, \
-        reply with exactly [].
+        lowercase snake_case keys where they apply: \(Self.factKeys.joined(separator: ", ")). \
+        Keep each value short. If the message states no such facts, reply with exactly [].
 
         Reply with ONLY the JSON array, nothing else.
 
@@ -51,6 +84,19 @@ nonisolated struct SessionFactExtractor {
     }
 
     // MARK: - Private
+
+    /// Map a schema-constrained result onto the store's fact type. The same trim-and-drop-empties
+    /// pass `parse(_:)` applies, so both paths hand `SessionFactStore.merge` identical shapes —
+    /// but no failure branch, because the schema already guaranteed the categories.
+    @available(iOS 26.0, *)
+    private static func facts(from extracted: ExtractedSessionFacts) -> [SessionFactStore.SessionFact] {
+        extracted.facts.compactMap { item in
+            let key = item.key.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let value = item.value.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !key.isEmpty, !value.isEmpty else { return nil }
+            return SessionFactStore.SessionFact(key: key, value: value)
+        }
+    }
 
     /// Parse the model's reply into facts. Tolerant by design: strips a `<think>` preamble,
     /// isolates the first `[...]` array (models sometimes wrap it in prose despite the
