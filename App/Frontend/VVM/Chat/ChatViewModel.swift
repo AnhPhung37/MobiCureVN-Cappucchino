@@ -52,13 +52,26 @@ final class ChatViewModel: ObservableObject {
     /// as still being written. `nil` whenever nothing is streaming.
     @Published private(set) var streamingMessageID: UUID?
 
+    /// True while the mic is actively listening and transcribing into `inputText`.
+    @Published private(set) var isListening: Bool = false
+
+    /// The message currently being read aloud, if any — at most one at a time.
+    @Published private(set) var speakingMessageID: UUID?
+
     // MARK: - Dependencies
 
     private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
+    private let speechService: SpeechRecognitionServiceProtocol
+    private let speechSynthesisService: TextToSpeechServiceProtocol
     @Published private(set) var currentConversationId: UUID = UUID()
 
     private var streamingTask: Task<Void, Never>?
+    private var voiceTask: Task<Void, Never>?
+    /// `inputText` as it stood right before the mic started — voice input appends to it (like
+    /// iOS's own keyboard dictation) rather than clobbering an in-progress draft, since each
+    /// yielded transcript is the FULL current utterance and gets concatenated onto this base.
+    private var voiceInputBaseText: String = ""
     private var cancellables: Set<AnyCancellable> = []
 
     private var messageDates: [Date] = []
@@ -72,7 +85,9 @@ final class ChatViewModel: ObservableObject {
 
     init(
         llmService: LLMServiceProtocol? = nil,
-        historyRepository: ChatHistoryRepository? = nil
+        historyRepository: ChatHistoryRepository? = nil,
+        speechService: SpeechRecognitionServiceProtocol? = nil,
+        speechSynthesisService: TextToSpeechServiceProtocol? = nil
     ) {
         let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.chatService = ChatService(
@@ -80,6 +95,8 @@ final class ChatViewModel: ObservableObject {
             translationService: AppConfig.translationService
         )
         self.historyRepository = historyRepository ?? AppConfig.chatHistoryRepository
+        self.speechService = speechService ?? SpeechRecognitionService()
+        self.speechSynthesisService = speechSynthesisService ?? TextToSpeechService()
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
@@ -148,7 +165,8 @@ final class ChatViewModel: ObservableObject {
                 content: message.content,
                 date: messageDates[index],
                 sources: message.sources,
-                imageData: message.imageData
+                imageData: message.imageData,
+                profileUpdateProposals: message.profileUpdateProposals
             )
         }
     }
@@ -166,6 +184,7 @@ final class ChatViewModel: ObservableObject {
     ) {
         let text = (prompt ?? inputText).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isLoading else { return }
+        stopVoiceInput()
 
         let bubbleText = (displayContent ?? text).trimmingCharacters(in: .whitespacesAndNewlines)
         appendUserMessage(bubbleText, imageData: attachedImageData)
@@ -175,12 +194,14 @@ final class ChatViewModel: ObservableObject {
         // Captures the sources retrieved during generation so citations can be attached
         // without a second retrieval (the orchestrator already retrieved this context).
         let sourcesBox = SourcesBox()
+        let profileUpdatesBox = ProfileUpdateProposalsBox()
         streamingTask = Task {
             let outcome = await streamResponse(
                 for: text,
                 images: attachedImageData,
                 assistantIndex: assistantIndex,
-                sourcesBox: sourcesBox
+                sourcesBox: sourcesBox,
+                profileUpdatesBox: profileUpdatesBox
             )
             // The validated answer only arrives at the very end, so a cancel (Stop button /
             // clear / switch) leaves `finalText` empty even when draft text was on screen.
@@ -190,7 +211,12 @@ final class ChatViewModel: ObservableObject {
                 handleCancelledGeneration(partialText: outcome.interruptedText, assistantIndex: assistantIndex)
                 return
             }
-            await finalizeResponse(outcome.finalText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+            await finalizeResponse(
+                outcome.finalText,
+                sources: sourcesBox.get(),
+                profileUpdateProposals: profileUpdatesBox.get(),
+                assistantIndex: assistantIndex
+            )
         }
     }
 
@@ -213,6 +239,7 @@ final class ChatViewModel: ObservableObject {
         rebuildSections()
 
         let sourcesBox = SourcesBox()
+        let profileUpdatesBox = ProfileUpdateProposalsBox()
         streamingTask = Task {
             processingState = .generating
             // analyzeWound also persists a structured WoundLogEntry (parsed findings + saved
@@ -236,13 +263,19 @@ final class ChatViewModel: ObservableObject {
                 for: query,
                 images: [],
                 assistantIndex: assistantIndex,
-                sourcesBox: sourcesBox
+                sourcesBox: sourcesBox,
+                profileUpdatesBox: profileUpdatesBox
             )
             guard !Task.isCancelled else {
                 handleCancelledGeneration(partialText: outcome.interruptedText, assistantIndex: assistantIndex)
                 return
             }
-            await finalizeResponse(outcome.finalText, sources: sourcesBox.get(), assistantIndex: assistantIndex)
+            await finalizeResponse(
+                outcome.finalText,
+                sources: sourcesBox.get(),
+                profileUpdateProposals: profileUpdatesBox.get(),
+                assistantIndex: assistantIndex
+            )
         }
     }
 
@@ -287,7 +320,13 @@ final class ChatViewModel: ObservableObject {
         var interruptedText: String { finalText.isEmpty ? draftText : finalText }
     }
 
-    private func streamResponse(for text: String, images: [Data], assistantIndex: Int, sourcesBox: SourcesBox) async -> StreamOutcome {
+    private func streamResponse(
+        for text: String,
+        images: [Data],
+        assistantIndex: Int,
+        sourcesBox: SourcesBox,
+        profileUpdatesBox: ProfileUpdateProposalsBox
+    ) async ->  StreamOutcome {
         var outcome = StreamOutcome()
         // dropLast(2) excludes the assistant placeholder AND the just-appended user message:
         // the current turn travels separately as `text` + `images`, so leaving it in history
@@ -297,7 +336,8 @@ final class ChatViewModel: ObservableObject {
             images: images,
             history: Array(messages.dropLast(2)),
             conversationId: currentConversationId,
-            onSourcesRetrieved: { sourcesBox.set($0) }
+            onSourcesRetrieved: { sourcesBox.set($0) },
+            onProfileUpdateProposed: { profileUpdatesBox.set($0) }
         )
         defer { streamingMessageID = nil }
 
@@ -329,7 +369,12 @@ final class ChatViewModel: ObservableObject {
         return outcome
     }
 
-    private func finalizeResponse(_ fullText: String, sources: [MedicalSource], assistantIndex: Int) async {
+    private func finalizeResponse(
+        _ fullText: String,
+        sources: [MedicalSource],
+        profileUpdateProposals: [ProposedProfileUpdate],
+        assistantIndex: Int
+    ) async {
         guard messages.indices.contains(assistantIndex) else {
             isLoading = false
             return
@@ -347,7 +392,12 @@ final class ChatViewModel: ObservableObject {
                 sources: sources
             )
             Task { try? await historyRepository.append(assistantItem) }
-            messages[assistantIndex] = ChatMessage(role: "assistant", content: fullText, sources: sources)
+            messages[assistantIndex] = ChatMessage(
+                role: "assistant",
+                content: fullText,
+                sources: sources,
+                profileUpdateProposals: profileUpdateProposals
+            )
         }
 
         rebuildSections()
@@ -379,6 +429,46 @@ final class ChatViewModel: ObservableObject {
         rebuildSections()
     }
 
+    // MARK: - Profile Update Confirmation
+
+    /// Patient confirmed a proposed profile change: writes it through to the persisted
+    /// profile, resolves the pending record, and updates the inline card's local state.
+    func acceptProfileUpdate(_ update: ProposedProfileUpdate) async {
+        do {
+            let current = try await AppConfig.profileRepository.fetchProfile()
+            try await AppConfig.profileRepository.save(current.applying(update))
+            try await AppConfig.profileUpdateStore.resolve(id: update.id, status: .accepted)
+            updateLocalProposalStatus(id: update.id, status: .accepted)
+        } catch {
+            errorMessage = "Không thể lưu thay đổi hồ sơ. Vui lòng thử lại.".localized(for: .current)
+        }
+    }
+
+    /// Patient declined a proposed profile change — nothing is written to the profile.
+    func dismissProfileUpdate(_ update: ProposedProfileUpdate) async {
+        try? await AppConfig.profileUpdateStore.resolve(id: update.id, status: .dismissed)
+        updateLocalProposalStatus(id: update.id, status: .dismissed)
+    }
+
+    /// Finds the message carrying `id` among its proposals and marks it resolved, so the
+    /// inline card reflects the decision without re-fetching the whole conversation.
+    private func updateLocalProposalStatus(id: UUID, status: ProposedProfileUpdate.Status) {
+        for index in messages.indices {
+            guard let proposalIndex = messages[index].profileUpdateProposals.firstIndex(where: { $0.id == id }) else { continue }
+            var updatedProposals = messages[index].profileUpdateProposals
+            updatedProposals[proposalIndex].status = status
+            messages[index] = ChatMessage(
+                role: messages[index].role,
+                content: messages[index].content,
+                sources: messages[index].sources,
+                imageData: messages[index].imageData,
+                profileUpdateProposals: updatedProposals
+            )
+            break
+        }
+        rebuildSections()
+    }
+
     func cancelStreaming() {
         streamingTask?.cancel()
         streamingTask = nil
@@ -388,6 +478,8 @@ final class ChatViewModel: ObservableObject {
 
     func clearConversation() {
         cancelStreaming()
+        stopVoiceInput()
+        stopSpeaking()
         messages = []
         messageDates = []
         messageIDs = []
@@ -396,7 +488,90 @@ final class ChatViewModel: ObservableObject {
         currentConversationId = UUID()
     }
 
+    // MARK: - Voice Input
+
+    func toggleVoiceInput() {
+        if isListening {
+            stopVoiceInput()
+        } else {
+            startVoiceInput()
+        }
+    }
+
+    private func startVoiceInput() {
+        guard !isListening, !isLoading else { return }
+        // Recording and playback both claim the audio session; stop any reply being read aloud
+        // rather than let them fight over it.
+        stopSpeaking()
+
+        let existing = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        voiceInputBaseText = existing.isEmpty ? "" : existing + " "
+
+        voiceTask = Task {
+            guard await speechService.requestAuthorization() else {
+                errorMessage = "Cần quyền micro và nhận dạng giọng nói để dùng tính năng này.".localized(for: .current)
+                return
+            }
+            guard !Task.isCancelled else { return }
+
+            isListening = true
+            // Vietnamese/English only, matching the app's language toggle — there's no third
+            // UI language to speak in.
+            let locale = Locale(identifier: AppLanguage.current == .vietnamese ? "vi-VN" : "en-US")
+            do {
+                for try await transcript in speechService.startTranscribing(locale: locale) {
+                    guard !Task.isCancelled else { break }
+                    inputText = voiceInputBaseText + transcript
+                }
+            } catch {
+                if !Task.isCancelled {
+                    errorMessage = error.localizedDescription
+                }
+            }
+            isListening = false
+        }
+    }
+
+    func stopVoiceInput() {
+        guard isListening else { return }
+        speechService.stop()
+        voiceTask?.cancel()
+        voiceTask = nil
+        isListening = false
+    }
+
+    // MARK: - Voice Output (read aloud)
+
+    /// Toggles read-aloud for one message: tapping the currently-speaking message stops it;
+    /// tapping any other message stops whatever was playing and starts this one — only one
+    /// message is ever read at a time.
+    func toggleSpeech(for messageID: UUID, text: String) {
+        guard speakingMessageID != messageID else {
+            stopSpeaking()
+            return
+        }
+        stopVoiceInput() // see startVoiceInput's note — recording and playback don't mix
+        stopSpeaking()
+
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
+        speakingMessageID = messageID
+        let locale = Locale(identifier: AppLanguage.current == .vietnamese ? "vi-VN" : "en-US")
+        speechSynthesisService.speak(text, locale: locale) { [weak self] in
+            guard let self, self.speakingMessageID == messageID else { return }
+            self.speakingMessageID = nil
+        }
+    }
+
+    func stopSpeaking() {
+        guard speakingMessageID != nil else { return }
+        speechSynthesisService.stop()
+        speakingMessageID = nil
+    }
+
     func loadConversation(_ conversationId: UUID) async {
+        stopVoiceInput()
+        stopSpeaking()
         currentConversationId = conversationId
         let items = (try? await historyRepository.loadHistory(conversationId: conversationId)) ?? []
         await MainActor.run {
@@ -408,14 +583,44 @@ final class ChatViewModel: ObservableObject {
     func deleteConversation(_ conversationId: UUID) async {
         do {
             try await historyRepository.deleteConversation(id: conversationId)
+            // Facts the assistant remembered for this session are part of the conversation the
+            // patient just deleted — drop them too, or they'd keep feeding the system prompt.
+            await AppConfig.sessionFactStore.reset(conversationId)
             if currentConversationId == conversationId {
                 clearConversation()
             }
             await refreshConversationHistory()
         } catch {
-            await MainActor.run {
-                self.errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
+            errorMessage = "Không thể xoá cuộc trò chuyện này.".localized(for: .current)
+        }
+    }
+
+    /// Wipes all stored conversations and starts a fresh, empty one.
+    func deleteAllConversations() async {
+        // Capture the ids before the wipe so each session's remembered facts can be cleared;
+        // the store is keyed by conversation id and has no "remove everything" entry point.
+        let existingIds = conversationSections.flatMap { $0.items.map(\.id) }
+        do {
+            try await historyRepository.deleteAllConversations()
+            for id in existingIds {
+                await AppConfig.sessionFactStore.reset(id)
             }
+            await AppConfig.sessionFactStore.reset(currentConversationId)
+            clearConversation()
+            await refreshConversationHistory()
+        } catch {
+            errorMessage = "Không thể xoá lịch sử trò chuyện.".localized(for: .current)
+        }
+    }
+
+    /// Renames a conversation. A blank title clears the override, restoring the automatic
+    /// title taken from the conversation's first message.
+    func renameConversation(_ conversationId: UUID, to title: String) async {
+        do {
+            try await historyRepository.renameConversation(id: conversationId, title: title)
+            await refreshConversationHistory()
+        } catch {
+            errorMessage = "Không thể đổi tên cuộc trò chuyện này.".localized(for: .current)
         }
     }
 
@@ -478,6 +683,22 @@ private nonisolated final class SourcesBox: @unchecked Sendable {
     }
 
     func get() -> [MedicalSource] {
+        lock.lock(); defer { lock.unlock() }; return value
+    }
+}
+
+/// Thread-safe holder that carries the profile-update proposals generated on the (background)
+/// generation task back to this @MainActor view model once streaming completes. Mirrors
+/// `SourcesBox`.
+private nonisolated final class ProfileUpdateProposalsBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: [ProposedProfileUpdate] = []
+
+    func set(_ newValue: [ProposedProfileUpdate]) {
+        lock.lock(); value = newValue; lock.unlock()
+    }
+
+    func get() -> [ProposedProfileUpdate] {
         lock.lock(); defer { lock.unlock() }; return value
     }
 }

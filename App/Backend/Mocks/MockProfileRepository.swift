@@ -25,4 +25,7 @@ struct MockProfileRepository: ProfileRepository {
             sourceName: "Mock medical report"
         )
     }
+
+    /// Previews/tests only — nothing to persist to.
+    func save(_ profile: PatientProfile) async throws {}
 }

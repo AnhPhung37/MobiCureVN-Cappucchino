@@ -7,6 +7,8 @@ struct ProfileView: View {
     /// affordance. Harmless when pushed instead.
     @Environment(\.dismiss) private var dismiss
 
+    @State private var isEditingProfile = false
+
     /// The UI language chosen with the VI/EN picker. Read here directly so the sheet localizes
     /// correctly regardless of whether it inherits the presenter's `\.locale` environment, and
     /// so it live-updates when the user flips the toggle while Profile is open.
@@ -40,6 +42,7 @@ struct ProfileView: View {
                         notesCard(title: "Care notes", items: profile.careNotes, icon: "checkmark.circle.fill")
                         notesCard(title: "Warning signs", items: profile.warningSigns, icon: "exclamationmark.triangle.fill")
                         rememberedFactsCard
+                        highStakesHistoryCard
                         woundPhotosCard
                         sourceCard(profile)
                     } else if let error = viewModel.errorMessage {
@@ -79,6 +82,13 @@ struct ProfileView: View {
             .task {
                 await viewModel.load()
             }
+            .sheet(isPresented: $isEditingProfile) {
+                if let profile = viewModel.profile {
+                    ProfileEditView(initial: profile.edits) { edits in
+                        await viewModel.saveEdits(edits)
+                    }
+                }
+            }
         }
         // Also propagate the chosen language to any SwiftUI Text/LocalizedStringKey inside
         // (e.g. notesCard titles) so they resolve consistently with the explicit t(...) calls.
@@ -87,31 +97,41 @@ struct ProfileView: View {
 
     private func headerCard(_ profile: PatientProfile) -> some View {
         HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(Color.cyan.opacity(0.15))
-                    .frame(width: 64, height: 64)
-                Text(String(profile.name.prefix(1)))
-                    .appFont(size: 24, weight: .bold)
-                    .foregroundColor(.cyan)
-            }
+            ProfileAvatar(photoData: profile.photoData, name: profile.name, diameter: 64)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(profile.name)
+                Text(profile.name.isEmpty ? t("Chưa đặt tên") : profile.name)
                     .appFont(size: 22, weight: .bold, design: .rounded)
-                Text(profile.diagnosis)
-                    .appFont(size: 14)
-                    .foregroundColor(Color(.secondaryLabel))
-                    .lineLimit(2)
-                Text(profile.recoveryStage)
-                    .appFont(size: 12, weight: .semibold)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Capsule().fill(Color.cyan.opacity(0.15)))
-                    .foregroundColor(.cyan)
+                    .foregroundColor(profile.name.isEmpty ? Color(.tertiaryLabel) : Color(.label))
+                if !profile.diagnosis.isEmpty {
+                    Text(profile.diagnosis)
+                        .appFont(size: 14)
+                        .foregroundColor(Color(.secondaryLabel))
+                        .lineLimit(2)
+                }
+                if !profile.recoveryStage.isEmpty {
+                    Text(profile.recoveryStage)
+                        .appFont(size: 12, weight: .semibold)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Capsule().fill(Color.cyan.opacity(0.15)))
+                        .foregroundColor(.cyan)
+                }
             }
 
             Spacer()
+
+            Button {
+                isEditingProfile = true
+            } label: {
+                Image(systemName: "square.and.pencil")
+                    .appFont(size: 18)
+                    .foregroundColor(.cyan)
+                    .padding(8)
+                    .background(Circle().fill(Color.cyan.opacity(0.12)))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(t("Chỉnh sửa hồ sơ"))
         }
         .padding(18)
         .background(
@@ -148,24 +168,46 @@ struct ProfileView: View {
 
     private func profileDetails(_ profile: PatientProfile) -> some View {
         VStack(spacing: 12) {
-            detailRow(label: t("Age"), value: "\(profile.age)")
-            detailRow(label: t("Gender"), value: profile.gender)
-            detailRow(label: t("Procedure"), value: profile.procedure)
-            detailRow(label: t("Last updated"), value: Self.dateFormatter.string(from: profile.lastUpdated))
-            VStack(alignment: .leading, spacing: 8) {
-                Text(t("Report summary"))
-                    .font(.headline)
-                Text(profile.reportSummary)
-                    .appFont(size: 14)
-                    .foregroundColor(Color(.secondaryLabel))
-                    .fixedSize(horizontal: false, vertical: true)
+            // A blank profile is the normal starting state (SwiftDataProfileRepository seeds an
+            // empty row rather than fabricating clinical data), so unset fields read as "not
+            // set" instead of "0" or an empty gap.
+            detailRow(label: t("Age"), value: profile.age > 0 ? "\(profile.age)" : t("Chưa đặt"))
+            detailRow(label: t("Gender"), value: displayGender(profile.gender))
+            if !profile.procedure.isEmpty {
+                detailRow(label: t("Procedure"), value: profile.procedure)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(.systemBackground))
-            )
+            detailRow(label: t("Last updated"), value: Self.dateFormatter.string(from: profile.lastUpdated))
+            if !profile.reportSummary.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(t("Report summary"))
+                        .font(.headline)
+                    Text(profile.reportSummary)
+                        .appFont(size: 14)
+                        .foregroundColor(Color(.secondaryLabel))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(Color(.systemBackground))
+                )
+            }
+        }
+    }
+
+    /// Render the stored gender for display. Values are stored in the canonical lowercase
+    /// English vocabulary shared with `ProfileUpdateExtractor` (see `ProfileGender`), so they
+    /// need translating back for the UI; anything custom is shown exactly as written.
+    private func displayGender(_ stored: String) -> String {
+        guard !stored.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return t("Chưa đặt")
+        }
+        switch ProfileGender.matching(stored) {
+        case .female, .male:
+            return t(ProfileGender.matching(stored).displayKey)
+        case .other, .unspecified:
+            return stored
         }
     }
 
@@ -272,6 +314,69 @@ struct ProfileView: View {
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
+        )
+    }
+
+    // MARK: - Clinical Change History
+    //
+    // Audit trail for high-stakes fields (diagnosis/procedure/recovery stage): every resolved
+    // proposal, so a bad edit can be caught after the fact even though nothing after Accept
+    // requires a clinician's sign-off.
+
+    @ViewBuilder
+    private var highStakesHistoryCard: some View {
+        if !viewModel.highStakesHistory.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .foregroundColor(.orange)
+                    Text(t("Lịch sử thay đổi lâm sàng"))
+                        .font(.headline)
+                }
+
+                VStack(spacing: 8) {
+                    ForEach(viewModel.highStakesHistory) { update in
+                        highStakesHistoryRow(update)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            )
+        }
+    }
+
+    private func highStakesHistoryRow(_ update: ProposedProfileUpdate) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(update.field.displayLabel)
+                    .font(.system(size: 13, weight: .semibold))
+                Text(update.status == .accepted ? t("Đã xác nhận") : t("Đã bỏ qua"))
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(update.status == .accepted ? .cyan : Color(.tertiaryLabel))
+                Spacer()
+                Text(Self.dateFormatter.string(from: update.createdAt))
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(.secondaryLabel))
+            }
+            if let previous = update.previousValue {
+                Text("\(previous) → \(update.newValue)")
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundColor(Color(.secondaryLabel))
+            } else {
+                Text(update.newValue)
+                    .font(.system(size: 12, design: .monospaced))
+                    .foregroundColor(Color(.secondaryLabel))
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color(.systemBackground))
         )
     }
 

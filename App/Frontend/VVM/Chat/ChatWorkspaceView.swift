@@ -18,6 +18,11 @@ struct ChatWorkspaceView: View {
     @State private var searchText: String = ""
     @State private var downloadedModels: Set<ModelCatalog> = []
     @State private var isShowingProfile = false
+    /// Conversation awaiting a destructive/rename confirmation. Non-nil while its alert is up.
+    @State private var conversationPendingDeletion: ChatConversationSummary?
+    @State private var conversationPendingRename: ChatConversationSummary?
+    @State private var renameDraft: String = ""
+    @State private var isConfirmingDeleteAll = false
 
     init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -81,17 +86,63 @@ struct ChatWorkspaceView: View {
             } message: {
                 Text("Choose how to add an image to your message.")
             }
+            .alert(
+                "Xoá cuộc trò chuyện?",
+                isPresented: presenting($conversationPendingDeletion),
+                presenting: conversationPendingDeletion
+            ) { conversation in
+                Button("Xoá", role: .destructive) {
+                    Task { await viewModel.deleteConversation(conversation.id) }
+                }
+                Button("Huỷ", role: .cancel) {}
+            } message: { conversation in
+                Text("“\(conversation.title)” sẽ bị xoá vĩnh viễn khỏi thiết bị này.")
+            }
+            .alert(
+                "Xoá tất cả cuộc trò chuyện?",
+                isPresented: $isConfirmingDeleteAll
+            ) {
+                Button("Xoá tất cả", role: .destructive) {
+                    Task { await viewModel.deleteAllConversations() }
+                }
+                Button("Huỷ", role: .cancel) {}
+            } message: {
+                Text("Toàn bộ lịch sử trò chuyện trên thiết bị này sẽ bị xoá vĩnh viễn.")
+            }
+            .alert(
+                "Đổi tên cuộc trò chuyện",
+                isPresented: presenting($conversationPendingRename),
+                presenting: conversationPendingRename
+            ) { conversation in
+                TextField("Tên cuộc trò chuyện", text: $renameDraft)
+                Button("Lưu") {
+                    let title = renameDraft
+                    Task { await viewModel.renameConversation(conversation.id, to: title) }
+                }
+                Button("Huỷ", role: .cancel) {}
+            } message: { _ in
+                Text("Để trống để dùng lại tên tự động theo tin nhắn đầu tiên.")
+            }
             .sheet(isPresented: $isShowingProfile) {
                 // Pass the active conversation so Profile shows the facts remembered for THIS
                 // conversation — the same block injected into the live system prompt.
                 ProfileView(
                     viewModel: ProfileViewModel(
-                        repository: MockProfileRepository(),
+                        repository: AppConfig.profileRepository,
                         conversationId: viewModel.currentConversationId
                     )
                 )
             }
         }
+    }
+
+    /// Bridges an optional "what is this alert about" state to the `isPresented:` binding the
+    /// alert API wants: showing follows the value being non-nil, and dismissal clears it.
+    private func presenting<T>(_ value: Binding<T?>) -> Binding<Bool> {
+        Binding(
+            get: { value.wrappedValue != nil },
+            set: { if !$0 { value.wrappedValue = nil } }
+        )
     }
 
     // MARK: - Sidebar
@@ -111,6 +162,11 @@ struct ChatWorkspaceView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 14)
 
+            if !viewModel.conversationSections.isEmpty {
+                conversationSearchField
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+            }
 
             recentChats
                 .padding(.horizontal, 12)
@@ -198,14 +254,23 @@ struct ChatWorkspaceView: View {
     private var recentChats: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 12) {
-                Text("CUỘC TRÒ CHUYỆN GẦN ĐÂY")
-                    .appFont(size: 11, weight: .bold)
-                    .foregroundColor(Color(.secondaryLabel))
-                    .textCase(.uppercase)
-                    .padding(.horizontal, 8)
+                HStack(spacing: 4) {
+                    Text("CUỘC TRÒ CHUYỆN GẦN ĐÂY")
+                        .appFont(size: 11, weight: .bold)
+                        .foregroundColor(Color(.secondaryLabel))
+                        .textCase(.uppercase)
+                    Spacer(minLength: 0)
+                    historyMenu
+                }
+                .padding(.horizontal, 8)
 
                 if viewModel.conversationSections.isEmpty {
                     Text("Chưa có cuộc trò chuyện nào.")
+                        .appFont(size: 13)
+                        .foregroundColor(Color(.secondaryLabel))
+                        .padding(.horizontal, 8)
+                } else if filteredConversationSections.isEmpty {
+                    Text("Không tìm thấy cuộc trò chuyện phù hợp.")
                         .appFont(size: 13)
                         .foregroundColor(Color(.secondaryLabel))
                         .padding(.horizontal, 8)
@@ -218,46 +283,7 @@ struct ChatWorkspaceView: View {
                                 .padding(.horizontal, 8)
 
                             ForEach(section.items) { conversation in
-                                Button {
-                                    Task { await viewModel.loadConversation(conversation.id) }
-                                } label: {
-                                    HStack(alignment: .center, spacing: 12) {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text(conversation.title.isEmpty ? "Chat" : conversation.title)
-                                                .appFont(size: 14, weight: .semibold)
-                                                .foregroundColor(Color(.label))
-                                                .lineLimit(1)
-                                            (conversation.preview.isEmpty ? Text("No preview") : Text(conversation.preview))
-                                                .appFont(size: 12)
-                                                .foregroundColor(Color(.secondaryLabel))
-                                                .lineLimit(2)
-                                        }
-                                        Spacer(minLength: 6)
-                                        VStack(alignment: .trailing, spacing: 4) {
-                                            Text(relativeDate(conversation.lastMessageDate))
-                                                .appFont(size: 11, weight: .medium)
-                                                .foregroundColor(Color(.secondaryLabel))
-                                            if viewModel.currentConversationId == conversation.id {
-                                                Text("Đang mở")
-                                                    .appFont(size: 10, weight: .semibold)
-                                                    .padding(.horizontal, 8)
-                                                    .padding(.vertical, 4)
-                                                    .background(Capsule().fill(Color.blue.opacity(0.12)))
-                                                    .foregroundColor(.blue)
-                                            }
-                                        }
-                                    }
-                                    .padding(12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                            .fill(viewModel.currentConversationId == conversation.id ? Color.blue.opacity(0.10) : Color(.systemBackground))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                                    .strokeBorder(viewModel.currentConversationId == conversation.id ? Color.blue.opacity(0.22) : Color(.separator).opacity(0.5), lineWidth: 1)
-                                            )
-                                    )
-                                }
-                                .buttonStyle(.plain)
+                                conversationRow(conversation)
                             }
                         }
                     }
@@ -265,6 +291,145 @@ struct ChatWorkspaceView: View {
             }
             .padding(.vertical, 4)
         }
+    }
+
+    /// One row in the recent-conversations list: tap to open, and — via the trailing "…" menu
+    /// or a long press — rename or delete. Both gestures lead to the same two actions so the
+    /// menu stays discoverable without hiding anything behind a long press.
+    private func conversationRow(_ conversation: ChatConversationSummary) -> some View {
+        let isActive = viewModel.currentConversationId == conversation.id
+
+        return ZStack(alignment: .topTrailing) {
+            Button {
+                Task { await viewModel.loadConversation(conversation.id) }
+            } label: {
+                HStack(alignment: .center, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(conversation.title.isEmpty ? "Chat" : conversation.title)
+                            .appFont(size: 14, weight: .semibold)
+                            .foregroundColor(Color(.label))
+                            .lineLimit(1)
+                        (conversation.preview.isEmpty ? Text("No preview") : Text(conversation.preview))
+                            .appFont(size: 12)
+                            .foregroundColor(Color(.secondaryLabel))
+                            .lineLimit(2)
+                    }
+                    Spacer(minLength: 6)
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(relativeDate(conversation.lastMessageDate))
+                            .appFont(size: 11, weight: .medium)
+                            .foregroundColor(Color(.secondaryLabel))
+                        if isActive {
+                            Text("Đang mở")
+                                .appFont(size: 10, weight: .semibold)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Capsule().fill(Color.blue.opacity(0.12)))
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    // Reserves room for the overlaid menu button so the date and the "open"
+                    // badge never run underneath it.
+                    .padding(.trailing, 30)
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(isActive ? Color.blue.opacity(0.10) : Color(.systemBackground))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .strokeBorder(isActive ? Color.blue.opacity(0.22) : Color(.separator).opacity(0.5), lineWidth: 1)
+                        )
+                )
+            }
+            .buttonStyle(.plain)
+
+            Menu {
+                conversationActions(conversation)
+            } label: {
+                Image(systemName: "ellipsis")
+                    .appFont(size: 13, weight: .semibold)
+                    .foregroundColor(Color(.secondaryLabel))
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+            }
+            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
+            .padding(.top, 6)
+            .padding(.trailing, 6)
+            .accessibilityLabel("Tuỳ chọn cuộc trò chuyện")
+        }
+        .contextMenu {
+            conversationActions(conversation)
+        }
+    }
+
+    @ViewBuilder
+    private func conversationActions(_ conversation: ChatConversationSummary) -> some View {
+        Button {
+            renameDraft = conversation.title
+            conversationPendingRename = conversation
+        } label: {
+            Label("Đổi tên", systemImage: "pencil")
+        }
+
+        Button(role: .destructive) {
+            conversationPendingDeletion = conversation
+        } label: {
+            Label("Xoá", systemImage: "trash")
+        }
+    }
+
+    /// Sidebar-wide history actions. Only "delete all" for now, and only once there is
+    /// something to delete.
+    @ViewBuilder
+    private var historyMenu: some View {
+        if !viewModel.conversationSections.isEmpty {
+            Menu {
+                Button(role: .destructive) {
+                    isConfirmingDeleteAll = true
+                } label: {
+                    Label("Xoá tất cả cuộc trò chuyện", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .appFont(size: 16, weight: .semibold)
+                    .foregroundColor(Color(.secondaryLabel))
+                    .frame(width: 32, height: 32)
+            }
+            .accessibilityLabel("Tuỳ chọn lịch sử trò chuyện")
+        }
+    }
+
+    private var conversationSearchField: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .appFont(size: 13, weight: .semibold)
+                .foregroundColor(Color(.secondaryLabel))
+
+            TextField("Tìm cuộc trò chuyện", text: $searchText)
+                .appFont(size: 14)
+                .textFieldStyle(.plain)
+                .submitLabel(.search)
+
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .appFont(size: 13)
+                        .foregroundColor(Color(.tertiaryLabel))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Xoá tìm kiếm")
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 
     private var emergencyFooter: some View {
@@ -680,7 +845,26 @@ struct ChatWorkspaceView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 8)
                     ForEach(section.items) { item in
-                        MessageBubble(message: ChatMessage(role: item.role, content: item.content, sources: item.sources, imageData: item.imageData))
+                        MessageBubble(
+                            message: ChatMessage(
+                                role: item.role,
+                                content: item.content,
+                                sources: item.sources,
+                                imageData: item.imageData,
+                                profileUpdateProposals: item.profileUpdateProposals
+                            ),
+                            onAcceptProfileUpdate: { update in
+                                Task { await viewModel.acceptProfileUpdate(update) }
+                            },
+                            onDismissProfileUpdate: { update in
+                                Task { await viewModel.dismissProfileUpdate(update) }
+                            },
+                            isStreaming: item.id == viewModel.streamingMessageID,
+                            isSpeaking: item.id == viewModel.speakingMessageID,
+                            onToggleSpeech: {
+                                viewModel.toggleSpeech(for: item.id, text: item.content)
+                            }
+                        )
                     }
                 }
             }
@@ -705,7 +889,23 @@ struct ChatWorkspaceView: View {
                 }
                 .accessibilityLabel("Attach image")
 
-                TextField("Mô tả triệu chứng hoặc đặt câu hỏi...", text: $viewModel.inputText, axis: .vertical)
+                Button {
+                    viewModel.toggleVoiceInput()
+                } label: {
+                    Image(systemName: viewModel.isListening ? "waveform" : "mic.fill")
+                        .appFont(size: 16, weight: .semibold)
+                        .foregroundColor(viewModel.isListening ? .white : Color(.secondaryLabel))
+                        .frame(width: 38, height: 38)
+                        .background(Circle().fill(viewModel.isListening ? Color.red : Color(.secondarySystemBackground)))
+                        .symbolEffect(.variableColor.iterative, isActive: viewModel.isListening)
+                }
+                // Recording while the model is mid-answer would fight the same audio session
+                // for no benefit, so the mic is only available when the composer is otherwise
+                // usable.
+                .disabled(viewModel.isLoading)
+                .accessibilityLabel(viewModel.isListening ? "Dừng nhập giọng nói" : "Nhập bằng giọng nói")
+
+                TextField(viewModel.isListening ? "Đang nghe..." : "Mô tả triệu chứng hoặc đặt câu hỏi...", text: $viewModel.inputText, axis: .vertical)
                     .appFont(size: 16)
                     .lineLimit(1...5)
                     .focused($inputFocused)
