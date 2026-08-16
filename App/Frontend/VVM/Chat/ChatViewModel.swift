@@ -55,11 +55,15 @@ final class ChatViewModel: ObservableObject {
     /// True while the mic is actively listening and transcribing into `inputText`.
     @Published private(set) var isListening: Bool = false
 
+    /// The message currently being read aloud, if any — at most one at a time.
+    @Published private(set) var speakingMessageID: UUID?
+
     // MARK: - Dependencies
 
     private var chatService: ChatService
     private let historyRepository: ChatHistoryRepository
     private let speechService: SpeechRecognitionServiceProtocol
+    private let speechSynthesisService: TextToSpeechServiceProtocol
     @Published private(set) var currentConversationId: UUID = UUID()
 
     private var streamingTask: Task<Void, Never>?
@@ -82,7 +86,8 @@ final class ChatViewModel: ObservableObject {
     init(
         llmService: LLMServiceProtocol? = nil,
         historyRepository: ChatHistoryRepository? = nil,
-        speechService: SpeechRecognitionServiceProtocol? = nil
+        speechService: SpeechRecognitionServiceProtocol? = nil,
+        speechSynthesisService: TextToSpeechServiceProtocol? = nil
     ) {
         let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.chatService = ChatService(
@@ -91,6 +96,7 @@ final class ChatViewModel: ObservableObject {
         )
         self.historyRepository = historyRepository ?? AppConfig.chatHistoryRepository
         self.speechService = speechService ?? SpeechRecognitionService()
+        self.speechSynthesisService = speechSynthesisService ?? TextToSpeechService()
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
@@ -473,6 +479,7 @@ final class ChatViewModel: ObservableObject {
     func clearConversation() {
         cancelStreaming()
         stopVoiceInput()
+        stopSpeaking()
         messages = []
         messageDates = []
         messageIDs = []
@@ -493,6 +500,9 @@ final class ChatViewModel: ObservableObject {
 
     private func startVoiceInput() {
         guard !isListening, !isLoading else { return }
+        // Recording and playback both claim the audio session; stop any reply being read aloud
+        // rather than let them fight over it.
+        stopSpeaking()
 
         let existing = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         voiceInputBaseText = existing.isEmpty ? "" : existing + " "
@@ -530,8 +540,38 @@ final class ChatViewModel: ObservableObject {
         isListening = false
     }
 
+    // MARK: - Voice Output (read aloud)
+
+    /// Toggles read-aloud for one message: tapping the currently-speaking message stops it;
+    /// tapping any other message stops whatever was playing and starts this one — only one
+    /// message is ever read at a time.
+    func toggleSpeech(for messageID: UUID, text: String) {
+        guard speakingMessageID != messageID else {
+            stopSpeaking()
+            return
+        }
+        stopVoiceInput() // see startVoiceInput's note — recording and playback don't mix
+        stopSpeaking()
+
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
+        speakingMessageID = messageID
+        let locale = Locale(identifier: AppLanguage.current == .vietnamese ? "vi-VN" : "en-US")
+        speechSynthesisService.speak(text, locale: locale) { [weak self] in
+            guard let self, self.speakingMessageID == messageID else { return }
+            self.speakingMessageID = nil
+        }
+    }
+
+    func stopSpeaking() {
+        guard speakingMessageID != nil else { return }
+        speechSynthesisService.stop()
+        speakingMessageID = nil
+    }
+
     func loadConversation(_ conversationId: UUID) async {
         stopVoiceInput()
+        stopSpeaking()
         currentConversationId = conversationId
         let items = (try? await historyRepository.loadHistory(conversationId: conversationId)) ?? []
         await MainActor.run {

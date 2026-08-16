@@ -859,7 +859,11 @@ struct ChatWorkspaceView: View {
                             onDismissProfileUpdate: { update in
                                 Task { await viewModel.dismissProfileUpdate(update) }
                             },
-                            isStreaming: item.id == viewModel.streamingMessageID
+                            isStreaming: item.id == viewModel.streamingMessageID,
+                            isSpeaking: item.id == viewModel.speakingMessageID,
+                            onToggleSpeech: {
+                                viewModel.toggleSpeech(for: item.id, text: item.content)
+                            }
                         )
                     }
                 }

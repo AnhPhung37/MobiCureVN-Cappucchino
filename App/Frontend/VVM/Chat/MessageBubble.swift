@@ -17,6 +17,9 @@ struct MessageBubble: View {
     /// decoder output that no guardrail has validated yet and will be replaced wholesale by the
     /// final answer, so it is marked with a caret rather than presented as a finished reply.
     var isStreaming: Bool = false
+    /// True while this specific message is being read aloud — at most one bubble at a time.
+    var isSpeaking: Bool = false
+    var onToggleSpeech: () -> Void = {}
 
     private var isUser: Bool { message.role.lowercased() == "user" }
 
@@ -66,6 +69,10 @@ struct MessageBubble: View {
                 .padding(.vertical, 10)
                 .background(bubbleBackground)
 
+                if !isUser && !message.content.isEmpty && !isStreaming {
+                    speechButton
+                }
+
                 if !isUser && !message.sources.isEmpty {
                     CitationsView(sources: message.sources)
                 }
@@ -74,6 +81,31 @@ struct MessageBubble: View {
             if !isUser { Spacer(minLength: 48) }
         }
         .padding(.horizontal, 16)
+    }
+
+    // MARK: - Voice Output
+
+    /// Lets a patient who'd rather listen than read have the reply spoken aloud. A filled
+    /// capsule rather than plain text — a bare secondary-label link under the bubble read as
+    /// inert metadata (patients weren't noticing it), so this borrows the same "obviously
+    /// tappable chip" language as the Save/Ignore buttons on a profile-update proposal.
+    private var speechButton: some View {
+        Button(action: onToggleSpeech) {
+            HStack(spacing: 6) {
+                Image(systemName: isSpeaking ? "speaker.wave.2.fill" : "speaker.wave.2.fill")
+                    .symbolEffect(.variableColor.iterative, isActive: isSpeaking)
+                Text(isSpeaking ? "Đang đọc..." : "Nghe")
+            }
+            .appFont(size: 13, weight: .semibold)
+            .foregroundColor(isSpeaking ? .white : .accentColor)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(
+                Capsule().fill(isSpeaking ? Color.accentColor : Color.accentColor.opacity(0.14))
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 4)
     }
 
     // MARK: - Sub-views
