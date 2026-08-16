@@ -434,11 +434,17 @@ final class ChatService: ObservableObject {
     /// Logs the elapsed time for a language-pipeline stage (⏱️, matching
     /// MedicalChatOrchestrator) and returns "now" so the caller can chain the next
     /// measurement. Monotonic clock, so wall-clock changes don't corrupt the numbers.
+    ///
+    /// DEBUG-only output, matching the rule `ChatFlowLog` already applies to itself: a release
+    /// build should not pay for `String(format:)` plus a console write on every stage of every
+    /// turn. The mark is still returned in release, so the call sites chain identically.
     @discardableResult
     private static func logStage(_ name: String, since mark: DispatchTime) -> DispatchTime {
         let now = DispatchTime.now()
+        #if DEBUG
         let elapsed = Double(now.uptimeNanoseconds &- mark.uptimeNanoseconds) / 1_000_000_000
         print(String(format: "⏱️ [ChatService] %@: %.3fs", name, elapsed))
+        #endif
         return now
     }
 

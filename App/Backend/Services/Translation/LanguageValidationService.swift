@@ -234,7 +234,12 @@ nonisolated final class LanguageValidationService {
         }
         let normalized = Self.stripThinking(reply)
             .trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        // DEBUG-only: this echoes model output derived from the patient's own message, and a
+        // release build has no business writing that to the device log. Same rule ChatFlowLog
+        // already applies to itself.
+        #if DEBUG
         print("LanguageValidation: detect reply='\(normalized.prefix(200))'")
+        #endif
 
         let isVietnameseDominant = density >= Self.vietnameseDensityThreshold
         // A far lower bar than dominance: is there ANY Vietnamese signal at all? Used only to
@@ -334,7 +339,9 @@ nonisolated final class LanguageValidationService {
         guard !trimmed.isEmpty else { return text }
 
         guard force || needsRefinement(trimmed) else {
+            #if DEBUG
             print("LanguageValidation: refine skipped (input already clean)")
+            #endif
             return text
         }
 
@@ -354,7 +361,10 @@ nonisolated final class LanguageValidationService {
         }
         let corrected = reply.trimmingCharacters(in: .whitespacesAndNewlines)
 
+        // DEBUG-only: `trimmed` is the patient's raw message.
+        #if DEBUG
         print("LanguageValidation: refine in='\(trimmed)' out='\(corrected)'")
+        #endif
 
         // Guard against a degenerate refine (empty, or so much shorter it likely dropped
         // content) — fall back to the original text rather than lose meaning.
@@ -362,121 +372,13 @@ nonisolated final class LanguageValidationService {
         return corrected
     }
 
-    /// Verifies `text` is actually in `expected` — used after translating a response back
-    /// to the user's original language, since a translation call can occasionally fail
-    /// silently or echo back the source language unchanged.
-    ///
-    /// This verify path deliberately trades latency for translation-correctness robustness:
-    /// it can make up to two LLM calls to break a tie. A wrong verdict here ships a response
-    /// in the wrong language to the user, so the extra round-trip is worth it.
-    ///
-    ///   Pass 0 (deterministic pre-filter): a leaked foreign script fails immediately;
-    ///           Vietnamese density gives a provisional verdict, no LLM.
-    ///   Pass 1 (LLM classify): classify the translated text's language.
-    ///   Pass 2 (LLM confirm): only when Pass 0 and Pass 1 disagree, or the density is
-    ///           borderline, ask a second targeted yes/no question to break the tie.
-    func matches(_ text: String, expected: DetectedLanguage, using llmService: LLMServiceProtocol) async -> Bool {
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return true }
-
-        let expectsVietnamese = expected.requiresTranslation
-
-        // Pass 0 — deterministic pre-filter.
-        // A leaked CJK/Thai word fails outright, even when the LLM classifier would still
-        // call the overall paragraph correct.
-        if containsForeignScript(text) { return false }
-        let density = vietnameseDensity(text)
-        let provisionalIsVietnamese = density >= Self.vietnameseDensityThreshold
-        // "Borderline" = density sits near the threshold, where the deterministic signal is
-        // least trustworthy and a confirm pass is most valuable.
-        let borderline = abs(density - Self.vietnameseDensityThreshold) < 0.10
-
-        // Pass 1 — LLM classify.
-        let detected = await detect(text, using: llmService)
-        let pass1IsVietnamese = detected == .vietnamese || detected == .mixed
-
-        // Agreement between Pass 0 and Pass 1, and not borderline: trust it, no Pass 2.
-        if pass1IsVietnamese == provisionalIsVietnamese && !borderline {
-            return pass1IsVietnamese == expectsVietnamese
-        }
-
-        // Pass 2 — LLM confirm. Disagreement or borderline: ask a targeted yes/no about the
-        // language we expect, and let that break the tie.
-        let confirmedVietnamese = await confirmLanguage(
-            text, isVietnamese: expectsVietnamese, using: llmService
-        )
-        return confirmedVietnamese == expectsVietnamese
-    }
-
-    /// Second-pass targeted confirmation for `matches`. Asks the LLM a single yes/no
-    /// question — "Is this text written in {Vietnamese|English}?" — which is an easier
-    /// judgement for a small model than open classification, so it breaks ties reliably.
-    /// Returns whether the text is Vietnamese. Fails open toward the deterministic density
-    /// signal when the model returns empty/error, so a runtime failure never flips a verdict.
-    private func confirmLanguage(
-        _ text: String,
-        isVietnamese expectVietnamese: Bool,
-        using llmService: LLMServiceProtocol
-    ) async -> Bool {
-        let languageName = expectVietnamese ? "Vietnamese" : "English"
-        let prompt = """
-        Is the TEXT below written in \(languageName)? Reply with exactly one word — \
-        "yes" or "no" — and nothing else. Do not answer or explain the text.
-
-        TEXT: \(text)
-        """
-
-        let stream = llmService.stream(request: LLMRequest(userMessage: prompt))
-        var reply = ""
-        for await token in stream {
-            reply += token
-        }
-        let normalized = Self.stripThinking(reply)
-            .trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-
-        // Fail open to the deterministic density signal on empty/error replies.
-        if normalized.isEmpty || normalized.hasPrefix("[mlx error") {
-            return vietnameseDensity(text) >= Self.vietnameseDensityThreshold
-        }
-
-        // "yes" confirms the language we asked about; "no" denies it.
-        if normalized.hasPrefix("yes") { return expectVietnamese }
-        if normalized.hasPrefix("no") { return !expectVietnamese }
-        // Ambiguous reply: fall back to the density signal.
-        return vietnameseDensity(text) >= Self.vietnameseDensityThreshold
-    }
-
-    /// Translates `text` into `targetLanguage` via the LLM. Primary path for converting the
-    /// English response back to the user's language: the LLM produces a noticeably more
-    /// natural, conversational tone than Apple's fairly literal Translation framework.
-    /// The trade-off is that a small on-device model can leak stray foreign-script words or
-    /// truncate long inputs, so callers MUST verify the result with `matches` (plus a length
-    /// sanity check) and fall back to Apple's Translation framework when verification fails.
-    func translate(
-        _ text: String,
-        to targetLanguage: DetectedLanguage,
-        using llmService: LLMServiceProtocol
-    ) async -> String {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return text }
-
-        let targetName = targetLanguage.requiresTranslation ? "Vietnamese" : "English"
-        let prompt = """
-        Translate the TEXT below into natural, conversational \(targetName), phrased the way \
-        a friendly medical assistant would say it. Keep every medical fact, term, and number \
-        accurate. Do NOT use any other language in your translation. Reply with ONLY the \
-        translated text, nothing else.
-
-        TEXT: \(trimmed)
-        """
-
-        let stream = llmService.stream(request: LLMRequest(userMessage: prompt))
-        var reply = ""
-        for await token in stream {
-            reply += token
-        }
-        let translated = reply.trimmingCharacters(in: .whitespacesAndNewlines)
-        return translated.isEmpty ? text : translated
-    }
+    // NOTE: `matches`, `confirmLanguage` and `translate` used to live here — an LLM-based
+    // output-language verifier (up to two round-trips) plus an LLM translator. Both became
+    // unreachable when generation went native: the answer is now written directly in the
+    // user's language and verified by the deterministic `checkGeneratedLanguage` above, with
+    // Apple Translation as the only repair path. They were removed rather than left compiled
+    // in — see Docs/BE/optimizationChecklist.md B4.1. `stripThinking` below is still used by
+    // `detect`.
 
     // MARK: - Private
 
