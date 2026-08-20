@@ -709,16 +709,7 @@ struct ChatWorkspaceView: View {
 
             Spacer()
 
-            HStack(spacing: 10) {
-                statusChip
-                Button(action: {}) {
-                    Image(systemName: "mic.fill")
-                        .appFont(size: 14, weight: .semibold)
-                        .foregroundColor(Color(.secondaryLabel))
-                        .frame(width: 42, height: 42)
-                        .background(Circle().fill(Color(.secondarySystemBackground)))
-                }
-            }
+            statusChip
         }
     }
 
