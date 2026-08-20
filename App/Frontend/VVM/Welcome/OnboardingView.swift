@@ -14,13 +14,22 @@ struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // The language page only exists in the TabView once the disclaimer is agreed to,
+            // so a forward swipe past the disclaimer page has nowhere to land until then —
+            // backward swiping between Welcome and Disclaimer is unaffected either way. This
+            // avoids needing to intercept the pan gesture directly: an earlier attempt at that
+            // (a `.highPriorityGesture` DragGesture, and before that a rejecting selection
+            // binding) either let the swipe through anyway or couldn't distinguish forward from
+            // backward drags, since a plain `DragGesture` has no notion of direction.
             TabView(selection: $page) {
                 WelcomeStepView()
                     .tag(0)
                 DisclaimerStepView(agreed: $hasAgreedToDisclaimer)
                     .tag(1)
-                LanguageStepView(selectedLanguage: $selectedLanguage)
-                    .tag(2)
+                if hasAgreedToDisclaimer {
+                    LanguageStepView(selectedLanguage: $selectedLanguage)
+                        .tag(2)
+                }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
 

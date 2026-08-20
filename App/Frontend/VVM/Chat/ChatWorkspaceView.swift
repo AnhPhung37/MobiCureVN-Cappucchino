@@ -15,6 +15,8 @@ struct ChatWorkspaceView: View {
     @State private var isShowingPhotoPicker = false
     @State private var photoPickerItems: [PhotosPickerItem] = []
     @State private var attachedImages: [UIImage] = []
+    @State private var isShowingImageLimitAlert = false
+    private let maxAttachedImages = 2
     @State private var searchText: String = ""
     @State private var downloadedModels: Set<ModelCatalog> = []
     @State private var isShowingProfile = false
@@ -70,10 +72,15 @@ struct ChatWorkspaceView: View {
             .onChange(of: viewModel.downloadingModels) { _, _ in
                 refreshDownloadedModels()
             }
-            .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItems, maxSelectionCount: 10, matching: .images)
+            .photosPicker(isPresented: $isShowingPhotoPicker, selection: $photoPickerItems, maxSelectionCount: remainingImageSlots, matching: .images)
             .onChange(of: photoPickerItems) { _, newItems in
                 guard !newItems.isEmpty else { return }
                 Task { await loadPickedImages(from: newItems) }
+            }
+            .alert("Giới hạn ảnh đính kèm".localized(for: appLanguage), isPresented: $isShowingImageLimitAlert) {
+                Button("Đã hiểu".localized(for: appLanguage), role: .cancel) {}
+            } message: {
+                Text(String(format: "Bạn chỉ có thể đính kèm tối đa %lld ảnh cho mỗi tin nhắn.".localized(for: appLanguage), maxAttachedImages))
             }
             .fullScreenCover(isPresented: $isShowingCameraPicker) {
                 CameraImagePicker(image: cameraCaptureBinding)
@@ -437,10 +444,20 @@ struct ChatWorkspaceView: View {
             Image(systemName: "phone.fill")
                 .foregroundColor(.red)
             Text("Khẩn cấp: gọi 115 hoặc liên hệ bác sĩ.")
-                .appFont(size: 12, weight: .medium)
-                .foregroundColor(Color(.secondaryLabel))
+                .appFont(size: 12, weight: .semibold)
+                .foregroundColor(.red)
             Spacer(minLength: 0)
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.red.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.red.opacity(0.4), lineWidth: 1.5)
+                )
+        )
     }
 
     // MARK: - Main Panel
@@ -482,6 +499,8 @@ struct ChatWorkspaceView: View {
                     .padding(.top, 18)
                     .padding(.bottom, 16)
                 }
+                .scrollBounceBehavior(.always)
+                .scrollDismissesKeyboard(.interactively)
                 .onChange(of: viewModel.messages.last?.content) { _, _ in
                     withAnimation(.easeOut(duration: 0.2)) {
                         proxy.scrollTo("bottom", anchor: .bottom)
@@ -690,16 +709,7 @@ struct ChatWorkspaceView: View {
 
             Spacer()
 
-            HStack(spacing: 10) {
-                statusChip
-                Button(action: {}) {
-                    Image(systemName: "mic.fill")
-                        .appFont(size: 14, weight: .semibold)
-                        .foregroundColor(Color(.secondaryLabel))
-                        .frame(width: 42, height: 42)
-                        .background(Circle().fill(Color(.secondarySystemBackground)))
-                }
-            }
+            statusChip
         }
     }
 
@@ -879,11 +889,15 @@ struct ChatWorkspaceView: View {
 
             HStack(alignment: .center, spacing: 12) {
                 Button {
-                    isShowingAttachmentSheet = true
+                    if attachedImages.count >= maxAttachedImages {
+                        isShowingImageLimitAlert = true
+                    } else {
+                        isShowingAttachmentSheet = true
+                    }
                 } label: {
                     Image(systemName: "photo.on.rectangle.angled")
                         .appFont(size: 16, weight: .semibold)
-                        .foregroundColor(Color(.secondaryLabel))
+                        .foregroundColor(attachedImages.count >= maxAttachedImages ? Color(.tertiaryLabel) : Color(.secondaryLabel))
                         .frame(width: 38, height: 38)
                         .background(Circle().fill(Color(.secondarySystemBackground)))
                 }
@@ -953,11 +967,19 @@ struct ChatWorkspaceView: View {
 
     // MARK: - Attachment Helpers
 
+    private var remainingImageSlots: Int {
+        max(0, maxAttachedImages - attachedImages.count)
+    }
+
     private var cameraCaptureBinding: Binding<UIImage?> {
         Binding(
             get: { nil },
             set: { newImage in
                 guard let newImage else { return }
+                guard attachedImages.count < maxAttachedImages else {
+                    isShowingImageLimitAlert = true
+                    return
+                }
                 attachedImages.append(newImage)
             }
         )
@@ -1010,7 +1032,11 @@ struct ChatWorkspaceView: View {
         }
 
         await MainActor.run {
-            attachedImages.append(contentsOf: loaded)
+            let slots = remainingImageSlots
+            if loaded.count > slots {
+                isShowingImageLimitAlert = true
+            }
+            attachedImages.append(contentsOf: loaded.prefix(slots))
             photoPickerItems = []
         }
     }
