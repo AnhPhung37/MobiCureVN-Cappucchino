@@ -437,10 +437,20 @@ struct ChatWorkspaceView: View {
             Image(systemName: "phone.fill")
                 .foregroundColor(.red)
             Text("Khẩn cấp: gọi 115 hoặc liên hệ bác sĩ.")
-                .appFont(size: 12, weight: .medium)
-                .foregroundColor(Color(.secondaryLabel))
+                .appFont(size: 12, weight: .semibold)
+                .foregroundColor(.red)
             Spacer(minLength: 0)
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.red.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.red.opacity(0.4), lineWidth: 1.5)
+                )
+        )
     }
 
     // MARK: - Main Panel
