@@ -492,6 +492,8 @@ struct ChatWorkspaceView: View {
                     .padding(.top, 18)
                     .padding(.bottom, 16)
                 }
+                .scrollBounceBehavior(.always)
+                .scrollDismissesKeyboard(.interactively)
                 .onChange(of: viewModel.messages.last?.content) { _, _ in
                     withAnimation(.easeOut(duration: 0.2)) {
                         proxy.scrollTo("bottom", anchor: .bottom)

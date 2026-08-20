@@ -458,7 +458,7 @@ final class MedicalChatOrchestrator {
         let systemPrompt = """
         LANGUAGE: \(languageInstruction)
 
-        \(Self.invariantSystemPrompt)\(contextLanguageNote)\(noContextInstruction)\(memorySection)
+        \(Self.invariantSystemPrompt)\(profileSection)\(contextLanguageNote)\(noContextInstruction)\(memorySection)\(conflictInstruction)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
@@ -522,26 +522,8 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources when providing medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.\(contextLanguageNote)\(profileSection)\(noContextInstruction)\(memorySection)\(conflictInstruction)
-
-        Retrieved Medical Context:
-        \(formatContextChunks(budgetedChunks))
-
-        Sources:
-        \(formatSources(context.sources))
-
-        Confidence Score: \(String(format: "%.0f%%", context.confidenceScore * 100))
-
-        REMINDER — \(languageInstruction)
+        - For medical advice, include a disclaimer that they should consult with a healthcare provider.
         """
-
-        // Trim history by token budget rather than turn count, so a few long answers cost the
-        // same prefill as many short ones. Older context is less useful for a 3B model and
-        // significantly increases prefill time.
-        let budgetedHistory = applyHistoryBudget(history, budget: Self.historyTokenBudget)
-
-        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
-    }
 
     /// Formats the confirmed profile as compact bullet lines, prioritized identity → clinical
     /// basics → clinical lists → care guidance → free-text summary, and truncated to `budget`
