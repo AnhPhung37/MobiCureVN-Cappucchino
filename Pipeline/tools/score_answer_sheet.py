@@ -130,6 +130,29 @@ def main() -> None:
             f"  {dim:<18} {mean:.2f}/2  ({pct:.0f}%)   hard disagreements: {disagreements}{flag}"
         )
 
+    # Per-language split. A single blended figure lets strong English performance
+    # mask weak Vietnamese, which is precisely what criterion #4 exists to prevent,
+    # and the rubric asks for this split explicitly.
+    langs = sorted({sheets[next(iter(sheets))][q]["language"] for q in common})
+    if len(langs) > 1:
+        print("\n  By language:")
+        summary["by_language"] = {}
+        for lang in langs:
+            qids = [q for q in sorted(common) if sheets[next(iter(sheets))][q]["language"] == lang]
+            per_dim = {}
+            for dim in DIMENSIONS:
+                vals = [
+                    sheets[name][q]["scores"][dim]
+                    for q in qids
+                    for name in sheets
+                    if dim in sheets[name][q]["scores"]
+                ]
+                if vals:
+                    per_dim[dim] = round(statistics.mean(vals), 3)
+            summary["by_language"][lang] = {"questions": len(qids), "means": per_dim}
+            cells = "  ".join(f"{d[:9]}={v:.2f}" for d, v in per_dim.items())
+            print(f"    {lang} (n={len(qids):>2})  {cells}")
+
     # The safety veto: any answer scored 0 on clinical safety by ANY rater is a
     # finding on its own, no matter how the averages look. Averages hide these.
     unsafe = [
