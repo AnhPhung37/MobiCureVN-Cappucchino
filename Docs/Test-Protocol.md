@@ -54,9 +54,11 @@ xcodebuild test -scheme MobiCureVN -destination 'platform=iOS,name=<iPad>' \
   -only-testing:MobiCureVNTests/LatencyBenchmarkTests
 ```
 
-`Docs/BE/Latency-Benchmark.md` shows the unprefixed form; if the test reports **skipped**, this
-is why. Alternatively set the variables in the scheme's Test action. On a physical device the
-JSON cannot be written into the repo — take it from the `.xcresult` attachment.
+If the test reports **skipped**, this is the first thing to check. Alternatively set the
+variables in the scheme's Test action. The model must also already be **downloaded on the
+device** (in-app model picker) — the harness resolves its local path through `ModelManager` and
+skips with a "not downloaded" message otherwise. On a physical device the JSON cannot be written
+into the repo — take it from the `.xcresult` attachment.
 
 ---
 
@@ -162,6 +164,7 @@ the `TEST_RUNNER_` variables (§0).
 |---|---|
 | normal test run | benchmark **skipped** |
 | opted-in run | JSON produced with `device` naming the iPad (e.g. `iPad…`, not a board id like `D84AP`) |
+| skip message, if skipped | names the actual cause (opt-in variable missing, or model not downloaded) |
 
 **Likely compile issues.** `sysctlbyname` / `UIDevice` imports; `XCTAttachment(data:uniformTypeIdentifier:)`.
 
@@ -279,7 +282,7 @@ about the patient.
 
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Swift `AuxPassGatingTests` | 7/7 | — |
+| Swift `AuxPassGatingTests` | 8/8 | includes a test pinning that "What is a stoma?" DOES run the pass — intended |
 | DEBUG log after a plain question | `6-7 · Post-answer passes … both skipped` | — |
 | Profile proposal still works | say "I am 62 years old and allergic to penicillin" | confirmation card appears |
 | Back-to-back latency | send 5 questions without waiting; compare turn 2-5 time-to-first-preview vs previous step | lower — this only shows on the NEXT turn |
@@ -372,7 +375,26 @@ tokenizer blocker (§5 of the handoff) makes it future work regardless of the re
 
 ---
 
-## 5. Record template
+## 5. Defects already fixed while writing this protocol
+
+No Swift here has been compiled, so every Swift test was cross-checked by hand — mirroring the
+production logic in Python where possible. That review found and fixed five defects **before**
+anyone ran them. Listed so a tester is not surprised by the extra commits on these branches:
+
+| Branch | Defect | Would have looked like |
+|---|---|---|
+| `final/latency-benchmark` | passed a Hugging Face repo id to `LLMService(modelPath:)`, which only checks `fileExists(atPath:)` | benchmark **always skipped**, no number ever produced |
+| `final/latency-benchmark` | documented `MOBICURE_BENCH=1 xcodebuild …` without the `TEST_RUNNER_` prefix | benchmark **always skipped** on device |
+| `final/context-budget-fix` (+ `retrieval-topk`) | a test expected small chunks behind an oversized one to be kept even when the partial-fill rule takes precedence | `ContextBudgetTests` **failing** on first run; the measured 0.4450 → 0.6890 was always computed against the real behaviour |
+| `final/aux-pass-gating` | two tests asserted "What is a stoma?" / "Hậu môn nhân tạo là gì?" skip the gate; the cue list deliberately matches them | `AuxPassGatingTests` **failing** on first run |
+| `final/prefix-kv-cache` | the test built the orchestrator from AppConfig's SwiftData singletons | possible test-host crash or slow, stateful tests |
+
+If a test in these files still fails on first compile, treat it the same way: check whether the
+**test** encodes a wrong expectation before changing production code.
+
+---
+
+## 6. Record template
 
 One file per step: `Docs/test-runs/NN-<branch>.md`.
 
@@ -414,7 +436,7 @@ KEEP / KEEP WITH KNOB CHANGE (which) / DROP — and why, in one line.
 
 ---
 
-## 6. Final checks — the numbers for the presentation
+## 7. Final checks — the numbers for the presentation
 
 After the last kept step:
 
@@ -451,6 +473,6 @@ rate, privacy audit result. **Every number on a slide must trace to a file in `D
 | `final/frontend-perf-notes` | main | docs | 4.1 |
 | `final/multilang-embedder-and-test-protocol` | eval-integrity | investigation + this doc | 4.2 |
 
-Merging all fifteen in this order was dry-run on 2026-09-13: every merge is clean except 3.4, whose
+Merging all fifteen in this order was dry-run on 2026-09-13, and again after the §5 fixes: every merge is clean except 3.4, whose
 conflict resolves exactly as described there, leaving `retrievalTopK 10`, `contextTokenBudget
 3000`, `historyTokenBudget 350`, `maxTokens 512`, `prefillStepSize 512`.
