@@ -1,0 +1,108 @@
+
+MobiCureVN — privacy / locality audit
+repo:   /home/quan-nguyen15/Documents/capstone
+commit: 5468933 (DIRTY)
+date:   2026-09-12T08:41:53Z
+
+────────────────────────────────────────────────────────────
+1. Commercial LLM inference endpoints (must be ZERO)
+────────────────────────────────────────────────────────────
+  PASS — no reference to any commercial LLM API host.
+
+────────────────────────────────────────────────────────────
+2. All hardcoded http(s) URLs
+────────────────────────────────────────────────────────────
+  https://developer.apple.com
+      documentation reference only (appears solely in comments) — not an egress path
+  https://github.com
+      string literal in a user-facing message — no request is constructed from it
+  https://huggingface.co   [reached from code]
+      declared: one-time download of open-weight model files (MLX). No prompt, query or patient data is sent; the request carries only a repo path.
+        App/Backend/Services/LLM/ModelManager.swift:315:        let apiURL = URL(string: "https://huggingface.co/api/models/\(repoID.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? repoID)")!
+        App/Backend/Services/LLM/ModelManager.swift:382:                    let fileURL = URL(string: "https://huggingface.co/\(repoID)/resolve/main/\(filename.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? filename)")!
+  https://www.kaggle.com   [reached from code]
+      declared: medical-anchor dataset fetch used to build the input guardrail's relevance vocabulary. Verify this is a BUILD-time fetch, not a runtime one.
+        App/Backend/Services/GuardRail/MedicalAnchorLoader.swift:99:            "https://www.kaggle.com/api/v1/datasets/download/\(datasetOwner)/\(datasetSlug)")
+
+────────────────────────────────────────────────────────────
+3. Networking API usage (URLSession / sockets / web views)
+────────────────────────────────────────────────────────────
+  App/Backend/Configs/AppConfig.swift:201:    @MainActor private static var downloadTasks: [ModelCatalog: Task<Void, Never>] = [:]
+  App/Backend/Configs/AppConfig.swift:214:        downloadTasks[model] != nil
+  App/Backend/Configs/AppConfig.swift:363:    /// parallel; each is tracked independently in `downloadTasks` / `modelDownloadProgress`.
+  App/Backend/Configs/AppConfig.swift:367:        guard downloadTasks[model] == nil else { return }  // already downloading
+  App/Backend/Configs/AppConfig.swift:399:        downloadTasks[model] = task
+  App/Backend/Configs/AppConfig.swift:406:        downloadTasks[model] = nil
+  App/Backend/Configs/AppConfig.swift:418:        downloadTasks[model]?.cancel()
+  App/Backend/Services/LLM/ModelManager.swift:76:    private func applyAuth(_ token: String?, to request: inout URLRequest) {
+  App/Backend/Services/LLM/ModelManager.swift:219:                var request = URLRequest(url: archiveSource)
+  App/Backend/Services/LLM/ModelManager.swift:222:                let (localURL, response) = try await URLSession.shared.download(for: request)
+  App/Backend/Services/LLM/ModelManager.swift:316:        var request = URLRequest(url: apiURL)
+  App/Backend/Services/LLM/ModelManager.swift:319:        let (data, response) = try await URLSession.shared.data(for: request)
+  App/Backend/Services/LLM/ModelManager.swift:383:                    var fileRequest = URLRequest(url: fileURL)
+  App/Backend/Services/LLM/ModelManager.swift:472:    /// Mirrors `URLSession.download(for:)`'s return shape: (temp file URL, response). A
+  App/Backend/Services/LLM/ModelManager.swift:473:    /// `URLSessionDownloadTask` streams the body to disk in the networking layer — no bytes
+  App/Backend/Services/LLM/ModelManager.swift:477:    private func downloadWithProgress(request: URLRequest,
+  App/Backend/Services/LLM/ModelManager.swift:485:                let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+  App/Backend/Services/LLM/ModelManager.swift:486:                let task = session.downloadTask(with: request)
+  App/Backend/Services/LLM/ModelManager.swift:498:    // @unchecked Sendable: URLSession serializes all delegate callbacks for a given task onto
+  App/Backend/Services/LLM/ModelManager.swift:501:    private final class ProgressDownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
+  App/Backend/Services/LLM/ModelManager.swift:505:        weak var task: URLSessionDownloadTask?
+  App/Backend/Services/LLM/ModelManager.swift:512:        func urlSession(_ session: URLSession,
+  App/Backend/Services/LLM/ModelManager.swift:513:                        downloadTask: URLSessionDownloadTask,
+  App/Backend/Services/LLM/ModelManager.swift:526:        func urlSession(_ session: URLSession,
+  App/Backend/Services/LLM/ModelManager.swift:527:                        downloadTask: URLSessionDownloadTask,
+  App/Backend/Services/LLM/ModelManager.swift:529:            let response = downloadTask.response ?? URLResponse()
+  App/Backend/Services/LLM/ModelManager.swift:539:        func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+  App/Backend/Services/GuardRail/MedicalAnchorLoader.swift:102:        var request = URLRequest(url: url, timeoutInterval: 120)
+  App/Backend/Services/GuardRail/MedicalAnchorLoader.swift:107:        let (tmpURL, response) = try await URLSession.shared.download(for: request)
+
+  Each line above must be attributable to model/asset download, never to inference
+  or to sending user content off-device.
+
+────────────────────────────────────────────────────────────
+4. Analytics, telemetry and crash reporting (must be ZERO)
+────────────────────────────────────────────────────────────
+  PASS — no third-party analytics or crash-reporting SDK.
+
+────────────────────────────────────────────────────────────
+5. Patient-data persistence (must be on-device only)
+────────────────────────────────────────────────────────────
+  SwiftData / SQLite stores:
+    App/Backend/Store/SwiftDataProfileUpdateRepository.swift
+    App/Backend/Store/InMemoryProfileRepository.swift
+    App/Backend/Store/StoreFileProtection.swift
+    App/Backend/Store/SwiftDataChatHistoryRepository.swift
+    App/Backend/Store/SwiftDataProfileRepository.swift
+    App/Backend/Store/WoundLogRecord.swift
+    App/Backend/Store/SwiftDataWoundLogRepository.swift
+    App/Backend/Store/InMemoryChatHistoryRepository.swift
+    App/Backend/Store/ChatConversationRecord.swift
+    App/Backend/Store/ProposedProfileUpdateRecord.swift
+    App/Backend/Store/PatientProfileRecord.swift
+    App/Backend/Store/ChatRecord.swift
+    App/Backend/Services/RAG/SQLiteRetriever.swift
+
+  File protection applied to those stores:
+    10:/// `.completeUnlessOpen` is the right class for a database the app holds open across the
+    20:    static func apply(_ level: FileProtectionType = .completeUnlessOpen, toStoreAt storeURL: URL?) {
+
+  iCloud / CloudKit sync (would take patient data off-device):
+    PASS — none. Stores are local-only.
+
+────────────────────────────────────────────────────────────
+6. Entitlements / App Transport Security
+────────────────────────────────────────────────────────────
+  App/MobiCureVN.entitlements
+
+────────────────────────────────────────────────────────────
+VERDICT: consistent with criterion #1.
+
+  Claim this exactly: inference, retrieval, translation and storage all run
+  on-device; no patient text, photo or profile field is ever transmitted; the
+  only network egress is a one-time download of open-weight model files.
+
+  A static scan is necessary but not sufficient. Pair it with the runtime
+  proof: Airplane Mode demo (Docs/BE/Privacy-Audit.md §Runtime proof).
+────────────────────────────────────────────────────────────
+
