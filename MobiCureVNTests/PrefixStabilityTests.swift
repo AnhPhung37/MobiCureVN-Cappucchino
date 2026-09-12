@@ -12,7 +12,16 @@ import XCTest
 /// cheap half of it: they need no MLX runtime and run in milliseconds.
 final class PrefixStabilityTests: XCTestCase {
 
-    private let orchestrator = MedicalChatOrchestrator(llmService: MockLLMService())
+    /// Built with in-memory stores rather than the defaults, which reach AppConfig's
+    /// SwiftData-backed repositories. buildEnrichedPrompt is pure string assembly and needs none
+    /// of them. The RAG service still defaults to AppConfig.retriever (the bundled SQLite
+    /// index), which prompt building never calls.
+    private let orchestrator = MedicalChatOrchestrator(
+        llmService: MockLLMService(),
+        factStore: SessionFactStore(),
+        profileRepository: InMemoryProfileRepository(patientID: UUID()),
+        profileUpdateStore: InMemoryProfileUpdateRepository()
+    )
 
     private func context(chunks: [ContextChunk], confidence: Double = 0.8) -> RetrievedContext {
         RetrievedContext(
