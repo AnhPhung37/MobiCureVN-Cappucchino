@@ -165,6 +165,22 @@ class ScoringTests(unittest.TestCase):
         self.assertIn("en (n= 1)", out)
         self.assertIn("vi (n= 1)", out)
 
+    def test_reports_weighted_kappa_and_flags_poor_agreement(self):
+        r1 = [row(f"q{i}", grounded=g) for i, g in enumerate([0, 1, 2, 0, 1, 2, 0, 1, 2, 2], start=1)]
+        r2 = [row(f"q{i}", grounded=g) for i, g in enumerate([2, 1, 0, 2, 1, 0, 2, 1, 0, 0], start=1)]
+        out = self._score({"r1": r1, "r2": r2})
+        line = next(l for l in out.splitlines() if l.strip().startswith("grounded"))
+        self.assertIn("kw -", line, "systematically opposite raters score below chance")
+        self.assertIn("raters diverge", line)
+
+    def test_json_summary_carries_the_kappa(self):
+        out_path = self.tmp / "kappa.json"
+        rows = [row(f"q{i}", grounded=i % 3) for i in range(1, 7)]
+        self._score({"r1": rows, "r2": rows}, out=out_path)
+        kappa = json.loads(out_path.read_text())["dimensions"]["grounded"]["weighted_kappa"]
+        self.assertEqual(kappa["mean"], 1.0)
+        self.assertEqual(kappa["interpretation"], "almost perfect")
+
     def test_writes_a_json_summary(self):
         out_path = self.tmp / "summary.json"
         self._score({"r1": [row("q1")], "r2": [row("q1")]}, out=out_path)
@@ -193,6 +209,46 @@ class ScoringTests(unittest.TestCase):
     def test_rejects_raters_who_scored_different_questions(self):
         with self.assertRaises(SystemExit):
             self._score({"r1": [row("q1")], "r2": [row("q99")]})
+
+
+class WeightedKappaTests(unittest.TestCase):
+    """Inter-rater agreement is the number that makes two raters' scores a measurement."""
+
+    def test_identical_ratings_with_variance_agree_perfectly(self):
+        self.assertAlmostEqual(score_tool.weighted_kappa([0, 1, 2, 2, 1], [0, 1, 2, 2, 1]), 1.0)
+
+    def test_matches_a_hand_computed_value(self):
+        # rater a: 0,0,1,2   rater b: 0,1,1,2   (k = 3, quadratic weights 0 / 0.25 / 1)
+        # observed weighted disagreement = 0.25 (one 0-vs-1)
+        # expected = sum w_ij * row_i * col_j / n with rows (2,1,1), cols (1,2,1), n = 4
+        #          = 0.25*(2*2 + 1*1 + 1*2 + 1*1)/4 + 1*(2*1 + 1*1)/4 = 0.25*8/4 + 3/4 = 1.25
+        self.assertAlmostEqual(score_tool.weighted_kappa([0, 0, 1, 2], [0, 1, 1, 2]), 1 - 0.25 / 1.25)
+
+    def test_agrees_with_scikit_learn_when_available(self):
+        try:
+            from sklearn.metrics import cohen_kappa_score
+        except ImportError:
+            self.skipTest("scikit-learn not installed")
+        import random
+
+        rng = random.Random(7)
+        for _ in range(50):
+            a = [rng.randint(0, 2) for _ in range(30)]
+            b = [min(2, max(0, x + rng.choice([-1, 0, 0, 1]))) for x in a]
+            ours = score_tool.weighted_kappa(a, b)
+            if ours is None:
+                continue
+            self.assertAlmostEqual(ours, cohen_kappa_score(a, b, labels=[0, 1, 2], weights="quadratic"), places=9)
+
+    def test_is_undefined_without_variance_or_items(self):
+        self.assertIsNone(score_tool.weighted_kappa([2, 2, 2], [2, 2, 2]))
+        self.assertIsNone(score_tool.weighted_kappa([1], [1]))
+
+    def test_interpretation_bands(self):
+        self.assertEqual(score_tool.interpret_kappa(0.85), "almost perfect")
+        self.assertEqual(score_tool.interpret_kappa(0.5), "moderate")
+        self.assertEqual(score_tool.interpret_kappa(-0.1), "poor")
+        self.assertEqual(score_tool.interpret_kappa(None), "undefined")
 
 
 class GeneratorCliTests(unittest.TestCase):

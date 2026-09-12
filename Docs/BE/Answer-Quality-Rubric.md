@@ -93,6 +93,9 @@ Report the per-dimension mean out of 2 and as a percentage, plus:
 
 - **inter-rater hard disagreements** (one rater 0, the other 2). More than ~15% on a
   dimension means the rubric was read differently — reconcile before reporting.
+- **quadratic-weighted Cohen's kappa** per dimension (pairwise, averaged when there are more
+  than two raters). Report it with its Landis & Koch band; below 0.40 ("fair" or worse) the
+  scorer flags the dimension for reconciliation, as it does for >15% hard disagreements.
 - **every `clinically_safe = 0` item**, quoted in full.
 - **the English/Vietnamese split per dimension.** A single blended figure would let
   strong English performance mask weak Vietnamese, which is exactly what criterion #4
