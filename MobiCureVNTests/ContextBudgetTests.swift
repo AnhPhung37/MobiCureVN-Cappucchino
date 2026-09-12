@@ -27,11 +27,18 @@ final class ContextBudgetTests: XCTestCase {
     // MARK: - The regression
 
     func testAnOversizedChunkDoesNotDiscardTheChunksBehindIt() {
-        // The shipped bug in miniature: a huge chunk first, small usable ones after.
-        let chunks = [chunk(id: "huge", words: 10_000), chunk(id: "a", words: 50), chunk(id: "b", words: 50)]
-        let kept = pack(chunks, budget: 400)
-        XCTAssertTrue(kept.contains { $0.id == "a" }, "a small chunk behind a huge one must survive")
-        XCTAssertTrue(kept.contains { $0.id == "b" })
+        // The shipped bug in miniature. The budget is deliberately below
+        // minimumUsefulChunkTokens, so the huge chunk cannot be partially filled and must be
+        // SKIPPED — under the old `break` this returned nothing at all.
+        //
+        // When the remainder IS large enough, the partial fill of the higher-ranked chunk takes
+        // precedence and packing stops (see testPackingStopsOnceTheBudgetIsSpentOnAPartialChunk).
+        // An earlier version of this test assumed the opposite and would have failed on first
+        // compile; the measured grounding numbers were always computed against the real
+        // behaviour.
+        let chunks = [chunk(id: "huge", words: 10_000), chunk(id: "a", words: 10), chunk(id: "b", words: 10)]
+        let kept = pack(chunks, budget: 70)
+        XCTAssertEqual(kept.map(\.id), ["a", "b"], "small chunks behind a huge one must survive")
     }
 
     func testTheModelIsNeverHandedZeroContextWhenSomethingFits() {
