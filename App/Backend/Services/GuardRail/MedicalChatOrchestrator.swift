@@ -350,9 +350,13 @@ final class MedicalChatOrchestrator {
     /// a relaunch, not a rebuild. See `Docs/BE/inferenceTuning.md`.
     private static var tuning: InferenceTuning.Prompt { InferenceTuning.current.prompt }
 
-    // Token budget for RAG context injected into the system prompt.
-    // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
-    private static let contextTokenBudget = 600
+    // Token budget for RAG context injected into the system prompt, bounding prefill time.
+    //
+    // Read from `InferenceTuning` like every other prompt budget. It used to be a hardcoded
+    // 600 here while `InferenceTuning.Prompt.contextTokenBudget` existed and was parsed from
+    // the JSON — so editing the JSON silently did nothing, and the value was never actually
+    // tunable. See Docs/BE/Context-Budget-Finding.md.
+    private static var contextTokenBudget: Int { tuning.contextTokenBudget }
     // Token budget for the persisted patient profile block. Smaller than the RAG budget —
     // these are compact structured facts, not prose.
     private static let profileTokenBudget = 200
@@ -402,7 +406,7 @@ final class MedicalChatOrchestrator {
         """ : ""
 
         // Apply token budget to RAG chunks so the system prompt stays compact.
-        let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+        let budgetedChunks = Self.applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
 
         // The confirmed, cross-conversation profile — durable baseline, persists across chats.
         // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install), so a
@@ -609,18 +613,79 @@ final class MedicalChatOrchestrator {
         return parts.prefix(words).joined(separator: " ") + " […]"
     }
 
-    private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
+    /// Packs relevance-ranked chunks into `budget`, skipping what will not fit and trimming
+    /// the last one to use the remainder.
+    ///
+    /// This used to `break` on the first chunk that did not fit, which discarded every chunk
+    /// behind it however small. Because the corpus contains chunks far larger than any sane
+    /// budget (18% exceed 512 tokens; the largest is ~13.6k), a single oversized chunk landing
+    /// at rank 1 emptied the whole context — and the model answered a medical question from
+    /// parametric memory with no sources at all. Measured over the 209-query golden set, that
+    /// happened on **22.5% of queries**, and only 1.52 of 5 retrieved chunks reached the model.
+    ///
+    /// `continue` keeps scanning, so a large chunk costs only itself. The final partial fill
+    /// then spends whatever budget is left on the head of the next chunk: for a 13k-token
+    /// passage, the first few hundred tokens of the right source beat nothing at all.
+    /// `static` and internal rather than private: it depends on no instance state, and a unit
+    /// test can then exercise the packing directly instead of standing up an orchestrator
+    /// (which would pull in AppConfig's SwiftData stores for a pure function).
+    static func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
+        guard budget > 0 else { return [] }
+
         var usedTokens = 0
         var selected: [ContextChunk] = []
 
         for chunk in chunks {
             let estimate = Self.estimateTokens(chunk.content)
-            if usedTokens + estimate > budget { break }
-            usedTokens += estimate
-            selected.append(chunk)
+            if usedTokens + estimate <= budget {
+                usedTokens += estimate
+                selected.append(chunk)
+                continue
+            }
+
+            // Does not fit whole. Skip it and keep looking — a later, smaller chunk may still
+            // fit, which is the bug this replaces.
+            let remaining = budget - usedTokens
+            guard remaining >= Self.minimumUsefulChunkTokens else { continue }
+
+            // Enough room left to be worth a partial passage. Take the head of the highest
+            // ranked chunk that did not fit, then stop: the budget is now spent.
+            let trimmed = Self.truncate(chunk.content, toTokens: remaining)
+            guard !trimmed.isEmpty else { continue }
+            selected.append(
+                ContextChunk(
+                    id: chunk.id,
+                    content: trimmed + Self.truncationMarker,
+                    section: chunk.section,
+                    sourceID: chunk.sourceID,
+                    relevanceScore: chunk.relevanceScore
+                )
+            )
+            break
         }
 
         return selected
+    }
+
+    /// Below this, a partial passage is more likely to mislead than to ground: a sentence or
+    /// two torn out of a clinical document reads as authoritative while carrying no usable
+    /// fact. Better to leave the budget unspent.
+    private static let minimumUsefulChunkTokens = 80
+
+    /// Signals to the model that the passage was cut, so it does not treat the end of the text
+    /// as the end of the guidance.
+    private static let truncationMarker = " […]"
+
+    /// Word-granular truncation to approximately `tokens`, using the same estimate as the
+    /// budget itself so the two cannot disagree. Cuts at a word boundary — a half word is
+    /// never worth the tokens it costs.
+    private static func truncate(_ text: String, toTokens tokens: Int) -> String {
+        guard tokens > 0 else { return "" }
+        let words = text.split(separator: " ", omittingEmptySubsequences: true)
+        let allowedWords = Int(Double(tokens) / wordsToTokensRatio)
+        guard allowedWords > 0 else { return "" }
+        guard words.count > allowedWords else { return text }
+        return words.prefix(allowedWords).joined(separator: " ")
     }
 
     /// Selects as many of the most recent messages as fit within `budget`, condensing assistant

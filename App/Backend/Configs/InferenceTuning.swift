@@ -134,10 +134,10 @@ nonisolated struct InferenceTuning: Sendable {
             prefillStepSize: nil
         ),
         prompt: Prompt(
-            contextTokenBudget: 600,
+            contextTokenBudget: 2000,
             historyTokenBudget: 500,
             assistantReplayWordCap: 60,
-            wordsToTokensRatio: 1.4
+            wordsToTokensRatio: 1.6
         ),
         vision: Vision(
             inputSide: 512,
