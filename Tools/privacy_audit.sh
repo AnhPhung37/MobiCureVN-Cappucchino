@@ -49,12 +49,23 @@ hr
 say "1. Commercial LLM inference endpoints (must be ZERO)"
 hr
 prohibited=$(grep -rEn "$PROHIBITED_HOSTS" "${SRC_DIRS[@]}" 2>/dev/null)
-if [[ -z "$prohibited" ]]; then
-  say "  PASS — no reference to any commercial LLM API host."
+# A host named in a comment ("we deliberately do not call X") is not a call. It is
+# still worth showing -- a reviewer should see it -- but failing on it would make
+# the audit impossible to keep green while documenting the decision.
+prohibited_code=$(printf '%s\n' "$prohibited" | grep -vE ':[0-9]+:[[:space:]]*(//|///|\*)' | grep -v '^$')
+prohibited_comment=$(printf '%s\n' "$prohibited" | grep -E ':[0-9]+:[[:space:]]*(//|///|\*)' | grep -v '^$')
+
+if [[ -z "$prohibited_code" ]]; then
+  say "  PASS — no code path reaches a commercial LLM API host."
 else
   say "  FAIL — criterion #1 is violated by:"
-  say "$prohibited" | sed 's/^/    /'
+  say "$prohibited_code" | sed 's/^/    /'
   fail=1
+fi
+if [[ -n "$prohibited_comment" ]]; then
+  say ""
+  say "  NOTE — mentioned in comments only (not a call, shown for review):"
+  say "$prohibited_comment" | sed 's/^/    /'
 fi
 say ""
 

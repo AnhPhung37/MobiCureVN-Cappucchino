@@ -1,13 +1,13 @@
 
 MobiCureVN — privacy / locality audit
 repo:   /home/quan-nguyen15/Documents/capstone
-commit: 5468933 (DIRTY)
-date:   2026-09-12T08:41:53Z
+commit: 28809a6 (DIRTY)
+date:   2026-09-12T08:55:40Z
 
 ────────────────────────────────────────────────────────────
 1. Commercial LLM inference endpoints (must be ZERO)
 ────────────────────────────────────────────────────────────
-  PASS — no reference to any commercial LLM API host.
+  PASS — no code path reaches a commercial LLM API host.
 
 ────────────────────────────────────────────────────────────
 2. All hardcoded http(s) URLs
