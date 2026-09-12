@@ -9,8 +9,10 @@
     "retrieval": {
         "mode": "hybrid",
         "candidate_multiplier": 3,
-        "rrf_k": 60,
-        "min_token_length": 3
+        "rrf_k": 60.0,
+        "min_token_length": 3,
+        "always_fuse": true,
+        "drop_stopwords": true
     },
     "evaluation": {
         "queries_path": "./data/queries.jsonl",
@@ -25,9 +27,18 @@
     "experiments": [
         {
             "name": "neural",
+            "enabled": true,
             "source_chunks_dir": "../data/neural_chunks",
             "enriched_output_dir": "./outputs/enriched_neural",
             "index_db_path": "./outputs/vectorstore_neural.db"
+        },
+        {
+            "name": "semantic",
+            "enabled": false,
+            "disabled_reason": "../data/semantic_chunks holds 9 of the 39 corpus docs, so the golden set (39 docs) cannot be scored against it. Re-chunk the full corpus semantically before re-enabling, or the comparison is not like-for-like.",
+            "source_chunks_dir": "../data/semantic_chunks",
+            "enriched_output_dir": "./outputs/enriched_semantic",
+            "index_db_path": "./outputs/vectorstore_semantic.db"
         }
     ]
 }

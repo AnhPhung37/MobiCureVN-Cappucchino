@@ -4,7 +4,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from .dataset import QueryItem, QrelItem
-from .metrics_ir import mrr, ndcg_at_k, recall_at_k
+from .metrics_ir import doc_hit_at_k, mrr, ndcg_at_k, recall_at_k
 from .metrics_qa import answer_similarity, faithfulness, safe_mean
 from .retriever import Embedder, HybridRetriever, SQLiteVecRetriever
 
@@ -27,12 +27,17 @@ def run_experiment(
     mode = retrieval.get("mode", "hybrid")
     if mode == "hybrid":
         # Faithful port of the shipped app retriever (FTS + vec + RRF).
+        # always_fuse/drop_stopwords default to True because that is what
+        # SQLiteRetriever.swift:55-62 actually ships; leaving them off measured a
+        # retriever the app does not have and under-reported recall.
         retriever = HybridRetriever(
             db_path,
             embedder,
             candidate_multiplier=retrieval.get("candidate_multiplier", 3),
             rrf_k=retrieval.get("rrf_k", 60.0),
             min_token_length=retrieval.get("min_token_length", 3),
+            always_fuse=retrieval.get("always_fuse", True),
+            drop_stopwords=retrieval.get("drop_stopwords", True),
         )
     elif mode == "vector":
         retriever = SQLiteVecRetriever(db_path, embedder)
@@ -43,6 +48,7 @@ def run_experiment(
     recall_scores: list[float] = []
     mrr_scores: list[float] = []
     ndcg_scores: list[float] = []
+    doc_hit_scores: list[float] = []
     ans_rel_scores: list[float] = []
     faith_scores: list[float] = []
 
@@ -54,10 +60,12 @@ def run_experiment(
         r_at_k = recall_at_k(rel_ids, retrieved_ids, top_k)
         mrr_score = mrr(rel_ids, retrieved_ids)
         ndcg_score = ndcg_at_k(rel_ids, retrieved_ids, top_k)
+        doc_hit = doc_hit_at_k(rel_ids, retrieved_ids, top_k)
 
         recall_scores.append(r_at_k)
         mrr_scores.append(mrr_score)
         ndcg_scores.append(ndcg_score)
+        doc_hit_scores.append(doc_hit)
 
         answer_text = None
         answer_rel = None
@@ -80,6 +88,7 @@ def run_experiment(
                 "recall@k": r_at_k,
                 "mrr": mrr_score,
                 "ndcg@k": ndcg_score,
+                "doc_hit@k": doc_hit,
                 "answer": answer_text,
                 "answer_similarity": answer_rel,
                 "faithfulness": faith,
@@ -90,12 +99,21 @@ def run_experiment(
         "recall@k": safe_mean(recall_scores),
         "mrr": safe_mean(mrr_scores),
         "ndcg@k": safe_mean(ndcg_scores),
+        "doc_hit@k": safe_mean(doc_hit_scores),
         "answer_similarity": safe_mean(ans_rel_scores),
         "faithfulness": safe_mean(faith_scores),
     }
 
     return {
         "experiment": name,
+        "retrieval": {
+            "mode": mode,
+            "candidate_multiplier": retrieval.get("candidate_multiplier", 3),
+            "rrf_k": retrieval.get("rrf_k", 60.0),
+            "min_token_length": retrieval.get("min_token_length", 3),
+            "always_fuse": retrieval.get("always_fuse", True),
+            "drop_stopwords": retrieval.get("drop_stopwords", True),
+        },
         "metrics": metrics,
         "per_query": per_query,
     }

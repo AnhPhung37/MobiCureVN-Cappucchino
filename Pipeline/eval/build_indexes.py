@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .chunk_prep import enrich_chunks
 from .index_builder import build_index
+from .provenance import index_fingerprint
 from .utils import ensure_dir
 
 
@@ -38,6 +39,10 @@ def main() -> None:
     embed_cfg = cfg["embed"]
 
     for exp in cfg["experiments"]:
+        if not exp.get("enabled", True):
+            print(f"[SKIP] {exp['name']}: {exp.get('disabled_reason', 'disabled in config')}")
+            continue
+
         source_dir = _resolve_path(base_dir, exp["source_chunks_dir"])
         enriched_dir = _resolve_path(base_dir, exp["enriched_output_dir"])
         index_db = _resolve_path(base_dir, exp["index_db_path"])
@@ -56,7 +61,11 @@ def main() -> None:
             embed_cfg["embed_dim"],
             embed_cfg["batch_size"],
         )
-        print(f"[OK] {exp['name']} indexed {count} chunks")
+        fp = index_fingerprint(index_db)
+        print(
+            f"[OK] {exp['name']} indexed {count} chunks "
+            f"({fp['doc_count']} docs, sha256={(fp['sha256'] or '')[:12]})"
+        )
 
 
 if __name__ == "__main__":
