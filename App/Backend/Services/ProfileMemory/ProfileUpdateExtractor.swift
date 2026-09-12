@@ -107,7 +107,11 @@ nonisolated struct ProfileUpdateExtractor {
         MESSAGE: \(trimmed)
         """
 
-        let stream = llmService.stream(request: LLMRequest(userMessage: prompt))
+        // A short JSON array parsed strictly: greedy decoding and the extraction ceiling, as
+        // SessionFactExtractor already asks for. Without options this inherited the ANSWER
+        // preset — the full answer token budget at answering temperature — so a model that
+        // started explaining itself held the shared ModelContainer for the whole budget.
+        let stream = llmService.stream(request: LLMRequest(userMessage: prompt, options: .extraction))
         var reply = ""
         for await token in stream {
             reply += token
