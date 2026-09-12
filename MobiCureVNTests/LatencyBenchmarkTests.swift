@@ -15,8 +15,8 @@ import UIKit
 /// Run it on each target device and keep the JSON — a criterion with no recorded
 /// measurement is an unanswered criterion.
 ///
-///     MOBICURE_BENCH=1 \
-///     MOBICURE_BENCH_OUT=$PWD/Docs/benchmarks/latency-ipad-m5.json \
+///     TEST_RUNNER_MOBICURE_BENCH=1 \
+///     TEST_RUNNER_MOBICURE_BENCH_OUT=$PWD/Docs/benchmarks/latency-ipad-m5.json \
 ///     xcodebuild test -scheme MobiCureVN \
 ///       -destination 'platform=iOS,name=<iPad>' \
 ///       -only-testing:MobiCureVNTests/LatencyBenchmarkTests
@@ -93,7 +93,7 @@ final class LatencyBenchmarkTests: XCTestCase {
     func testEndToEndLatencyMeetsBudget() async throws {
         try XCTSkipUnless(
             ProcessInfo.processInfo.environment["MOBICURE_BENCH"] == "1",
-            "Latency benchmark is opt-in: set MOBICURE_BENCH=1. See Docs/BE/Latency-Benchmark.md"
+            "Latency benchmark is opt-in: set MOBICURE_BENCH=1 (via xcodebuild: TEST_RUNNER_MOBICURE_BENCH=1). See Docs/BE/Latency-Benchmark.md"
         )
 
         // A mock backend would measure nothing but the harness itself, so refuse to
@@ -101,8 +101,22 @@ final class LatencyBenchmarkTests: XCTestCase {
         let modelID = ProcessInfo.processInfo.environment["MOBICURE_BENCH_MODEL"]
             ?? ModelCatalog.default.repoID
 
+        // LLMService takes a LOCAL model directory, not a Hugging Face repo id: its init only
+        // checks FileManager.fileExists(atPath:). Passing the repo id — as this test first did —
+        // made isModelAvailable false, so every run skipped and no number was ever produced.
+        // Resolve the path exactly as AppConfig.initializeLLMService does.
+        let modelURL: URL? = ModelManager.shared.isModelDownloaded(repoID: modelID)
+            ? try? ModelManager.shared.localModelURL(repoID: modelID)
+            : nil
+        guard let modelURL else {
+            throw XCTSkip(
+                "Model \(modelID) is not downloaded on this device. Download it from the app's "
+                + "model picker first, then re-run."
+            )
+        }
+
         let loadStart = Date()
-        let service = LLMService(modelPath: modelID)
+        let service = LLMService(modelPath: modelURL.path)
         let ready = await service.initializeModel()
         let modelLoadSeconds = Date().timeIntervalSince(loadStart)
         try XCTSkipUnless(

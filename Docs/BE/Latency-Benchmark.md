@@ -43,6 +43,15 @@ short questions would produce a number that says nothing about real use.
 
 ## How to run
 
+> **`xcodebuild` does not forward ordinary environment variables into the test process on a
+> device.** Prefix them with `TEST_RUNNER_` — `xcodebuild` strips the prefix and passes them
+> through, so the test still reads `MOBICURE_BENCH`. Without the prefix the benchmark reports
+> **skipped**. Setting the variables in the scheme's Test action works too.
+>
+> The model must already be **downloaded on the device** (use the in-app model picker). The
+> test resolves its local path through `ModelManager`; a model that is not on disk skips with a
+> message saying so.
+
 The benchmark is **opt-in**. It loads a multi-GB model and takes minutes, so it is
 skipped unless `MOBICURE_BENCH=1` — normal `⌘U` and CI runs are unaffected.
 
@@ -50,8 +59,8 @@ skipped unless `MOBICURE_BENCH=1` — normal `⌘U` and CI runs are unaffected.
 
 ```bash
 mkdir -p Docs/benchmarks
-MOBICURE_BENCH=1 \
-MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/latency-ipad-m5.json" \
+TEST_RUNNER_MOBICURE_BENCH=1 \
+TEST_RUNNER_MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/latency-ipad-m5.json" \
 xcodebuild test \
   -scheme MobiCureVN \
   -destination 'platform=iOS,name=<your iPad name>' \
@@ -65,8 +74,8 @@ the `latency-benchmark.json` attachment, and save it into `Docs/benchmarks/`.
 ### Mac Studio M3 Max
 
 ```bash
-MOBICURE_BENCH=1 \
-MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/latency-macstudio-m3max.json" \
+TEST_RUNNER_MOBICURE_BENCH=1 \
+TEST_RUNNER_MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/latency-macstudio-m3max.json" \
 xcodebuild test \
   -scheme MobiCureVN \
   -destination 'platform=macOS' \
@@ -76,7 +85,7 @@ xcodebuild test \
 ### Comparing models
 
 ```bash
-MOBICURE_BENCH_MODEL="mlx-community/Qwen2.5-3B-Instruct-4bit" ...
+TEST_RUNNER_TEST_RUNNER_MOBICURE_BENCH_MODEL="mlx-community/Qwen2.5-3B-Instruct-4bit" ...
 ```
 
 Defaults to `ModelCatalog.default` (Qwen 3.5 4B) — benchmark the model you actually ship.
