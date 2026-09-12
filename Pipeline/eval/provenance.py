@@ -8,16 +8,25 @@ import subprocess
 from pathlib import Path
 
 
-def _git(*args: str, cwd: Path) -> str | None:
+_GIT_FAILED = object()
+
+
+def _git(*args: str, cwd: Path):
+    """Returns the command's stdout, or `_GIT_FAILED` if git could not answer.
+
+    Empty stdout is a real answer -- `git status --porcelain` prints nothing for a
+    clean tree -- so it must not be conflated with failure, or a clean tree reports
+    its dirty flag as unknown.
+    """
     try:
         out = subprocess.run(
             ["git", *args], cwd=cwd, capture_output=True, text=True, timeout=10
         )
     except (OSError, subprocess.SubprocessError):
-        return None
+        return _GIT_FAILED
     if out.returncode != 0:
-        return None
-    return out.stdout.strip() or None
+        return _GIT_FAILED
+    return out.stdout.strip()
 
 
 def git_state(repo_dir: Path) -> dict:
@@ -27,11 +36,12 @@ def git_state(repo_dir: Path) -> dict:
     so the flag has to travel with the numbers.
     """
     commit = _git("rev-parse", "HEAD", cwd=repo_dir)
+    branch = _git("rev-parse", "--abbrev-ref", "HEAD", cwd=repo_dir)
     status = _git("status", "--porcelain", cwd=repo_dir)
     return {
-        "commit": commit,
-        "branch": _git("rev-parse", "--abbrev-ref", "HEAD", cwd=repo_dir),
-        "dirty": bool(status) if status is not None else None,
+        "commit": None if commit is _GIT_FAILED else commit,
+        "branch": None if branch is _GIT_FAILED else branch,
+        "dirty": None if status is _GIT_FAILED else bool(status),
     }
 
 
