@@ -199,6 +199,17 @@ nonisolated final class LanguageValidationService {
     ///     detector still exists: accent-less Vietnamese ("toi bi dau bung") has low density
     ///     yet must be caught, and the LLM handles it where NLLanguageRecognizer (which
     ///     misreads such strings as Romanian/Polish) does not.
+    ///
+    /// Short-circuit 3 closes the case that used to escape both tiers: **plain English**.
+    /// English carries no Vietnamese diacritics and no Vietnamese function words, so both
+    /// density gates read zero and it fell straight through to a full LLM generation — on
+    /// the critical path, before the answer can even start prefilling. `NLLanguageRecognizer`
+    /// is used *only* to confirm that case, never to decide Vietnamese: it is asked for a
+    /// confident English verdict, and its answer is accepted only when the Vietnamese signal
+    /// is exactly zero. Accent-less Vietnamese still carries function words ("toi", "bi",
+    /// "dau"), so it has non-zero signal and is never captured here — it goes to the LLM as
+    /// before. That asymmetry is the whole point: the recogniser can only ever remove an
+    /// LLM call for text it is confident about and that has no Vietnamese in it at all.
     func detect(_ text: String, using llmService: LLMServiceProtocol) async -> DetectedLanguage {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return .english }
@@ -217,6 +228,17 @@ nonisolated final class LanguageValidationService {
         // which has zero diacritic density, still falls through to the LLM below.
         if vietnameseDiacriticDensity(trimmed) >= Self.vietnameseConfidentDensityThreshold {
             return .vietnamese
+        }
+
+        // Short-circuit 3: confidently English AND carrying no Vietnamese signal whatsoever.
+        // This is the common case for an English-speaking patient, and without it every such
+        // turn paid a full LLM generation before the answer could start. See the note above
+        // for why the recogniser is trusted in this direction only.
+        if density < Self.vietnameseMinSignalThreshold, Self.isConfidentlyEnglish(trimmed) {
+            #if DEBUG
+            print("LanguageValidation: detect short-circuited to English (no LLM)")
+            #endif
+            return .english
         }
 
         let prompt = """
@@ -428,6 +450,40 @@ nonisolated final class LanguageValidationService {
         }
         return Double(vietnameseWords.count) / Double(words.count)
     }
+
+    /// Whether `NLLanguageRecognizer` is confident the text is English.
+    ///
+    /// Deliberately one-directional. The recogniser is unreliable on accent-less Vietnamese
+    /// (it reports Romanian or Polish), which is exactly why this service still keeps an LLM
+    /// classifier — so its verdict is consulted ONLY to confirm English, and only by the
+    /// caller that has already established zero Vietnamese signal.
+    ///
+    /// Two guards beyond the language code:
+    ///   • a confidence floor, because the recogniser will name a language for any string;
+    ///   • a minimum length, because it is close to guessing on one or two words, and a short
+    ///     turn costs little to classify properly anyway.
+    private static func isConfidentlyEnglish(_ text: String) -> Bool {
+        guard words(in: text).count >= englishShortCircuitMinWords else { return false }
+
+        let recognizer = NLLanguageRecognizer()
+        // Vietnamese must remain a candidate the recogniser can name; constraining it away
+        // would turn a Vietnamese string into a confident English verdict.
+        recognizer.processString(text)
+        guard recognizer.dominantLanguage == .english else { return false }
+
+        let hypotheses = recognizer.languageHypotheses(withMaximum: 2)
+        guard let englishConfidence = hypotheses[.english] else { return false }
+        return englishConfidence >= englishShortCircuitConfidence
+    }
+
+    /// The recogniser names a language for any input, so a bare `dominantLanguage == .english`
+    /// is not evidence. 0.9 keeps the short-circuit to text it is genuinely sure about;
+    /// anything less falls through to the LLM, which is the pre-existing behaviour.
+    private static let englishShortCircuitConfidence = 0.9
+
+    /// Below this the recogniser is close to guessing, and a short turn is cheap to classify
+    /// properly. Four words also excludes greetings, which are ambiguous across languages.
+    private static let englishShortCircuitMinWords = 4
 
     /// Fraction of words carrying an actual Vietnamese diacritic (function words excluded).
     /// Used only for the confident short-circuit in `detect`: accent-less Vietnamese has a
