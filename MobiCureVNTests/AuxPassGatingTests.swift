@@ -32,14 +32,25 @@ final class AuxPassGatingTests: XCTestCase {
     // MARK: - Turns that must SKIP the LLM passes
 
     func testAPlainEnglishQuestionStatesNoDurableFact() {
-        XCTAssertFalse(gates("What is a stoma?"))
+        XCTAssertFalse(gates("What does a normal recovery look like?"))
         XCTAssertFalse(gates("How often should the pouch be changed?"))
         XCTAssertFalse(gates("When does recovery usually finish?"))
     }
 
     func testAPlainVietnameseQuestionStatesNoDurableFact() {
-        XCTAssertFalse(gates("Hậu môn nhân tạo là gì?"))
+        XCTAssertFalse(gates("Nên ăn gì để mau hồi phục?"))
         XCTAssertFalse(gates("Khi nào nên tái khám?"))
+    }
+
+    func testTheGateIsDeliberatelyPermissiveForClinicalTopicWords() {
+        // The cue list includes topic words such as "stoma" and "hậu môn nhân tạo" so that
+        // "my stoma is leaking" is never missed. The price is that a plain question that merely
+        // names the topic still runs the pass. An occasional wasted generation is the intended
+        // trade over a missed disclosure — this test pins it so nobody "fixes" it by accident.
+        // (An earlier version of this file asserted the opposite for these two strings and would
+        // have failed on first compile.)
+        XCTAssertTrue(gates("What is a stoma?"))
+        XCTAssertTrue(gates("Hậu môn nhân tạo là gì?"))
     }
 
     func testGreetingsAndEmptyTurnsSkip() {
