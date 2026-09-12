@@ -479,25 +479,25 @@ final class MedicalChatOrchestrator {
         return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
     }
 
-    /// Segment 2 of the system prompt: persona and constraints that never vary at runtime.
+    /// Segment 2 of the system prompt: the fixed persona and safety constraints, which never vary
+    /// at runtime.
+    ///
+    /// Re-read by the model on every turn, so its length is a per-turn prefill tax. Slimmed from
+    /// 473 to about 315 whitespace words — roughly 270 fewer tokens per turn at Qwen 3.5's
+    /// measured 1.72 tokens per word — by removing restatement, not requirements. The one rule
+    /// deleted outright (answer common health questions from general knowledge when nothing was
+    /// retrieved) is carried by `noContextInstruction`, which is injected precisely when it applies.
     ///
     /// The language directive deliberately does NOT appear here. It used to be stated three
     /// times (opening line, a constraint bullet, and the closing reminder); the middle copy was
     /// dropped because the opening and the reminder are the two positions a small model
-    /// actually attends to, and the third repetition was paying tokens on every turn for the
-    /// same instruction. `LanguageDriftTests` / `OutputGuardRailVietnameseTests` are the
+    /// actually attends to. `LanguageDriftTests` / `OutputGuardRailVietnameseTests` are the
     /// regression check if this turns out to have been load-bearing.
-    /// The fixed persona and safety constraints. Re-read on every turn, so its length is a
-    /// per-turn tax: it was ~440 words (~700 tokens) and is now ~230, with every behavioural
-    /// rule preserved. Compressed by removing restatement, not requirements — the one rule
-    /// actually deleted here was duplicated by `noContextInstruction`, which already says the
-    /// same thing and is injected precisely when it applies.
     ///
     /// SAFETY-CRITICAL. Any edit changes model behaviour and must be re-validated against
     /// Docs/BE/Adversarial-Chat-Test-Script.md before shipping — a shorter prompt that drops a
-    /// constraint is not an optimisation.
-    /// Internal, not private, so SystemPromptConstraintTests can assert every safety rule
-    /// is still present after any future slimming.
+    /// constraint is not an optimisation. Internal, not private, so SystemPromptConstraintTests
+    /// can assert every safety rule is still present after any future slimming.
     static let invariantSystemPrompt = """
         You are a warm, supportive medical information assistant for colorectal cancer patients
         and their families, many of them elderly or recovering from surgery. Speak kindly and
@@ -529,7 +529,8 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources for medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately tell them to call emergency services.
-        - Include a disclaimer to consult their healthcare provider.
+        - When giving medical information, add a short disclaimer to consult their healthcare
+          provider (not needed for greetings or small talk).
         """
 
     /// Formats the confirmed profile as compact bullet lines, prioritized identity → clinical

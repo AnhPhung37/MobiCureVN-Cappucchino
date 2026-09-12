@@ -11,6 +11,7 @@ import XCTest
 /// These are keyword assertions, not behaviour tests — they prove the instruction is still in
 /// the prompt, not that the model obeys it. Obedience is validated separately against
 /// `Docs/BE/Adversarial-Chat-Test-Script.md`, which must be re-run after any edit to this prompt.
+@MainActor
 final class SystemPromptConstraintTests: XCTestCase {
 
     private var prompt: String { MedicalChatOrchestrator.invariantSystemPrompt.lowercased() }
@@ -54,6 +55,13 @@ final class SystemPromptConstraintTests: XCTestCase {
     func testRequiresAHealthcareProviderDisclaimer() {
         assertMentions(["healthcare provider"],
                        "advice carries a consult-your-provider disclaimer")
+    }
+
+    func testDoesNotAttachTheDisclaimerToSmallTalk() {
+        // An unconditional "always add a disclaimer" contradicts "respond naturally to greetings":
+        // a warm "you're welcome" followed by a medical disclaimer reads as a form letter.
+        assertMentions(["not needed for greetings"],
+                       "the provider disclaimer is scoped to medical information")
     }
 
     // MARK: - Grounding and attribution
@@ -119,8 +127,8 @@ final class SystemPromptConstraintTests: XCTestCase {
             .split(whereSeparator: \.isWhitespace).count
         XCTAssertLessThanOrEqual(
             words, 340,
-            "Invariant system prompt grew to \(words) words. It was slimmed from 473 to ~305 "
-            + "to cut ~268 tokens of prefill per turn; re-justify before raising this bound."
+            "Invariant system prompt grew to \(words) words. It was slimmed from 473 to 317 "
+            + "to cut prefill on every turn; re-justify before raising this bound."
         )
     }
 }
