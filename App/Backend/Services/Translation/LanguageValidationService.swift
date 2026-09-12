@@ -206,7 +206,7 @@ nonisolated final class LanguageValidationService {
     /// the critical path, before the answer can even start prefilling. `NLLanguageRecognizer`
     /// is used *only* to confirm that case, never to decide Vietnamese: it is asked for a
     /// confident English verdict, and its answer is accepted only when the Vietnamese signal
-    /// is exactly zero. Accent-less Vietnamese still carries function words ("toi", "bi",
+    /// is exactly zero, all-caps acronyms such as "GI" aside. Accent-less Vietnamese still carries function words ("toi", "bi",
     /// "dau"), so it has non-zero signal and is never captured here — it goes to the LLM as
     /// before. That asymmetry is the whole point: the recogniser can only ever remove an
     /// LLM call for text it is confident about and that has no Vietnamese in it at all.
@@ -234,7 +234,8 @@ nonisolated final class LanguageValidationService {
         // This is the common case for an English-speaking patient, and without it every such
         // turn paid a full LLM generation before the answer could start. See the note above
         // for why the recogniser is trusted in this direction only.
-        if density < Self.vietnameseMinSignalThreshold, Self.isConfidentlyEnglish(trimmed) {
+        if vietnameseDensity(ignoringAcronymsIn: trimmed) < Self.vietnameseMinSignalThreshold,
+           Self.isConfidentlyEnglish(trimmed) {
             #if DEBUG
             print("LanguageValidation: detect short-circuited to English (no LLM)")
             #endif
@@ -484,6 +485,27 @@ nonisolated final class LanguageValidationService {
     /// Below this the recogniser is close to guessing, and a short turn is cheap to classify
     /// properly. Four words also excludes greetings, which are ambiguous across languages.
     private static let englishShortCircuitMinWords = 4
+
+    /// Vietnamese signal with all-caps acronyms set aside — for the English fast path only.
+    ///
+    /// Several accent-less Vietnamese function words are also English medical acronyms: "GI"
+    /// (gì), "VA" (và), "BI" (bị). So "What does GI bleeding look like?" carried Vietnamese
+    /// signal and lost the fast path, in exactly the domain this app serves. A patient typing
+    /// accent-less Vietnamese does not capitalise every letter of a two-letter word, so a token of
+    /// two or three letters, all upper-case, is read as an acronym here. Text with no lower-case
+    /// letter at all (caps lock) is left untouched: there, capitals are not evidence of anything.
+    ///
+    /// Only the optimisation depends on this. A misread acronym can cost at most the LLM call the
+    /// fast path exists to save; it cannot route Vietnamese to English on its own, because
+    /// `isConfidentlyEnglish` still has to agree.
+    private func vietnameseDensity(ignoringAcronymsIn text: String) -> Double {
+        guard text.contains(where: \.isLowercase) else { return vietnameseDensity(text) }
+        let kept = text.split(whereSeparator: \.isWhitespace).filter { token in
+            let letters = token.filter(\.isLetter)
+            return !((2...3).contains(letters.count) && letters.allSatisfy(\.isUppercase))
+        }
+        return vietnameseDensity(kept.joined(separator: " "))
+    }
 
     /// Fraction of words carrying an actual Vietnamese diacritic (function words excluded).
     /// Used only for the confident short-circuit in `detect`: accent-less Vietnamese has a

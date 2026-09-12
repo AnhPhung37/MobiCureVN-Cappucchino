@@ -12,37 +12,13 @@ import XCTest
 /// accent-less Vietnamese ("toi bi dau bung") as Romanian or Polish, which is why this service
 /// keeps an LLM classifier at all. These tests pin the asymmetry — the recogniser may only ever
 /// *remove* an LLM call for text that is confidently English and has zero Vietnamese signal.
+@MainActor
 final class LanguageDetectFastPathTests: XCTestCase {
 
-    /// Records that the LLM was consulted, then answers, so a test can assert on the *cost*
-    /// rather than only the verdict — a correct answer obtained via a full generation is
-    /// exactly the bug being fixed.
-    private final class RecordingLLM: LLMServiceProtocol, @unchecked Sendable {
-        private let onCall: @Sendable () -> Void
-        init(onCall: @escaping @Sendable () -> Void) { self.onCall = onCall }
-
-        func stream(request: LLMRequest) -> AsyncStream<String> {
-            onCall()
-            return AsyncStream { continuation in
-                continuation.yield("english")
-                continuation.finish()
-            }
-        }
-    }
-
     private func detect(_ text: String) async -> (language: DetectedLanguage, usedLLM: Bool) {
-        let box = LLMCallBox()
-        let service = LanguageValidationService()
-        let llm = RecordingLLM { box.markCalled() }
-        let language = await service.detect(text, using: llm)
-        return (language, box.wasCalled)
-    }
-
-    private final class LLMCallBox: @unchecked Sendable {
-        private let lock = NSLock()
-        private var called = false
-        func markCalled() { lock.lock(); called = true; lock.unlock() }
-        var wasCalled: Bool { lock.lock(); defer { lock.unlock() }; return called }
+        let llm = RecordingLLM()
+        let language = await LanguageValidationService().detect(text, using: llm)
+        return (language, llm.wasCalled)
     }
 
     // MARK: - English takes the fast path
@@ -84,6 +60,24 @@ final class LanguageDetectFastPathTests: XCTestCase {
 
     // MARK: - The guards on the fast path
 
+    func testAMedicalAcronymThatSpellsAVietnameseWordDoesNotCostTheLLM() async {
+        // "GI" is also accent-less "gì". As an all-caps acronym in an English sentence it is not
+        // Vietnamese signal, and this domain is full of it.
+        let result = await detect("What does GI bleeding after bowel surgery look like?")
+        XCTAssertEqual(result.language, .english)
+        XCTAssertFalse(result.usedLLM)
+    }
+
+    func testCapsLockVietnameseIsNotMistakenForAcronyms() async {
+        let result = await detect("TOI BI DAU BUNG VA KHONG AN DUOC GI")
+        XCTAssertTrue(result.usedLLM, "with no lower-case letter anywhere, capitals are not evidence of an acronym")
+    }
+
+    func testAnAcronymDoesNotHideRealVietnameseAroundIt() async {
+        let result = await detect("toi bi GI bleeding sau khi mo")
+        XCTAssertTrue(result.usedLLM)
+    }
+
     func testVeryShortEnglishDoesNotTakeTheFastPath() async {
         // Under the word floor the recogniser is close to guessing, and the turn is cheap to
         // classify properly.
@@ -101,5 +95,29 @@ final class LanguageDetectFastPathTests: XCTestCase {
         let result = await detect("   ")
         XCTAssertEqual(result.language, .english)
         XCTAssertFalse(result.usedLLM)
+    }
+}
+
+/// Answers "english" and records that it was asked, so a test can assert on the *cost* of a
+/// verdict rather than only the verdict — a correct answer obtained via a full generation is
+/// exactly the bug being fixed.
+private nonisolated final class RecordingLLM: LLMServiceProtocol, @unchecked Sendable {
+    private let lock = NSLock()
+    private var called = false
+
+    var wasCalled: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return called
+    }
+
+    nonisolated func stream(request: LLMRequest) -> AsyncStream<String> {
+        lock.lock()
+        called = true
+        lock.unlock()
+        return AsyncStream { continuation in
+            continuation.yield("english")
+            continuation.finish()
+        }
     }
 }
