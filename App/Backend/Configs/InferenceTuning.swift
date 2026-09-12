@@ -123,7 +123,7 @@ nonisolated struct InferenceTuning: Sendable {
     static let defaults = InferenceTuning(
         profileName: "built-in-defaults",
         generation: Generation(
-            maxTokens: 1024,
+            maxTokens: 512,
             temperature: 0.3,
             topP: 0.85,
             auxiliaryMaxTokens: 64,
@@ -131,7 +131,7 @@ nonisolated struct InferenceTuning: Sendable {
             kvGroupSize: nil,
             quantizedKVStart: nil,
             maxKVSize: nil,
-            prefillStepSize: nil
+            prefillStepSize: 512
         ),
         prompt: Prompt(
             contextTokenBudget: 600,

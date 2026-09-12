@@ -248,17 +248,45 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                         // JSON extraction asks for a greedy, cheap preset instead of silently
                         // inheriting a 1024-token answering budget. See `GenerationOptions`.
                         //
-                        // KV-cache quantization and prefill step size are NOT set here yet. Their
-                        // `GenerateParameters` field names have to be confirmed against the pinned
-                        // mlx-swift-lm before they can be trusted — the values are already carried in
-                        // `InferenceTuning.generation` so that wiring them is a one-line change per
-                        // field. Follow Docs/BE/mlxApiVerification.md.
+                        // KV-cache quantization and prefill step size ARE wired now. They are
+                        // applied as property assignments after construction rather than through
+                        // the memberwise initializer on purpose: that only depends on the property
+                        // names existing and being `var`, not on the init's argument labels or
+                        // their order, which is the part most likely to shift between mlx-swift-lm
+                        // releases. See Docs/BE/mlxApiVerification.md for how to re-verify.
+                        //
+                        // Every knob is optional and defaults to nil in InferenceTuning, so an
+                        // unset value leaves the runtime's own default untouched — nothing here
+                        // changes behaviour unless the JSON asks for it.
                         let options = request.options
-                        let params = GenerateParameters(
+                        var params = GenerateParameters(
                             maxTokens: options.maxTokens,
                             temperature: options.temperature,
                             topP: options.topP
                         )
+                        let generation = Self.tuning.generation
+                        // Bounds peak memory during prefill by processing the prompt in chunks
+                        // instead of one allocation. Pure memory shaping — it cannot change the
+                        // tokens produced, only how they are computed.
+                        if let prefillStepSize = generation.prefillStepSize {
+                            params.prefillStepSize = prefillStepSize
+                        }
+                        // Quantizing the KV cache cuts its memory 2x at 8 bits, 4x at 4 bits.
+                        // It DOES affect output — leave nil until a sweep says otherwise.
+                        if let kvBits = generation.kvBits {
+                            params.kvBits = kvBits
+                            if let kvGroupSize = generation.kvGroupSize {
+                                params.kvGroupSize = kvGroupSize
+                            }
+                            if let quantizedKVStart = generation.quantizedKVStart {
+                                params.quantizedKVStart = quantizedKVStart
+                            }
+                        }
+                        // Hard ceiling on cache growth in a long conversation. Truncates context
+                        // once reached, so it trades continuity for a memory bound.
+                        if let maxKVSize = generation.maxKVSize {
+                            params.maxKVSize = maxKVSize
+                        }
                         let stream = try await container.generate(input: lmInput, parameters: params)
                         for await event in stream {
                             if Task.isCancelled { break }
