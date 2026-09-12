@@ -25,13 +25,14 @@ Per frame:
 
 - `itemsAsChatItems()` (`:156`) allocates a fresh `ChatItem` for **every message in the
   conversation**, copying `sources`, `imageData` and `profileUpdateProposals` each time.
-- `ChatGrouper.group()` (`ChatGrouper.swift:10`) calls `calendar.date(byAdding:)` **four
-  times** and then walks every item into five buckets. `Calendar` arithmetic is expensive,
+- `ChatGrouper.group()` (`App/Backend/Domain/Models/ChatGrouper.swift:10`) calls
+  `calendar.startOfDay` and `calendar.date(byAdding:)` **three times**, then walks every item
+  into five buckets. `Calendar` arithmetic is expensive,
   and the day boundaries it computes change **once a day**.
 
 **Suggested fix**
 
-1. Cache the four day boundaries; recompute only when the day changes. They are pure
+1. Cache the four day boundaries (today, yesterday, 7 and 30 days back); recompute only when the day changes. They are pure
    functions of `startOfDay(now)`.
 2. While streaming, only the last message changes. Either update that one section in place,
    or throttle `rebuildSections()` to the existing `previewInterval` cadence rather than
@@ -102,7 +103,7 @@ Same pattern, lower traffic (not in the streaming path, fix when convenient):
 - `ForEach` uses stable identities throughout; `messageIDs` is deliberately kept in step.
 - No `Timer` / polling anywhere in the app.
 - `localized(for:)` (`AppLanguage.swift:22`) constructs a `Bundle` on every call, which looks
-  alarming — but there are only ~19 call sites and they are all ViewModel error strings, not
+  alarming — but there are only 21 call sites and they are all ViewModel error strings, not
   view-body labels. Not a hot path. Cache it if you are touching the file anyway, otherwise
   leave it.
 - Image attachment handling (`UIImage+Attachment.swift`) already downscales and re-encodes
@@ -114,7 +115,7 @@ Same pattern, lower traffic (not in the streaming path, fix when convenient):
 
 `ChatViewModel:299` and `:404` call `refreshConversationHistory()` **twice per turn**, and
 each call fetches every `ChatRecord` row in the database including image blobs
-(`SwiftDataChatHistoryRepository.swift:33`). That is the single most expensive thing the chat
+(`SwiftDataChatHistoryRepository.swift:34`, `loadConversations()`). That is the single most expensive thing the chat
 screen triggers, but the fix belongs in the Store layer, and is tracked separately on the
 backend side. Coordinate before changing the call sites.
 
