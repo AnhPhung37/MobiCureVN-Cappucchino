@@ -12,7 +12,8 @@
     "prefillStepSize": null
   },
   "prompt": {
-    "contextTokenBudget": 2000,
+    "retrievalTopK": 10,
+    "contextTokenBudget": 3000,
     "historyTokenBudget": 500,
     "assistantReplayWordCap": 60,
     "wordsToTokensRatio": 1.6

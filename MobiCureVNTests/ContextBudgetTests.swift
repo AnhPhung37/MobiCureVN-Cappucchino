@@ -94,7 +94,20 @@ final class ContextBudgetTests: XCTestCase {
 
     func testContextBudgetIsReadFromTuningNotHardcoded() {
         // It used to be a hardcoded 600 shadowing the JSON value, making the knob dead.
-        XCTAssertEqual(InferenceTuning.current.prompt.contextTokenBudget, 2000)
+        XCTAssertGreaterThanOrEqual(InferenceTuning.current.prompt.contextTokenBudget, 2000)
+    }
+
+    func testTopKAndContextBudgetAreRaisedTogether() {
+        // Measured: topK 10 at a 2000-token budget grounds exactly as well as topK 5 --
+        // the budget binds first. Shipping a raised topK against a small budget spends
+        // retrieval time for nothing, so the two are asserted as a pair.
+        let prompt = InferenceTuning.current.prompt
+        if prompt.retrievalTopK > 5 {
+            XCTAssertGreaterThanOrEqual(
+                prompt.contextTokenBudget, 3000,
+                "topK > 5 needs a budget that can actually carry the extra chunks"
+            )
+        }
     }
 
     func testTokenRatioIsCalibratedAgainstTheCorpus() {
