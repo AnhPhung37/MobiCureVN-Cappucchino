@@ -6,7 +6,9 @@ from pathlib import Path
 
 from .dataset import load_qrels, load_queries, validate_dataset
 from .provenance import (
+    app_retrieval,
     config_digest,
+    repo_relative,
     corpus_fingerprint,
     environment,
     git_state,
@@ -85,10 +87,11 @@ def main() -> None:
         "config_sha256": config_digest(cfg),
         "generated_at": utc_now_compact(),
         "git": git_state(repo_dir),
+        "app_retrieval": app_retrieval(repo_dir),
         "environment": environment(),
         "dataset": {
-            "queries_path": str(_resolve_path(base_dir, cfg["evaluation"]["queries_path"])),
-            "qrels_path": str(_resolve_path(base_dir, cfg["evaluation"]["qrels_path"])),
+            "queries_path": repo_relative(_resolve_path(base_dir, cfg["evaluation"]["queries_path"]), repo_dir),
+            "qrels_path": repo_relative(_resolve_path(base_dir, cfg["evaluation"]["qrels_path"]), repo_dir),
             "query_count": len(queries),
             "qrel_count": len(qrels),
         },
@@ -99,6 +102,16 @@ def main() -> None:
         if not exp.get("enabled", True):
             print(f"[SKIP] {exp['name']}: {exp.get('disabled_reason', 'disabled in config')}")
             continue
+
+        # An experiment may override retrieval keys (e.g. mode) on top of the shared block.
+        retrieval = {**cfg.get("retrieval", {}), **exp.get("retrieval", {})}
+        if exp.get("represents_app") and retrieval.get("mode", "hybrid") != results["app_retrieval"]["mode"]:
+            print(
+                f"[WARN] {exp['name']} is marked as the app's retriever but scores mode="
+                f"{retrieval.get('mode', 'hybrid')!r}; a build of this tree ships "
+                f"{results['app_retrieval']['mode']!r} (query embedder bundled: "
+                f"{results['app_retrieval']['query_embedder_bundled']})."
+            )
 
         db_path = _resolve_path(base_dir, exp["index_db_path"])
         source_dir = _resolve_path(base_dir, exp["source_chunks_dir"])
@@ -123,11 +136,15 @@ def main() -> None:
             embedder=embedder,
             top_k=cfg["evaluation"]["top_k"],
             answerer=answerer,
-            retrieval=cfg.get("retrieval"),
+            retrieval=retrieval,
         )
+        index = index_fingerprint(db_path)
+        index["path"] = repo_relative(db_path, repo_dir)
+        corpus = corpus_fingerprint(source_dir)
+        corpus["path"] = repo_relative(source_dir, repo_dir)
         result["provenance"] = {
-            "index": index_fingerprint(db_path),
-            "corpus": corpus_fingerprint(source_dir),
+            "index": index,
+            "corpus": corpus,
             "qrels_coverage": coverage,
         }
         results["experiments"].append(result)
@@ -144,7 +161,7 @@ def main() -> None:
         m = exp["metrics"]
         prov = exp["provenance"]
         print(
-            f"\n[{exp['experiment']}] "
+            f"\n[{exp['experiment']} | {exp['retrieval']['mode']}] "
             f"recall@k={m['recall@k']:.4f} doc_hit@k={m['doc_hit@k']:.4f} "
             f"mrr={m['mrr']:.4f} ndcg@k={m['ndcg@k']:.4f}"
         )

@@ -30,6 +30,18 @@
             "enabled": true,
             "source_chunks_dir": "../data/neural_chunks",
             "enriched_output_dir": "./outputs/enriched_neural",
+            "index_db_path": "./outputs/vectorstore_neural.db",
+            "represents_app": true
+        },
+        {
+            "name": "neural_fts_only",
+            "enabled": true,
+            "note": "The same index searched FTS-only: what a build without App/Resources/query_embedder.mlpackage ships. Reported so the embedder's contribution is measured rather than assumed.",
+            "retrieval": {
+                "mode": "fts"
+            },
+            "source_chunks_dir": "../data/neural_chunks",
+            "enriched_output_dir": "./outputs/enriched_neural",
             "index_db_path": "./outputs/vectorstore_neural.db"
         },
         {

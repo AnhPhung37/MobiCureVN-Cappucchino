@@ -39,6 +39,19 @@ def run_experiment(
             always_fuse=retrieval.get("always_fuse", True),
             drop_stopwords=retrieval.get("drop_stopwords", True),
         )
+    elif mode == "fts":
+        # The same fusion code with the vector pass off: what SQLiteRetriever ships when
+        # App/Resources carries no query embedder.
+        retriever = HybridRetriever(
+            db_path,
+            embedder,
+            candidate_multiplier=retrieval.get("candidate_multiplier", 3),
+            rrf_k=retrieval.get("rrf_k", 60.0),
+            min_token_length=retrieval.get("min_token_length", 3),
+            always_fuse=retrieval.get("always_fuse", True),
+            drop_stopwords=retrieval.get("drop_stopwords", True),
+            use_vector=False,
+        )
     elif mode == "vector":
         retriever = SQLiteVecRetriever(db_path, embedder)
     else:

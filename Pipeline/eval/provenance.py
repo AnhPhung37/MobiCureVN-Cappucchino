@@ -29,19 +29,68 @@ def _git(*args: str, cwd: Path):
     return out.stdout.strip()
 
 
-def git_state(repo_dir: Path) -> dict:
+# Paths the harness writes itself. They are derived from the corpus and the config, which
+# the result already fingerprints (index sha256, corpus digest, config digest), so they must
+# not mark the tree dirty -- otherwise the second of three back-to-back runs reports
+# dirty=true merely because the first one wrote its result file.
+DERIVED_OUTPUT_PREFIXES = ("Pipeline/eval/results/", "Pipeline/eval/outputs/")
+
+
+def _porcelain_path(line: str) -> str:
+    """The path of one `git status --porcelain` (v1) line, repository-relative."""
+    path = line[3:]
+    if " -> " in path:  # rename: "R  old -> new"
+        path = path.split(" -> ", 1)[1]
+    return path.strip('"')
+
+
+def git_state(repo_dir: Path, ignore_prefixes: tuple[str, ...] = DERIVED_OUTPUT_PREFIXES) -> dict:
     """Commit the eval ran at, plus whether the tree was dirty.
 
     A result produced from a dirty tree is not reproducible from a commit alone,
-    so the flag has to travel with the numbers.
+    so the flag has to travel with the numbers. Changes under `ignore_prefixes`
+    (the harness's own outputs) do not count.
     """
     commit = _git("rev-parse", "HEAD", cwd=repo_dir)
     branch = _git("rev-parse", "--abbrev-ref", "HEAD", cwd=repo_dir)
     status = _git("status", "--porcelain", cwd=repo_dir)
+    dirty = None
+    if status is not _GIT_FAILED:
+        changed = [_porcelain_path(line) for line in status.splitlines() if line.strip()]
+        dirty = any(not path.startswith(ignore_prefixes) for path in changed)
     return {
         "commit": None if commit is _GIT_FAILED else commit,
         "branch": None if branch is _GIT_FAILED else branch,
-        "dirty": None if status is _GIT_FAILED else bool(status),
+        "dirty": dirty,
+    }
+
+
+def repo_relative(path: Path, repo_dir: Path) -> str:
+    """`path` relative to the repository root when it lies inside it.
+
+    Result files are committed; an absolute path records one machine's checkout location,
+    which differs on every machine and says nothing about what was measured.
+    """
+    try:
+        return str(Path(path).resolve().relative_to(Path(repo_dir).resolve()))
+    except ValueError:
+        return str(path)
+
+
+def app_retrieval(repo_dir: Path) -> dict:
+    """The retriever a build of this tree actually ships.
+
+    SQLiteRetriever runs the vector pass only when the CoreML query embedder and its
+    vocabulary are bundled; without them every search is FTS-only, however the index
+    was built. An eval of the hybrid retriever describes the app only if these exist.
+    """
+    resources = repo_dir / "App" / "Resources"
+    embedder = (resources / "query_embedder.mlpackage").exists()
+    vocab = (resources / "vocab.txt").exists()
+    return {
+        "query_embedder_bundled": embedder,
+        "vocab_bundled": vocab,
+        "mode": "hybrid" if embedder and vocab else "fts",
     }
 
 
