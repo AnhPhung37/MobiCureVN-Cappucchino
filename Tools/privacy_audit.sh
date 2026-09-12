@@ -193,14 +193,48 @@ else
 fi
 say ""
 
+# ── 7. Speech recognition stays on-device ───────────────────────────────────
+hr
+say "7. Speech recognition (patient voice must not leave the device)"
+hr
+# SFSpeechRecognizer sends audio to Apple's servers unless the request sets
+# requiresOnDeviceRecognition = true. Setting it from supportsOnDeviceRecognition, or not
+# setting it, silently falls back to the server whenever the locale has no on-device
+# model -- which is patient voice leaving the device. Checked per file that uses the API
+# in code (a mention in a comment is not a use).
+speech_files=$(grep -rEn --include='*.swift' 'SFSpeechRecognizer' App 2>/dev/null | grep -vE ':[0-9]+:[[:space:]]*(//|///|\*)' | cut -d: -f1 | sort -u)
+if [[ -z "$speech_files" ]]; then
+  say "  PASS — no SFSpeechRecognizer usage."
+else
+  for f in $speech_files; do
+    lines=$(grep -En 'requiresOnDeviceRecognition[[:space:]]*=' "$f" | grep -vE '^[0-9]+:[[:space:]]*(//|///|\*)')
+    if [[ -z "$lines" ]]; then
+      say "  FAIL — $f uses SFSpeechRecognizer without requiring on-device recognition"
+      fail=1
+      continue
+    fi
+    not_forced=$(printf '%s\n' "$lines" | grep -vE 'requiresOnDeviceRecognition[[:space:]]*=[[:space:]]*true[[:space:]]*(//.*)?$')
+    if [[ -n "$not_forced" ]]; then
+      say "  FAIL — $f does not force on-device recognition (audio can reach Apple's servers):"
+      printf '%s\n' "$not_forced" | sed "s|^|    $f:|" | while IFS= read -r l; do say "$l"; done
+      fail=1
+    else
+      say "  PASS — $f requires on-device recognition:"
+      printf '%s\n' "$lines" | sed "s|^|    $f:|" | while IFS= read -r l; do say "$l"; done
+    fi
+  done
+fi
+say ""
+
 # ── Verdict ─────────────────────────────────────────────────────────────────
 hr
 if [[ $fail -eq 0 ]]; then
   say "VERDICT: consistent with criterion #1."
   say ""
-  say "  Claim this exactly: inference, retrieval, translation and storage all run"
-  say "  on-device; no patient text, photo or profile field is ever transmitted; the"
-  say "  only network egress is a one-time download of open-weight model files."
+  say "  Claim this exactly: inference, retrieval, speech recognition, translation and"
+  say "  storage all run on-device; no patient text, voice, photo or profile field is ever"
+  say "  transmitted; the only network egress is a one-time download of open-weight model"
+  say "  files (and the declared anchor dataset fetch, if still present)."
   say ""
   say "  A static scan is necessary but not sufficient. Pair it with the runtime"
   say "  proof: Airplane Mode demo (Docs/BE/Privacy-Audit.md §Runtime proof)."

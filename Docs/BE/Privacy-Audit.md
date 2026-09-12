@@ -19,6 +19,7 @@ Run it: `Tools/privacy_audit.sh` (committed output: `Docs/audits/privacy-audit.t
 | 4 | Analytics / telemetry / crash SDKs | **PASS — zero** |
 | 5 | Patient-data persistence, file protection, iCloud sync | local-only, `.completeUnlessOpen` |
 | 6 | Entitlements / ATS exceptions | no arbitrary-loads exception |
+| 7 | Speech recognition forced on-device (`requiresOnDeviceRecognition = true`) | on-device only |
 
 The scan distinguishes three kinds of URL, because lumping them together is how a
 privacy claim becomes untrue in either direction:
@@ -29,8 +30,9 @@ privacy claim becomes untrue in either direction:
 
 ## The exact claim you can make
 
-> Inference, retrieval, translation, guardrails and storage all execute on-device.
-> No patient text, wound photo, or profile field is transmitted anywhere, at any time.
+> Inference, retrieval, speech recognition, translation, guardrails and storage all execute
+> on-device. No patient text, voice, wound photo, or profile field is transmitted anywhere, at
+> any time.
 > The only network egress is asset download: open-weight model files from Hugging Face.
 
 Do **not** say "the app never touches the network" — it does, and one screenshot of
@@ -80,7 +82,9 @@ Pair it with a demo the audience can verify with their own eyes:
 2. **Cut the network on camera.** Airplane Mode on, Wi-Fi off, Cellular off. Show the
    Control Centre toggles on screen. Do not cut away.
 3. **Run the full pipeline while offline:**
-   - Vietnamese voice input → speech recognition;
+   - Vietnamese voice input → speech recognition. Recognition is on-device only (§7), so this
+     needs a device with Apple's on-device Vietnamese dictation installed; without it the mic
+     reports itself unavailable instead of sending audio to Apple. Check before recording;
    - a wound photo from the library → image analysis;
    - a text question → retrieval → cited answer;
    - tap a citation → the source card renders from the bundled `vectorstore.db`;

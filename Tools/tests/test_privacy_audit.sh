@@ -136,6 +136,45 @@ enum Probe {
 SWIFT
 check "identifiers containing sdk names do not fail" 0 $?
 
+# ── Must FAIL: speech recognition allowed to fall back to Apple's servers.
+with_probe <<'SWIFT'
+import Speech
+enum Probe {
+    static func request(_ recognizer: SFSpeechRecognizer) -> SFSpeechAudioBufferRecognitionRequest {
+        let request = SFSpeechAudioBufferRecognitionRequest()
+        request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition
+        return request
+    }
+}
+SWIFT
+check "speech server fallback is caught" 1 $?
+
+with_probe <<'SWIFT'
+import Speech
+enum Probe { static let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "vi-VN")) }
+SWIFT
+check "speech with no on-device requirement is caught" 1 $?
+
+# ── Must PASS: on-device recognition forced, and a mention that is only a comment.
+with_probe <<'SWIFT'
+import Speech
+enum Probe {
+    static func request() -> SFSpeechAudioBufferRecognitionRequest {
+        let request = SFSpeechAudioBufferRecognitionRequest()
+        request.requiresOnDeviceRecognition = true
+        return request
+    }
+}
+SWIFT
+check "forced on-device speech does not fail" 0 $?
+
+with_probe <<'SWIFT'
+import Foundation
+/// Unlike SFSpeechRecognizer, this probe records nothing.
+enum Probe { static let note = "comment-only mention" }
+SWIFT
+check "speech api named in a comment does not fail" 0 $?
+
 # ── The tree must be exactly as it started.
 "$AUDIT" >/dev/null 2>&1
 check "tree restored after probes" 0 $?
