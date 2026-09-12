@@ -232,10 +232,13 @@ python -m tools.ab_retrieval    # A/B sweep of retrieval variants (table below)
 > 0.367, which is why every row sits between 0.19 and 0.25.
 >
 > The *relative* ordering of the variants is probably still informative — all rows
-> shared the same handicap — but no absolute figure here may be quoted. Re-run
-> `python -m eval.build_indexes && python -m eval.run_eval` on the corrected config
-> (now pointing at `../data/neural_chunks`, 39 docs / 1238 chunks) and replace this
-> table wholesale. See `Docs/Eval-Integrity-Finding.md`.
+> shared the same handicap — but no absolute figure here may be quoted.
+>
+> **Update:** the corrected config (39 docs / 1238 chunks, coverage 1.000) has now been
+> run and the shipped variant scores **recall@5 = 0.2488, doc-hit@5 = 0.7703, MRR = 0.1589,
+> nDCG@5 = 0.1814** — statistically indistinguishable from the row below, for reasons
+> explained in `Docs/Eval-Integrity-Finding.md`. Re-run `python -m tools.ab_retrieval`
+> against the rebuilt index before quoting any of the *other* rows.
 
 | variant | recall@5 | mrr | ndcg@5 | doc-hit@5 |
 |---|---|---|---|---|
