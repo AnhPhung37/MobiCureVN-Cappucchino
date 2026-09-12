@@ -273,12 +273,21 @@ final class LatencyBenchmarkTests: XCTestCase {
 
     /// e.g. "iPad16,6" / "Mac15,14" — the report has to name the hardware it ran on, since
     /// criterion #3 is stated per-device.
+    ///
+    /// The sysctl key differs by platform: on iOS the device identifier is `hw.machine`
+    /// (`hw.model` returns an internal board id such as "D84AP"), while on Apple Silicon
+    /// macOS it is `hw.model` (`hw.machine` returns just "arm64"). Reading the wrong one
+    /// produces a report that cannot be attributed to a device.
     private static func hardwareIdentifier() -> String {
+        #if os(iOS)
+        let key = "hw.machine"
+        #else
+        let key = "hw.model"
+        #endif
         var size = 0
-        sysctlbyname("hw.model", nil, &size, nil, 0)
-        guard size > 0 else { return "unknown" }
+        guard sysctlbyname(key, nil, &size, nil, 0) == 0, size > 0 else { return "unknown" }
         var bytes = [CChar](repeating: 0, count: size)
-        sysctlbyname("hw.model", &bytes, &size, nil, 0)
+        guard sysctlbyname(key, &bytes, &size, nil, 0) == 0 else { return "unknown" }
         return String(cString: bytes)
     }
 
