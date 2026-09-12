@@ -1,8 +1,8 @@
 
 MobiCureVN — privacy / locality audit
-repo:   /home/quan-nguyen15/Documents/capstone
-commit: 28809a6 (DIRTY)
-date:   2026-09-12T08:55:40Z
+repo:   /tmp/claude-1000/-home-quan-nguyen15/4cc13218-fa22-409a-b6e9-250c1590d564/scratchpad/wt/privacy-audit
+commit: 9f178a4 (DIRTY)
+date:   2026-09-12T22:58:40Z
 
 ────────────────────────────────────────────────────────────
 1. Commercial LLM inference endpoints (must be ZERO)
@@ -96,11 +96,18 @@ date:   2026-09-12T08:55:40Z
   App/MobiCureVN.entitlements
 
 ────────────────────────────────────────────────────────────
+7. Speech recognition (patient voice must not leave the device)
+────────────────────────────────────────────────────────────
+  PASS — App/Backend/Services/Voice/SpeechRecognitionService.swift requires on-device recognition:
+    App/Backend/Services/Voice/SpeechRecognitionService.swift:55:            request.requiresOnDeviceRecognition = true
+
+────────────────────────────────────────────────────────────
 VERDICT: consistent with criterion #1.
 
-  Claim this exactly: inference, retrieval, translation and storage all run
-  on-device; no patient text, photo or profile field is ever transmitted; the
-  only network egress is a one-time download of open-weight model files.
+  Claim this exactly: inference, retrieval, speech recognition, translation and
+  storage all run on-device; no patient text, voice, photo or profile field is ever
+  transmitted; the only network egress is a one-time download of open-weight model
+  files (and the declared anchor dataset fetch, if still present).
 
   A static scan is necessary but not sufficient. Pair it with the runtime
   proof: Airplane Mode demo (Docs/BE/Privacy-Audit.md §Runtime proof).
