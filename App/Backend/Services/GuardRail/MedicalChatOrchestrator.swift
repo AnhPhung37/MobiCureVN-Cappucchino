@@ -238,6 +238,17 @@ final class MedicalChatOrchestrator {
                     )
                 }
 
+                // Both post-answer passes are gated on the same deterministic predicate, so a
+                // turn that states nothing about the patient costs no generation at all. Worth
+                // logging as one line: two skipped passes is the difference between the next
+                // message starting immediately and queueing behind ~2 generations.
+                if !Task.isCancelled, !SessionFactExtractor.statesDurableFact(sanitizedQuery) {
+                    _ = Self.logStage(
+                        "6-7 · Post-answer passes", since: pipelineStart,
+                        detail: "both skipped — turn states no durable fact"
+                    )
+                }
+
                 _ = Self.logStage("TOTAL pipeline", since: pipelineStart)
                 continuation.finish()
             }

@@ -65,6 +65,17 @@ nonisolated struct ProfileUpdateExtractor {
         let trimmed = userText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
 
+        // Deterministic gate before the LLM, reusing SessionFactExtractor's predicate so the
+        // two post-answer passes agree on what "the user stated something about themselves"
+        // means — two gates drifting apart would be worse than one.
+        //
+        // Without it this ran a full generation on every turn, including turns that state
+        // nothing and can only ever return []. It does not delay the current answer (it runs
+        // after `.final`), but it holds the single ModelContainer, so the user's NEXT message
+        // queues behind a pass that was never going to produce anything. Same rationale as
+        // SessionFactExtractor's gate.
+        guard SessionFactExtractor.statesDurableFact(trimmed) else { return [] }
+
         let prompt = """
         The patient's CURRENT profile on file:
         \(Self.summarize(currentProfile))
