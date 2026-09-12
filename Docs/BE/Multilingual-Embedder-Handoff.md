@@ -1,6 +1,6 @@
 # Handoff: multilingual retrieval embedder
 
-**Branch:** `final/multilingual-embedder`, based on **`final/eval-integrity`** (not `main`)
+**Branch:** `final/multilang-embedder-and-test-protocol`, based on **`final/eval-integrity`** (not `main`)
 **Status:** investigation only — no app code changed, no decision taken
 **Written:** 2026-09-12 · **For:** a Claude Code session on the Mac Studio M3 Max
 
@@ -64,7 +64,7 @@ enough for a "future work" slide.
 
 ```bash
 # On the Mac Studio.
-git checkout final/multilingual-embedder     # already includes final/eval-integrity
+git checkout final/multilang-embedder-and-test-protocol   # already includes final/eval-integrity
 cd Pipeline
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt sentence-transformers
