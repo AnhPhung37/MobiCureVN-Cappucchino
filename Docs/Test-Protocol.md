@@ -2,6 +2,18 @@
 
 _Written 2026-09-13. Lives on `final/multilang-embedder-and-test-protocol`._
 
+**This branch carries the documentation hand-offs** (it changes no app code):
+
+| Document | For | What it is |
+|---|---|---|
+| `Docs/Test-Protocol.md` (this file) | whoever integrates and tests | order, gates, pass criteria, record template for all branches |
+| `Docs/BE/Multilingual-Embedder-Handoff.md` + `Pipeline/tools/compare_embedders.py` | a session on the Mac Studio | multilingual retrieval investigation; not for the presentation |
+| `Docs/FE/Frontend-Performance-Notes.md` | the frontend owner | four streaming-time UI costs (C1–C4), static analysis only |
+| `Pipeline/tools/simulate_context_packing.py` | whoever tests §3.1–3.2 | reproduces the grounding numbers without a device |
+
+Documents here refer to files that exist only on the branches they describe (e.g.
+`LatencyBenchmarkTests.swift`); they resolve once those branches are merged as in §3.
+
 This is the order to integrate and test every branch produced in the pre-presentation
 optimisation pass, what each one must prove before it is kept, what to expect, and exactly
 what to write down. Follow it top to bottom. **Merge one branch, test, record, decide — then
@@ -355,11 +367,14 @@ the previous `App/Resources/vectorstore.db`.
 
 ## 4. Phase 3 — documentation and investigation
 
-### 4.1 `final/frontend-perf-notes`
+### 4.1 Frontend performance notes
 
-Docs only. No test. Hand `Docs/FE/Frontend-Performance-Notes.md` to the frontend owner.
+Docs only, no test. `Docs/FE/Frontend-Performance-Notes.md` is **already on this branch**
+(merged from `final/frontend-perf-notes`), so merging §4.2 is enough — merging
+`final/frontend-perf-notes` separately is harmless but redundant. Hand the document to the
+frontend owner; its four findings (C1–C4) are not part of this protocol's gates.
 
-### 4.2 `final/multilang-embedder-and-test-protocol` (this branch)
+### 4.2 `final/multilang-embedder-and-test-protocol` (this branch — also carries 4.1)
 
 Investigation only; no app behaviour change. Run on the **Mac Studio**:
 
@@ -470,8 +485,8 @@ rate, privacy audit result. **Every number on a slide must trace to a file in `D
 | `final/mlx-runtime-knobs` | main | latency / memory | 3.6 |
 | `final/prefix-kv-cache` | mlx-runtime-knobs | groundwork | 3.7 |
 | `final/chunk-splitting` | main | corpus | 3.8 |
-| `final/frontend-perf-notes` | main | docs | 4.1 |
-| `final/multilang-embedder-and-test-protocol` | eval-integrity | investigation + this doc | 4.2 |
+| `final/frontend-perf-notes` | main | docs — **also merged into the branch below; redundant** | 4.1 |
+| `final/multilang-embedder-and-test-protocol` | eval-integrity | all doc hand-offs: this protocol, multilingual investigation, FE notes | 4.1 + 4.2 |
 
 Merging all fifteen in this order was dry-run on 2026-09-13, and again after the §5 fixes: every merge is clean except 3.4, whose
 conflict resolves exactly as described there, leaving `retrievalTopK 10`, `contextTokenBudget
