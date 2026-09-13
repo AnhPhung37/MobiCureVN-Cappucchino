@@ -16,7 +16,7 @@
 | Check | Pass criterion | Result | Pass? |
 |---|---|---|---|
 | `ContextBudgetTests` | 20/20, pins topK 10 / budget 3000 | **20/20**, 0 failures | ✅ |
-| Packing sim `--top-k 10 --budget 3000 --ratio 1.75` | zero-context 0.0%, doc-hit seen 0.8134 | **cannot run** — `tools/simulate_context_packing.py` missing repo-wide, see `07-context-budget-fix.md` Finding | ⚠️ unverifiable |
+| Packing sim `--top-k 10 --budget 3000 --ratio 1.75` | zero-context 0.0%, doc-hit seen 0.8134 | **Update — tool found, see `16-packing-tool-found.md`.** Re-run on the current (post-`chunk-splitting`) corpus: 0.0% zero-ctx confirmed, doc-hit seen 0.8421 — not a clean historical match to this branch's own 0.8134 (measured pre-split); the same parameters against the *current* corpus exactly match `chunk-splitting`'s own expected number instead | ✅ (zero-ctx claim) |
 | Latency ≤ +10% vs 3.1 | — | not run — needs physical device | ⏭ escalated |
 
 ## Numbers (vs previous kept step)

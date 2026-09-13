@@ -1,0 +1,94 @@
+{
+  "results": [
+    {
+      "model": "BAAI/bge-small-en-v1.5",
+      "device": "mps",
+      "dim": 384,
+      "query_prefix": "",
+      "passage_prefix": "",
+      "load_seconds": 6.9,
+      "embed_seconds": 58.8,
+      "chunks": 1876,
+      "english": {
+        "5": {
+          "recall": 0.2631578947368421,
+          "doc_hit": 0.7942583732057417,
+          "mrr": 0.17559808612440192,
+          "ndcg": 0.1970480267128928
+        },
+        "10": {
+          "recall": 0.3157894736842105,
+          "doc_hit": 0.8708133971291866,
+          "mrr": 0.18238778765094554,
+          "ndcg": 0.21383336177021
+        }
+      },
+      "cross_lingual": {
+        "chunk_overlap_at_5": 0.0,
+        "same_document_at_5": 0.5833333333333334,
+        "cosine_vi_en_query": 0.4031684696674347,
+        "queries": 12
+      }
+    },
+    {
+      "model": "intfloat/multilingual-e5-small",
+      "device": "mps",
+      "dim": 384,
+      "query_prefix": "query: ",
+      "passage_prefix": "passage: ",
+      "load_seconds": 27.6,
+      "embed_seconds": 44.9,
+      "chunks": 1876,
+      "english": {
+        "5": {
+          "recall": 0.215311004784689,
+          "doc_hit": 0.784688995215311,
+          "mrr": 0.14178628389154704,
+          "ndcg": 0.16000367518226363
+        },
+        "10": {
+          "recall": 0.27751196172248804,
+          "doc_hit": 0.8660287081339713,
+          "mrr": 0.15039112933849774,
+          "ndcg": 0.18042163496055172
+        }
+      },
+      "cross_lingual": {
+        "chunk_overlap_at_5": 0.13333333333333333,
+        "same_document_at_5": 0.5,
+        "cosine_vi_en_query": 0.8428380489349365,
+        "queries": 12
+      }
+    },
+    {
+      "model": "BAAI/bge-m3",
+      "device": "mps",
+      "dim": 1024,
+      "query_prefix": "",
+      "passage_prefix": "",
+      "load_seconds": 61.6,
+      "embed_seconds": 609.7,
+      "chunks": 1876,
+      "english": {
+        "5": {
+          "recall": 0.2583732057416268,
+          "doc_hit": 0.7990430622009569,
+          "mrr": 0.17615629984051037,
+          "ndcg": 0.19636229771843003
+        },
+        "10": {
+          "recall": 0.33014354066985646,
+          "doc_hit": 0.8851674641148325,
+          "mrr": 0.18564213564213564,
+          "ndcg": 0.21949574815519704
+        }
+      },
+      "cross_lingual": {
+        "chunk_overlap_at_5": 0.4000000000000001,
+        "same_document_at_5": 1.0,
+        "cosine_vi_en_query": 0.7596752643585205,
+        "queries": 12
+      }
+    }
+  ]
+}

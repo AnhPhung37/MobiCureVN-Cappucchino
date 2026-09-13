@@ -27,13 +27,12 @@ rebuild here.
 | `python -m tools.remap_qrels --from-split-provenance` | "209 already grouped" | **"0 queries remapped... 209 already grouped... groups of 1-11 pieces (51 gold chunks were split)"** | ✅ |
 | `python -m eval.build_indexes` (the TODO above) | rebuild from 1876-chunk corpus | **"neural indexed 1876 chunks (39 docs, sha256=3057e01de661)"** | ✅ |
 | `python -m eval.run_eval` (post-rebuild) | coverage 1.000 | recall@5 **0.2249**, doc-hit@5 **0.7799**, MRR **0.1503**, nDCG@5 **0.1689**; FTS 0.2010/0.7177 — **exact match to the doc's "Expected" column**, coverage 1.0 | ✅ |
-| Packing sim `--top-k 10 --budget 3000 --ratio 1.75` (doc-hit seen ≥ 0.8034) | — | **cannot run** — `tools/simulate_context_packing.py` missing repo-wide, see `07-context-budget-fix.md` | ⚠️ unverifiable |
+| Packing sim `--top-k 10 --budget 3000 --ratio 1.75` (doc-hit seen ≥ 0.8034) | zero-ctx 0.0%; 8.50 sent, doc-hit seen 0.8421 | **found and run** — see `16-packing-tool-found.md`: tool ships in `final/multilang-embedder-and-test-protocol`, merged next. Result: **8.50 sent, 0.0% zero-ctx, doc-hit seen 0.8421 — exact match** | ✅ |
 | G5 citations from rebuilt `vectorstore.db` | — | needs device | ⏭ escalated |
 | Quick quality vs 3.7 | — | needs raters | ⏭ escalated |
 
-Since `doc-hit@5 = 0.7799 ≥ 0.7603` (the doc's own DROP threshold), the drop condition on that
-metric is clearly not met. The `doc-hit seen (k10/3000) ≥ 0.8034` half of the DROP criterion
-remains unverifiable for the same tooling-gap reason as `07`/`08` — noting rather than guessing.
+`doc-hit@5 = 0.7799 ≥ 0.7603` and `doc-hit seen = 0.8421 ≥ 0.8034` — **both halves of the DROP
+criterion now cleared**, closing the doc's own outstanding TODO for this branch completely.
 
 ## Numbers (vs previous kept step)
 
@@ -50,8 +49,6 @@ passage now counts once whichever piece is found.
 
 ## Decision
 
-**KEEP.** Every numeric check that could be run matches the doc's "Expected" column exactly (this
-run is more complete than the original human tester's own, since the index-rebuild TODO is now
-done). `doc-hit@5` clears the DROP threshold comfortably. The `doc-hit seen` half of the DROP
-criterion and G5 citation rendering remain open pending the missing packing tool and device access
-respectively — neither is a reason to drop a branch whose every other number matches expectation.
+**KEEP.** Every numeric check matches the doc's "Expected" column exactly, including the packing
+simulation once the tool was located (`16-packing-tool-found.md`) — both halves of the DROP
+criterion clear comfortably. Only G5 citation rendering remains open, pending device access.

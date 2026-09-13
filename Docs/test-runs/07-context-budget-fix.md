@@ -20,7 +20,7 @@
 |---|---|---|---|
 | `ContextBudgetTests` | 19/19 | **19/19**, 0 failures | ✅ |
 | `InferenceTuningResolutionTests` | 10/10 | **10/10**, 0 failures | ✅ |
-| Packing sim `--policy new --top-k 5 --budget 2000 --ratio 1.75` | zero-context 0.0% | **cannot run — see Finding below** | ⚠️ |
+| Packing sim `--policy new --top-k 5 --budget 2000 --ratio 1.75` | zero-context 0.0% | **Update — tool found, see `16-packing-tool-found.md`.** Re-run on the current (post-`chunk-splitting`) corpus: 0.0% zero-ctx confirmed, doc-hit seen 0.7751 — not a clean historical match, since this branch's own corpus was 1238 chunks, not today's 1876 | ✅ (zero-ctx claim) |
 | Stale seed / knob-is-live / citations / latency ≤5s | various | not run — needs physical device | ⏭ escalated |
 
 ## Finding: `tools/simulate_context_packing.py` does not exist anywhere in the repository
