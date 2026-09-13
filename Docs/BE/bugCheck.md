@@ -4,6 +4,12 @@
 > flag additional defects, assess feasibility for **5 people over 12 weeks**, and
 > propose a rescoped, evidence-based plan.
 > Line references point at the code state on branch `master` at time of writing.
+>
+> **Status note (2026-09-13).** Dated review; line references are stale. Superseded items: #10 context
+> budget → `final/context-budget-fix` (two-pass packing, 3000 estimated tokens, per-model token
+> ratio); "verify the query embedder is actually bundled" → it was not, bundled by
+> `final/eval-integrity`; `Package.resolved` → committable after `final/mlx-runtime-knobs` fixes
+> `.gitignore`.
 
 ---
 

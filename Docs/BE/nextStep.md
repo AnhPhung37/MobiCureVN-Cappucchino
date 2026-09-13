@@ -2,6 +2,10 @@
 
 _Last updated: 2026-07-02_
 
+> **Status note (2026-09-13).** The corpus is 39 documents (1876 chunks after `final/chunk-splitting`), not the
+> 9 documents some items below assume; the `QueryEmbedder` "already built" was never bundled until
+> `final/eval-integrity`; retrieval numbers live only in `Docs/Eval-Integrity-Finding.md`.
+
 This document captures a technical assessment of the current app and a prioritized
 set of expansion options, plus recommended benchmarks for evaluating output quality.
 
@@ -34,14 +38,22 @@ Key components:
 
 ### Strengths
 
-- The hybrid retrieval + RRF design is the right call, and the eval **proves it matters**:
+- The hybrid retrieval + RRF design is the right call.
 
-  | Chunking  | recall@5 | MRR   | nDCG@5 |
-  |-----------|----------|-------|--------|
-  | neural    | **1.00** | **0.88** | **0.90** |
-  | semantic  | 0.125    | 0.05  | 0.07   |
-
-  A real, defensible finding — lead with it in the report.
+  > **RETRACTED (2026-09-12).** This section used to carry a table reporting
+  > `neural: recall@5 = 1.00, MRR = 0.88, nDCG@5 = 0.90` against
+  > `semantic: 0.125 / 0.05 / 0.07`, and called it "a real, defensible finding".
+  > It was not. Those numbers came from a 30-query golden set whose gold chunks
+  > were derived from the same chunking run being scored — the labels leaked, so
+  > the neural column could only ever be near-perfect. **Do not quote them, in the
+  > report, the slides, or anywhere else.**
+  >
+  > The golden set was rebuilt to 209 queries. Two further defects were found later:
+  > the harness scored a retriever configuration the app no longer used, and the app
+  > itself shipped without its query embedder, so it searched FTS-only. All of it is
+  > written up in `Docs/Eval-Integrity-Finding.md`, which is
+  > the **single source of truth** for retrieval numbers. Quote the latest
+  > `Pipeline/eval/results/eval_*.json`, never a number transcribed into prose.
 - On-device + offline + privacy is a legitimately standout angle.
 - Clean layering (protocols, mocks, DI via `AppConfig`), shared SQLite connection,
   compiled-once regexes — engineering maturity.
@@ -183,10 +195,10 @@ source-grounded, bilingual cancer-care companion.**
 **Steps to fix (ordered by effort):**
 
 1. **Relax the FTS AND clause to OR** — in `SQLiteRetriever.swift`, change the base query token join from `AND` to `OR`. BM25 scoring naturally demotes weak matches; the RRF fusion step already handles noise from over-retrieval. This is a one-line change with measurable recall improvement.
-2. **Expand the Vietnamese→English term map** — grow from ~50 to ~150+ entries covering common patient questions about post-op care, stoma management, nutrition, pain, infection signs, and medication. Source terms from the existing 173-chunk corpus: extract the most frequent medical nouns and ensure they're in the map.
+2. **Expand the Vietnamese→English term map** — grow from ~50 to ~150+ entries covering common patient questions about post-op care, stoma management, nutrition, pain, infection signs, and medication. Source terms from the existing 1238-chunk corpus: extract the most frequent medical nouns and ensure they're in the map.
 3. **Use `QueryEmbedder` for query expansion** — `QueryEmbedder.swift` and `WordPieceTokenizer.swift` are already built. At retrieval time, embed the refined query and find the top-5 most similar chunk embeddings; use their keywords to augment the FTS query. This replaces the manual map for long-tail terms.
 4. **Add LLM-based query rewriting as a stretch goal** — before retrieval, run one short LLM generation step that rewrites the patient's conversational question into a retrieval-optimised form (e.g. "What are the signs of stoma infection?" → "stoma infection symptoms redness swelling discharge fever"). The LLM is already on-device; the extra latency is one short generation (~200 tokens). Gate this behind a flag so it can be disabled if latency is unacceptable.
-5. **Benchmark each change** — the `Pipeline/eval/` harness exists. After each of the above steps, run the 30-question benchmark and record `recall@5` / `MRR` / `nDCG@5`. Keep only changes that improve the numbers. The current neural-chunking baseline (`recall@5 = 1.00`) is the ceiling to preserve.
+5. **Benchmark each change** — the `Pipeline/eval/` harness exists. After each of the above steps, run `python -m eval.build_indexes && python -m eval.run_eval` over the **209-query** golden set and record `recall@5` / `doc-hit@5` / `MRR` / `nDCG@5`. Keep only changes that improve the numbers. There is no `recall@5 = 1.00` ceiling — that figure was retracted (§1); take the baseline from the most recent result JSON, which now carries the index fingerprint and gold-chunk coverage that make it comparable.
 
 ---
 

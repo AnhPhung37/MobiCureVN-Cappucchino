@@ -18,7 +18,7 @@ chunks to the LLM as grounding context, with citations.
 
 ```
                        OFFLINE (Pipeline/, run on a dev machine)
-  raw PDFs ─▶ parse ─▶ clean ─▶ chunk ─▶ enrich ─▶ build index ─▶ vectorstore.db
+  raw PDFs ─▶ parse ─▶ clean ─▶ chunk ─▶ split ─▶ enrich ─▶ build index ─▶ vectorstore.db
                                                                         │
                                                     copied into the app bundle
                                                                         ▼
@@ -30,7 +30,11 @@ Two things must stay in sync:
 - **Embedding model** — the index and the app's query encoder must use the same
   model and dimensionality (`BAAI/bge-small-en-v1.5`, 384-dim). The app encodes
   queries with a CoreML conversion of that model
-  (`App/Backend/Services/RAG/QueryEmbedder.swift`).
+  (`App/Backend/Services/RAG/QueryEmbedder.swift`), bundled as
+  `App/Resources/query_embedder.mlpackage` + `vocab.txt` since `final/eval-integrity` — before that
+  no build contained it and retrieval ran FTS-only. It must use the model's own **[CLS] pooling**;
+  regenerate it with `python -m tools.convert_embedder`, which refuses to export a model that
+  disagrees with `SentenceTransformer`, and check it on device with `QueryEmbedderParityTests`.
 - **Schema** — `SQLiteRetriever` reads `chunks`, `vec_chunks`, and `chunks_fts`.
   The builder must create all three.
 
@@ -63,7 +67,7 @@ Run all stages with:
 ```bash
 cd Pipeline
 source .venv/bin/activate          # so bare `python` resolves to the venv
-./run_pipeline.sh --force          # parse → clean → chunk → enrich → index
+./run_pipeline.sh --force          # parse → clean → chunk → split → enrich → index
 ```
 
 Or invoke a single stage directly, e.g. `python ingestion/build_index.py --force`.
@@ -75,10 +79,11 @@ exists unless `--force` is passed.
 | 1 | Parse | `ingestion/parse.py` | `raw_pdfs/*.pdf` → `parsed_markdowns/*.md` | `pymupdf4llm` PDF→Markdown (preserves headings, lists, tables) |
 | 2 | Clean | `ingestion/clean.py` | `parsed_markdowns/` → `cleaned_markdowns/` | strip boilerplate / artifacts, normalize whitespace |
 | 3 | Chunk | `ingestion/chunk.py` | `cleaned_markdowns/` → `neural_chunks/` | **NeuralChunker** (default) or semantic (see §4) |
+| 3b | Split | `ingestion/split_oversized.py` | `neural_chunks/` in place | pieces over 480 tokens split at paragraph / sentence / word boundaries, text kept verbatim; records `source_chunk_index` (see §4) |
 | 4 | Enrich | `ingestion/enrich_chunks.py` | `neural_chunks/` + `registry.csv` → `enriched_chunks/` | join registry metadata, extract section headings, assign `chunk_id` |
 | 5 | Index | `ingestion/build_index.py` | `enriched_chunks/` → `vectorstore.db` | embed + build vec + FTS tables |
 
-Output of the current run: **39 documents → 1238 chunks → `vectorstore.db` (6.6 MB)**.
+Output of the current run: **39 documents → 1876 chunks** (1238 before the split stage) **→ `vectorstore.db`**.
 
 ### Deploying the index to the app
 
@@ -112,23 +117,21 @@ recursive splitting → `chunk_size=500` semantic grouping (similarity threshold
 `minishlab/potion-base-32M`. Because it caps at 500 tokens it fits the embedder
 window cleanly (see the caveat below).
 
-### Chunk-size caveat (known limitation)
+### Chunk size and the embedder window
 
 The embedder `bge-small-en-v1.5` has a **512-token max sequence length**. The
-neural chunker's size distribution on the current corpus:
+neural chunker has no maximum, and on this corpus produced:
 
 ```
 min 15 · avg 401 · max 13,664 tokens
 ≥512 tokens: 219 / 1238 chunks (18%)
 ```
 
-Chunks over 512 tokens (concentrated in table-heavy docs like
-`NCCN_DPYD_2025`) are **truncated to their first ~512 tokens when embedded** — so
-vector search only "sees" their opening. Mitigations already in place: the full
-chunk text is still stored and returned to the LLM (truncation affects the
-*embedding* only), and the FTS5 keyword index covers the full text. To remove
-the caveat, either run `--chunker semantic` (500-token cap) or add a
-split-oversized-chunks step to the neural path.
+Everything past a chunk's first 512 tokens was never embedded. `final/chunk-splitting`
+adds stage 3b (`ingestion/split_oversized.py`): chunks over 480 tokens are cut at
+paragraph, then sentence, then word boundaries into slices of the original text, with at
+most 48 tokens of overlap. Result: **1876 chunks, max 480 tokens**. Each piece records
+`source_chunk_index`, so the golden set is remapped exactly (§7).
 
 ---
 
@@ -158,12 +161,19 @@ Hybrid retrieval over the bundled DB:
    BGE-small) and matched against `vec_chunks`.
 3. **Fusion** — the two result lists are merged with **Reciprocal Rank Fusion**
    (`k=60`), deduped by a content fingerprint (first 200 normalized chars), and
-   truncated to `topK` (default 5).
+   truncated to `topK` — `InferenceTuning.prompt.retrievalTopK`, 10 with
+   `final/retrieval-topk` (5 before).
 4. **Confidence** — combines top/avg relevance, document diversity, and a
    credibility-tier boost; surfaced to the UI alongside citations.
 
-If the vector index or embedder is unavailable, retrieval degrades gracefully to
-FTS-only (and to a `LIKE` fallback if even FTS is missing).
+If the vector index or embedder is unavailable, retrieval degrades to FTS-only (and to a
+`LIKE` fallback if even FTS is missing) and logs that it did — which is what every build ran
+until the embedder was bundled.
+
+Retrieved chunks are then packed into `contextTokenBudget` (3000 estimated tokens with
+`final/retrieval-topk`) by the two-pass packer in `MedicalChatOrchestrator`, and the prompt's
+source list, the citation cards and the output guardrail see only the packed chunks — see
+`Docs/BE/Context-Budget-Finding.md`.
 
 ### Retrieval tuning (2026-07-24)
 
@@ -192,23 +202,32 @@ retrieval return the chunks a human marked correct?* Driven by
 - `eval/data/qrels.jsonl` — the answer key: relevant `chunk_id`s per query.
 
 Because re-chunking shifts chunk boundaries, `chunk_id`s in the qrels can go
-stale. `tools/remap_qrels.py` repairs them: it recovers each stale chunk's
-original text from the previous index and maps it to the best-matching new chunk
-in the same document (cosine ≥ 0.80 **or** token-containment ≥ 0.75), dropping
-IDs (and any queries thereby emptied) that have no clean single-chunk
-equivalent. Current set after cleanup: **209 aligned queries, 0 broken
-references.**
+stale. `tools/remap_qrels.py` repairs them in one of two ways:
+
+- `--from-split-provenance` (after the split stage) — exact: each gold chunk maps to all of its
+  pieces, written as one `relevant_groups` entry. `eval.metrics_ir` counts a group as found when
+  any piece is retrieved, so a split gold chunk is still one label.
+- `--old-db OLD --new-db NEW` (after re-chunking from Markdown) — approximate: the most similar
+  chunk in the same document (cosine ≥ 0.80 **or** token containment ≥ 0.75); weaker matches are
+  dropped and listed.
+
+Current set: **209 queries, 0 broken references**; on the split corpus 51 gold chunks are groups
+of 2–11 pieces.
 
 ### Metrics (`eval/metrics_ir.py`)
 - **recall@5** — fraction of relevant chunks found in the top 5 (primary).
 - **MRR** — 1/rank of the first relevant hit (ranking quality).
 - **nDCG@5** — position-weighted recall, normalized to the ideal ordering.
-- **doc-hit@5** (reported by the A/B tool) — did any top-5 chunk come from the
-  right *document*. More robust than exact-chunk recall, which is deflated when
-  the retriever returns an equally-correct *neighbor* chunk after re-chunking.
+- **doc-hit@5** — did any top-5 chunk come from the right *document*. More robust
+  than exact-chunk recall, which is deflated when the retriever returns an
+  equally-correct *neighbor* chunk after re-chunking. It is computed by the harness
+  itself (`metrics_ir.py::doc_hit_at_k`) and written into every result JSON —
+  previously it existed only in an untracked side tool, which made it a number the
+  docs quoted but no artifact could confirm.
 
 The retriever in the eval (`eval/retriever.py::HybridRetriever`) is a **faithful
-port of the app's Swift retriever**, so scores reflect what ships. Query
+port of the app's Swift retriever**, so scores reflect what ships — provided `App/Resources`
+bundles the query embedder; without it the app searches FTS-only (`Docs/Eval-Integrity-Finding.md`). Query
 enrichment (the app's `enrichedTerms`) is not modelled.
 
 ### Running it
@@ -220,6 +239,14 @@ python -m tools.ab_retrieval    # A/B sweep of retrieval variants (table below)
 ```
 
 ### Results (209 queries, top_k=5)
+
+> **Read before quoting (corrected 2026-09-13).** These rows were measured with
+> `tools/ab_retrieval.py` on the full 39-document index — the committed July results retrieve
+> from 38–39 documents; an earlier note here claiming a 9-document index was wrong. Two things
+> limit them: the row labelled "hybrid (ships)" is the app's *old* rule (the app now always fuses
+> and drops stopwords, the "+fuse +stopwords" row), and until `final/eval-integrity` no build
+> shipped the vector half at all — the app searched FTS-only (recall@5 0.2201, doc-hit@5 0.7081).
+> Current numbers, with provenance: `Docs/Eval-Integrity-Finding.md`.
 
 | variant | recall@5 | mrr | ndcg@5 | doc-hit@5 |
 |---|---|---|---|---|
@@ -237,9 +264,10 @@ python -m tools.ab_retrieval    # A/B sweep of retrieval variants (table below)
 - Pure vector still edges out on MRR/nDCG (ranks the single gold chunk at #1 more
   often); the fused config wins recall/doc-hit, which matters more when feeding
   5 chunks to the LLM.
-- Absolute recall@5 (~0.25) looks low because most queries have a single labelled
-  gold chunk and re-chunking makes the retriever return a correct *neighbor*;
-  **doc-hit@5 ≈ 0.77** is the more trustworthy signal of usefulness.
+- Absolute recall@5 (~0.25) is low largely because 207 of 209 queries label a
+  single gold chunk, so an equally correct neighbour scores zero; doc-hit@5 (≈0.77)
+  is the companion metric. An earlier edit here blamed missing gold chunks in the
+  index — that was wrong (see `Docs/Eval-Integrity-Finding.md`).
 
 ---
 
@@ -257,10 +285,13 @@ source .venv/bin/activate
 python tools/smoke_retrieve.py "What is DPYD testing and why does it matter?"
 
 # 3. Deploy to the app bundle
+#    run_pipeline.sh's index stage (ingestion/build_index.py) writes data/vectorstore.db;
+#    App/Resources/ is what ships.
 cp data/vectorstore.db ../App/Resources/vectorstore.db
 
 # 4. Evaluate (optional but recommended after any chunking/retrieval change)
-python tools/remap_qrels.py --apply     # only if chunk IDs shifted
+python -m tools.remap_qrels --from-split-provenance --apply   # after a split
+# python -m tools.remap_qrels --old-db OLD.db --new-db data/vectorstore.db --apply   # after re-chunking
 python -m eval.build_indexes
 python -m eval.run_eval
 python -m tools.ab_retrieval
@@ -272,27 +303,31 @@ python -m tools.ab_retrieval
 
 | Path | Role |
 |---|---|
-| `Pipeline/run_pipeline.sh` | orchestrates the 5 ingestion stages |
-| `Pipeline/ingestion/*.py` | per-stage scripts (parse/clean/chunk/enrich/index) |
-| `Pipeline/registry.csv`, `data/registry.csv` | 39-doc corpus manifest + metadata |
-| `Pipeline/data/vectorstore.db` | built index (source of truth) |
+| `Pipeline/run_pipeline.sh` | orchestrates the 6 ingestion stages |
+| `Pipeline/ingestion/*.py` | per-stage scripts (parse/clean/chunk/split/enrich/index) |
+| `Pipeline/run_pipeline.py` | legacy single-file pipeline over the 9-document top-level folders; not the one to run |
+| `Pipeline/data/registry.csv` | 39-doc corpus manifest + metadata (`Pipeline/registry.csv` is an identical legacy copy) |
+| `Pipeline/data/vectorstore.db` | built index (source of truth, written by `ingestion/build_index.py`) |
+| `Pipeline/vectorstore.db` | tracked copy of a deployed index; not written by the pipeline |
 | `App/Resources/vectorstore.db` | index shipped in the app bundle |
 | `App/Backend/Services/RAG/SQLiteRetriever.swift` | on-device hybrid retrieval |
 | `App/Backend/Services/RAG/QueryEmbedder.swift` | CoreML BGE-small query encoder |
+| `App/Resources/query_embedder.mlpackage`, `vocab.txt` | bundled encoder and vocabulary (`Pipeline/tools/convert_embedder.py`) |
 | `Pipeline/eval/` | golden-set IR evaluation harness |
 | `Pipeline/tools/smoke_retrieve.py` | quick ad-hoc retrieval check |
-| `Pipeline/tools/remap_qrels.py` | repair stale qrel chunk IDs after re-chunking |
+| `Pipeline/tools/remap_qrels.py` | repair stale qrel chunk IDs after a split (exact) or a re-chunk (approximate) |
 | `Pipeline/tools/ab_retrieval.py` | A/B sweep of retrieval variants |
 
 ---
 
 ## 10. Open items
 
-- **Oversized chunks (§4):** 18% of chunks exceed the 512-token embedder window.
-  Adopt semantic chunking or split oversized neural chunks.
+- **Oversized chunks (§4):** resolved by the split stage (`final/chunk-splitting`).
+- **Ranking:** hybrid retrieval puts the right document in the top 5 far more often than the exact
+  gold chunk; a cross-encoder reranker over the fused candidates is the next lever.
 - **Vector-pass latency (§6):** `always_fuse` embeds every query on-device;
   measure real-device latency and consider a BM25-confidence gate if needed.
-- **Eval coverage:** qrels mostly label a single gold chunk per query; adding
-  multi-chunk relevance and modelling query enrichment would tighten the metrics.
+- **Eval coverage:** qrels mostly label a single gold chunk per query (groups exist only for
+  split pieces); multi-chunk relevance and modelling query enrichment would tighten the metrics.
 - **Semantic-chunker eval:** the eval currently runs the neural experiment only;
   re-add a semantic experiment to compare chunking strategies head-to-head.

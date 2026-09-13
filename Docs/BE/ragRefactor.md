@@ -9,6 +9,11 @@
 >
 > Ranking legend per alternative: **Impact** (retrieval/answer quality or UX gain) · **Effort** ·
 > **Risk**. Fittingness = best trade-off for an on-device, single-user, medical, iOS/MLX app.
+>
+> **Status note (2026-09-13).** Dated plan. Done since: vector pass always fused; per-request
+> generation options (answer `maxTokens` 512 with a truncation notice, `final/mlx-runtime-knobs`);
+> context packing (`final/context-budget-fix`); oversized-chunk splitting (`final/chunk-splitting`);
+> the query embedder bundled with [CLS] pooling (`final/eval-integrity`). Line references are stale.
 
 ---
 
