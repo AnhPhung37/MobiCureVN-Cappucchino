@@ -19,7 +19,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from eval.dataset import QrelItem
+from eval.dataset import QrelItem, validate_dataset, QueryItem
 from eval.metrics_ir import doc_hit_at_k, doc_id_of, mrr, ndcg_at_k, recall_at_k
 from eval.provenance import (
     app_retrieval,
@@ -84,6 +84,45 @@ class DocHitTests(unittest.TestCase):
 
     def test_empty_relevant_set_scores_zero_rather_than_dividing_by_zero(self):
         self.assertEqual(doc_hit_at_k(set(), ["A_c1"], 5), 0.0)
+
+
+class RelevanceGroupTests(unittest.TestCase):
+    """A split gold chunk is one label, not several: any of its pieces satisfies it."""
+
+    def test_any_piece_of_a_split_chunk_counts_once_for_recall(self):
+        groups = [["A_c1", "A_c2", "A_c3"]]
+        self.assertEqual(recall_at_k(groups, ["X_c9", "A_c2"], 5), 1.0)
+        self.assertEqual(recall_at_k(groups, ["A_c1", "A_c3"], 5), 1.0, "two pieces are still one hit")
+        self.assertEqual(recall_at_k([["A_c1", "A_c2"], ["B_c1"]], ["A_c2"], 5), 0.5)
+
+    def test_a_group_earns_ndcg_gain_once(self):
+        self.assertAlmostEqual(ndcg_at_k([["A_c1", "A_c2"]], ["A_c1", "A_c2"], 5), 1.0)
+        self.assertAlmostEqual(mrr([["A_c1", "A_c2"]], ["X_c1", "A_c2"]), 0.5)
+
+    def test_singleton_groups_score_exactly_like_a_plain_set(self):
+        import random
+
+        rng = random.Random(3)
+        ids = [f"D_c{i}" for i in range(20)]
+        for _ in range(200):
+            gold = set(rng.sample(ids, rng.randint(1, 4)))
+            got = rng.sample(ids, 10)
+            singleton = [[cid] for cid in gold]
+            for metric in (recall_at_k, ndcg_at_k, doc_hit_at_k):
+                self.assertAlmostEqual(metric(gold, got, 5), metric(singleton, got, 5))
+            self.assertAlmostEqual(mrr(gold, got), mrr(singleton, got))
+
+    def test_qrels_expose_groups_when_present(self):
+        plain = QrelItem("q1", ["A_c1"])
+        grouped = QrelItem("q1", ["A_c1", "A_c2"], [["A_c1", "A_c2"]])
+        self.assertEqual(plain.relevance(), {"A_c1"})
+        self.assertEqual(grouped.relevance(), [["A_c1", "A_c2"]])
+
+    def test_groups_that_disagree_with_the_chunk_ids_are_rejected(self):
+        queries = [QueryItem("q1", "?")]
+        with self.assertRaises(ValueError):
+            validate_dataset(queries, {"q1": QrelItem("q1", ["A_c1", "A_c2"], [["A_c1"]])})
+        validate_dataset(queries, {"q1": QrelItem("q1", ["A_c1", "A_c2"], [["A_c1", "A_c2"]])})
 
 
 class ExistingMetricsRegressionTests(unittest.TestCase):
