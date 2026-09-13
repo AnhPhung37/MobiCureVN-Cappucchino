@@ -38,10 +38,16 @@ def main() -> None:
     registry_path = _resolve_path(base_dir, cfg["registry_path"])
     embed_cfg = cfg["embed"]
 
+    built: set[Path] = set()
     for exp in cfg["experiments"]:
         if not exp.get("enabled", True):
             print(f"[SKIP] {exp['name']}: {exp.get('disabled_reason', 'disabled in config')}")
             continue
+        if _resolve_path(base_dir, exp["index_db_path"]) in built:
+            # Several experiments may score one index with different retrieval settings.
+            print(f"[SKIP] {exp['name']}: index already built above")
+            continue
+        built.add(_resolve_path(base_dir, exp["index_db_path"]))
 
         source_dir = _resolve_path(base_dir, exp["source_chunks_dir"])
         enriched_dir = _resolve_path(base_dir, exp["enriched_output_dir"])

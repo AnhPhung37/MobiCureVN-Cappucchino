@@ -39,6 +39,19 @@ def run_experiment(
             always_fuse=retrieval.get("always_fuse", True),
             drop_stopwords=retrieval.get("drop_stopwords", True),
         )
+    elif mode == "fts":
+        # The same fusion code with the vector pass off: what SQLiteRetriever ships when
+        # App/Resources carries no query embedder.
+        retriever = HybridRetriever(
+            db_path,
+            embedder,
+            candidate_multiplier=retrieval.get("candidate_multiplier", 3),
+            rrf_k=retrieval.get("rrf_k", 60.0),
+            min_token_length=retrieval.get("min_token_length", 3),
+            always_fuse=retrieval.get("always_fuse", True),
+            drop_stopwords=retrieval.get("drop_stopwords", True),
+            use_vector=False,
+        )
     elif mode == "vector":
         retriever = SQLiteVecRetriever(db_path, embedder)
     else:
@@ -53,14 +66,14 @@ def run_experiment(
     faith_scores: list[float] = []
 
     for query in queries:
-        rel_ids = set(qrels[query.query_id].relevant_chunk_ids)
+        relevance = qrels[query.query_id].relevance()
         retrieved = retriever.search(query.question, top_k)
         retrieved_ids = [c.chunk_id for c in retrieved]
 
-        r_at_k = recall_at_k(rel_ids, retrieved_ids, top_k)
-        mrr_score = mrr(rel_ids, retrieved_ids)
-        ndcg_score = ndcg_at_k(rel_ids, retrieved_ids, top_k)
-        doc_hit = doc_hit_at_k(rel_ids, retrieved_ids, top_k)
+        r_at_k = recall_at_k(relevance, retrieved_ids, top_k)
+        mrr_score = mrr(relevance, retrieved_ids)
+        ndcg_score = ndcg_at_k(relevance, retrieved_ids, top_k)
+        doc_hit = doc_hit_at_k(relevance, retrieved_ids, top_k)
 
         recall_scores.append(r_at_k)
         mrr_scores.append(mrr_score)

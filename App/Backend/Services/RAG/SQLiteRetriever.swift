@@ -36,6 +36,12 @@ final class SQLiteRetriever {
         hasVecIndex = tableExists("vec_chunks")
         hasPageStartColumn = columnExists(tableName: "chunks", columnName: "page_start")
         queryEmbedder = QueryEmbedder()
+        if queryEmbedder == nil {
+            // Not an error the patient sees, but a different retriever: without the bundled
+            // query embedder every search is FTS-only. Say so, so a build missing the resource
+            // cannot pass for the hybrid retriever the evaluation measures.
+            print("SQLiteRetriever: query_embedder / vocab.txt not in bundle — vector search disabled, FTS-only")
+        }
         if !hasFTSIndex {
             print("SQLiteRetriever: chunks_fts not found, using chunks fallback search")
         }

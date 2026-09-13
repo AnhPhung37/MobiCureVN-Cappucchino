@@ -19,14 +19,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from eval.dataset import QrelItem
+from eval.dataset import QrelItem, validate_dataset, QueryItem
 from eval.metrics_ir import doc_hit_at_k, doc_id_of, mrr, ndcg_at_k, recall_at_k
 from eval.provenance import (
+    app_retrieval,
     config_digest,
     corpus_fingerprint,
     git_state,
     index_fingerprint,
     qrels_coverage,
+    repo_relative,
 )
 
 
@@ -82,6 +84,45 @@ class DocHitTests(unittest.TestCase):
 
     def test_empty_relevant_set_scores_zero_rather_than_dividing_by_zero(self):
         self.assertEqual(doc_hit_at_k(set(), ["A_c1"], 5), 0.0)
+
+
+class RelevanceGroupTests(unittest.TestCase):
+    """A split gold chunk is one label, not several: any of its pieces satisfies it."""
+
+    def test_any_piece_of_a_split_chunk_counts_once_for_recall(self):
+        groups = [["A_c1", "A_c2", "A_c3"]]
+        self.assertEqual(recall_at_k(groups, ["X_c9", "A_c2"], 5), 1.0)
+        self.assertEqual(recall_at_k(groups, ["A_c1", "A_c3"], 5), 1.0, "two pieces are still one hit")
+        self.assertEqual(recall_at_k([["A_c1", "A_c2"], ["B_c1"]], ["A_c2"], 5), 0.5)
+
+    def test_a_group_earns_ndcg_gain_once(self):
+        self.assertAlmostEqual(ndcg_at_k([["A_c1", "A_c2"]], ["A_c1", "A_c2"], 5), 1.0)
+        self.assertAlmostEqual(mrr([["A_c1", "A_c2"]], ["X_c1", "A_c2"]), 0.5)
+
+    def test_singleton_groups_score_exactly_like_a_plain_set(self):
+        import random
+
+        rng = random.Random(3)
+        ids = [f"D_c{i}" for i in range(20)]
+        for _ in range(200):
+            gold = set(rng.sample(ids, rng.randint(1, 4)))
+            got = rng.sample(ids, 10)
+            singleton = [[cid] for cid in gold]
+            for metric in (recall_at_k, ndcg_at_k, doc_hit_at_k):
+                self.assertAlmostEqual(metric(gold, got, 5), metric(singleton, got, 5))
+            self.assertAlmostEqual(mrr(gold, got), mrr(singleton, got))
+
+    def test_qrels_expose_groups_when_present(self):
+        plain = QrelItem("q1", ["A_c1"])
+        grouped = QrelItem("q1", ["A_c1", "A_c2"], [["A_c1", "A_c2"]])
+        self.assertEqual(plain.relevance(), {"A_c1"})
+        self.assertEqual(grouped.relevance(), [["A_c1", "A_c2"]])
+
+    def test_groups_that_disagree_with_the_chunk_ids_are_rejected(self):
+        queries = [QueryItem("q1", "?")]
+        with self.assertRaises(ValueError):
+            validate_dataset(queries, {"q1": QrelItem("q1", ["A_c1", "A_c2"], [["A_c1"]])})
+        validate_dataset(queries, {"q1": QrelItem("q1", ["A_c1", "A_c2"], [["A_c1", "A_c2"]])})
 
 
 class ExistingMetricsRegressionTests(unittest.TestCase):
@@ -236,11 +277,112 @@ class GitStateTests(unittest.TestCase):
             (root / "f.txt").write_text("y")
             self.assertIs(git_state(root)["dirty"], True)
 
+    def test_the_harness_own_outputs_do_not_dirty_the_tree(self):
+        # Three back-to-back runs must all report dirty=false on a clean checkout: run 1's
+        # result file must not make run 2 look like it ran on modified code.
+        with tempfile.TemporaryDirectory() as tmp:
+            import subprocess
+
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "t@t"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "t"], cwd=root, check=True)
+            (root / "Pipeline" / "eval").mkdir(parents=True)
+            (root / "Pipeline" / "eval" / "run_eval.py").write_text("x")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "init"], cwd=root, check=True)
+
+            (root / "Pipeline" / "eval" / "results").mkdir()
+            (root / "Pipeline" / "eval" / "results" / "eval_1.json").write_text("{}")
+            (root / "Pipeline" / "eval" / "outputs").mkdir()
+            (root / "Pipeline" / "eval" / "outputs" / "index.db").write_text("")
+            self.assertIs(git_state(root)["dirty"], False)
+
+            (root / "Pipeline" / "eval" / "run_eval.py").write_text("changed")
+            self.assertIs(git_state(root)["dirty"], True, "a code change is still dirty")
+
     def test_non_repository_reports_unknown_rather_than_raising(self):
         with tempfile.TemporaryDirectory() as tmp:
             state = git_state(Path(tmp))
             self.assertIsNone(state["commit"])
             self.assertIsNone(state["dirty"])
+
+
+class AppRetrievalTests(unittest.TestCase):
+    """The eval can only claim to describe the app if the app ships the vector pass."""
+
+    def test_without_the_bundled_embedder_the_app_is_fts_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "App" / "Resources").mkdir(parents=True)
+            self.assertEqual(app_retrieval(root)["mode"], "fts")
+            (root / "App" / "Resources" / "vocab.txt").write_text("[PAD]")
+            self.assertEqual(app_retrieval(root)["mode"], "fts", "vocab alone is not enough")
+
+    def test_with_embedder_and_vocab_the_app_is_hybrid(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            resources = Path(tmp) / "App" / "Resources"
+            (resources / "query_embedder.mlpackage").mkdir(parents=True)
+            (resources / "vocab.txt").write_text("[PAD]")
+            self.assertEqual(app_retrieval(Path(tmp))["mode"], "hybrid")
+
+
+@unittest.skipUnless(
+    __import__("importlib").util.find_spec("sqlite_vec")
+    and __import__("importlib").util.find_spec("sentence_transformers"),
+    "needs sqlite_vec and sentence_transformers",
+)
+class FtsOnlyModeTests(unittest.TestCase):
+    """mode=fts must never touch the embedder -- that is what makes it FTS-only."""
+
+    class _ExplodingEmbedder:
+        def encode(self, *args, **kwargs):
+            raise AssertionError("the vector pass ran")
+
+    def _index(self, path: Path) -> None:
+        import sqlite_vec
+
+        conn = sqlite3.connect(path)
+        conn.enable_load_extension(True)
+        sqlite_vec.load(conn)
+        conn.execute("CREATE TABLE chunks (rowid INTEGER PRIMARY KEY, chunk_id TEXT, text TEXT)")
+        conn.execute("CREATE VIRTUAL TABLE chunks_fts USING fts5(text, content='chunks', content_rowid='rowid')")
+        conn.execute("CREATE VIRTUAL TABLE vec_chunks USING vec0(embedding float[2])")
+        for i, text in enumerate(["stoma care at home", "diet after surgery"], start=1):
+            conn.execute("INSERT INTO chunks VALUES (?,?,?)", (i, f"D_c{i}", text))
+            conn.execute("INSERT INTO vec_chunks(rowid, embedding) VALUES (?, ?)", (i, struct.pack("2f", 1.0, 0.0)))
+        conn.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
+        conn.commit()
+        conn.close()
+
+    def test_fts_mode_returns_keyword_hits_without_embedding_the_query(self):
+        from eval.retriever import HybridRetriever
+
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / "i.db"
+            self._index(db)
+            fts = HybridRetriever(db, self._ExplodingEmbedder(), always_fuse=True, use_vector=False)
+            self.assertEqual([c.chunk_id for c in fts.search("stoma care", 5)], ["D_c1"])
+
+            hybrid = HybridRetriever(db, self._ExplodingEmbedder(), always_fuse=True)
+            with self.assertRaises(AssertionError):
+                hybrid.search("stoma care", 5)
+
+
+class RepoRelativeTests(unittest.TestCase):
+    def test_paths_inside_the_repo_are_recorded_relative_to_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            (repo / "Pipeline" / "eval").mkdir(parents=True)
+            self.assertEqual(
+                repo_relative(repo / "Pipeline" / "eval" / "x.db", repo),
+                str(Path("Pipeline") / "eval" / "x.db"),
+            )
+
+    def test_paths_outside_the_repo_are_kept_as_given(self):
+        with tempfile.TemporaryDirectory() as repo, tempfile.TemporaryDirectory() as other:
+            outside = Path(other) / "x.db"
+            self.assertEqual(repo_relative(outside, Path(repo)), str(outside))
 
 
 class ConfigDigestTests(unittest.TestCase):
@@ -285,6 +427,17 @@ class ShippedConfigTests(unittest.TestCase):
         retrieval = self.cfg["retrieval"]
         self.assertTrue(retrieval["always_fuse"])
         self.assertTrue(retrieval["drop_stopwords"])
+
+    def test_exactly_one_experiment_stands_for_the_app(self):
+        self.assertEqual(sum(bool(e.get("represents_app")) for e in self.cfg["experiments"]), 1)
+
+    def test_the_app_experiment_scores_the_retriever_this_tree_ships(self):
+        # Ties the headline number to the bundle: if query_embedder.mlpackage is removed,
+        # this fails instead of the eval quietly describing a retriever the app lacks.
+        repo_root = self.CONFIG.parents[2]
+        exp = next(e for e in self.cfg["experiments"] if e.get("represents_app"))
+        mode = {**self.cfg["retrieval"], **exp.get("retrieval", {})}.get("mode", "hybrid")
+        self.assertEqual(mode, app_retrieval(repo_root)["mode"])
 
     def test_at_least_one_experiment_is_enabled(self):
         self.assertTrue(any(e.get("enabled", True) for e in self.cfg["experiments"]))

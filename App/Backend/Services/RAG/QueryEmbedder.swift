@@ -3,12 +3,15 @@ import CoreML
 
 /// On-device query embedder backed by a CoreML-converted BGE-small model.
 ///
-/// Requires two bundle resources added in Xcode:
-///   query_embedder.mlpackage  — output of Pipeline/convert_embedder.py
-///   vocab.txt                 — WordPiece vocabulary from the same script
+/// Bundle resources, both committed under App/Resources and produced by
+/// `Pipeline/tools/convert_embedder.py` from the same model that built vectorstore.db:
+///   query_embedder.mlpackage  — [CLS]-pooled, L2-normalised, 384-d (bge-small-en-v1.5's own pooling)
+///   vocab.txt                 — WordPiece vocabulary for WordPieceTokenizer
 ///
-/// When either resource is absent, init() returns nil and SQLiteRetriever
-/// silently skips vector search, falling back to FTS-only retrieval.
+/// The query vector is only comparable with the document vectors if tokenizer and model match
+/// the Python side exactly; `QueryEmbedderParityTests` checks both against a fixture the
+/// converter exports. When either resource is absent, init() returns nil and SQLiteRetriever
+/// falls back to FTS-only retrieval (and logs that it did).
 final class QueryEmbedder {
 
     private let model:     MLModel
