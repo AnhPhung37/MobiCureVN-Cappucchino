@@ -194,16 +194,48 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 #endif
     }
 
+    /// `kvBits`, unless it cannot take effect. In mlx-swift-lm 3.31 a `maxKVSize` gives every
+    /// full-attention layer a `RotatingKVCache`, and `maybeQuantizeKVCache` quantizes only
+    /// `KVCacheSimple` — so with both set the bits would be silently ignored while the tuning file
+    /// claimed a quantized cache. The conflict is resolved once, in favour of the hard memory
+    /// bound, and logged. See Docs/BE/mlxApiVerification.md.
+    private static let effectiveKVBits: Int? = {
+        let generation = tuning.generation
+        guard let bits = generation.kvBits else { return nil }
+        guard generation.maxKVSize == nil else {
+            log.error("kvBits \(bits) ignored: maxKVSize is set, and mlx-swift-lm cannot quantize a rotating KV cache")
+            return nil
+        }
+        return bits
+    }()
+
     // MARK: - LLMServiceProtocol
 
     func stream(request: LLMRequest) -> AsyncStream<String> {
-        return generate(request: request)
+        let events = generate(request: request)
+        return AsyncStream<String>(bufferingPolicy: .bufferingNewest(Self.tokenBufferLimit)) { continuation in
+            let task = Task {
+                for await event in events {
+                    if case let .text(text) = event {
+                        continuation.yield(text)
+                    }
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// The same generation as `stream`, followed by how it ended: MLX reports whether it stopped
+    /// at an end-of-sequence token or at `maxTokens` (`GenerateCompletionInfo.stopReason`).
+    func streamEvents(request: LLMRequest) -> AsyncStream<LLMStreamEvent> {
+        generate(request: request)
     }
 
     // MARK: - Private Generation
 
-    private func generate(request: LLMRequest) -> AsyncStream<String> {
-        return AsyncStream<String>(bufferingPolicy: .bufferingNewest(Self.tokenBufferLimit)) { continuation in
+    private func generate(request: LLMRequest) -> AsyncStream<LLMStreamEvent> {
+        return AsyncStream<LLMStreamEvent>(bufferingPolicy: .bufferingNewest(Self.tokenBufferLimit)) { continuation in
             let task = Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self = self else {
                     continuation.finish()
@@ -248,26 +280,62 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                         // JSON extraction asks for a greedy, cheap preset instead of silently
                         // inheriting a 1024-token answering budget. See `GenerationOptions`.
                         //
-                        // KV-cache quantization and prefill step size are NOT set here yet. Their
-                        // `GenerateParameters` field names have to be confirmed against the pinned
-                        // mlx-swift-lm before they can be trusted — the values are already carried in
-                        // `InferenceTuning.generation` so that wiring them is a one-line change per
-                        // field. Follow Docs/BE/mlxApiVerification.md.
+                        // The optional knobs below are applied as property assignments after
+                        // construction rather than through the memberwise initializer: that depends
+                        // only on the property names existing and being `var` (verified against
+                        // mlx-swift-lm 3.31.3 in Docs/BE/mlxApiVerification.md), not on the
+                        // initializer's argument order. A knob left nil in InferenceTuning keeps the
+                        // runtime's own default. The token ceiling is not one of these knobs: it
+                        // comes from the request's GenerationOptions.
                         let options = request.options
-                        let params = GenerateParameters(
+                        var params = GenerateParameters(
                             maxTokens: options.maxTokens,
                             temperature: options.temperature,
                             topP: options.topP
                         )
-                        let stream = try await container.generate(input: lmInput, parameters: params)
-                        for await event in stream {
-                            if Task.isCancelled { break }
-                            if case let .chunk(text) = event {
-                                continuation.yield(text)
+                        let generation = Self.tuning.generation
+                        // Prompt tokens processed per prefill step. The runtime default is
+                        // already 512; set a smaller value only to bound peak prefill memory on a
+                        // constrained device. It shapes how the prompt is computed, not the output.
+                        if let prefillStepSize = generation.prefillStepSize {
+                            params.prefillStepSize = prefillStepSize
+                        }
+                        // Quantizing the KV cache cuts its memory 2x at 8 bits, 4x at 4 bits, and
+                        // DOES affect output — leave nil until a sweep says otherwise. Only
+                        // full-attention layers are quantized; see `effectiveKVBits`.
+                        if let kvBits = Self.effectiveKVBits {
+                            params.kvBits = kvBits
+                            if let kvGroupSize = generation.kvGroupSize {
+                                params.kvGroupSize = kvGroupSize
+                            }
+                            if let quantizedKVStart = generation.quantizedKVStart {
+                                params.quantizedKVStart = quantizedKVStart
                             }
                         }
+                        // Hard ceiling on cache growth in a long conversation. Old entries are
+                        // overwritten once reached, trading continuity for a memory bound.
+                        if let maxKVSize = generation.maxKVSize {
+                            params.maxKVSize = maxKVSize
+                        }
+                        let stream = try await container.generate(input: lmInput, parameters: params)
+                        var completion = LLMCompletion.unknown
+                        for await event in stream {
+                            if Task.isCancelled { break }
+                            switch event {
+                            case .chunk(let text):
+                                continuation.yield(.text(text))
+                            case .info(let info):
+                                // `.length`: maxTokens cut the answer off before the model finished,
+                                // and the orchestrator tells the patient so.
+                                completion = info.stopReason == .length ? .truncated : .finished
+                            default:
+                                break
+                            }
+                        }
+                        continuation.yield(.completed(completion))
                     } catch {
-                        continuation.yield("[MLX error: \(error.localizedDescription)]")
+                        continuation.yield(.text("[MLX error: \(error.localizedDescription)]"))
+                        continuation.yield(.completed(.unknown))
                     }
                     continuation.finish()
                     return
@@ -283,8 +351,9 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
 
                 for chunk in Self.chunk(reply, size: 48) {
                     if Task.isCancelled { break }
-                    continuation.yield(chunk)
+                    continuation.yield(.text(chunk))
                 }
+                continuation.yield(.completed(.finished))
 
                 continuation.finish()
             }

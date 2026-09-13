@@ -53,20 +53,17 @@ nonisolated struct InferenceTuning: Sendable {
         let topP: Float
 
         /// Ceiling for the short auxiliary calls (language classification, fact extraction)
-        /// that only ever need a few tokens. Not yet wired: `LLMRequest` currently has no way
-        /// to carry per-call generation options, so every call shares `maxTokens` above.
-        /// See Docs/BE/optimizationChecklist.md B1/3.1.
+        /// that only ever need a few tokens; `GenerationOptions` derives the classification and
+        /// extraction presets from it.
         let auxiliaryMaxTokens: Int
 
         /// KV-cache quantization and prefill controls.
         ///
-        /// **Decoded but NOT yet applied.** The exact `GenerateParameters` field names for
-        /// these differ between mlx-swift-lm versions, and this project has already been
-        /// bitten once by reaching for the obvious-looking API and getting a deprecated one
-        /// (`OOM-Memory-Management.md` §2.2). They are carried here so that the verification
-        /// pass in `Docs/BE/mlxApiVerification.md` is a one-line wiring change per field
-        /// rather than a re-design — and so they become tunable without a rebuild the moment
-        /// that pass lands.
+        /// Applied by `LLMService` when set; `nil` keeps the mlx-swift-lm default (prefill step
+        /// 512, no KV quantization, unbounded cache). Verified against the pinned 3.31.3 source in
+        /// `Docs/BE/mlxApiVerification.md`, including two limits: `kvBits` has no effect together
+        /// with `maxKVSize` (LLMService drops it and logs), and it quantizes only full-attention
+        /// layers.
         let kvBits: Int?
         let kvGroupSize: Int?
         let quantizedKVStart: Int?
@@ -134,7 +131,7 @@ nonisolated struct InferenceTuning: Sendable {
     static let defaults = InferenceTuning(
         profileName: "built-in-defaults",
         generation: Generation(
-            maxTokens: 1024,
+            maxTokens: 512,
             temperature: 0.3,
             topP: 0.85,
             auxiliaryMaxTokens: 64,
