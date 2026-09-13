@@ -431,7 +431,7 @@ number on a slide must trace to a file in `Docs/test-runs/`.**
 | `final/mlx-runtime-knobs` | main | latency / truncation | 3.6 |
 | `final/prefix-kv-cache` | mlx-runtime-knobs | groundwork | 3.7 |
 | `final/chunk-splitting` | eval-integrity | corpus | 3.8 |
-| `final/frontend-perf-notes` | main | docs | 4.1 |
+| `final/docs-fe-perf` | main | docs | 4.1 |
 | `final/multilang-embedder-and-test-protocol` | eval-integrity | investigation + this doc | 4.2 |
 
 Merging all fifteen in this order was dry-run on 2026-09-13 after the fixes: every merge is clean
@@ -439,3 +439,94 @@ except 3.4, which resolves exactly as described there. The merged tree passes G3
 G4 (audit exit 0, 16/16), has `App/Resources/vectorstore.db` at 1876 chunks / 39 documents, and ships
 `maxTokens 512`, `prefillStepSize null`, `retrievalTopK 10`, `contextTokenBudget 3000`,
 `historyTokenBudget 350`, `wordsToTokensRatio null`. G1, G2 and G5 need Xcode and a device.
+
+---
+
+## 7. Phase 4 — `final0.1-*` recommendation branches
+
+**Do not start this phase before Phases 1–3 are merged and kept.** Every `final0.1-*` branch is
+built from a local integration branch, `final0.1-base`, which is nothing but the fifteen `final/*`
+branches above merged in the Appendix order (the same merge dry-run this doc already describes,
+just kept as a named branch instead of thrown away). A `final0.1-*` branch diffs against that
+merge, not against `main` — merging one onto `main` directly, or onto a `main` that is missing one
+of the fifteen, will not apply cleanly and will not carry the fixes it was measured against
+(bundled embedder, `retrievalTopK 10`/`contextTokenBudget 3000`, the split 1876-chunk corpus, the
+prefix-stable prompt, …). Rebuild it yourself before branching further work from it:
+
+```bash
+git checkout -b final0.1-base main
+for b in eval-integrity docs-metrics-truth privacy-audit answer-quality latency-benchmark \
+         context-budget-fix retrieval-topk language-detect-fast prompt-slimming \
+         aux-pass-gating mlx-runtime-knobs prefix-kv-cache chunk-splitting docs-fe-perf \
+         multilang-embedder-and-test-protocol; do
+  git merge --no-edit "final/$b"
+done
+# only final/prompt-slimming conflicts (§3.4) — resolve to retrievalTopK 10 / contextTokenBudget
+# 3000 / historyTokenBudget 350, the values every final0.1-* number below was measured against.
+```
+
+### What was and wasn't verified
+
+Every `final0.1-*` branch below was written and measured **on a Linux machine with no Xcode and no
+iOS device or simulator** — the opposite constraint from Phases 1–3, which were at least written
+on the Mac. That changes what "verified" means here:
+
+- **Verified:** every Python tool, every Python test (`cd Pipeline && python -m unittest discover
+  -s eval/tests -t .`), the CPU eval numbers quoted per branch below, and `Tools/privacy_audit.sh`
+  — all run for real, on the merged tree.
+- **Not verified, at all:** G1 (build), G2 (Swift tests), G5 (smoke) — no Swift in any of these
+  branches has been compiled, let alone run. Treat every Swift change here as a first-draft against
+  an API surface that was checked by reading the package sources, not by the compiler.
+
+Dry-run merging the seven branches below onto `final0.1-base` (in any order — they touch disjoint
+files, `final0.1-lora-distill` excepted, see below) was done on 2026-09-13: **no conflicts**, **119
+Python tests pass**, privacy audit **PASS**. That is the full extent of what "no conflicts" proves
+here — it says nothing about G1/G2/G5.
+
+### Merge order
+
+| Branch | Depends on | What it changes | Runtime cost |
+|---|---|---|---|
+| `final0.1-contextual-header` | `final0.1-base` | `App/Resources/vectorstore.db` rebuilt with `"<title> › <section>"` embedded above each chunk; `represents_app` moves to the header index | none (baked into the index) |
+| `final0.1-model-catalog` | `final0.1-base` | adds MedGemma 1.5 4B + Gemma 4 E2B to `ModelCatalog`; wound-photo VLM defaults to MedGemma | download only if a device picks the model |
+| `final0.1-reranker` | `final0.1-base` | adds `CrossEncoderReranker`, ships **off** (`rerankCandidates: 0`) | none while off; ~35 ms/candidate if turned on |
+| `final0.1-fm-aux-routing` | `final0.1-base` | routes post-answer fact/profile extraction to Apple's on-device Foundation Model when available | removes MLX queueing for two passes, on iOS 26 + Apple Intelligence devices only |
+| `final0.1-qrels-pooling` | `final0.1-base` | adds `tools/pool_qrels.py` / graded metrics; does not touch the app or the golden `qrels.jsonl` | none |
+| `final0.1-dwq` | `final0.1-base` | adds `Pipeline/quant/*`; produces no model by itself | none until a DWQ model is built and added to the catalog |
+| `final0.1-lora-distill` | **`final0.1-dwq`** (reuses its prompt builder — merge dwq first) | adds `Pipeline/distill/*`; produces no model by itself | none until a distilled model is built and added to the catalog |
+
+Merge these onto `final0.1-base` in the order above (or any order for the first six — they touch
+disjoint files; `final0.1-lora-distill` must come after `final0.1-dwq` or its `from quant import
+build_dwq_calibration` import fails). Test and record each one individually per §5 before merging
+the next, same discipline as Phases 1–3 — a Python-only change is still a change, and the point of
+one-at-a-time is knowing which branch moved a number, not which language it's written in.
+
+### Gate for this phase
+
+Since G1/G2/G5 cannot run here, the phase-4 gate is what phases 1–3 called G3/G4 plus the CPU eval
+number each branch claims:
+
+| Gate | Command | Pass |
+|---|---|---|
+| P4.1 Python tests | `cd Pipeline && python -m unittest discover -s eval/tests -t .` | 0 failures (**119** with all seven merged) |
+| P4.2 Privacy | `Tools/privacy_audit.sh` | exit 0, VERDICT: consistent |
+| P4.3 Eval number | `cd Pipeline && python -m eval.run_eval` | the `represents_app` experiment reproduces the branch's quoted doc-hit@5 (`neural_contextual` → 0.8038) within noise |
+| P4.4 Build (first time this tree is opened in Xcode) | `xcodebuild build -scheme MobiCureVN` | fix-and-record every error per branch — expect some |
+
+**Not started:** `final0.1-embedder-finetune`, `final0.1-output-safety-classifier`,
+`final0.1-phowhisper-asr` (no code). **Uncommitted, do not merge:**
+`final0.1-embedder-candidates` — `Pipeline/tools/compare_embedders.py` has a local, dirty patch
+adding `--candidates` (Qwen3-Embedding-0.6B, EmbeddingGemma-300m) that was never run to completion
+or committed; see `Docs/BE/Multilingual-Embedder-Handoff.md` §9.
+
+### Appendix B — `final0.1-*` branch map
+
+| Branch | Doc |
+|---|---|
+| `final0.1-contextual-header` | `Docs/BE/Contextual-Header.md` |
+| `final0.1-model-catalog` | `Docs/BE/Model-Catalog-Candidates.md` |
+| `final0.1-reranker` | `Docs/BE/Reranker.md` |
+| `final0.1-fm-aux-routing` | `Docs/BE/FM-Aux-Routing.md` |
+| `final0.1-qrels-pooling` | `Docs/BE/Qrels-Pooling.md` |
+| `final0.1-dwq` | `Docs/BE/DWQ-Quantization.md` |
+| `final0.1-lora-distill` | `Docs/BE/LoRA-Distillation.md` |

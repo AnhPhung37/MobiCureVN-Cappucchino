@@ -163,3 +163,18 @@ embedder and queried with another returns confident nonsense, with no error anyw
 finishing — the bge-m3 row in particular — because "we measured cross-lingual retrieval
 and here is why we kept the translation hop" is a strong slide. The *swap* is future
 work, gated on §5.
+
+## 9. Follow-up: `final0.1-embedder-candidates`
+
+Picks up exactly this handoff's open question with `tools/compare_embedders.py --candidates`,
+comparing the shipped `BAAI/bge-small-en-v1.5` against two models that did not exist when §2's
+numbers were measured: `Qwen/Qwen3-Embedding-0.6B` (prompts wired from its
+`config_sentence_transformers.json`) and `google/embeddinggemma-300m` (gated on Hugging Face —
+accept its licence and log in before running).
+
+**Status: local patch, uncommitted, not run to completion.** It was written on the same Linux
+machine this handoff warns against using — no GPU headroom for a 0.6B embedding model over 1876
+chunks in a reasonable time, so the run was never finished and the patch was never committed to
+`final0.1-embedder-candidates`. Do the actual comparison on the Mac Studio, following every "Do
+not" in §7 above, before that branch is worth merging. Full `final0.1-*` merge order and
+prerequisites: `Docs/Test-Protocol.md` §7.
