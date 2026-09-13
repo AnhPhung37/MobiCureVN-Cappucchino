@@ -84,7 +84,7 @@ python -m tools.compare_embedders --device mps \
 python -m tools.compare_embedders --device mps --models BAAI/bge-small-en-v1.5 --bge-instruction
 ```
 
-**If `final/chunk-splitting` has been merged**, the corpus is 2108 chunks, not 1238, and
+**If `final/chunk-splitting` has been merged**, the corpus is 1876 chunks, not 1238, and
 none of the numbers in §2 are comparable any more. Re-measure the baseline in the same
 run rather than against this table.
 
