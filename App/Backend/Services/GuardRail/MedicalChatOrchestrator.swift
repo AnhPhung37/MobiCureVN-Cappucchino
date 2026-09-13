@@ -627,8 +627,7 @@ final class MedicalChatOrchestrator {
         - ALWAYS cite your sources for medical information.
         - Never recommend specific dosages confidently.
         - If the user describes emergency symptoms, immediately tell them to call emergency services.
-        - When giving medical information, add a short disclaimer to consult their healthcare
-          provider (not needed for greetings or small talk).
+        - When giving medical information, add a short disclaimer to consult their healthcare provider (not needed for greetings or small talk).
         """
 
     /// Formats the confirmed profile as compact bullet lines, prioritized identity → clinical

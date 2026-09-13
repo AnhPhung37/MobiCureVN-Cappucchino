@@ -1,0 +1,15 @@
+{
+  "index": "/Users/hanhdo/Documents/RMIT/Capstone/MobiCureVN-Cappucchino/.claude/worktrees/integration+final-test/Pipeline/eval/outputs/vectorstore_neural.db",
+  "rows": [
+    {
+      "policy": "new",
+      "top_k": 10,
+      "budget": 3000,
+      "ratio": 1.75,
+      "chunks_sent": 8.497607655502392,
+      "context_tokens": 2847.5645933014353,
+      "zero_context_rate": 0.0,
+      "doc_hit_seen": 0.8421052631578947
+    }
+  ]
+}
