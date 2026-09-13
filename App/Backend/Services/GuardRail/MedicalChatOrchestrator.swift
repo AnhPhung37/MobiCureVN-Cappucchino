@@ -150,8 +150,8 @@ final class MedicalChatOrchestrator {
                 // model drifted — a deterministic check, not another LLM call.
                 // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
                 // so the total prompt length stays within the model's sweet spot.
-                let (accumulatedResponse, generationStats) = await Self.accumulate(
-                    stream: llmService.stream(request: LLMRequest(
+                let (generatedResponse, completion, generationStats) = await Self.accumulate(
+                    events: llmService.streamEvents(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
                         conversationHistory: enrichedPrompt.history,
@@ -159,8 +159,15 @@ final class MedicalChatOrchestrator {
                     )),
                     previewingTo: continuation
                 )
+                // An answer cut off at maxTokens has lost its ending, which is where the model puts
+                // the consult-your-provider disclaimer. Say it was cut and restore the disclaimer
+                // before the guardrail — or the patient — sees it.
+                let accumulatedResponse = Self.completingTruncatedAnswer(
+                    generatedResponse, completion: completion, language: responseLanguage
+                )
                 stageMark = Self.logStage(
-                    "4 · LLM generation", since: stageMark, detail: generationStats.summary
+                    "4 · LLM generation", since: stageMark,
+                    detail: generationStats.summary + (completion == .truncated ? ", truncated at maxTokens" : "")
                 )
 
                 // The complete answer is patient-facing medical text derived from the user's own
@@ -282,15 +289,20 @@ final class MedicalChatOrchestrator {
     /// The previews are the raw decoder output — no guardrail has run yet. They are display
     /// only; the caller replaces them with a `.final` once Step 5 has validated the whole thing.
     private static func accumulate(
-        stream: AsyncStream<String>,
+        events: AsyncStream<LLMStreamEvent>,
         previewingTo continuation: AsyncStream<ChatStreamEvent>.Continuation
-    ) async -> (text: String, stats: GenerationStats) {
+    ) async -> (text: String, completion: LLMCompletion, stats: GenerationStats) {
         let start = DispatchTime.now()
         var firstTokenAt: DispatchTime?
         var lastPreviewAt = start
         var result = ""
         var chunkCount = 0
-        for await token in stream {
+        var completion = LLMCompletion.unknown
+        for await event in events {
+            guard case let .text(token) = event else {
+                if case let .completed(reason) = event { completion = reason }
+                continue
+            }
             if firstTokenAt == nil { firstTokenAt = DispatchTime.now() }
             result += token
             chunkCount += 1
@@ -308,7 +320,24 @@ final class MedicalChatOrchestrator {
             total: seconds(from: start, to: end),
             chunkCount: chunkCount
         )
-        return (result, stats)
+        return (result, completion, stats)
+    }
+
+    /// `text` with a notice appended when generation stopped at the token ceiling.
+    ///
+    /// The model ends an answer with the consult-your-provider disclaimer, so a cut answer is
+    /// exactly the one missing it: the notice says the answer is incomplete and restores the
+    /// disclaimer in the reply language. Anything but `.truncated` is returned unchanged.
+    static func completingTruncatedAnswer(
+        _ text: String,
+        completion: LLMCompletion,
+        language: DetectedLanguage
+    ) -> String {
+        guard completion == .truncated else { return text }
+        let notice = language.requiresTranslation
+            ? "…\n\n_(Câu trả lời đã bị cắt vì đạt giới hạn độ dài — bạn có thể hỏi tiếp để xem phần còn lại. Hãy hỏi lại nhân viên y tế về những điều quan trọng với sức khỏe của bạn.)_"
+            : "…\n\n_(This answer was cut off at the length limit — ask me to continue for the rest. Please check anything important for your health with your healthcare provider.)_"
+        return text + notice
     }
 
     // MARK: - Stage Timing
