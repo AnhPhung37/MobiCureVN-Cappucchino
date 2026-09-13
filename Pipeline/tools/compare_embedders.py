@@ -107,8 +107,9 @@ def evaluate(
     # ── English golden set ────────────────────────────────────────────────────
     q_vectors = encode_queries([q.question for q in queries])
     ranked = np.argsort(-(q_vectors @ corpus.T), axis=1)[:, :10]
+    # Group-aware relevance: after final/chunk-splitting the pieces of one gold chunk count once.
     rows = [
-        (set(qrels[q.query_id].relevant_chunk_ids), [ids[j] for j in ranked[i]])
+        (qrels[q.query_id].relevance(), [ids[j] for j in ranked[i]])
         for i, q in enumerate(queries)
     ]
     english: dict[str, dict] = {}
