@@ -21,6 +21,10 @@ Run it: `Tools/privacy_audit.sh` (committed output: `Docs/audits/privacy-audit.t
 | 6 | Entitlements / ATS exceptions | no arbitrary-loads exception |
 | 7 | Speech recognition forced on-device (`requiresOnDeviceRecognition = true`) | on-device only |
 
+§1, §4, §5 and §7 scan code and configuration only — Swift and Objective-C sources, plists,
+entitlements, xcconfig and `project.pbxproj` — never bundled data: the query embedder's
+`vocab.txt` contains ordinary words such as "amplitude", which is not an analytics SDK.
+
 The scan distinguishes three kinds of URL, because lumping them together is how a
 privacy claim becomes untrue in either direction:
 
