@@ -9,7 +9,7 @@
     "kvGroupSize": null,
     "quantizedKVStart": null,
     "maxKVSize": null,
-    "prefillStepSize": 512
+    "prefillStepSize": null
   },
   "prompt": {
     "contextTokenBudget": 600,

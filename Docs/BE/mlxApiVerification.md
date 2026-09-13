@@ -1,115 +1,94 @@
 # Verifying the MLX generation API
 
-`LLMService.swift` has pointed at this document for a while; it did not exist, which is
-why the KV-cache and prefill knobs sat unwired in `InferenceTuning` with `null` values
-and no way for anyone to finish the job. This is that document.
+_Verified 2026-09-13 against the source of the mlx-swift-lm **3.31.3** tag
+(`Libraries/MLXLMCommon/Evaluate.swift`, `KVCache.swift`) — the minimum version the project
+pins. Re-verify whenever the pin moves._
+
+`LLMService.swift` applies every generation knob through `MLXLMCommon.GenerateParameters`, a type
+from a fast-moving package. This document records what that type actually declares at the pinned
+version, the two runtime behaviours the knobs depend on, and what ships.
 
 ---
 
-## Why it is needed
+## Pinning
 
-`MLXLMCommon.GenerateParameters` is the type the whole tuning surface depends on, and it
-comes from a **0.x / fast-moving** package. Two things made that unsafe:
+- Both packages are `upToNextMinorVersion` (`mlx-swift` from 0.31.3, `mlx-swift-lm` from 3.31.3):
+  patch releases resolve, API-changing minor releases do not.
+- **`Package.resolved` must be committed**, and until this branch it could not be: `.gitignore`
+  ignored `*.xcodeproj`, which ignores the lockfile inside the project whatever the comment next
+  to it said. `.gitignore` now ignores only per-user state inside the project. After the first
+  resolve on the Mac:
 
-1. **The packages were effectively unpinned.** Both used `upToNextMajorVersion`:
-   - `mlx-swift` from `0.31.3` → resolved anything `>=0.31.3 <1.0.0`. For a 0.x library
-     that is not a compatibility guarantee at all; breaking changes land in *minor* bumps.
-   - `mlx-swift-lm` from `3.31.3` → anything `>=3.31.3 <4.0.0`.
+  ```bash
+  xcodebuild -resolvePackageDependencies -project MobiCureVN.xcodeproj
+  git check-ignore -v MobiCureVN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved  # must print nothing
+  git add MobiCureVN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+  ```
 
-   Both are now `upToNextMinorVersion`, so a resolve can pick up patch fixes but cannot
-   silently change the API under the app.
+## What 3.31.3 declares
 
-2. **`Package.resolved` is not committed.** `.gitignore:14` says, in as many words, that
-   it is *intentionally not ignored* — but the file is absent from the tree. Until it is
-   committed, two machines can resolve two different versions and only one of them
-   compiles. **Commit it after the first resolve on the Mac.**
+| `GenerateParameters` property | Type | Default | How `LLMService` sets it |
+|---|---|---|---|
+| `maxTokens` | `Int?` | `nil` | always, from the request's `GenerationOptions` |
+| `temperature`, `topP` | `Float` | — | always, from `GenerationOptions` |
+| `prefillStepSize` | `Int` (`var`) | **512** | only when `InferenceTuning.generation.prefillStepSize` is set |
+| `maxKVSize` | `Int?` | `nil` | only when set |
+| `kvBits` | `Int?` | `nil` | only when set **and** `maxKVSize` is not |
+| `kvGroupSize` | `Int` | 64 | with `kvBits` |
+| `quantizedKVStart` | `Int` | 0 | with `kvBits` |
 
-## How to verify, in five minutes
+The knobs are assigned as properties after `GenerateParameters(maxTokens:temperature:topP:)`, so
+the code depends only on these names existing and being `var`, not on the initializer's argument
+order. Later mlx-swift-lm releases move `prefillStepSize` to `prefill.stepSize` and keep a
+deprecated alias: moving the pin produces a warning, not a build failure.
 
-```bash
-# 1. Resolve and pin.
-xcodebuild -resolvePackageDependencies -project MobiCureVN.xcodeproj
-git add MobiCureVN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
-git commit -m "chore: pin MLX package versions"
+Two behaviours the knobs depend on:
 
-# 2. Read the actual declaration for the version you just resolved.
-find ~/Library/Developer/Xcode/DerivedData -path '*mlx-swift-lm*' -name 'GenerateParameters.swift' \
-  -o -path '*SourcePackages*mlx-swift-lm*' -name '*.swift' | xargs grep -l "struct GenerateParameters"
-```
+1. **`kvBits` quantizes only `KVCacheSimple`** (`maybeQuantizeKVCache`, `KVCache.swift:1779`).
+   Setting `maxKVSize` replaces each full-attention cache with a `RotatingKVCache`, which that
+   function skips — so with both set the bits do nothing at all. `LLMService.effectiveKVBits` drops
+   `kvBits` in that case and logs it, rather than letting the tuning file claim a quantized cache.
+   Non-attention layers (Mamba-style caches in hybrid models) are never quantized either.
+2. **Every generation ends with `.info(GenerateCompletionInfo)`**, whose public `stopReason` is
+   `.stop`, `.length` or `.cancelled`. `LLMService.streamEvents` forwards it as `LLMCompletion`,
+   and `MedicalChatOrchestrator` appends a localized "answer was cut off" notice — restoring the
+   consult-your-provider disclaimer the cut removed — to any answer that stopped at `.length`.
 
-Or simply ⌘-click `GenerateParameters` in `LLMService.swift` and read the definition.
+## What ships
 
-## What the code assumes
-
-`LLMService.swift` applies the knobs as **property assignments after construction**, not
-through the memberwise initializer:
-
-```swift
-var params = GenerateParameters(maxTokens:temperature:topP:)
-if let prefillStepSize = generation.prefillStepSize { params.prefillStepSize = prefillStepSize }
-if let kvBits = generation.kvBits { params.kvBits = kvBits; ... }
-if let maxKVSize = generation.maxKVSize { params.maxKVSize = maxKVSize }
-```
-
-That is deliberate. It depends only on:
-
-- the property **names** existing: `prefillStepSize`, `kvBits`, `kvGroupSize`,
-  `quantizedKVStart`, `maxKVSize`;
-- those properties being `var` (settable);
-- the three-argument init `(maxTokens:temperature:topP:)` remaining valid.
-
-It does **not** depend on the initializer's full argument list or their order, which is the
-part most likely to change between releases. If a name has moved, the build fails loudly at
-that line — which is the intended failure mode. Fix the name, and update the matching field
-in `InferenceTuning.Generation` and `App/Resources/InferenceTuning.json` so the three stay
-in step.
-
-### Type check
-
-`InferenceTuning.Generation` declares all five as `Int?`. If the resolved API types any of
-them differently (e.g. `kvGroupSize` as non-optional `Int` with a default), the assignment
-still compiles — the optional is unwrapped before it is assigned. Only a *name* change or a
-`let` property breaks the build.
-
-## What ships on, and what does not
-
-| Knob | Shipped value | Why |
+| Knob | Value | Why |
 |---|---|---|
-| `prefillStepSize` | **512** | Bounds peak memory during prefill by chunking the prompt. Cannot change the tokens produced, only how they are computed — safe to enable without a quality sweep. |
-| `maxTokens` | **512** (was 1024) | Decode time is linear in tokens emitted. A patient answer rarely needs 1024; this halves the worst case. Live knob — raise it if answers start getting cut off. |
-| `kvBits` | `null` | Quantizing the KV cache cuts its memory 2x at 8 bits and 4x at 4 bits, but it **does** change output. Not enabled without measurement. |
-| `kvGroupSize` | `null` | Only meaningful alongside `kvBits`. |
-| `quantizedKVStart` | `null` | Only meaningful alongside `kvBits`. |
-| `maxKVSize` | `null` | A hard ceiling truncates context once reached, trading conversational continuity for a memory bound. Enable only if a device is actually running out. |
+| `maxTokens` | **512** (was 1024) | Halves worst-case decode. Vietnamese costs more tokens per idea on several tokenizers, so truncation is checked per language (Docs/Test-Protocol.md §3.6), and a truncated answer is labelled, never silent. |
+| `prefillStepSize` | `null` | The runtime default is already 512 — the value this branch first shipped, which therefore changed nothing. Set a lower value (e.g. 256) only to bound prefill memory on a constrained device. |
+| `kvBits`, `kvGroupSize`, `quantizedKVStart` | `null` | Changes output. Enable only after the sweep below. |
+| `maxKVSize` | `null` | Overwrites old context once reached, and disables `kvBits`. Enable only if a device runs out of memory. |
 
-The pattern throughout: **an unset knob leaves the runtime's own default untouched.** Nothing
-in this change alters behaviour unless the JSON asks for it, except `maxTokens`.
+## The sweep on device
 
-## The sweep to run on device
+The bundled `App/Resources/InferenceTuning.json` needs a rebuild to change. The no-rebuild knob is
+the **Documents** copy: Xcode → Devices and Simulators → the app → Download Container, edit
+`AppData/Documents/InferenceTuning.json`, Replace Container, relaunch. An edited file overrides the
+bundle key by key; an untouched seed written by an earlier build does not (see
+`InferenceTuning.layer`, merged from `final/context-budget-fix`).
 
-`kvBits` is the largest remaining memory lever and the reason this plumbing exists. Run it
-with the latency harness, on the real device, and record all three axes together:
+Suggested values when enabling: `kvBits: 8`, `kvGroupSize: 64`, `quantizedKVStart: 0`, with
+`maxKVSize` left `null`.
 
 ```bash
-# Baseline, then 8-bit, then 4-bit. Edit App/Resources/InferenceTuning.json between runs —
-# no rebuild needed, that is the point of the knob being live.
-MOBICURE_BENCH=1 MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/kv-null.json"  xcodebuild test ...
-MOBICURE_BENCH=1 MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/kv-8bit.json"  xcodebuild test ...
-MOBICURE_BENCH=1 MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/kv-4bit.json"  xcodebuild test ...
+TEST_RUNNER_MOBICURE_BENCH=1 \
+TEST_RUNNER_MOBICURE_BENCH_OUT="$PWD/Docs/test-runs/kv-null.json" \
+xcodebuild test -scheme MobiCureVN -destination 'platform=iOS,name=<iPad>' \
+  -only-testing:MobiCureVNTests/LatencyBenchmarkTests
+# repeat with kvBits 8 (kv-8bit.json), then 4 (kv-4bit.json)
 ```
-
-Suggested starting values when enabling: `kvBits: 8`, `kvGroupSize: 64`,
-`quantizedKVStart: 0`.
 
 Record for each run:
 
-- **p95 time-to-final** and **cold start** — from the benchmark JSON.
-- **Peak memory** — Instruments → Allocations, or Xcode's memory gauge during a long turn.
-  This is the number `kvBits` exists to move; if it does not drop, the knob is not taking
-  effect and the wiring is wrong.
-- **Answer quality** — the same 30-question sheet from
-  `Docs/BE/Answer-Quality-Rubric.md`. 4-bit KV in particular can degrade long answers, and
-  a latency win that costs grounding is not a win for this app.
+- **p95 time-to-final** and **cold start** — from the benchmark JSON (on a device, take it from
+  the `.xcresult` attachment).
+- **Peak memory** — Instruments → Allocations during a long answer. This is the number `kvBits`
+  exists to move; if it does not drop, the setting is not taking effect.
+- **Answer quality** — the 30-question sheet from `Docs/BE/Answer-Quality-Rubric.md`. A latency or
+  memory win that costs grounding is not a win for this app.
 
-**Keep 8-bit only if quality is unchanged. Keep 4-bit only if a device genuinely cannot run
-8-bit.** Do not enable either on latency evidence alone.
+**Keep 8-bit only if quality is unchanged. Keep 4-bit only if a device cannot run 8-bit.**
