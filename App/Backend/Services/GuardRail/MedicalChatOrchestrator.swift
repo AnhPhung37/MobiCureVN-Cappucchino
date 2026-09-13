@@ -213,12 +213,26 @@ final class MedicalChatOrchestrator {
                 // for any other caller.
                 let turnMayStateFact = SessionFactExtractor.statesDurableFact(sanitizedQuery)
 
+                // Both post-answer passes read `sanitizedQuery`, which by this point in the
+                // pipeline is guaranteed English (ChatService translates before ever calling the
+                // orchestrator) — so routing them to the system model never risks the Vietnamese
+                // handling the chat path depends on. `AppConfig.utilityLLMService` is read once
+                // here rather than through the stored `llmService` (the resident MLX model): that
+                // property is re-evaluated per access and prefers Apple's on-device Foundation
+                // model whenever it's available, so these two short JSON-extraction passes no
+                // longer hold the MLX model's single serialized ModelContainer — the queue the
+                // NEXT user message would otherwise sit behind. Falls back to `llmService` itself
+                // when the system model can't serve (pre-iOS 26, Apple Intelligence off, assets
+                // still downloading), so behavior is unchanged on a device without it.
+                let auxLLMService = AppConfig.utilityLLMService
+
                 // Step 6: Extract durable facts the user stated this turn and merge them into
                 // the session store, so they're available to inject on later turns. Runs after
                 // the response is delivered so it never delays the answer the user is waiting
-                // on; a failed extraction just yields no new facts (fail-closed).
+                // on; a failed extraction (including a system-model safety refusal on health
+                // content) just yields no new facts (fail-closed).
                 if !Task.isCancelled, turnMayStateFact {
-                    let newFacts = await factExtractor.extract(from: sanitizedQuery, using: llmService)
+                    let newFacts = await factExtractor.extract(from: sanitizedQuery, using: auxLLMService)
                     await factStore.merge(newFacts, into: conversationId)
                     stageMark = Self.logStage("6 · Fact extraction (LLM)", since: stageMark)
                 } else if !Task.isCancelled {
@@ -235,7 +249,7 @@ final class MedicalChatOrchestrator {
                 // delivered, same rationale as Step 6.
                 if !Task.isCancelled, turnMayStateFact, let currentProfile = confirmedProfile {
                     let proposals = await profileUpdateExtractor.extract(
-                        from: sanitizedQuery, currentProfile: currentProfile, using: llmService
+                        from: sanitizedQuery, currentProfile: currentProfile, using: auxLLMService
                     )
                     var enqueuedCount = 0
                     if !proposals.isEmpty {
