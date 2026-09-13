@@ -3,6 +3,10 @@
 > For LLM context: this document describes 13 performance/fix branches that were split from a
 > single working-tree change and pushed to GitHub. Each branch is independently applyable to
 > `main`. Branch `perf/dev-signing-team` (#15) is local-only and was not pushed.
+>
+> **Status note (2026-09-13).** Historical branch summary. "Run vector search only when FTS is thin" was
+> later reversed (the retriever always fuses; see `Docs/RAG-Pipeline-and-Evaluation.md` §6), and
+> the query embedder it guards was not bundled until `final/eval-integrity`.
 
 ---
 

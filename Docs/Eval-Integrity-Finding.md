@@ -122,6 +122,20 @@ Three consecutive runs at one commit, all `dirty: false`, produced byte-identica
 lists: `Pipeline/eval/results/eval_20260912T225838Z.json`, `eval_20260912T225853Z.json`,
 `eval_20260913T025757Z.json`.
 
+### After `final/chunk-splitting`
+
+The split corpus (1876 chunks / 39 documents, no chunk over the embedder window) with the golden
+set remapped into relevance groups (a split gold chunk counts once, whichever piece is found),
+index `398a1e9490f9`, result `Pipeline/eval/results/eval_20260913T031040Z.json` on that branch:
+
+| Retriever | recall@5 | doc-hit@5 | MRR | nDCG@5 |
+|---|---|---|---|---|
+| **hybrid** | **0.2249** | **0.7799** | 0.1503 | 0.1689 |
+| FTS-only | 0.2010 | 0.7177 | 0.1176 | 0.1384 |
+
+recall@5 falls while doc-hit rises: more, smaller chunks compete for five slots. Grounding — what
+the model reads — rises to **0.8421** at `top_k = 10` / budget 3000.
+
 **Do not present a retrieval number that is not in a result file**, and do not transcribe one into
 prose elsewhere — that is how contradictory figures ended up in this repo at the same time.
 

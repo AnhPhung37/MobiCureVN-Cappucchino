@@ -1,5 +1,8 @@
 # On-Device LLM Memory Management (OOM Fix)
 
+> **Status note (2026-09-13).** `Package.resolved` is referenced below but was not committed (and could not
+> be, while `.gitignore` ignored `*.xcodeproj`) until `final/mlx-runtime-knobs`.
+
 This documents the fix for `bugCheck.md` §7.1 — the app being killed by iOS under memory pressure during on-device LLM chat. It covers what was wrong, what changed, why, and what's still worth improving as the project scales.
 
 Related files:

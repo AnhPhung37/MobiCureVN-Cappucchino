@@ -2,6 +2,10 @@
 
 _Last updated: 2026-07-02_
 
+> **Status note (2026-09-13).** The corpus is 39 documents (1876 chunks after `final/chunk-splitting`), not the
+> 9 documents some items below assume; the `QueryEmbedder` "already built" was never bundled until
+> `final/eval-integrity`; retrieval numbers live only in `Docs/Eval-Integrity-Finding.md`.
+
 This document captures a technical assessment of the current app and a prioritized
 set of expansion options, plus recommended benchmarks for evaluating output quality.
 
