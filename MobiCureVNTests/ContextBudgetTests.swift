@@ -184,10 +184,24 @@ final class ContextBudgetTests: XCTestCase {
 
     // MARK: - The tuning the fix depends on
 
-    func testContextBudgetShipsAt2000() {
-        // It used to be a hardcoded 600 shadowing the JSON value, making the knob dead.
+    func testContextBudgetAndTopKShipTogether() {
+        // The budget used to be a hardcoded 600 shadowing the JSON value, making the knob dead.
         // InferenceTuningResolutionTests pins that the bundled JSON agrees with these defaults.
-        XCTAssertEqual(InferenceTuning.defaults.prompt.contextTokenBudget, 2000)
+        XCTAssertEqual(InferenceTuning.defaults.prompt.retrievalTopK, 10)
+        XCTAssertEqual(InferenceTuning.defaults.prompt.contextTokenBudget, 3000)
+    }
+
+    func testTopKAndContextBudgetAreRaisedTogether() {
+        // Measured (Docs/BE/Context-Budget-Finding.md, Qwen 3.5 ratio): topK 10 grounds 0.7512 at a
+        // 2000 budget and 0.8134 at 3000. Past five chunks the budget decides how much of the extra
+        // retrieval reaches the model, so a raised topK must ship with a budget that carries it.
+        let prompt = InferenceTuning.defaults.prompt
+        if prompt.retrievalTopK > 5 {
+            XCTAssertGreaterThanOrEqual(
+                prompt.contextTokenBudget, 3000,
+                "topK > 5 needs a budget that can actually carry the extra chunks"
+            )
+        }
     }
 
     func testTheShippedRatioIsPerModelRatherThanGlobal() {
