@@ -126,8 +126,8 @@ the repository history (the old "9-document index" story was wrong).
 **Test.**
 
 ```bash
-git grep -nw "1\.00" -- Docs                        # -w: 1.000 coverage figures do not match
-git grep -nE "(^|[^0-9])9-doc|0\.367" -- Docs       # not 39-document
+git grep -nw "1\.00" -- Docs ':!Docs/Test-Protocol.md'                        # -w: 1.000 does not match
+git grep -nE "(^|[^0-9])9-doc|0\.367" -- Docs ':!Docs/Test-Protocol.md'       # not 39-document
 ```
 
 Every `1.00` hit is the retracted leaked-label result, quoted as retracted. Every 9-document /
