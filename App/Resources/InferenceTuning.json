@@ -15,7 +15,7 @@
     "contextTokenBudget": 2000,
     "historyTokenBudget": 500,
     "assistantReplayWordCap": 60,
-    "wordsToTokensRatio": 1.6
+    "wordsToTokensRatio": null
   },
   "vision": {
     "inputSide": 512,
