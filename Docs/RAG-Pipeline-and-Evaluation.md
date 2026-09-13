@@ -211,7 +211,8 @@ references.**
   docs quoted but no artifact could confirm.
 
 The retriever in the eval (`eval/retriever.py::HybridRetriever`) is a **faithful
-port of the app's Swift retriever**, so scores reflect what ships. Query
+port of the app's Swift retriever**, so scores reflect what ships — provided `App/Resources`
+bundles the query embedder; without it the app searches FTS-only (`Docs/Eval-Integrity-Finding.md`). Query
 enrichment (the app's `enrichedTerms`) is not modelled.
 
 ### Running it
@@ -224,21 +225,13 @@ python -m tools.ab_retrieval    # A/B sweep of retrieval variants (table below)
 
 ### Results (209 queries, top_k=5)
 
-> **PROVISIONAL — must be re-run before use (2026-09-12).** Every number in this
-> table was produced against `eval/outputs/vectorstore_neural.db`, which the harness
-> built from `Pipeline/neural_chunks` — **9 of the 39 corpus documents**. The golden
-> set labels chunks across all 39, so only 69 of 188 gold chunks (coverage 0.367)
-> were even present in the index under test. recall@5 was mathematically capped at
-> 0.367, which is why every row sits between 0.19 and 0.25.
->
-> The *relative* ordering of the variants is probably still informative — all rows
-> shared the same handicap — but no absolute figure here may be quoted.
->
-> **Update:** the corrected config (39 docs / 1238 chunks, coverage 1.000) has now been
-> run and the shipped variant scores **recall@5 = 0.2488, doc-hit@5 = 0.7703, MRR = 0.1589,
-> nDCG@5 = 0.1814** — statistically indistinguishable from the row below, for reasons
-> explained in `Docs/Eval-Integrity-Finding.md`. Re-run `python -m tools.ab_retrieval`
-> against the rebuilt index before quoting any of the *other* rows.
+> **Read before quoting (corrected 2026-09-13).** These rows were measured with
+> `tools/ab_retrieval.py` on the full 39-document index — the committed July results retrieve
+> from 38–39 documents; an earlier note here claiming a 9-document index was wrong. Two things
+> limit them: the row labelled "hybrid (ships)" is the app's *old* rule (the app now always fuses
+> and drops stopwords, the "+fuse +stopwords" row), and until `final/eval-integrity` no build
+> shipped the vector half at all — the app searched FTS-only (recall@5 0.2201, doc-hit@5 0.7081).
+> Current numbers, with provenance: `Docs/Eval-Integrity-Finding.md`.
 
 | variant | recall@5 | mrr | ndcg@5 | doc-hit@5 |
 |---|---|---|---|---|
@@ -256,12 +249,10 @@ python -m tools.ab_retrieval    # A/B sweep of retrieval variants (table below)
 - Pure vector still edges out on MRR/nDCG (ranks the single gold chunk at #1 more
   often); the fused config wins recall/doc-hit, which matters more when feeding
   5 chunks to the LLM.
-- Absolute recall@5 (~0.25) was long explained as "most queries have a single
-  labelled gold chunk, and re-chunking makes the retriever return a correct
-  *neighbor*". That explanation is now known to be **wrong, or at least premature**:
-  the dominant cause was that 63% of gold chunks were missing from the index being
-  scored. doc-hit@5 remains the right companion metric, but it was being used to
-  explain away a plumbing bug. Re-measure before repeating either claim.
+- Absolute recall@5 (~0.25) is low largely because 207 of 209 queries label a
+  single gold chunk, so an equally correct neighbour scores zero; doc-hit@5 (≈0.77)
+  is the companion metric. An earlier edit here blamed missing gold chunks in the
+  index — that was wrong (see `Docs/Eval-Integrity-Finding.md`).
 
 ---
 
@@ -279,8 +270,9 @@ source .venv/bin/activate
 python tools/smoke_retrieve.py "What is DPYD testing and why does it matter?"
 
 # 3. Deploy to the app bundle
-#    run_pipeline.sh writes Pipeline/vectorstore.db; App/Resources/ is what ships.
-cp vectorstore.db ../App/Resources/vectorstore.db
+#    run_pipeline.sh's index stage (ingestion/build_index.py) writes data/vectorstore.db;
+#    App/Resources/ is what ships.
+cp data/vectorstore.db ../App/Resources/vectorstore.db
 
 # 4. Evaluate (optional but recommended after any chunking/retrieval change)
 python tools/remap_qrels.py --apply     # only if chunk IDs shifted
@@ -298,7 +290,8 @@ python -m tools.ab_retrieval
 | `Pipeline/run_pipeline.sh` | orchestrates the 5 ingestion stages |
 | `Pipeline/ingestion/*.py` | per-stage scripts (parse/clean/chunk/enrich/index) |
 | `Pipeline/data/registry.csv` | 39-doc corpus manifest + metadata (`Pipeline/registry.csv` is an identical legacy copy) |
-| `Pipeline/vectorstore.db` | built index (source of truth) |
+| `Pipeline/data/vectorstore.db` | built index (source of truth, written by `ingestion/build_index.py`) |
+| `Pipeline/vectorstore.db` | tracked copy of a deployed index; not written by the pipeline |
 | `App/Resources/vectorstore.db` | index shipped in the app bundle |
 | `App/Backend/Services/RAG/SQLiteRetriever.swift` | on-device hybrid retrieval |
 | `App/Backend/Services/RAG/QueryEmbedder.swift` | CoreML BGE-small query encoder |
