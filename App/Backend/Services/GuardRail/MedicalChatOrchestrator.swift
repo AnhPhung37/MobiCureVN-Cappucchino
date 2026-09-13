@@ -199,14 +199,26 @@ final class MedicalChatOrchestrator {
                     continuation.yield(.final(accumulatedResponse))
                 }
 
+                // Steps 6 and 7 share one deterministic gate: a turn that says nothing about the
+                // patient costs no generation in either pass, so the next message does not queue
+                // behind two generations that could only return nothing. Evaluated once here so
+                // the stage log reports what actually ran; both extractors also gate internally
+                // for any other caller.
+                let turnMayStateFact = SessionFactExtractor.statesDurableFact(sanitizedQuery)
+
                 // Step 6: Extract durable facts the user stated this turn and merge them into
                 // the session store, so they're available to inject on later turns. Runs after
                 // the response is delivered so it never delays the answer the user is waiting
                 // on; a failed extraction just yields no new facts (fail-closed).
-                if !Task.isCancelled {
+                if !Task.isCancelled, turnMayStateFact {
                     let newFacts = await factExtractor.extract(from: sanitizedQuery, using: llmService)
                     await factStore.merge(newFacts, into: conversationId)
                     stageMark = Self.logStage("6 · Fact extraction (LLM)", since: stageMark)
+                } else if !Task.isCancelled {
+                    stageMark = Self.logStage(
+                        "6 · Fact extraction", since: stageMark,
+                        detail: "skipped — turn states no durable fact"
+                    )
                 }
 
                 // Step 7: propose durable, cross-conversation profile updates from this turn,
@@ -214,7 +226,7 @@ final class MedicalChatOrchestrator {
                 // writes the profile directly — proposals are staged for explicit patient
                 // confirmation (see ProfileUpdateRepository). Runs after the answer is
                 // delivered, same rationale as Step 6.
-                if !Task.isCancelled, let currentProfile = confirmedProfile {
+                if !Task.isCancelled, turnMayStateFact, let currentProfile = confirmedProfile {
                     let proposals = await profileUpdateExtractor.extract(
                         from: sanitizedQuery, currentProfile: currentProfile, using: llmService
                     )
@@ -243,7 +255,9 @@ final class MedicalChatOrchestrator {
                 } else if !Task.isCancelled {
                     _ = Self.logStage(
                         "7 · Profile update proposals", since: stageMark,
-                        detail: "skipped — profile fetch failed"
+                        detail: turnMayStateFact
+                            ? "skipped — profile fetch failed"
+                            : "skipped — turn states no durable fact"
                     )
                 }
 
