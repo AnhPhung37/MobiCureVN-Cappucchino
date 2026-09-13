@@ -1,24 +1,12 @@
 # Test protocol — all `final/*` branches
 
-_Written 2026-09-13. Lives on `final/multilang-embedder-and-test-protocol`._
+_Rewritten 2026-09-13 after the logic review of every branch. Lives on
+`final/multilang-embedder-and-test-protocol`._
 
-**This branch carries the documentation hand-offs** (it changes no app code):
-
-| Document | For | What it is |
-|---|---|---|
-| `Docs/Test-Protocol.md` (this file) | whoever integrates and tests | order, gates, pass criteria, record template for all branches |
-| `Docs/BE/Multilingual-Embedder-Handoff.md` + `Pipeline/tools/compare_embedders.py` | a session on the Mac Studio | multilingual retrieval investigation; not for the presentation |
-| `Docs/FE/Frontend-Performance-Notes.md` | the frontend owner | four streaming-time UI costs (C1–C4), static analysis only |
-| `Pipeline/tools/simulate_context_packing.py` | whoever tests §3.1–3.2 | reproduces the grounding numbers without a device |
-
-Documents here refer to files that exist only on the branches they describe (e.g.
-`LatencyBenchmarkTests.swift`); they resolve once those branches are merged as in §3.
-
-This is the order to integrate and test every branch produced in the pre-presentation
-optimisation pass, what each one must prove before it is kept, what to expect, and exactly
-what to write down. Follow it top to bottom. **Merge one branch, test, record, decide — then
-the next.** Never merge two behaviour changes between measurements: if a number moves, you
-must know which branch moved it.
+The order to integrate and test every branch, what each must prove before it is kept, what to
+expect, and what to write down. **Merge one branch, test, record, decide — then the next.** Never
+merge two behaviour changes between measurements: if a number moves, you must know which branch
+moved it.
 
 ---
 
@@ -28,11 +16,12 @@ must know which branch moved it.
 
 1. **Run on the Mac + iPad M5, never on a laptop.** Model downloads are multi-GB and inference
    saturates every core. The Mac Studio M3 Max is for the Python-side measurements.
-2. **Pin the device for every Python ML script.** `--device cpu` or `--device mps`. An unpinned
-   run grabs a CUDA card and OOMs. Every committed tool defaults to `cpu`.
-3. **No Swift in these branches has ever been compiled.** It was written without Xcode. Expect a
-   handful of first-compile errors; fix them on the integration branch and note each one in the
-   record. Likely suspects are listed per branch.
+2. **Pin the device for every Python ML script** (`--device cpu` / `mps`). An unpinned run grabs a
+   CUDA card and OOMs. Every committed tool defaults to `cpu`.
+3. **No Swift in these branches has been compiled.** It was written without Xcode. Expect a few
+   first-compile errors; fix them on the integration branch and note each one in the record.
+   Likely suspects are listed per branch. All Python and shell code *has* been run: every number
+   below was measured.
 4. **Record everything in `Docs/test-runs/`** using the template in §5 — including failures and
    reverted knobs. A kept branch with no record is an unverified branch.
 
@@ -44,20 +33,28 @@ git checkout -b integration/final-test main
 
 # Python side (Mac Studio)
 cd Pipeline && python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt sentence-transformers && cd ..
+pip install -r requirements.txt coremltools && cd ..
 
-# Swift side — resolve and PIN the packages before anything else.
+# Swift side — resolve the packages before anything else.
 xcodebuild -resolvePackageDependencies -project MobiCureVN.xcodeproj
 ```
 
-`Package.resolved` is absent from the repo even though `.gitignore:14` says it is intentionally
-tracked. Commit it the moment `final/mlx-runtime-knobs` is merged (§3.6) — until then two
-machines can resolve different MLX versions.
+`Package.resolved` can be committed only once `final/mlx-runtime-knobs` is merged: until then
+`.gitignore` ignores everything under `*.xcodeproj`, the lockfile included (§3.6).
 
-### ⚠️ Latency harness gotcha
+### Tuning file on devices
 
-`xcodebuild` does **not** forward ordinary environment variables into the test process on a
-device. Prefix them with `TEST_RUNNER_`, which `xcodebuild` strips and passes through:
+`InferenceTuning` reads `Documents/InferenceTuning.json` on top of the bundled file. Before
+`final/context-budget-fix`, a device that had launched the app once kept running the values it
+first saw, whatever the bundle said. After it, an **untouched** seed is replaced on launch, and
+an **edited** one overrides the bundle key by key. To change a knob without a rebuild: Xcode →
+Devices and Simulators → the app → Download Container, edit `AppData/Documents/InferenceTuning.json`,
+Replace Container, relaunch. Editing `App/Resources/InferenceTuning.json` needs a rebuild.
+
+### Latency harness
+
+`xcodebuild` does not forward ordinary environment variables into the test process on a device;
+prefix them with `TEST_RUNNER_`:
 
 ```bash
 TEST_RUNNER_MOBICURE_BENCH=1 \
@@ -66,11 +63,8 @@ xcodebuild test -scheme MobiCureVN -destination 'platform=iOS,name=<iPad>' \
   -only-testing:MobiCureVNTests/LatencyBenchmarkTests
 ```
 
-If the test reports **skipped**, this is the first thing to check. Alternatively set the
-variables in the scheme's Test action. The model must also already be **downloaded on the
-device** (in-app model picker) — the harness resolves its local path through `ModelManager` and
-skips with a "not downloaded" message otherwise. On a physical device the JSON cannot be written
-into the repo — take it from the `.xcresult` attachment.
+Mac Studio destination: `'platform=macOS,arch=arm64,variant=Designed for iPad'`. On a physical
+device take the JSON from the `.xcresult` attachment.
 
 ---
 
@@ -79,12 +73,12 @@ into the repo — take it from the `.xcresult` attachment.
 | Gate | Command / action | Pass |
 |---|---|---|
 | G1 Build | `xcodebuild build -scheme MobiCureVN` | succeeds |
-| G2 Swift tests | `xcodebuild test -scheme MobiCureVN -destination …` (full suite, benchmark skipped) | 0 failures; record count |
-| G3 Python tests | `cd Pipeline && python -m unittest discover -s eval/tests -t .` | 0 failures (46 once both Python branches are in) |
-| G4 Privacy | `Tools/privacy_audit.sh` then `Tools/tests/test_privacy_audit.sh` | audit exit 0; suite 11/11 |
-| G5 Smoke | In the app, airplane mode ON, ask the three smoke questions below | all three answer, with citations, no crash |
+| G2 Swift tests | `xcodebuild test -scheme MobiCureVN -destination …` (benchmark skips) | 0 failures; record count |
+| G3 Python tests | `cd Pipeline && python -m unittest discover -s eval/tests -t .` | 0 failures (**74** once every branch is in) |
+| G4 Privacy | `Tools/privacy_audit.sh` then `Tools/tests/test_privacy_audit.sh` | audit exit 0; suite **16/16** |
+| G5 Smoke | airplane mode ON, the three smoke questions below | all three answer, with citations, no crash |
 
-**Smoke questions** (use the same three every time):
+**Smoke questions** (the same three every time):
 
 - EN: `What are the signs that my surgical wound is infected?`
 - VI có dấu: `Làm sao để biết vết mổ của tôi bị nhiễm trùng?`
@@ -94,289 +88,252 @@ A step that fails any gate is not kept until fixed or reverted.
 
 ---
 
-## 2. Phase 1 — tooling and evidence (no app behaviour change)
+## 2. Phase 1 — tooling and evidence
 
-These branches add measurement tools, tests and docs. They change nothing a patient sees, so
-they go in first and together form the instrument every later step is measured with.
+These go first and together form the instrument every later step is measured with.
+`final/eval-integrity` is the exception to "no app behaviour change": it bundles the query
+embedder the app was written for (see §2.1), so the baseline measures the intended retriever.
 
 ### 2.1 `final/eval-integrity`
 
-**Purpose.** Fix the retrieval harness (it scored a 9-doc index against a 39-doc answer key), add
-provenance to every result, add `doc_hit@k`.
+**Purpose.** Score what the app ships, and make the app ship what is scored: the harness mirrors
+`SQLiteRetriever` (always fuse, drop stopwords), reports FTS-only beside hybrid, records whether the
+tree bundles the embedder, and stamps clean provenance; the CoreML query embedder, its vocabulary
+and a parity fixture are bundled; the Swift tokenizer mirrors the Python one; gold relevance can be
+grouped (used by §3.8).
 
-**Test.**
-```bash
-cd Pipeline
-python -m unittest discover -s eval/tests -t .
-python -m eval.build_indexes
-python -m eval.run_eval && python -m eval.run_eval && python -m eval.run_eval
-```
+| Check | Pass criterion | Expected |
+|---|---|---|
+| Python tests | all pass | 44 on this branch |
+| `python -m eval.build_indexes` | index built | 1238 chunks / 39 docs |
+| `python -m eval.run_eval` ×3 | coverage 1.000; `dirty: false`; identical metrics | hybrid recall@5 **0.2488**, doc-hit@5 **0.7703**, MRR 0.1589, nDCG@5 0.1814; FTS-only 0.2201 / 0.7081 / 0.1300 / 0.1525 (±0.01 across machines) |
+| `QueryEmbedderParityTests` (device or simulator) | 3/3 | tokenizer ids identical; embedding cosine ≥ 0.999 |
+| DEBUG log on launch | no `vector search disabled, FTS-only` line | — |
 
-| Pass criterion | Expected |
-|---|---|
-| unit tests | 31/31 |
-| index | 1238 chunks / 39 docs |
-| gold-chunk coverage | **1.000** (printed by `run_eval`; a WARN line means fail) |
-| reproducibility | the 3 runs have identical metrics and identical index sha256 on the same machine |
-| recall@5 | ≈ 0.249 (0.2488 measured on CPU) — tolerance ±0.01 across machines/devices |
-| doc-hit@5 | ≈ 0.770 (0.7703) — tolerance ±0.01 |
+**Likely compile issues.** `Unicode.Scalar.Properties.lowercaseMapping` / `generalCategory`;
+`String.UnicodeScalarView` built from an `ArraySlice`; `QueryEmbedder` reading the `.mlmodelc`.
 
-**Record.** The three result JSON paths, index sha256, the four metrics, `git.dirty` value
-(must be `false` if the tree was clean — this flag had a bug that is now fixed).
+**Record.** Result JSON paths, index sha256, the eight metrics, parity test output.
 
-**Drop if.** Coverage < 1.0 or runs disagree. Nothing else in this protocol is trustworthy until
-this passes.
+**Drop if.** Never. If `QueryEmbedderParityTests` fails, fix the tokenizer or re-run
+`python -m tools.convert_embedder` — do not ship an embedder that disagrees with the index.
 
 ### 2.2 `final/docs-metrics-truth`
 
-**Purpose.** Retract the `recall@5 = 1.00` figure, mark the old A/B table provisional, make
-`Docs/Eval-Integrity-Finding.md` the single source of truth.
+**Purpose.** `Docs/Eval-Integrity-Finding.md` becomes the single source of truth, corrected against
+the repository history (the old "9-document index" story was wrong).
 
-**Test.** `git grep -n "1\.00" -- Docs` — every hit must be inside a retraction notice.
-
-**Record.** Grep output. **Drop if.** Never — docs only.
+**Test.** `git grep -n "1\.00" -- Docs` — every hit is inside a retraction. `git grep -n "0\.367\|9-doc" -- Docs`
+— hits only in the correction note. **Drop if.** Never — docs only.
 
 ### 2.3 `final/privacy-audit`
 
-**Purpose.** Evidence for success criterion #1.
+**Purpose.** Evidence for criterion #1, now including voice: speech recognition is forced on-device.
 
-**Test.** G4. **Expected:** audit exit 0; the output lists Hugging Face (declared) and the
-**Kaggle runtime download** in `MedicalAnchorLoader` — that finding is expected, not a failure.
-Suite 11/11.
+**Test.** G4. **Expected:** audit exit 0, §7 PASS for `SpeechRecognitionService.swift`; the Kaggle
+runtime download in `MedicalAnchorLoader` still listed (declared, expected). Suite 16/16.
 
-**Record.** Save the audit output to `Docs/test-runs/privacy-audit.txt`. Note whether the Kaggle
-fetch has been bundled yet.
+**Device check.** Voice input in Vietnamese with airplane mode on. If the iPad has no on-device
+Vietnamese dictation, the mic now reports "unavailable" instead of sending audio to Apple — install
+the dictation language before recording the demo, and record which it was.
+
+**Record.** `Docs/test-runs/privacy-audit.txt`; the dictation result.
 
 ### 2.4 `final/answer-quality`
 
-**Purpose.** Manual grounding / safety / Vietnamese review (criteria #2, #4).
-
-**Test.**
-```bash
-cd Pipeline
-python -m unittest eval.tests.test_answer_quality_tools
-python -m tools.make_answer_sheet --n 30 --raters 2
-```
-
-| Pass criterion | Expected |
-|---|---|
-| unit tests | 15/15 |
-| sheet | 30 rows, **18 EN + 12 VI**, identical question order in both rater files |
-
-**Record.** Sheet paths. Do not fill them yet — that is the baseline in §2.6.
+**Test.** `python -m unittest eval.tests.test_answer_quality_tools` (22/22) and
+`python -m tools.make_answer_sheet --n 30 --raters 2` → 30 rows, 18 EN + 12 VI, identical order.
+The scorer reports weighted kappa per dimension; below 0.40 it flags the dimension.
 
 ### 2.5 `final/latency-benchmark`
 
-**Purpose.** Measure criterion #3 (<5 s).
-
-**Test.** G1/G2 — the benchmark must report **skipped** in a normal run. Then one real run with
-the `TEST_RUNNER_` variables (§0).
+**Test.** G1/G2 — the benchmark reports **skipped** in a normal run. One opted-in run (§0).
 
 | Pass criterion | Expected |
 |---|---|
-| normal test run | benchmark **skipped** |
-| opted-in run | JSON produced with `device` naming the iPad (e.g. `iPad…`, not a board id like `D84AP`) |
-| skip message, if skipped | names the actual cause (opt-in variable missing, or model not downloaded) |
+| opted-in run | 30 samples (3 passes × 10 queries); `device` names the iPad (`iPad…`) or the Mac (`Mac…`) |
 
-**Likely compile issues.** `sysctlbyname` / `UIDevice` imports; `XCTAttachment(data:uniformTypeIdentifier:)`.
-
-**Record.** Report JSON path, device, model. **Drop if.** Never — but fix until it runs.
+**Likely compile issues.** `ProcessInfo.isiOSAppOnMac`; `XCTAttachment(data:uniformTypeIdentifier:)`.
 
 ### 2.6 BASELINE — measure before any behaviour change
 
-Everything below is compared against this. Do not skip it.
-
 | Measurement | How |
 |---|---|
-| Retrieval | §2.1 numbers (already recorded) |
+| Retrieval | §2.1 numbers |
 | Packing | `python -m tools.simulate_context_packing --policy old --top-k 5 --budget 600 --ratio 1.4 --device mps --out ../Docs/test-runs/packing-baseline.json` — expect **1.52 chunks sent, 22.5% zero-context, doc-hit seen 0.4450** |
-| Latency | latency harness on iPad M5, default model → `latency-baseline.json` |
-| Peak memory | Instruments → Allocations, one long answer, on iPad M5 |
-| Answer quality | full 30-question sheet, **two raters**, one native Vietnamese speaker → `score_answer_sheet --out ../Docs/test-runs/answer-quality-baseline.json` |
-| Adversarial | run `Docs/BE/Adversarial-Chat-Test-Script.md`, record pass/fail per case |
+| Latency | harness on iPad M5, default model → `latency-baseline.json` |
+| Peak memory | Instruments → Allocations, one long answer, iPad M5 |
+| Answer quality | 30-question sheet, two raters (one native Vietnamese speaker) → `score_answer_sheet --out ../Docs/test-runs/answer-quality-baseline.json` |
+| Adversarial | `Docs/BE/Adversarial-Chat-Test-Script.md`, pass/fail per case |
 
-If baseline p95 time-to-final is already **> 5 s**, write that down plainly. The latency gate in
-Phase 2 then becomes "must not regress more than 10% against the previous kept step".
+If baseline p95 time-to-final is already **> 5 s**, write it down plainly; the latency gate in Phase 2
+then becomes "must not regress more than 10% against the previous kept step".
 
 ---
 
 ## 3. Phase 2 — behaviour changes, one at a time
 
-Order is by certainty and dependency: the confirmed bug fix first, the knobs that depend on it
-next, latency work after, and the corpus change last because it invalidates retrieval
-comparisons for everything before it.
-
-Every step runs G1–G5, plus its own checks. **Quick quality check** below means: 10 questions
-from the sheet (5 EN, 5 VI), one rater, scoring only `grounded` and `clinically_safe`.
+Every step runs G1–G5 plus its own checks. **Quick quality check** = 10 sheet questions (5 EN, 5 VI),
+one rater, scoring `grounded` and `clinically_safe` only.
 
 ### 3.1 `final/context-budget-fix` — the confirmed bug
 
-**Purpose.** `applyContextBudget` used `break`; one oversized chunk emptied the context. Now
-`continue` + partial fill, budget 600 → 2000, ratio 1.4 → 1.6, budget wired to `InferenceTuning`.
+**Purpose.** Two-pass packing that never evicts small chunks behind a huge one and never exceeds the
+budget; packed sources to the prompt, the citation cards and the guardrail; budget 600 → 2000 and
+live; tokens per word measured per model (`ModelCatalog.wordsToTokensRatio`, Qwen 3.5 = 1.75);
+stale tuning seeds no longer freeze old defaults.
 
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Swift `ContextBudgetTests` | 12/12 | — |
-| Packing sim `--policy new --top-k 5 --budget 2000 --ratio 1.6` | zero-context **0.0%** | 3.96 chunks sent, doc-hit seen **0.6890** (from 0.4450) |
-| Knob is live | edit `contextTokenBudget` in the JSON to 800, relaunch, confirm prompt shrinks in DEBUG log, set back | budget follows the JSON |
-| Latency | p95 time-to-final ≤ 5 s (or ≤ +10% if baseline was already over) | **will rise**: context 307 → ~1720 tokens |
-| Quick quality | `clinically_safe` no worse; `grounded` expected **better** | more answers cite real sources |
+| `ContextBudgetTests` | 19/19 | includes a 300-case property test |
+| `InferenceTuningResolutionTests` | 10/10 | bundled JSON equals compiled defaults |
+| Packing sim `--policy new --top-k 5 --budget 2000 --ratio 1.75` | zero-context 0.0% | **4.51 chunks sent, doc-hit seen 0.7416** |
+| Stale seed | on a device that ran `main`, first launch logs `unedited seed from an earlier build — replacing it` and runs budget 2000 | — |
+| Knob is live | set `contextTokenBudget` 800 in the Documents copy (§0), relaunch: log says `Documents file overrides the bundle` and the prompt shrinks; restore | — |
+| Citations | no citation card names a document absent from the prompt's context (DEBUG log) | — |
+| Latency | p95 ≤ 5 s (or ≤ +10%) | **will rise**: ~1760 estimated context tokens |
+| Quick quality | `clinically_safe` no worse, `grounded` better | — |
 
-**Record.** Packing JSON, latency JSON, the p95 delta vs baseline, quick-quality scores.
+**Likely compile issues.** `import CryptoKit` / `SHA256`; the labelled tuple returned by
+`InferenceTuning.layer`; `AppConfig.selectedModel` read from the orchestrator.
 
-**Drop if.** Never drop the `break`→`continue` fix — it is a correctness bug. If latency fails the
-gate, lower `contextTokenBudget` in the JSON (try 1200) and re-measure; record the value kept.
+**Drop if.** Never drop the packing fix. If latency fails, lower `contextTokenBudget` in the
+Documents copy (try 1200), re-measure, record the value kept.
 
-### 3.2 `final/retrieval-topk` — depends on 3.1
+### 3.2 `final/retrieval-topk` — contains 3.1
 
-**Purpose.** `retrievalTopK` 5 → 10 as a JSON knob, budget 2000 → 3000.
+**Purpose.** `retrievalTopK` 5 → 10 with budget 2000 → 3000, as a pair.
 
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Swift `ContextBudgetTests` | 13/13 (adds the coupling test) | — |
-| Packing sim `--top-k 10 --budget 3000 --ratio 1.6` | zero-context 0.0% | 6.40 chunks sent, doc-hit seen **0.7512** |
-| Latency | same gate as 3.1, measured against 3.1 | context ~2850 tokens — the largest prefill of any step |
-| Quick quality | `grounded` ≥ 3.1 | small gain |
+| `ContextBudgetTests` | 20/20 | pins topK 10 with budget 3000 |
+| Packing sim `--top-k 10 --budget 3000 --ratio 1.75` | zero-context 0.0% | **7.50 sent, ~2875 est. tokens, doc-hit seen 0.8134** |
+| Latency | as 3.1, against 3.1 | the largest prefill of any step |
+| Quick quality | `grounded` ≥ 3.1 | — |
 
-**Drop if.** p95 fails the gate. This is **the branch designed to be dropped** — revert the JSON
-values to `retrievalTopK: 5`, `contextTokenBudget: 2000` and record it. Do not keep topK 10 with a
-smaller budget: measured, that combination gains exactly nothing.
+**Drop if.** p95 fails the gate — the branch designed to be dropped. Revert to `retrievalTopK: 5`,
+`contextTokenBudget: 2000` (doc-hit seen 0.7416). topK 10 at 2000 grounds only slightly better
+(0.7512) for the retrieval cost; if 3000 cannot be afforded, keep topK 5.
 
 ### 3.3 `final/language-detect-fast`
 
-**Purpose.** Plain English no longer costs a full LLM classification before the answer.
-
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Swift `LanguageDetectFastPathTests` | 8/8 | — |
-| DEBUG log, EN smoke question | line `detect short-circuited to English (no LLM)` appears | — |
-| DEBUG log, VI không dấu smoke question | that line does **NOT** appear; answer still Vietnamese | — |
-| Latency, EN queries only | time-to-first-preview **lower** than previous step | one fewer generation on the critical path |
-| G5 smoke | all three languages still routed correctly | — |
+| `LanguageDetectFastPathTests` | 11/11 | includes "GI" acronym and caps-lock Vietnamese |
+| DEBUG log, EN smoke question | `detect short-circuited to English (no LLM)` | — |
+| DEBUG log, VI không dấu smoke question | that line does **not** appear; answer Vietnamese | — |
+| Latency, EN queries | time-to-first-preview lower than previous step | — |
 
 **Likely compile issues.** `NLLanguageRecognizer.languageHypotheses(withMaximum:)` return type.
+**Drop if.** Any Vietnamese input, accented or not, is classified English.
 
-**Drop if.** Any Vietnamese input (accented or not) is classified English.
+### 3.4 `final/prompt-slimming` — known merge conflict
 
-### 3.4 `final/prompt-slimming` — has a known merge conflict
+**Conflict.** Merging after 3.2 conflicts in `App/Backend/Configs/InferenceTuning.swift` and
+`App/Resources/InferenceTuning.json`, adjacent lines only. Resolve to exactly:
 
-**Purpose.** Invariant system prompt 473 → 305 words (~268 fewer tokens per turn), history
-budget 500 → 350.
-
-**Conflict.** Merging after 3.2 conflicts in `App/Resources/InferenceTuning.json` and
-`App/Backend/Configs/InferenceTuning.swift`, on adjacent lines only. Resolve to:
-
-```json
-"retrievalTopK": 10,          // from 3.2 (or 5 if 3.2 was dropped)
-"contextTokenBudget": 3000,   // from 3.2 (or whatever 3.1/3.2 kept)
-"historyTokenBudget": 350,    // from this branch
+```
+retrievalTopK: 10            (from 3.2; 5 if 3.2 was dropped)
+contextTokenBudget: 3000     (from 3.2; whatever 3.1/3.2 kept)
+historyTokenBudget: 350      (from this branch)
+wordsToTokensRatio: nil / null
 ```
 
-and the same three values in the Swift defaults. The `600` shown on this branch's side is
-unchanged context from `main`, **not** an intended value — never take it.
+The `600` on this branch's side is `main`'s value, not an intended one — never take it.
+`InferenceTuningResolutionTests` fails if the Swift defaults and the JSON disagree.
 
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Swift `SystemPromptConstraintTests` | 15/15 | 14 safety rules present, ≤ 340 words |
-| Existing `LanguageDriftTests`, `OutputGuardRailVietnameseTests` | pass | — |
-| **Adversarial script** | **every case that passed at baseline still passes** | this is the real gate |
-| Follow-up continuity | 3-turn conversation: state a fact, ask two follow-ups ("is that normal?") | model keeps the fact |
-| Latency | p95 lower than previous step | prefill −~268 tokens |
-| Quick quality | `clinically_safe` no worse | — |
+| `SystemPromptConstraintTests` | 16/16 | 317 words ≤ 340; disclaimer scoped away from small talk |
+| `LanguageDriftTests`, `OutputGuardRailVietnameseTests` | pass | — |
+| **Adversarial script** | every case that passed at baseline still passes | the real gate |
+| Small talk | "thanks, that helps" gets no medical disclaimer | — |
+| Follow-up continuity | 3 turns: state a fact, two follow-ups | fact kept (350 estimated tokens ≈ 200 words on Qwen 3.5) |
+| Latency | p95 lower than previous step | ~270 fewer prefill tokens |
 
-**Drop if.** Any adversarial regression → revert the prompt text. Continuity broken → revert only
-`historyTokenBudget` to 500 in the JSON and keep the prompt.
+**Drop if.** Adversarial regression → revert the prompt text. Continuity broken → set
+`historyTokenBudget` back to 500 in the Documents copy and keep the prompt.
 
 ### 3.5 `final/aux-pass-gating`
 
-**Purpose.** `ProfileUpdateExtractor` no longer runs a generation on turns that state nothing
-about the patient.
-
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Swift `AuxPassGatingTests` | 8/8 | includes a test pinning that "What is a stoma?" DOES run the pass — intended |
-| DEBUG log after a plain question | `6-7 · Post-answer passes … both skipped` | — |
-| Profile proposal still works | say "I am 62 years old and allergic to penicillin" | confirmation card appears |
-| Back-to-back latency | send 5 questions without waiting; compare turn 2-5 time-to-first-preview vs previous step | lower — this only shows on the NEXT turn |
+| `AuxPassGatingTests` | 10/10 | whole-word cues; profile pass uses `.extraction` |
+| `python -m tools.measure_aux_gate --texts eval/data/queries.jsonl:question` | — | fires on **1/209** golden questions (was 78/209) |
+| DEBUG log after a plain question | `6 · Fact extraction … skipped` and `7 · Profile update proposals … skipped` | — |
+| Profile proposal | "I am 62 years old and allergic to penicillin" | confirmation card appears |
+| Back-to-back latency | 5 questions without waiting; turns 2–5 time-to-first-preview | lower than previous step |
 
 **Drop if.** A genuine self-disclosure no longer produces a proposal card.
 
 ### 3.6 `final/mlx-runtime-knobs`
 
-**Purpose.** Pin MLX to `upToNextMinorVersion`, wire `prefillStepSize` / `kvBits` / `maxKVSize`,
-`maxTokens` 1024 → 512.
-
-**First:** re-resolve packages and **commit `Package.resolved`**. Then follow
-`Docs/BE/mlxApiVerification.md` to confirm the five property names on `GenerateParameters`.
+**First:** resolve packages, then `git check-ignore -v MobiCureVN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`
+must print nothing; commit `Package.resolved`. Read `Docs/BE/mlxApiVerification.md`.
 
 | Check | Pass criterion | Expected |
 |---|---|---|
-| G1 build | compiles against the pinned version | a moved property name fails loudly here — fix the name, update `InferenceTuning` to match |
-| Truncation | answer all 30 sheet questions; count answers cut mid-sentence | **≤ 1 of 30** at `maxTokens: 512` |
-| Peak memory | Instruments, same long answer as baseline | lower or equal (`prefillStepSize: 512`) |
-| Latency | p95 time-to-final lower than previous step | worst-case decode halved |
+| G1 build | compiles against the pinned MLX | property names verified against 3.31.3 |
+| `GenerationCompletionTests` | 5/5 | — |
+| Truncation, **per language** | all 30 sheet questions; count answers ending in the "cut off" notice | ≤ 1 of 18 EN **and** ≤ 1 of 12 VI |
+| Cut answers | end with the notice and the healthcare-provider line | — |
+| Latency | p95 lower than previous step | worst-case decode halved |
 
-**Optional kvBits sweep** (only if a device is memory-constrained): `kvBits` null → 8 → 4 via the
-JSON, recording latency + peak memory + full quality sheet for each. Keep 8-bit only if quality is
-unchanged; 4-bit only if 8-bit does not fit.
+`prefillStepSize` ships `null` (the runtime default is already 512); do not expect a memory change
+from this branch. **Optional kvBits sweep:** per `mlxApiVerification.md`, via the Documents copy;
+never set `maxKVSize` together with `kvBits` (LLMService drops `kvBits` and logs it).
 
-**Drop if.** More than 1/30 answers truncated → set `maxTokens` back toward 768 in the JSON, keep
-the rest.
+**Likely compile issues.** `.info(let info)` / `info.stopReason`; the protocol extension's default
+`streamEvents`. **Drop if.** More than 1 cut answer in either language → raise `maxTokens` toward
+768 in the Documents copy, keep the rest.
 
-### 3.7 `final/prefix-kv-cache` — depends on 3.6, groundwork only
-
-**Purpose.** Split the system prompt into `stablePrefix` + `volatileSuffix` and prove the prefix is
-byte-stable. **Runtime cache reuse is NOT implemented** (see `Docs/BE/Prefix-KV-Cache.md`).
-
-| Check | Pass criterion | Expected |
-|---|---|---|
-| Swift `PrefixStabilityTests` | 10/10 | — |
-| Latency | **no meaningful change** vs 3.6 (±5%) | none — nothing is cached yet |
-| Quick quality | no worse | the halves are joined with one extra newline, so temperature-0 output may differ trivially |
-
-**Drop if.** Quality regresses. Do not expect or claim a latency gain from this branch.
-
-### 3.8 `final/chunk-splitting` — last, invalidates retrieval comparisons
-
-**Purpose.** Split chunks over the embedder window. 1238 → 2108 chunks, max 482 tokens.
-
-The chunk JSON is already regenerated on the branch, but chunk IDs have shifted, so:
-
-```bash
-cd Pipeline
-python -m eval.build_indexes
-python -m tools.remap_qrels --apply          # remap the golden set to the new IDs
-python -m eval.run_eval
-python -m tools.simulate_context_packing --policy new --top-k 10 --budget 3000 --ratio 1.6 --device mps
-./run_pipeline.sh --force && cp vectorstore.db ../App/Resources/vectorstore.db
-```
+### 3.7 `final/prefix-kv-cache` — contains 3.6, groundwork only
 
 | Check | Pass criterion | Expected |
 |---|---|---|
-| Split ceiling | `max(token_count)` ≤ 512 across `data/neural_chunks` | 482 |
-| Coverage after remap | ≥ 0.95 | remap may drop gold chunks with no clean equivalent — record how many |
-| doc-hit@5 | ≥ 0.7703 − 0.01 | unknown — more, smaller chunks can go either way |
-| Packing sim | zero-context 0.0% | more chunks fit per budget |
-| App index | `App/Resources/vectorstore.db` rebuilt and copied; G5 citations still render | — |
+| `PrefixStabilityTests` | 11/11 | includes the byte-identical join |
+| Latency | no meaningful change (±5%) | nothing is cached yet |
+| Quick quality | no worse | the prompt is byte-identical to the previous step's |
+
+**Drop if.** Quality regresses. Do not claim a latency gain from this branch.
+
+### 3.8 `final/chunk-splitting` — contains 2.1; last, changes the corpus
+
+**Already done on the branch:** chunks split (1238 → 1876, max 480 tokens, text verbatim), golden
+set remapped by split provenance (51 gold chunks became groups of 1–11 pieces), eval index,
+`Pipeline/data/vectorstore.db` and `App/Resources/vectorstore.db` rebuilt.
+
+| Check | Pass criterion | Expected |
+|---|---|---|
+| `python -m ingestion.split_oversized --dry-run` | nothing left to split | `would split 0` |
+| `python -m tools.remap_qrels --from-split-provenance` | no remap needed | `209 already grouped` |
+| `python -m eval.run_eval` | coverage 1.000 | hybrid recall@5 **0.2249** (group-aware), doc-hit@5 **0.7799**, MRR 0.1503, nDCG@5 0.1689; FTS-only 0.2010 / 0.7177 |
+| Packing sim `--top-k 10 --budget 3000 --ratio 1.75` | zero-context 0.0% | **8.50 sent, doc-hit seen 0.8421** (0.7751 at k 5 / 2000) |
+| G5 | citations render from the rebuilt `vectorstore.db` | — |
 | Quick quality | `grounded` ≥ previous step | — |
 
-**Drop if.** Coverage < 0.95 or doc-hit regresses beyond tolerance. Revert the branch and restore
-the previous `App/Resources/vectorstore.db`.
+recall@5 falls (0.2488 → 0.2249) while doc-hit and grounding rise: more, smaller chunks compete for
+the top five, and a split gold passage now counts once whichever piece is found. Judge the branch on
+doc-hit and doc-hit seen.
+
+**Drop if.** doc-hit@5 < 0.7603, or doc-hit seen (k 10 / 3000) < 0.8034, or citations break. Revert
+the merge; it restores the previous chunks, qrels and `App/Resources/vectorstore.db` together.
+
+Re-running ingestion later: `./run_pipeline.sh` now splits after chunking. For an index rebuild
+without re-chunking: `./run_pipeline.sh --force --stages split enrich index`, then
+`cp data/vectorstore.db ../App/Resources/vectorstore.db`.
 
 ---
 
 ## 4. Phase 3 — documentation and investigation
 
-### 4.1 Frontend performance notes
+### 4.1 `final/frontend-perf-notes`
 
-Docs only, no test. `Docs/FE/Frontend-Performance-Notes.md` is **already on this branch**
-(merged from `final/frontend-perf-notes`), so merging §4.2 is enough — merging
-`final/frontend-perf-notes` separately is harmless but redundant. Hand the document to the
-frontend owner; its four findings (C1–C4) are not part of this protocol's gates.
+Docs only. Hand `Docs/FE/Frontend-Performance-Notes.md` to the frontend owner.
 
-### 4.2 `final/multilang-embedder-and-test-protocol` (this branch — also carries 4.1)
+### 4.2 `final/multilang-embedder-and-test-protocol` (this branch; contains 2.1)
 
-Investigation only; no app behaviour change. Run on the **Mac Studio**:
+Investigation only. On the **Mac Studio**:
 
 ```bash
 cd Pipeline
@@ -384,32 +341,13 @@ git show final/answer-quality:Pipeline/eval/data/queries_vi.jsonl > eval/data/qu
 python -m tools.compare_embedders --device mps --out ../Docs/test-runs/embedder-comparison.json
 ```
 
-Pass / decision criteria are in `Docs/BE/Multilingual-Embedder-Handoff.md` §4. **Expected
-outcome: record the numbers, do not swap the embedder before the presentation** — the Swift
-tokenizer blocker (§5 of the handoff) makes it future work regardless of the result.
+Criteria: `Docs/BE/Multilingual-Embedder-Handoff.md` §4. After §3.8 the corpus is 1876 chunks —
+re-measure the baseline model in the same run. **Expected outcome:** record the numbers; a swap is
+future work behind a tokenizer parity test (handoff §5).
 
 ---
 
-## 5. Defects already fixed while writing this protocol
-
-No Swift here has been compiled, so every Swift test was cross-checked by hand — mirroring the
-production logic in Python where possible. That review found and fixed five defects **before**
-anyone ran them. Listed so a tester is not surprised by the extra commits on these branches:
-
-| Branch | Defect | Would have looked like |
-|---|---|---|
-| `final/latency-benchmark` | passed a Hugging Face repo id to `LLMService(modelPath:)`, which only checks `fileExists(atPath:)` | benchmark **always skipped**, no number ever produced |
-| `final/latency-benchmark` | documented `MOBICURE_BENCH=1 xcodebuild …` without the `TEST_RUNNER_` prefix | benchmark **always skipped** on device |
-| `final/context-budget-fix` (+ `retrieval-topk`) | a test expected small chunks behind an oversized one to be kept even when the partial-fill rule takes precedence | `ContextBudgetTests` **failing** on first run; the measured 0.4450 → 0.6890 was always computed against the real behaviour |
-| `final/aux-pass-gating` | two tests asserted "What is a stoma?" / "Hậu môn nhân tạo là gì?" skip the gate; the cue list deliberately matches them | `AuxPassGatingTests` **failing** on first run |
-| `final/prefix-kv-cache` | the test built the orchestrator from AppConfig's SwiftData singletons | possible test-host crash or slow, stateful tests |
-
-If a test in these files still fails on first compile, treat it the same way: check whether the
-**test** encodes a wrong expectation before changing production code.
-
----
-
-## 6. Record template
+## 5. Record template
 
 One file per step: `Docs/test-runs/NN-<branch>.md`.
 
@@ -420,7 +358,7 @@ One file per step: `Docs/test-runs/NN-<branch>.md`.
 - Integration commit (`git rev-parse HEAD`):
 - Devices: iPad model id + iOS | Mac model + macOS | RAM
 - Model under test (ModelCatalog):
-- InferenceTuning.json values in effect (paste the `prompt` and `generation` blocks):
+- InferenceTuning in effect (bundled JSON + any Documents overrides):
 
 ## Gates
 | G1 build | G2 Swift (pass/total) | G3 Python (pass/total) | G4 privacy | G5 smoke EN / VI / VI-no-accent |
@@ -451,30 +389,29 @@ KEEP / KEEP WITH KNOB CHANGE (which) / DROP — and why, in one line.
 
 ---
 
-## 7. Final checks — the numbers for the presentation
+## 6. Final checks — the numbers for the presentation
 
-After the last kept step:
-
-1. Full G1–G5.
-2. Latency harness on **iPad M5 and Mac Studio**, cold start reported separately, p95 stated.
-3. `python -m eval.run_eval` ×3 — identical.
-4. Full 30-question sheet, two raters, per-language split — compare against the baseline in §2.6.
+1. Full G1–G5, including `QueryEmbedderParityTests`.
+2. Latency harness on **iPad M5 and Mac Studio**, cold start separate, p95 over 30 samples.
+3. `python -m eval.run_eval` ×3 — identical, `dirty: false`.
+4. Full 30-question sheet, two raters, per-language split and weighted kappa — against §2.6.
 5. Adversarial script, full.
-6. Airplane-mode demo video: voice → retrieval → cited answer → citation card → TTS.
+6. Airplane-mode demo video: voice (on-device dictation) → retrieval → cited answer → citation
+   card → TTS.
 
-Build one summary table — baseline vs final — for: p95 time-to-final, cold start, peak memory,
-doc-hit@5, grounding rate seen by the model, answer-quality scores (EN / VI), adversarial pass
-rate, privacy audit result. **Every number on a slide must trace to a file in `Docs/test-runs/`.**
+One summary table, baseline vs final: p95 time-to-final, cold start, peak memory, doc-hit@5,
+doc-hit seen, answer quality (EN / VI, with kappa), adversarial pass rate, privacy audit. **Every
+number on a slide must trace to a file in `Docs/test-runs/`.**
 
 ---
 
 ## Appendix — branch map
 
-| Branch | Base | Kind | Phase |
+| Branch | Contains | Kind | Step |
 |---|---|---|---|
-| `final/eval-integrity` | main | tooling | 2.1 |
+| `final/eval-integrity` | main | tooling + bundled embedder | 2.1 |
 | `final/docs-metrics-truth` | main | docs | 2.2 |
-| `final/privacy-audit` | main | tooling | 2.3 |
+| `final/privacy-audit` | main | tooling + on-device speech | 2.3 |
 | `final/answer-quality` | main | tooling | 2.4 |
 | `final/latency-benchmark` | main | tooling | 2.5 |
 | `final/context-budget-fix` | main | **bug fix** | 3.1 |
@@ -482,12 +419,14 @@ rate, privacy audit result. **Every number on a slide must trace to a file in `D
 | `final/language-detect-fast` | main | latency | 3.3 |
 | `final/prompt-slimming` | main | latency (conflict) | 3.4 |
 | `final/aux-pass-gating` | main | latency | 3.5 |
-| `final/mlx-runtime-knobs` | main | latency / memory | 3.6 |
+| `final/mlx-runtime-knobs` | main | latency / truncation | 3.6 |
 | `final/prefix-kv-cache` | mlx-runtime-knobs | groundwork | 3.7 |
-| `final/chunk-splitting` | main | corpus | 3.8 |
-| `final/frontend-perf-notes` | main | docs — **also merged into the branch below; redundant** | 4.1 |
-| `final/multilang-embedder-and-test-protocol` | eval-integrity | all doc hand-offs: this protocol, multilingual investigation, FE notes | 4.1 + 4.2 |
+| `final/chunk-splitting` | eval-integrity | corpus | 3.8 |
+| `final/frontend-perf-notes` | main | docs | 4.1 |
+| `final/multilang-embedder-and-test-protocol` | eval-integrity | investigation + this doc | 4.2 |
 
-Merging all fifteen in this order was dry-run on 2026-09-13, and again after the §5 fixes: every merge is clean except 3.4, whose
-conflict resolves exactly as described there, leaving `retrievalTopK 10`, `contextTokenBudget
-3000`, `historyTokenBudget 350`, `maxTokens 512`, `prefillStepSize 512`.
+Merging all fifteen in this order was dry-run on 2026-09-13 after the fixes: every merge is clean
+except 3.4, which resolves exactly as described there. The merged tree passes G3 (74 Python tests),
+G4 (audit exit 0, 16/16), has `App/Resources/vectorstore.db` at 1876 chunks / 39 documents, and ships
+`maxTokens 512`, `prefillStepSize null`, `retrievalTopK 10`, `contextTokenBudget 3000`,
+`historyTokenBudget 350`, `wordsToTokensRatio null`. G1, G2 and G5 need Xcode and a device.
