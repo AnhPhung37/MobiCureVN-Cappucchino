@@ -15,10 +15,11 @@ cd "$REPO_ROOT"
 
 AUDIT="./Tools/privacy_audit.sh"
 PROBE="App/Backend/_privacy_audit_probe.swift"
+DATA_PROBE="App/Resources/_privacy_audit_probe_vocab.txt"
 pass=0
 fail=0
 
-cleanup() { rm -f "$PROBE"; }
+cleanup() { rm -f "$PROBE" "$DATA_PROBE"; }
 trap cleanup EXIT
 
 check() {
@@ -174,6 +175,14 @@ import Foundation
 enum Probe { static let note = "comment-only mention" }
 SWIFT
 check "speech api named in a comment does not fail" 0 $?
+
+# ── Must PASS: bundled data that merely contains SDK names as words. The query embedder's
+#    vocab.txt contains "amplitude"; the audit once failed the whole tree on it.
+printf '%s\n' amplitude firebase sentry mixpanel icloud > "$DATA_PROBE"
+"$AUDIT" >/dev/null 2>&1
+code=$?
+rm -f "$DATA_PROBE"
+check "sdk names inside a bundled vocabulary do not fail" 0 $code
 
 # ── The tree must be exactly as it started.
 "$AUDIT" >/dev/null 2>&1

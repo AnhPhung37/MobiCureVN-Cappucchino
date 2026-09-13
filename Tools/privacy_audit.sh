@@ -18,6 +18,10 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
 SRC_DIRS=(App MobiCureVNTests MobiCureVNUITests)
+# Only code and configuration can make a call, link an SDK or enable sync. Bundled data (a
+# WordPiece vocabulary, a test fixture) is full of ordinary words such as "amplitude" and must not
+# be read as a finding. The project file is included so a Swift package dependency is visible.
+CODE_INCLUDES=(--include='*.swift' --include='*.m' --include='*.h' --include='*.plist' --include='*.entitlements' --include='*.xcconfig' --include='*.pbxproj')
 JSON_MODE=0
 [[ "${1:-}" == "--json" ]] && JSON_MODE=1
 
@@ -48,7 +52,7 @@ say ""
 hr
 say "1. Commercial LLM inference endpoints (must be ZERO)"
 hr
-prohibited=$(grep -rEn "$PROHIBITED_HOSTS" "${SRC_DIRS[@]}" 2>/dev/null)
+prohibited=$(grep -rEn "${CODE_INCLUDES[@]}" "$PROHIBITED_HOSTS" "${SRC_DIRS[@]}" 2>/dev/null)
 # A host named in a comment ("we deliberately do not call X") is not a call. It is
 # still worth showing -- a reviewer should see it -- but failing on it would make
 # the audit impossible to keep green while documenting the decision.
@@ -141,8 +145,8 @@ say ""
 hr
 say "4. Analytics, telemetry and crash reporting (must be ZERO)"
 hr
-tel=$(grep -rEin '\b(firebase|crashlytics|sentry|amplitude|mixpanel|appsflyer|posthog|datadog)\b|segment\.io|google.?analytics' \
-        "${SRC_DIRS[@]}" 2>/dev/null | grep -vE '^\S+:[0-9]+:\s*(//|///|\*)')
+tel=$(grep -rEin "${CODE_INCLUDES[@]}" '\b(firebase|crashlytics|sentry|amplitude|mixpanel|appsflyer|posthog|datadog)\b|segment\.io|google.?analytics' \
+        "${SRC_DIRS[@]}" MobiCureVN.xcodeproj 2>/dev/null | grep -vE '^\S+:[0-9]+:\s*(//|///|\*)')
 if [[ -z "$tel" ]]; then
   say "  PASS — no third-party analytics or crash-reporting SDK."
 else
@@ -169,7 +173,7 @@ else
 fi
 say ""
 say "  iCloud / CloudKit sync (would take patient data off-device):"
-icloud=$(grep -rEn 'CloudKit|NSUbiquitous|cloudKitDatabase|iCloud' "${SRC_DIRS[@]}" 2>/dev/null)
+icloud=$(grep -rEn "${CODE_INCLUDES[@]}" 'CloudKit|NSUbiquitous|cloudKitDatabase|iCloud' "${SRC_DIRS[@]}" 2>/dev/null)
 if [[ -z "$icloud" ]]; then
   say "    PASS — none. Stores are local-only."
 else
