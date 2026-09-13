@@ -2,7 +2,15 @@
 
 On-device (MLX, 4-bit) VI↔EN medical RAG chatbot. SQLite (`sqlite-vec` + FTS5) hybrid retriever over **1238 chunks / 39 docs**. Apple Translation, regex guardrails, VLM wound path.
 
-Latest eval (hybrid, k=5): **recall@5 0.187 · MRR 0.097 · nDCG@5 0.119** · QA metrics 0 (answerer off).
+> **Status 2026-09-13.** This audit predates the `final/*` branches. Resolved there: embedder
+> pooling (and the embedder was not bundled at all) → `final/eval-integrity`; eval ≠ prod →
+> `final/eval-integrity`; oversized chunks → `final/chunk-splitting`; crude context budget →
+> `final/context-budget-fix`; one-size generation params → `GenerationOptions` on `main`;
+> an extra generation every turn → gated by `final/aux-pass-gating`. Still open: reranker,
+> page-less citations, confidence score, guardrail classifiers, VN eval, streaming, dead Kaggle
+> code. Current metrics: `Docs/Eval-Integrity-Finding.md`.
+
+Eval at the time of this audit (old harness, hybrid, k=5): **recall@5 0.187 · MRR 0.097 · nDCG@5 0.119** · QA metrics 0 (answerer off). Superseded — see the status note above.
 ## 🔴 Correctness bugs (silent quality loss)
 
 - **Embedder pooling mismatch.** Corpus = CLS pooling (`bge-small` `1_Pooling/config.json: pooling_mode_cls_token=true`), on-device query embedder = **mean pooling** (`convert_embedder.py:37-42`, comment falsely says "matches"). Query vs doc vectors in different spaces → on-device vector search degraded. Eval can't see it (Python embeds both sides via SentenceTransformer). **#1 fix.**

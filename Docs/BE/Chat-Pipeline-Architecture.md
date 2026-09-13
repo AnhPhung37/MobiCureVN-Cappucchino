@@ -2,6 +2,12 @@
 
 This documents the full flow of a user's chat message (text and optional attached images) from the UI down to the on-device LLM and back, across the layers in `App/Frontend/VVM/Chat` and `App/Backend/Services`.
 
+> **Status note (2026-09-13).** §3–§4 are updated for the `final/*` branches. §1–§2 still describe
+> translating the English answer back to Vietnamese and fully buffered delivery; on `main` the model
+> already answers directly in the reply language and streams unvalidated `.preview` drafts before
+> the validated `.final` — read `ChatService.swift` and `MedicalChatOrchestrator.processQuery` for
+> that part.
+
 ## Overview
 
 ```
@@ -70,15 +76,18 @@ Attached images bypass all text-only language steps untouched and are handed to 
 By the time this runs, the query is always English. Emergency detection has already happened upstream. Pipeline inside `processQuery`:
 
 1. **Input GuardRail** (`InputGuardRail.validate`) — dangerous request patterns (hard block), prompt injection/jailbreak patterns (hard block), PII detection + masking (masks, doesn't block), and a medical-relevance domain filter (fast keyword/intent match, then `NLEmbedding` cosine similarity against medical anchor phrases). Guardrails run on the query **text** only; images ride along unchecked.
-2. **RAG retrieval** (`RAGService.process`) — runs on the sanitized English query; `QueryRefiner` refines it, `SQLiteRetriever` does FTS5 lookup against `vectorstore.db`, returning `RetrievedContext` (chunks, sources, confidence score). Sources are surfaced immediately via `onSourcesRetrieved` for UI citations.
+2. **RAG retrieval** (`RAGService.process`) — runs on the sanitized English query; `QueryRefiner` refines it, `SQLiteRetriever` fuses FTS5/BM25 with a vector search over `vectorstore.db` (query embedded on device by the bundled `QueryEmbedder`; FTS-only if it is missing) and returns up to `retrievalTopK` chunks (10). The context is then **packed** into `contextTokenBudget` (3000 estimated tokens: every chunk that fits whole, then the head of the best one that did not), and only the packed chunks' sources reach `onSourcesRetrieved`, the prompt and the Output GuardRail (`Docs/BE/Context-Budget-Finding.md`).
 3. **Prompt assembly** (`buildEnrichedPrompt`) —
    - An English-only `LANGUAGE:` instruction stated three times (top, mid-constraints, final "REMINDER" after the RAG context) — a deliberate sandwich against recency bias.
    - Role/scope constraints (informational only, no diagnosis, cite sources, no confident dosages, emergency redirect, consult-a-doctor disclaimer).
-   - RAG context chunks token-budgeted to ~600 tokens (`contextTokenBudget`) plus a formatted source list and confidence score.
+   - The packed RAG chunks plus the source list of those chunks only, and the confidence score. Token estimates are whitespace words × the loaded model's measured ratio (`ModelCatalog.wordsToTokensRatio`, 1.75 for Qwen 3.5).
    - When retrieval found nothing, an explicit note permits answering common health/lifestyle questions from general knowledge (labeled as general guidance) while still declining clearly off-topic ones.
-   - Conversation history trimmed to the last 4 turns / 8 messages (`maxHistoryTurns`) to bound prefill time on a ~3–4B model.
+   - Conversation history trimmed newest-first to `historyTokenBudget` (350 estimated tokens with `final/prompt-slimming`), assistant turns condensed, to bound prefill time on a ~3–4B model.
+   - The system prompt is assembled as a stable prefix (language directive, persona and constraints, confirmed profile) followed by the per-turn part, concatenated byte-for-byte as one string (`final/prefix-kv-cache`).
 4. **LLM generation** (`LLMService.stream`, see §4) — **fully buffered**: the Output GuardRail needs the complete response (hallucination detection, dosage detection, citation enforcement can replace it outright), so no token can safely be shown earlier. There is no language-verification/retry step at this layer anymore — the orchestrator only ever sees and produces English.
+   If generation stopped at the token ceiling (`GenerateCompletionInfo.stopReason == .length`), a localized "answer was cut off" notice restoring the consult-your-provider line is appended first (`final/mlx-runtime-knobs`).
 5. **Output GuardRail** (`OutputGuardRail.validate`) — citation enforcement, low-confidence caution banner, hallucination-indicator redaction, unsafe-dosage replacement. The (possibly filtered/annotated) response is yielded as one chunk.
+6. **Post-answer passes** — session-fact extraction and profile-update proposals, each a short LLM generation, run after the answer is delivered and only when the turn contains a self-disclosure cue (whole-word match, `SessionFactExtractor.statesDurableFact`; `final/aux-pass-gating`).
 
 Consumer cancellation propagates down (`continuation.onTermination` → task cancel) so tapping Stop actually halts MLX generation instead of letting it run to completion in the background.
 
@@ -91,7 +100,7 @@ Consumer cancellation propagates down (`continuation.onTermination` → task can
 - **Structured chat, not a flat prompt**: `buildChat(system:history:user:images:)` assembles real `[Chat.Message]` roles (`.system` / `.user` / `.assistant`) and passes them via `UserInput(chat:)`, so `container.prepare` applies the model's own chat template (e.g. Qwen's `<|im_start|>` format) through the tokenizer. This replaced the earlier hand-rolled `System:/User:` flat string, which bypassed the template and measurably degraded output quality.
 - Images attach to their user turns per the multimodal chat convention — the current turn's images to the final user message, and history user turns re-attach their own persisted `imageData` (only when talking to a vision model), so follow-up questions about an earlier photo still work. Image bytes are decoded to `UserInput.Image.ciImage`; `input.processing.resize = 512×512` bounds vision prefill cost (a full-resolution photo would expand into thousands of image tokens).
 - `additionalContext: ["enable_thinking": false]` disables Qwen 3+ hybrid-reasoning thinking mode (which would burn the token budget on a `<think>` preamble and leak it into the chat); templates without the variable ignore it.
-- `GenerateParameters(maxTokens: 1024, temperature: 0.3, topP: 0.85)` — deliberately low temperature/topP since deterministic, on-language output matters more than lexical variety, and higher values let a small multilingual model drift into English/Chinese/Thai mid-reply.
+- Sampling comes per request from `GenerationOptions`: an answer uses `InferenceTuning.generation` (`maxTokens` 512, temperature 0.3, topP 0.85 — deliberately low, since higher values let a small multilingual model drift into English/Chinese/Thai mid-reply); classification and extraction use greedy, short presets. Optional KV-cache and prefill knobs are applied only when set (`Docs/BE/mlxApiVerification.md`), and `streamEvents` reports whether generation finished or hit the token ceiling.
 - Thread safety under Swift 6 strict concurrency: `OSAllocatedUnfairLock` guards the model container between `initializeModel()`/`unload()` and the detached generation task.
 
 > **Memory management** (MLX cache limits, memory-pressure unloading, model swapping) is documented separately in [`OOM-Memory-Management.md`](./OOM-Memory-Management.md).
