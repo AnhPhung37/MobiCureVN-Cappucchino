@@ -30,7 +30,13 @@ final class RAGService {
         let profileNote = profileTerms.isEmpty ? "" : " (+profile: \(profileTerms.joined(separator: ", ")))"
         print("RAGService: '\(userQuery)' → '\(refined.baseQuery)'\(profileNote)")
 
-        let context = retriever.retrieve(query: refined.baseQuery, enrichedTerms: enrichedTerms)
+        // topK comes from InferenceTuning so it can be swept alongside contextTokenBudget,
+        // which is what actually binds how much of this reaches the model.
+        let context = retriever.retrieve(
+            query: refined.baseQuery,
+            enrichedTerms: enrichedTerms,
+            topK: InferenceTuning.current.prompt.retrievalTopK
+        )
         print("RAGService: \(context.chunks.count) chunks, confidence=\(String(format: "%.2f", context.confidenceScore))")
 
         return context

@@ -77,6 +77,14 @@ nonisolated struct InferenceTuning: Sendable {
     /// Prompt assembly budgets. All token figures are *estimated* tokens — see
     /// `wordsToTokensRatio`.
     struct Prompt: Sendable {
+        /// How many chunks retrieval returns for the prompt builder to pack.
+        ///
+        /// Coupled to `contextTokenBudget`, not independent of it. Measured over the golden set
+        /// with the two-pass packer at Qwen 3.5's ratio, doc-hit of what the model sees: topK 5 at
+        /// budget 2000 → 0.7416; topK 10 at 2000 → 0.7512; topK 10 at 3000 → 0.8134. Past five
+        /// chunks the budget, not topK, decides how much of the extra retrieval reaches the model,
+        /// so raise the two together. See Docs/BE/Context-Budget-Finding.md.
+        let retrievalTopK: Int
         /// Token budget for retrieved RAG chunks injected into the system prompt.
         let contextTokenBudget: Int
         /// Token budget for replayed conversation history.
@@ -137,7 +145,8 @@ nonisolated struct InferenceTuning: Sendable {
             prefillStepSize: nil
         ),
         prompt: Prompt(
-            contextTokenBudget: 2000,
+            retrievalTopK: 10,
+            contextTokenBudget: 3000,
             historyTokenBudget: 500,
             assistantReplayWordCap: 60,
             wordsToTokensRatio: nil
@@ -286,7 +295,7 @@ nonisolated struct InferenceTuning: Sendable {
     private func logValues() {
         Self.log.info("""
             generation(maxTokens: \(generation.maxTokens), temperature: \(generation.temperature), topP: \(generation.topP)) \
-            prompt(context: \(prompt.contextTokenBudget), history: \(prompt.historyTokenBudget), ratio: \(prompt.wordsToTokensRatio.map { String($0) } ?? "per-model", privacy: .public)) \
+            prompt(topK: \(prompt.retrievalTopK), context: \(prompt.contextTokenBudget), history: \(prompt.historyTokenBudget), ratio: \(prompt.wordsToTokensRatio.map { String($0) } ?? "per-model", privacy: .public)) \
             vision(side: \(vision.inputSide), historyImageTurns: \(vision.historyImageTurnCap)) \
             memory(cacheFraction: \(memory.metalCacheFraction), streamBuffer: \(memory.tokenStreamBufferLimit))
             """)
@@ -324,6 +333,7 @@ extension InferenceTuning {
         }
 
         struct PromptFields: Codable, Sendable {
+            var retrievalTopK: Int?
             var contextTokenBudget: Int?
             var historyTokenBudget: Int?
             var assistantReplayWordCap: Int?
@@ -379,6 +389,7 @@ extension InferenceTuning {
             )
 
             let prompt = InferenceTuning.Prompt(
+                retrievalTopK: max(1, self.prompt?.retrievalTopK ?? d.prompt.retrievalTopK),
                 contextTokenBudget: max(0, self.prompt?.contextTokenBudget ?? d.prompt.contextTokenBudget),
                 historyTokenBudget: max(0, self.prompt?.historyTokenBudget ?? d.prompt.historyTokenBudget),
                 assistantReplayWordCap: max(1, self.prompt?.assistantReplayWordCap ?? d.prompt.assistantReplayWordCap),
@@ -429,6 +440,7 @@ extension InferenceTuning {
                 prefillStepSize: generation.prefillStepSize
             ),
             prompt: .init(
+                retrievalTopK: prompt.retrievalTopK,
                 contextTokenBudget: prompt.contextTokenBudget,
                 historyTokenBudget: prompt.historyTokenBudget,
                 assistantReplayWordCap: prompt.assistantReplayWordCap,
