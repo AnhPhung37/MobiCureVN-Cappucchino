@@ -215,6 +215,9 @@ def main() -> None:
     if model_path.exists():
         shutil.rmtree(model_path)
     mlmodel.save(str(model_path))
+    # The torch.export frontend leaves a debug-handle map in the package root. It is not listed in
+    # Manifest.json, the CoreML compiler does not use it, and it should not ship in the app bundle.
+    (model_path / "executorch_debug_handle_mapping.json").unlink(missing_ok=True)
 
     with tempfile.TemporaryDirectory() as tmp:
         vocab_file = Path(tokenizer.save_vocabulary(tmp)[0])
