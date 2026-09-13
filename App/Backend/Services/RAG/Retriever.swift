@@ -35,7 +35,8 @@ final class RAGService {
         let context = retriever.retrieve(
             query: refined.baseQuery,
             enrichedTerms: enrichedTerms,
-            topK: InferenceTuning.current.prompt.retrievalTopK
+            topK: InferenceTuning.current.prompt.retrievalTopK,
+            rerankCandidates: InferenceTuning.current.prompt.rerankCandidates
         )
         print("RAGService: \(context.chunks.count) chunks, confidence=\(String(format: "%.2f", context.confidenceScore))")
 

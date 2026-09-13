@@ -100,6 +100,13 @@ nonisolated struct InferenceTuning: Sendable {
         /// another. Set a number here only to pin a sweep to a fixed ratio, and sweep it together
         /// with the two budgets — they are one knob in two parts.
         let wordsToTokensRatio: Double?
+
+        /// How many fused candidates the cross-encoder reranker scores before the best
+        /// `retrievalTopK` are kept. `0` turns reranking off, and so does a build without
+        /// `reranker.mlpackage` — retrieval then keeps the fused order. Each candidate is one
+        /// 512-token prediction on the device, so this is the reranker's latency knob. Measured
+        /// effect: Docs/BE/Reranker.md.
+        let rerankCandidates: Int
     }
 
     /// Image handling on the way into a vision model.
@@ -146,7 +153,8 @@ nonisolated struct InferenceTuning: Sendable {
             contextTokenBudget: 3000,
             historyTokenBudget: 350,
             assistantReplayWordCap: 60,
-            wordsToTokensRatio: nil
+            wordsToTokensRatio: nil,
+            rerankCandidates: 20
         ),
         vision: Vision(
             inputSide: 512,
@@ -292,7 +300,7 @@ nonisolated struct InferenceTuning: Sendable {
     private func logValues() {
         Self.log.info("""
             generation(maxTokens: \(generation.maxTokens), temperature: \(generation.temperature), topP: \(generation.topP)) \
-            prompt(topK: \(prompt.retrievalTopK), context: \(prompt.contextTokenBudget), history: \(prompt.historyTokenBudget), ratio: \(prompt.wordsToTokensRatio.map { String($0) } ?? "per-model", privacy: .public)) \
+            prompt(topK: \(prompt.retrievalTopK), context: \(prompt.contextTokenBudget), history: \(prompt.historyTokenBudget), ratio: \(prompt.wordsToTokensRatio.map { String($0) } ?? "per-model", privacy: .public), rerank: \(prompt.rerankCandidates)) \
             vision(side: \(vision.inputSide), historyImageTurns: \(vision.historyImageTurnCap)) \
             memory(cacheFraction: \(memory.metalCacheFraction), streamBuffer: \(memory.tokenStreamBufferLimit))
             """)
@@ -335,6 +343,7 @@ extension InferenceTuning {
             var historyTokenBudget: Int?
             var assistantReplayWordCap: Int?
             var wordsToTokensRatio: Double?
+            var rerankCandidates: Int?
         }
 
         struct VisionFields: Codable, Sendable {
@@ -393,7 +402,10 @@ extension InferenceTuning {
                 // Below 1.0 the "token" budgets would under-count words, which is the bug B2.6
                 // fixed; refuse to reintroduce it through the config file. `nil` keeps the
                 // measured per-model ratio.
-                wordsToTokensRatio: (self.prompt?.wordsToTokensRatio ?? d.prompt.wordsToTokensRatio).map { max(1.0, $0) }
+                wordsToTokensRatio: (self.prompt?.wordsToTokensRatio ?? d.prompt.wordsToTokensRatio).map { max(1.0, $0) },
+                // Each candidate is a full cross-encoder prediction; the ceiling keeps a typo from
+                // turning retrieval into a multi-second stall.
+                rerankCandidates: min(max(0, self.prompt?.rerankCandidates ?? d.prompt.rerankCandidates), 100)
             )
 
             let vision = InferenceTuning.Vision(
@@ -441,7 +453,8 @@ extension InferenceTuning {
                 contextTokenBudget: prompt.contextTokenBudget,
                 historyTokenBudget: prompt.historyTokenBudget,
                 assistantReplayWordCap: prompt.assistantReplayWordCap,
-                wordsToTokensRatio: prompt.wordsToTokensRatio
+                wordsToTokensRatio: prompt.wordsToTokensRatio,
+                rerankCandidates: prompt.rerankCandidates
             ),
             vision: .init(
                 inputSide: vision.inputSide,

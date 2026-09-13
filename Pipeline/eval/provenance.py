@@ -87,11 +87,26 @@ def app_retrieval(repo_dir: Path) -> dict:
     resources = repo_dir / "App" / "Resources"
     embedder = (resources / "query_embedder.mlpackage").exists()
     vocab = (resources / "vocab.txt").exists()
+    reranker = (resources / "reranker.mlpackage").exists()
     return {
         "query_embedder_bundled": embedder,
         "vocab_bundled": vocab,
         "mode": "hybrid" if embedder and vocab else "fts",
+        "reranker_bundled": reranker,
+        # SQLiteRetriever reranks only when the knob is on AND CrossEncoderReranker loads (its
+        # model plus the shared vocab); otherwise it keeps the fused order.
+        "rerank_candidates": _bundled_rerank_candidates(resources) if reranker and vocab else 0,
     }
+
+
+def _bundled_rerank_candidates(resources: Path) -> int | None:
+    """`prompt.rerankCandidates` in the bundled InferenceTuning.json; None when unreadable."""
+    try:
+        tuning = json.loads((resources / "InferenceTuning.json").read_text(encoding="utf-8"))
+        value = tuning["prompt"]["rerankCandidates"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    return max(0, int(value)) if isinstance(value, (int, float)) else None
 
 
 def file_digest(path: Path) -> str | None:

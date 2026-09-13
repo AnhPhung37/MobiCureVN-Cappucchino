@@ -6,6 +6,7 @@ from pathlib import Path
 from .dataset import QueryItem, QrelItem
 from .metrics_ir import doc_hit_at_k, mrr, ndcg_at_k, recall_at_k
 from .metrics_qa import answer_similarity, faithfulness, safe_mean
+from .reranker import DEFAULT_RERANK_MODEL, CrossEncoderReranker, RerankingRetriever
 from .retriever import Embedder, HybridRetriever, SQLiteVecRetriever
 
 
@@ -22,6 +23,7 @@ def run_experiment(
     top_k: int,
     answerer=None,
     retrieval: dict | None = None,
+    reranker=None,
 ) -> dict:
     retrieval = retrieval or {}
     mode = retrieval.get("mode", "hybrid")
@@ -56,6 +58,15 @@ def run_experiment(
         retriever = SQLiteVecRetriever(db_path, embedder)
     else:
         raise ValueError(f"Unknown retrieval mode: {mode}")
+
+    # rerank_candidates > 0 mirrors SQLiteRetriever's rerank step: retrieve that many rows, score
+    # each with the cross-encoder, keep the best top_k. 0 (the default) keeps the fused order.
+    rerank_candidates = int(retrieval.get("rerank_candidates", 0))
+    rerank_model = retrieval.get("rerank_model", DEFAULT_RERANK_MODEL)
+    if rerank_candidates > 0:
+        if reranker is None:
+            reranker = CrossEncoderReranker(rerank_model)
+        retriever = RerankingRetriever(retriever, reranker, rerank_candidates)
 
     per_query: list[dict] = []
     recall_scores: list[float] = []
@@ -126,6 +137,8 @@ def run_experiment(
             "min_token_length": retrieval.get("min_token_length", 3),
             "always_fuse": retrieval.get("always_fuse", True),
             "drop_stopwords": retrieval.get("drop_stopwords", True),
+            "rerank_candidates": rerank_candidates,
+            "rerank_model": rerank_model if rerank_candidates > 0 else None,
         },
         "metrics": metrics,
         "per_query": per_query,
