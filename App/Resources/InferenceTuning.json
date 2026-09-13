@@ -1,7 +1,7 @@
 {
   "profileName": "bundled-default",
   "generation": {
-    "maxTokens": 1024,
+    "maxTokens": 512,
     "temperature": 0.3,
     "topP": 0.85,
     "auxiliaryMaxTokens": 64,
