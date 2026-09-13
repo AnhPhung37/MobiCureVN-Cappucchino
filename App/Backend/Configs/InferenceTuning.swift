@@ -104,8 +104,14 @@ nonisolated struct InferenceTuning: Sendable {
         /// How many fused candidates the cross-encoder reranker scores before the best
         /// `retrievalTopK` are kept. `0` turns reranking off, and so does a build without
         /// `reranker.mlpackage` — retrieval then keeps the fused order. Each candidate is one
-        /// 512-token prediction on the device, so this is the reranker's latency knob. Measured
-        /// effect: Docs/BE/Reranker.md.
+        /// 512-token prediction on the device, so this is the reranker's latency knob.
+        ///
+        /// Shipped at `0`: measured on the split index (Docs/BE/Reranker.md), ms-marco-MiniLM-L6
+        /// raised recall@k at every candidate depth tried but LOWERED doc-hit@k (0.7799 → at best
+        /// 0.7560 at k=5, 0.8756 → 0.8612 at k=10) — it reorders the right document's OTHER chunks
+        /// ahead of chunks from a different, sometimes better, document more than it fixes wrong
+        /// picks. Left in the catalog as an opt-in knob, not a default, until a reranker or a
+        /// query set changes that trade-off.
         let rerankCandidates: Int
     }
 
@@ -154,7 +160,7 @@ nonisolated struct InferenceTuning: Sendable {
             historyTokenBudget: 350,
             assistantReplayWordCap: 60,
             wordsToTokensRatio: nil,
-            rerankCandidates: 20
+            rerankCandidates: 0
         ),
         vision: Vision(
             inputSide: 512,
