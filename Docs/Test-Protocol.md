@@ -123,8 +123,17 @@ grouped (used by §3.8).
 **Purpose.** `Docs/Eval-Integrity-Finding.md` becomes the single source of truth, corrected against
 the repository history (the old "9-document index" story was wrong).
 
-**Test.** `git grep -n "1\.00" -- Docs` — every hit is inside a retraction. `git grep -n "0\.367\|9-doc" -- Docs`
-— hits only in the correction note. **Drop if.** Never — docs only.
+**Test.**
+
+```bash
+git grep -nw "1\.00" -- Docs                        # -w: 1.000 coverage figures do not match
+git grep -nE "(^|[^0-9])9-doc|0\.367" -- Docs       # not 39-document
+```
+
+Every `1.00` hit is the retracted leaked-label result, quoted as retracted. Every 9-document /
+0.367 hit is one of: the correction note, the May-era corpus history, the disabled semantic
+experiment, or the legacy `run_pipeline.py` folders — none presents a 9-document index as what a
+reported number was scored on. **Drop if.** Never — docs only.
 
 ### 2.3 `final/privacy-audit`
 
