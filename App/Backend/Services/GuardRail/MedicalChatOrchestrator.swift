@@ -390,8 +390,27 @@ final class MedicalChatOrchestrator {
         Double(end.uptimeNanoseconds &- start.uptimeNanoseconds) / 1_000_000_000
     }
 
-    private struct EnrichedPrompt {
-        let systemPrompt: String
+    struct EnrichedPrompt {
+        /// The part of the system prompt that does not change from turn to turn: the language
+        /// directive, the fixed persona and constraints, the confirmed profile, and the
+        /// context-language note. It varies only when the patient switches language or edits
+        /// their profile.
+        ///
+        /// Kept separate from `volatileSuffix` so prefix stability is a property the tests can
+        /// assert rather than a claim in a comment — a prefix KV cache can only reuse a prefix
+        /// that is byte-identical between turns, and one stray interpolation silently defeats it.
+        let stablePrefix: String
+
+        /// Everything that changes every turn: retrieved chunks, their sources and confidence,
+        /// session facts, and the no-context instruction.
+        let volatileSuffix: String
+
+        /// What the model actually receives: the two halves concatenated with nothing between
+        /// them, which is byte-for-byte the prompt the single interpolated string produced before
+        /// the split (a separator here would change every prompt the model sees). Order is part of
+        /// the contract: the stable half must come first or there is no reusable prefix.
+        var systemPrompt: String { stablePrefix + volatileSuffix }
+
         let userMessage: String
         /// History trimmed to `historyTokenBudget`, with assistant turns condensed.
         let history: [ChatMessage]
@@ -431,7 +450,9 @@ final class MedicalChatOrchestrator {
     // lists, and disclaimers that make up most of a long answer's length.
     private static var assistantReplayWordCap: Int { tuning.assistantReplayWordCap }
 
-    private func buildEnrichedPrompt(
+    /// Internal, not private, so PrefixStabilityTests can assert that the stable half really
+    /// is stable across turns. Nothing else calls it from outside.
+    func buildEnrichedPrompt(
         userQuery: String,
         context: RetrievedContext,
         history: [ChatMessage],
@@ -515,10 +536,22 @@ final class MedicalChatOrchestrator {
         //   1. languageDirective — changes only when the user switches language
         //   2. Self.invariantSystemPrompt — never changes at runtime
         //   3. everything below — changes every single turn (context, facts, confidence)
-        let systemPrompt = """
+        // The prompt is built as two explicitly separate pieces rather than one interpolation,
+        // because a prefix KV cache can only reuse a prefix that is BYTE-identical between
+        // turns — and "the top of the prompt is stable" was an unverified claim in a comment.
+        // Splitting it makes the claim testable (see PrefixStabilityTests) and gives a future
+        // cache something concrete to key on.
+        //
+        // Stable: varies only when the patient switches language or edits their profile.
+        let stablePrefix = """
         LANGUAGE: \(languageInstruction)
 
-        \(Self.invariantSystemPrompt)\(profileSection)\(contextLanguageNote)\(noContextInstruction)\(memorySection)\(conflictInstruction)
+        \(Self.invariantSystemPrompt)\(profileSection)\(contextLanguageNote)
+        """
+
+        // Volatile: changes every turn — retrieved chunks, session facts, confidence.
+        let volatileSuffix = """
+        \(noContextInstruction)\(memorySection)\(conflictInstruction)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
@@ -536,7 +569,12 @@ final class MedicalChatOrchestrator {
         // significantly increases prefill time.
         let budgetedHistory = applyHistoryBudget(history, budget: Self.historyTokenBudget)
 
-        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
+        return EnrichedPrompt(
+            stablePrefix: stablePrefix,
+            volatileSuffix: volatileSuffix,
+            userMessage: userQuery,
+            history: budgetedHistory
+        )
     }
 
     /// Segment 2 of the system prompt: the fixed persona and safety constraints, which never vary
