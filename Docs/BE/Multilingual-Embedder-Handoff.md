@@ -6,8 +6,8 @@
 
 The base matters: `tools/compare_embedders.py` imports `doc_hit_at_k` / `doc_id_of` from
 `eval/metrics_ir.py`, which exist only on `final/eval-integrity`, and the comparison is
-only meaningful against that branch's corrected corpus config (the harness on `main`
-scores a 9-document index against a 39-document answer key). Checking this branch out
+only meaningful against that branch's corrected harness (the harness on `main` scores a
+retriever configuration the app no longer uses; see `Docs/Eval-Integrity-Finding.md`). Checking this branch out
 gives you both.
 
 > **Read this before running anything.** The experiment was started on a laptop, pulled
@@ -56,7 +56,8 @@ enough for a "future work" slide.
    killed before it finished. It is the strongest multilingual candidate and the most
    likely to change the recommendation.
 3. **Vector-only, not hybrid.** The shipped retriever fuses FTS5/BM25 with the vector
-   pass via RRF. These numbers isolate the embedder; they are comparable to *each other*
+   pass via RRF — and until `final/eval-integrity` bundled the CoreML query embedder, no build
+   of the app ran the vector pass at all. These numbers isolate the embedder; they are comparable to *each other*
    but not directly to the hybrid figure of doc-hit@5 = 0.7703 in
    `Docs/Eval-Integrity-Finding.md`.
 
@@ -99,27 +100,30 @@ Recommend a swap only if **both** hold:
 If cross-lingual works but English regresses, that is a genuine trade-off to *report*,
 not to silently take — write it up rather than deciding alone.
 
-## 5. The real blocker is the Swift tokenizer, not the model
+## 5. The Swift tokenizer — smaller than it looked
 
-This is the part that makes the swap a week of work rather than an afternoon, and it is
-easy to miss until the CoreML export is already done.
+`App/Backend/Services/RAG/WordPieceTokenizer.swift` implements **WordPiece** from a BERT-style
+`vocab.txt`. Both multilingual candidates here (and `google/embeddinggemma-300m`,
+`Qwen/Qwen3-Embedding-0.6B`) use other algorithms — SentencePiece/Unigram or BPE — so the Swift
+tokenizer cannot be reused for them.
 
-`App/Backend/Services/RAG/WordPieceTokenizer.swift` implements **WordPiece** and reads a
-BERT-style `vocab.txt` (one token per line, index = id). Both multilingual candidates use
-**SentencePiece / XLM-RoBERTa**, which is a different algorithm with a different vocab
-format. `vocab.txt` does not exist for them in the form the Swift code expects.
+An earlier version of this section concluded that a swap needs a SentencePiece tokenizer written
+in Swift. It does not: the project already links **swift-transformers 1.3.3** (the `Tokenizers`
+product, used by the MLX packages), whose `AutoTokenizer.from(modelFolder:)` loads a model's
+`tokenizer.json` and maps `XLMRobertaTokenizer` to its Unigram implementation and
+`GemmaTokenizer` to BPE. The work is therefore:
 
-So a swap requires one of:
+1. bundle the candidate's `tokenizer.json` (and config) beside its CoreML model;
+2. tokenize queries with `Tokenizers` instead of `WordPieceTokenizer`;
+3. **prove parity before trusting it** — a tokenizer that disagrees with Python does not fail, it
+   returns embeddings that are merely bad. Export a fixture from the converter exactly as
+   `Pipeline/tools/convert_embedder.py` does for bge-small (`MobiCureVNTests/Fixtures/QueryEmbedderParity.json`)
+   and extend `QueryEmbedderParityTests` to the new model. The bge-small parity work found that
+   the obvious implementation got accent stripping, symbol splitting and CJK handling wrong; assume
+   a new tokenizer path does too until the fixture says otherwise.
 
-- **(a)** Write a SentencePiece tokenizer in Swift (unigram model, byte-fallback). Real
-  work, and a wrong implementation fails *silently* — it returns embeddings that are
-  merely bad, not an error.
-- **(b)** Bundle the tokenizer inside the CoreML model so Swift passes a string rather
-  than token ids. Cleanest if `coremltools` can express it for this model.
-- **(c)** Use a multilingual model that keeps a WordPiece vocabulary (e.g. a distilled
-  mBERT-based retriever). Weaker models, but no Swift work at all. **Evaluate this option
-  before committing to (a)** — it may be good enough and it is the only route that fits a
-  week.
+Option (c) — a multilingual model that keeps a WordPiece vocabulary — still avoids step 2, but it
+is no longer the only route that fits a week.
 
 ## 6. Every place the embedder identity is declared
 
@@ -132,11 +136,11 @@ than a configuration error.
 | `Pipeline/eval/experiment_config.json:4-5` | `embed.model_name`, `embed.embed_dim` |
 | `Pipeline/ingestion/build_index.py:109` | `vec0(embedding float[dim])` — follows `EMBED_DIM` |
 | `Pipeline/eval/index_builder.py:76` | same, for the eval index |
-| `Pipeline/tools/convert_embedder.py:22` | `MODEL_ID`; also the hardcoded `assert out.shape == (1, 384)` |
+| `Pipeline/tools/convert_embedder.py` | `--model`; pooling is read from the model's SentenceTransformer config, and the converter refuses to export a model that disagrees with it |
 | `App/Backend/Services/RAG/QueryEmbedder.swift:17` | `embedDim` (384) |
 | `App/Backend/Services/RAG/QueryEmbedder.swift:16` | `maxSeqLen` (128) |
-| `App/Backend/Services/RAG/WordPieceTokenizer.swift` | the blocker in §5 |
-| bundled resources | `query_embedder.mlpackage`, `vocab.txt` — both re-exported |
+| `App/Backend/Services/RAG/WordPieceTokenizer.swift` | replaced by a swift-transformers tokenizer for a non-WordPiece model (§5) |
+| bundled resources | `App/Resources/query_embedder.mlpackage`, `App/Resources/vocab.txt` and `MobiCureVNTests/Fixtures/QueryEmbedderParity.json` — all re-exported together |
 
 `App/Resources/vectorstore.db` must be rebuilt and re-copied; an index built with one
 embedder and queried with another returns confident nonsense, with no error anywhere.
