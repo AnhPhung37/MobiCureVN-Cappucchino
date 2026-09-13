@@ -96,6 +96,7 @@ class HybridRetriever:
         min_token_length: int = 3,
         always_fuse: bool = False,
         drop_stopwords: bool = False,
+        use_vector: bool = True,
     ) -> None:
         self._db_path = db_path
         self._embedder = embedder
@@ -106,6 +107,9 @@ class HybridRetriever:
         self._always_fuse = always_fuse
         # drop_stopwords: remove common stopwords from the FTS query to sharpen BM25.
         self._drop_stopwords = drop_stopwords
+        # use_vector=False reproduces a build without the bundled query embedder, where
+        # SQLiteRetriever silently searches FTS-only.
+        self._use_vector = use_vector
         self._conn = sqlite3.connect(db_path)
         self._conn.enable_load_extension(True)
         sqlite_vec.load(self._conn)
@@ -214,7 +218,9 @@ class HybridRetriever:
         fts_rows = self._run_fts(question, candidate_limit)
         # App behaviour: skip the vector pass when FTS already returned a full candidate set.
         # always_fuse overrides that and runs vector every time.
-        skip_vector = (not self._always_fuse) and len(fts_rows) >= candidate_limit
+        skip_vector = (not self._use_vector) or (
+            (not self._always_fuse) and len(fts_rows) >= candidate_limit
+        )
         vector_rows = [] if skip_vector else self._run_vector(question, candidate_limit)
         merged = self._merge_rrf(fts_rows, vector_rows)
         deduped = self._dedupe_by_content(merged)
