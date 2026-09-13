@@ -147,7 +147,7 @@ nonisolated struct InferenceTuning: Sendable {
         prompt: Prompt(
             retrievalTopK: 10,
             contextTokenBudget: 3000,
-            historyTokenBudget: 500,
+            historyTokenBudget: 350,
             assistantReplayWordCap: 60,
             wordsToTokensRatio: nil
         ),
