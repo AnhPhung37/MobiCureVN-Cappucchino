@@ -10,6 +10,7 @@ import XCTest
 ///
 /// These tests are the contract that makes the caching work worth starting. They are also the
 /// cheap half of it: they need no MLX runtime and run in milliseconds.
+@MainActor
 final class PrefixStabilityTests: XCTestCase {
 
     /// Built with in-memory stores rather than the defaults, which reach AppConfig's
@@ -132,6 +133,18 @@ final class PrefixStabilityTests: XCTestCase {
     }
 
     // MARK: - Composition
+
+    func testSplittingThePromptDidNotChangeWhatTheModelReads() {
+        // The halves are joined with nothing in between, so the prompt is exactly what the single
+        // interpolated string produced: the invariant block (plus any optional sections) followed
+        // by one blank line and the context header. An extra separator would show up as a third
+        // newline here, and would change model output at temperature 0.
+        let ctx = context(chunks: [chunk("a", "Text.")])
+        let prompt = orchestrator.buildEnrichedPrompt(userQuery: "Q", context: ctx, history: [])
+        XCTAssertTrue(prompt.systemPrompt.contains("\n\nRetrieved Medical Context:"))
+        XCTAssertFalse(prompt.systemPrompt.contains("\n\n\nRetrieved Medical Context:"))
+        XCTAssertEqual(prompt.systemPrompt, prompt.stablePrefix + prompt.volatileSuffix)
+    }
 
     func testSystemPromptIsThePrefixFollowedByTheSuffix() {
         // Order is part of the contract: the stable half must come first or there is no

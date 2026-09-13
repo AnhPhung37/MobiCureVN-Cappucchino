@@ -3,9 +3,9 @@
 ## The opportunity
 
 The system prompt is re-prefilled from the first token on **every turn**. After
-`final/prompt-slimming` the fixed persona and constraints are ~488 tokens, and a confirmed
-patient profile adds up to 200 more. That is ~700 tokens of identical work per turn, every
-turn, for the entire conversation.
+`final/prompt-slimming` the fixed persona and constraints are 317 words — about 545 tokens on
+Qwen 3.5 at its measured 1.72 tokens per word — and a confirmed patient profile adds up to 200
+more. That is roughly 550–750 tokens of identical work per turn, for the entire conversation.
 
 Reusing the KV cache for that prefix is the largest remaining time-to-first-token win in the
 app — larger than anything left in retrieval or prompt assembly, because it removes work
@@ -23,7 +23,10 @@ interpolated string:
 - `volatileSuffix` — retrieved chunks, sources, confidence, session facts, no-context note.
   Changes every turn.
 
-`systemPrompt` is `stablePrefix + "\n" + volatileSuffix`, so nothing downstream changed.
+`systemPrompt` is `stablePrefix + volatileSuffix` — nothing in between — so it is byte-for-byte the
+prompt the single interpolated string produced, and nothing downstream changed. (The first version
+joined the halves with an extra newline, which changed every prompt the model read;
+`testSplittingThePromptDidNotChangeWhatTheModelReads` pins the join.)
 
 `MobiCureVNTests/PrefixStabilityTests.swift` then asserts the property the whole optimisation
 depends on: the prefix is byte-identical across different questions, different retrieved
@@ -61,28 +64,39 @@ pinned and readable.
    resolved `mlx-swift-lm`. Confirm how a cache is constructed, seeded with a token prefix, and
    handed to the iterator.
 2. **Add a `PrefixCache` to `LLMService`**, holding:
-   - the `stablePrefix` string it was built from (the cache key — compare by value, and only
-     reuse on an exact match);
-   - the model identity, so switching models in the picker invalidates it;
+   - the **token ids** of the chat-templated prompt it was built from, and the model identity;
    - the seeded `KVCache` itself.
-3. **Thread the prefix through.** `LLMRequest` currently carries one `systemPrompt`. Add the
-   split so `LLMService` can tokenize the prefix separately and know where the reusable region
-   ends. Keep `systemPrompt` working for every other caller.
-4. **Invalidate on:** model change, language change, profile edit, memory-pressure warning
+
+   Key it on token ids, not on the `stablePrefix` string. A byte-identical prefix is necessary but
+   not sufficient: the prompt is tokenized as a whole, and a BPE tokenizer can merge characters
+   across the boundary — the suffix here always begins with newlines, and Qwen has single tokens
+   for runs of newlines, so the last prefix token can differ between turns. Tokenize the full
+   templated prompt each turn, find the longest common token prefix with the cached ids, and
+   reuse the cache up to that length. Never tokenize the prefix on its own and splice: that
+   produces token ids the model would not otherwise see.
+3. **Thread the split through only if it helps.** With longest-common-prefix matching the cache
+   does not need to know where `stablePrefix` ends; the split's job is to keep that common prefix
+   long, which these tests already guarantee. Keep `systemPrompt` as the single thing sent.
+4. **Keep auxiliary passes from evicting it.** Language classification and the two post-answer
+   extraction passes run through the same `ModelContainer` between chat turns with entirely
+   different prompts. A single-slot cache holding "the last prompt" is overwritten by them on every
+   turn and never hits. Either keep one slot per prompt family (chat vs auxiliary), or move the
+   auxiliary passes off the MLX container (the Foundation Models route in `final0.1-fm-aux-routing`).
+5. **Invalidate on:** model change, language change, profile edit, memory-pressure warning
    (`AppConfig.observeMemoryWarnings` already exists — a cache that survives a memory warning is
    a leak with extra steps), and app background.
-5. **Verify correctness before latency.** Same question, cold cache vs warm cache, must produce
+6. **Verify correctness before latency.** Same question, cold cache vs warm cache, must produce
    the same answer at temperature 0. If it does not, the cache is mis-seeded — stop.
-6. **Then measure.** `MOBICURE_BENCH=1` with the latency harness, comparing turn 1 (cold) against
+7. **Then measure.** `MOBICURE_BENCH=1` with the latency harness, comparing turn 1 (cold) against
    turns 2-10 (warm). The expected shape is: turn 1 unchanged, later turns drop by roughly the
    prefix's share of prefill.
 
 ## Expected gain
 
-Prefix ~700 tokens of a ~3000-token prompt (after `final/context-budget-fix` and
-`final/retrieval-topk`). If prefill dominates TTFT, that is a **~20-25% cut in prefill from the
-second turn onward** — smaller than it sounds when retrieval context is large, which is exactly
-why it should be measured rather than assumed.
+A prefix of ~550–750 tokens against a context budget of 2000–3000 estimated tokens plus history
+(after `final/context-budget-fix` and `final/retrieval-topk`). If prefill dominates TTFT, that is
+roughly a **15–25% cut in prefill from the second turn onward** — smaller than it sounds when
+retrieval context is large, which is exactly why it should be measured rather than assumed.
 
 If the measured gain is under ~10%, do not ship it: a correctness-sensitive cache is not worth
 carrying for a marginal win.

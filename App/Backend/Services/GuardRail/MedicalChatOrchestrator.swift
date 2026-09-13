@@ -382,9 +382,11 @@ final class MedicalChatOrchestrator {
         /// session facts, and the no-context instruction.
         let volatileSuffix: String
 
-        /// What the model actually receives. Concatenation order is part of the contract: the
-        /// stable half must come first or there is no reusable prefix.
-        var systemPrompt: String { stablePrefix + "\n" + volatileSuffix }
+        /// What the model actually receives: the two halves concatenated with nothing between
+        /// them, which is byte-for-byte the prompt the single interpolated string produced before
+        /// the split (a separator here would change every prompt the model sees). Order is part of
+        /// the contract: the stable half must come first or there is no reusable prefix.
+        var systemPrompt: String { stablePrefix + volatileSuffix }
 
         let userMessage: String
         /// History trimmed to `historyTokenBudget`, with assistant turns condensed.
