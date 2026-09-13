@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import os
 
@@ -78,10 +79,11 @@ nonisolated struct InferenceTuning: Sendable {
     struct Prompt: Sendable {
         /// How many chunks retrieval returns for the prompt builder to pack.
         ///
-        /// Coupled to `contextTokenBudget`, not independent of it: measured over the golden
-        /// set, raising this from 5 to 10 at a 2000-token budget changed grounding by exactly
-        /// zero, because the budget binds first and the extra chunks are packed then dropped.
-        /// Raise the two together or neither. See Docs/BE/Context-Budget-Finding.md.
+        /// Coupled to `contextTokenBudget`, not independent of it. Measured over the golden set
+        /// with the two-pass packer at Qwen 3.5's ratio, doc-hit of what the model sees: topK 5 at
+        /// budget 2000 → 0.7416; topK 10 at 2000 → 0.7512; topK 10 at 3000 → 0.8134. Past five
+        /// chunks the budget, not topK, decides how much of the extra retrieval reaches the model,
+        /// so raise the two together. See Docs/BE/Context-Budget-Finding.md.
         let retrievalTopK: Int
         /// Token budget for retrieved RAG chunks injected into the system prompt.
         let contextTokenBudget: Int
@@ -90,15 +92,17 @@ nonisolated struct InferenceTuning: Sendable {
         /// Word cap applied to an assistant turn before it is replayed to the model.
         let assistantReplayWordCap: Int
 
-        /// Multiplier converting a cheap whitespace word count into a token estimate.
+        /// Override for the multiplier converting a cheap whitespace word count into a token
+        /// estimate (checklist item B2.6).
         ///
-        /// This is the knob behind checklist item B2.6. At `1.0` the budgets above behave
-        /// exactly as they did historically (word counts wearing a token label, so the real
-        /// prompt was ~40% larger than the number suggested). At `1.4` they mean roughly what
-        /// they say for English medical prose. Sweep it together with the two budgets — they
-        /// are one knob in two parts, and moving them independently will produce results that
-        /// look contradictory.
-        let wordsToTokensRatio: Double
+        /// `nil`, the shipped value, means "use the measured ratio of the model that is actually
+        /// answering" — `ModelCatalog.wordsToTokensRatio`. The budgets above exist to bound
+        /// prefill on the chat model, and tokens per word differ materially between the shipped
+        /// tokenizers (1.61 for Llama 3.2 against 2.04 for Phi-3.5 on this corpus), so a single
+        /// global ratio either overshoots the budget on one model or starves the context on
+        /// another. Set a number here only to pin a sweep to a fixed ratio, and sweep it together
+        /// with the two budgets — they are one knob in two parts.
+        let wordsToTokensRatio: Double?
     }
 
     /// Image handling on the way into a vision model.
@@ -124,9 +128,9 @@ nonisolated struct InferenceTuning: Sendable {
 
     // MARK: - Defaults
 
-    /// The values the app ships with. Identical to the constants that used to be compiled into
-    /// `LLMService` and `MedicalChatOrchestrator`, except `wordsToTokensRatio`, which was
-    /// effectively `1.0` before checklist item B2.6.
+    /// The values the app ships with. `App/Resources/InferenceTuning.json` must resolve to
+    /// exactly these (`InferenceTuningResolutionTests` fails when the two drift), so the
+    /// bundled file and the compiled fallback can never describe two different apps.
     static let defaults = InferenceTuning(
         profileName: "built-in-defaults",
         generation: Generation(
@@ -145,7 +149,7 @@ nonisolated struct InferenceTuning: Sendable {
             contextTokenBudget: 3000,
             historyTokenBudget: 500,
             assistantReplayWordCap: 60,
-            wordsToTokensRatio: 1.6
+            wordsToTokensRatio: nil
         ),
         vision: Vision(
             inputSide: 512,
@@ -178,23 +182,29 @@ nonisolated struct InferenceTuning: Sendable {
             .appendingPathComponent("\(filename).\(fileExtension)")
     }
 
-    /// Writes the currently-effective configuration to `Documents/InferenceTuning.json` if no
-    /// file is there yet, so there is always something concrete to edit on a device instead of
-    /// an empty folder and a schema to guess at. Never overwrites an existing file.
+    /// Writes `configuration` to `Documents/InferenceTuning.json`, stamped with the fingerprint
+    /// of its values, so there is always something concrete to edit on a device instead of an
+    /// empty folder and a schema to guess at.
     ///
-    /// Called automatically the first time `current` is resolved, so no launch-site wiring is
-    /// needed anywhere else. Failures are ignored: an unwritable Documents directory means no
-    /// on-device tuning, not a broken app.
+    /// Never overwrites a file someone may have edited: an existing file is replaced only when
+    /// `replacingStaleSeed` says it is an untouched seed from an earlier build (see `layer`).
+    /// Called automatically when `current` is resolved, so no launch-site wiring is needed.
+    /// Failures are ignored: an unwritable Documents directory means no on-device tuning, not a
+    /// broken app.
     @discardableResult
-    static func seedDocumentsCopyIfMissing(from configuration: InferenceTuning) -> Bool {
+    static func seedDocumentsCopyIfMissing(
+        from configuration: InferenceTuning,
+        replacingStaleSeed: Bool = false
+    ) -> Bool {
         guard let url = documentsURL else { return false }
-        guard !FileManager.default.fileExists(atPath: url.path) else { return false }
+        guard replacingStaleSeed || !FileManager.default.fileExists(atPath: url.path) else { return false }
 
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             var seed = configuration.fileShape
             seed.profileName = "device-local (edit me, then relaunch)"
+            seed.seedFingerprint = seed.valuesFingerprint
             try encoder.encode(seed).write(to: url, options: .atomic)
             log.info("seeded editable tuning file at \(url.path, privacy: .public)")
             return true
@@ -206,36 +216,72 @@ nonisolated struct InferenceTuning: Sendable {
 
     // MARK: - Loading
 
-    private static func resolve() -> InferenceTuning {
-        if let url = documentsURL, let loaded = decode(contentsOf: url) {
-            log.info("loaded from Documents — profile '\(loaded.profileName, privacy: .public)'")
-            loaded.logValues()
-            return loaded
-        }
-
-        let fallback: InferenceTuning
-        if let url = Bundle.main.url(forResource: filename, withExtension: fileExtension),
-           let loaded = decode(contentsOf: url) {
-            log.info("loaded from bundle — profile '\(loaded.profileName, privacy: .public)'")
-            fallback = loaded
-        } else {
-            log.info("no tuning file found — using built-in defaults")
-            fallback = defaults
-        }
-
-        fallback.logValues()
-        // Nothing editable on the device yet: drop a copy of what we just resolved into
-        // Documents so the next person to tune this has a real file to edit rather than a
-        // schema to guess at. Seeding here (rather than from the app's `init`) keeps the whole
-        // mechanism inside this one file — no launch-site wiring to forget.
-        seedDocumentsCopyIfMissing(from: fallback)
-        return fallback
+    /// Where the effective configuration came from.
+    enum Source: Equatable, Sendable {
+        case builtInDefaults
+        case bundle
+        /// A Documents file someone edited; the keys it sets override the bundle's.
+        case documentsOverride
     }
 
-    private static func decode(contentsOf url: URL) -> InferenceTuning? {
+    /// The resolution rule as a pure function, so it can be tested without a device.
+    ///
+    /// Layers, each overriding only the keys it sets: built-in defaults ← bundled JSON ←
+    /// Documents JSON. A Documents file that is still exactly the seed some build wrote is NOT a
+    /// layer — it records what that build resolved to, not a decision anyone made. Honouring it
+    /// froze every later default on any device that had launched once: after the bundle moved
+    /// `contextTokenBudget` from 600 to 2000, such a device kept running 600, and a key added
+    /// later (`retrievalTopK`) combined with the stale values into a configuration nobody chose.
+    ///
+    /// - Returns: the configuration, its source, and whether the Documents file is an untouched
+    ///   seed whose values no longer match what is running — the caller re-seeds it, so the file
+    ///   on the device always shows the live values.
+    static func layer(
+        bundle: FileShape?,
+        documents: FileShape?
+    ) -> (tuning: InferenceTuning, source: Source, replaceStaleSeed: Bool) {
+        let base = bundle?.resolved(over: defaults) ?? defaults
+        let baseSource: Source = bundle == nil ? .builtInDefaults : .bundle
+        guard let documents else { return (base, baseSource, false) }
+        guard !documents.isUneditedSeed else {
+            return (base, baseSource, documents.seedFingerprint != base.fileShape.valuesFingerprint)
+        }
+        return (documents.resolved(over: base), .documentsOverride, false)
+    }
+
+    private static func resolve() -> InferenceTuning {
+        let bundleShape = Bundle.main
+            .url(forResource: filename, withExtension: fileExtension)
+            .flatMap(decodeShape(contentsOf:))
+        let documentsShape = documentsURL.flatMap(decodeShape(contentsOf:))
+        let (resolved, source, replaceStaleSeed) = layer(bundle: bundleShape, documents: documentsShape)
+
+        switch source {
+        case .documentsOverride:
+            log.info("Documents file overrides the bundle — profile '\(resolved.profileName, privacy: .public)'")
+        case .bundle:
+            log.info("loaded from bundle — profile '\(resolved.profileName, privacy: .public)'")
+        case .builtInDefaults:
+            log.info("no tuning file found — using built-in defaults")
+        }
+        if replaceStaleSeed {
+            log.info("Documents file was an unedited seed from an earlier build — replacing it")
+        }
+        resolved.logValues()
+
+        // Seeding here (rather than from the app's `init`) keeps the whole mechanism inside this
+        // one file — no launch-site wiring to forget. An existing file is replaced only when it
+        // is an untouched seed that no longer matches; a malformed or edited file is left alone.
+        if documentsShape == nil || replaceStaleSeed {
+            seedDocumentsCopyIfMissing(from: resolved, replacingStaleSeed: replaceStaleSeed)
+        }
+        return resolved
+    }
+
+    private static func decodeShape(contentsOf url: URL) -> FileShape? {
         guard let data = try? Data(contentsOf: url) else { return nil }
         do {
-            return try JSONDecoder().decode(FileShape.self, from: data).resolved()
+            return try JSONDecoder().decode(FileShape.self, from: data)
         } catch {
             // A malformed file must never take the app down, and must never silently look like
             // it worked: log loudly and fall through to the next source.
@@ -249,7 +295,7 @@ nonisolated struct InferenceTuning: Sendable {
     private func logValues() {
         Self.log.info("""
             generation(maxTokens: \(generation.maxTokens), temperature: \(generation.temperature), topP: \(generation.topP)) \
-            prompt(topK: \(prompt.retrievalTopK), context: \(prompt.contextTokenBudget), history: \(prompt.historyTokenBudget), ratio: \(prompt.wordsToTokensRatio)) \
+            prompt(topK: \(prompt.retrievalTopK), context: \(prompt.contextTokenBudget), history: \(prompt.historyTokenBudget), ratio: \(prompt.wordsToTokensRatio.map { String($0) } ?? "per-model", privacy: .public)) \
             vision(side: \(vision.inputSide), historyImageTurns: \(vision.historyImageTurnCap)) \
             memory(cacheFraction: \(memory.metalCacheFraction), streamBuffer: \(memory.tokenStreamBufferLimit))
             """)
@@ -265,6 +311,9 @@ extension InferenceTuning {
     /// non-optional fields — call sites never deal with "what if this knob is missing".
     struct FileShape: Codable, Sendable {
         var profileName: String?
+        /// Fingerprint of the values this file held when the app wrote it as a seed. Present only
+        /// on seeds, and equal to `valuesFingerprint` for as long as nobody edits the values.
+        var seedFingerprint: String?
 
         var generation: GenerationFields?
         var prompt: PromptFields?
@@ -303,9 +352,29 @@ extension InferenceTuning {
             var tokenStreamBufferLimit: Int?
         }
 
-        /// Merge over the built-in defaults, then clamp anything that would be nonsensical.
-        func resolved() -> InferenceTuning {
-            let d = InferenceTuning.defaults
+        /// SHA-256 of the values alone — `profileName` and `seedFingerprint` excluded — encoded
+        /// with sorted keys, so it survives a decode/encode round trip unchanged.
+        var valuesFingerprint: String {
+            var values = self
+            values.profileName = nil
+            values.seedFingerprint = nil
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys]
+            let data = (try? encoder.encode(values)) ?? Data()
+            return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        }
+
+        /// A seed the app wrote that nobody has changed since. Renaming the profile alone is not
+        /// an edit: the name is a label, not a value.
+        var isUneditedSeed: Bool {
+            guard let seedFingerprint else { return false }
+            return seedFingerprint == valuesFingerprint
+        }
+
+        /// Merge over `base` — the built-in defaults, or the layer below this file — then clamp
+        /// anything that would be nonsensical.
+        func resolved(over base: InferenceTuning = InferenceTuning.defaults) -> InferenceTuning {
+            let d = base
 
             let generation = InferenceTuning.Generation(
                 maxTokens: max(1, self.generation?.maxTokens ?? d.generation.maxTokens),
@@ -325,8 +394,9 @@ extension InferenceTuning {
                 historyTokenBudget: max(0, self.prompt?.historyTokenBudget ?? d.prompt.historyTokenBudget),
                 assistantReplayWordCap: max(1, self.prompt?.assistantReplayWordCap ?? d.prompt.assistantReplayWordCap),
                 // Below 1.0 the "token" budgets would under-count words, which is the bug B2.6
-                // fixed; refuse to reintroduce it through the config file.
-                wordsToTokensRatio: max(1.0, self.prompt?.wordsToTokensRatio ?? d.prompt.wordsToTokensRatio)
+                // fixed; refuse to reintroduce it through the config file. `nil` keeps the
+                // measured per-model ratio.
+                wordsToTokensRatio: (self.prompt?.wordsToTokensRatio ?? d.prompt.wordsToTokensRatio).map { max(1.0, $0) }
             )
 
             let vision = InferenceTuning.Vision(
