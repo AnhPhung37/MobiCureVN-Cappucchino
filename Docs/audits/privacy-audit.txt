@@ -1,8 +1,8 @@
 
 MobiCureVN — privacy / locality audit
 repo:   /tmp/claude-1000/-home-quan-nguyen15/4cc13218-fa22-409a-b6e9-250c1590d564/scratchpad/wt/privacy-audit
-commit: 9f178a4 (DIRTY)
-date:   2026-09-12T22:58:40Z
+commit: a0ccfbe (DIRTY)
+date:   2026-09-13T03:14:45Z
 
 ────────────────────────────────────────────────────────────
 1. Commercial LLM inference endpoints (must be ZERO)
