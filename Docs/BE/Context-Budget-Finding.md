@@ -96,7 +96,10 @@ mirrors the Swift packer:
 | after, k=10, 2500 | 6.90 | 2441 | 0.0% | 0.7656 |
 | after, k=10, 3000 | 7.50 | 2875 | 0.0% | 0.8134 |
 
-**Grounding +67% relative at the same k, and no query reaches the model unsourced.** Raising `top_k`
+**Grounding +67% relative at the same k, and no query reaches the model unsourced.**
+
+With `final/chunk-splitting` merged (1876 chunks, none over the embedder window) the same simulator
+gives 4.86 chunks / doc-hit seen **0.7751** at k 5 / 2000, and 8.50 / **0.8421** at k 10 / 3000. Raising `top_k`
 is a separate, latency-gated decision on `final/retrieval-topk`.
 
 ## Cost
@@ -107,7 +110,8 @@ relative to decode, so this should be affordable against the 5 s budget of succe
 iPad M5. If p95 regresses past budget, lower `contextTokenBudget` in the Documents copy and
 re-measure.
 
-## Root cause still open
+## Root cause
 
 Chunks of 13,664 tokens should not exist: the embedder window is 512, so everything past that was
-never embedded. Splitting them at ingestion is `final/chunk-splitting`.
+never embedded. `final/chunk-splitting` splits them at ingestion (max 480 tokens); the packer's
+partial fill then rarely triggers, but stays as the guard for any future oversized chunk.
