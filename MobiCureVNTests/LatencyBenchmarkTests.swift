@@ -22,6 +22,7 @@ import UIKit
 ///       -only-testing:MobiCureVNTests/LatencyBenchmarkTests
 ///
 /// See Docs/BE/Latency-Benchmark.md for the full procedure and what to report.
+@MainActor
 final class LatencyBenchmarkTests: XCTestCase {
 
     // MARK: - Configuration
@@ -51,10 +52,17 @@ final class LatencyBenchmarkTests: XCTestCase {
     /// Success criterion #3.
     private static let latencyBudgetSeconds: TimeInterval = 5.0
 
+    /// Passes over the query set. With one pass, "p95" over 10 samples is simply the slowest
+    /// query; three passes give 30 samples, where the nearest-rank p95 is the second-slowest and
+    /// run-to-run noise is visible. Override with MOBICURE_BENCH_REPEATS.
+    private static let defaultRepetitions = 3
+
     // MARK: - Measurement
 
     private struct QueryLatency: Codable {
         let queryID: String
+        /// 1-based pass over the query set this sample came from.
+        let repetition: Int
         let query: String
         let language: String
         /// Wall time from `processQuery` to the first `.preview` — what the user sees as
@@ -80,6 +88,8 @@ final class LatencyBenchmarkTests: XCTestCase {
 
         struct Summary: Codable {
             let count: Int
+            let repetitions: Int
+            /// Nearest-rank percentiles over `count` samples.
             let meanTimeToFinal: TimeInterval
             let medianTimeToFinal: TimeInterval
             let p95TimeToFinal: TimeInterval
@@ -134,23 +144,31 @@ final class LatencyBenchmarkTests: XCTestCase {
             orchestrator: orchestrator
         )
 
+        let repetitions = max(
+            1,
+            Int(ProcessInfo.processInfo.environment["MOBICURE_BENCH_REPEATS"] ?? "") ?? Self.defaultRepetitions
+        )
         var samples: [QueryLatency] = []
-        for query in Self.benchmarkQueries {
-            let sample = try await measure(
-                query: query.text,
-                id: query.id,
-                language: query.language,
-                orchestrator: orchestrator
-            )
-            samples.append(sample)
-            print(String(
-                format: "⏱️ %@  first-preview %.2fs  final %.2fs  (%d chars)",
-                sample.queryID, sample.timeToFirstPreview, sample.timeToFinal, sample.answerCharacters
-            ))
+        for repetition in 1...repetitions {
+            for query in Self.benchmarkQueries {
+                let sample = try await measure(
+                    query: query.text,
+                    id: query.id,
+                    language: query.language,
+                    repetition: repetition,
+                    orchestrator: orchestrator
+                )
+                samples.append(sample)
+                print(String(
+                    format: "⏱️ %@ #%d  first-preview %.2fs  final %.2fs  (%d chars)",
+                    sample.queryID, repetition, sample.timeToFirstPreview, sample.timeToFinal, sample.answerCharacters
+                ))
+            }
         }
 
         let report = makeReport(
             samples: samples,
+            repetitions: repetitions,
             coldStart: cold.timeToFinal,
             modelLoadSeconds: modelLoadSeconds,
             model: modelID
@@ -167,14 +185,15 @@ final class LatencyBenchmarkTests: XCTestCase {
             median final   %.2fs
             p95 final      %.2fs
             max final      %.2fs
-            within budget  %d/%d (%.0f%%)
+            within budget  %d/%d (%.0f%%)   samples: %d passes × %d queries
             ───────────────────────────────────────────────────────────
             """,
             Self.latencyBudgetSeconds, modelID, report.coldStartSeconds, report.modelLoadSeconds,
             report.summary.meanTimeToFinal, report.summary.medianTimeToFinal,
             report.summary.p95TimeToFinal, report.summary.maxTimeToFinal,
             report.summary.withinBudget, report.summary.count,
-            report.summary.budgetPassRate * 100
+            report.summary.budgetPassRate * 100,
+            report.summary.repetitions, Self.benchmarkQueries.count
         ))
 
         // Assert on p95, not mean: a criterion about what users experience is not met by an
@@ -196,6 +215,7 @@ final class LatencyBenchmarkTests: XCTestCase {
         query: String,
         id: String,
         language: DetectedLanguage,
+        repetition: Int = 1,
         orchestrator: MedicalChatOrchestrator
     ) async throws -> QueryLatency {
         let start = Date()
@@ -225,6 +245,7 @@ final class LatencyBenchmarkTests: XCTestCase {
 
         return QueryLatency(
             queryID: id,
+            repetition: repetition,
             query: query,
             language: language == .vietnamese ? "vi" : "en",
             // A turn blocked by a guardrail yields `.final` with no preview; attributing the
@@ -238,6 +259,7 @@ final class LatencyBenchmarkTests: XCTestCase {
 
     private func makeReport(
         samples: [QueryLatency],
+        repetitions: Int,
         coldStart: TimeInterval,
         modelLoadSeconds: TimeInterval,
         model: String
@@ -245,14 +267,17 @@ final class LatencyBenchmarkTests: XCTestCase {
         let finals = samples.map(\.timeToFinal).sorted()
         let withinBudget = finals.filter { $0 < Self.latencyBudgetSeconds }.count
 
+        /// Nearest-rank percentile: the smallest sample with at least `p` of all samples at or
+        /// below it. The previous `round(p × (n − 1))` index made p95 over 10 samples the maximum.
         func percentile(_ p: Double) -> TimeInterval {
             guard !finals.isEmpty else { return 0 }
-            let rank = Int((p * Double(finals.count - 1)).rounded())
-            return finals[min(max(rank, 0), finals.count - 1)]
+            let rank = Int((p * Double(finals.count)).rounded(.up))
+            return finals[min(max(rank, 1), finals.count) - 1]
         }
 
         let summary = BenchmarkReport.Summary(
             count: samples.count,
+            repetitions: repetitions,
             meanTimeToFinal: finals.isEmpty ? 0 : finals.reduce(0, +) / Double(finals.count),
             medianTimeToFinal: percentile(0.5),
             p95TimeToFinal: percentile(0.95),
@@ -290,11 +315,13 @@ final class LatencyBenchmarkTests: XCTestCase {
     ///
     /// The sysctl key differs by platform: on iOS the device identifier is `hw.machine`
     /// (`hw.model` returns an internal board id such as "D84AP"), while on Apple Silicon
-    /// macOS it is `hw.model` (`hw.machine` returns just "arm64"). Reading the wrong one
-    /// produces a report that cannot be attributed to a device.
+    /// macOS it is `hw.model` (`hw.machine` returns just "arm64"). This is an iOS app, so on the
+    /// Mac Studio it runs as "Designed for iPad": `os(iOS)` is true there, and the process has to
+    /// be asked whether it is actually on a Mac. Reading the wrong key produces a report that
+    /// cannot be attributed to a device.
     private static func hardwareIdentifier() -> String {
         #if os(iOS)
-        let key = "hw.machine"
+        let key = ProcessInfo.processInfo.isiOSAppOnMac ? "hw.model" : "hw.machine"
         #else
         let key = "hw.model"
         #endif

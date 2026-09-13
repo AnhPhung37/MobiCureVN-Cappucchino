@@ -41,6 +41,10 @@ carry does not answer a question about what users experience.
 medium / long expected answers. Decode time scales with answer length, so a set of
 short questions would produce a number that says nothing about real use.
 
+The set runs **3 times** by default (`MOBICURE_BENCH_REPEATS`), for 30 samples. Percentiles are
+nearest-rank: p95 over 30 samples is the second-slowest turn. Over a single pass of 10 it would
+simply be the slowest one, which is why one pass is not enough to report a p95.
+
 ## How to run
 
 > **`xcodebuild` does not forward ordinary environment variables into the test process on a
@@ -78,14 +82,14 @@ TEST_RUNNER_MOBICURE_BENCH=1 \
 TEST_RUNNER_MOBICURE_BENCH_OUT="$PWD/Docs/benchmarks/latency-macstudio-m3max.json" \
 xcodebuild test \
   -scheme MobiCureVN \
-  -destination 'platform=macOS' \
+  -destination 'platform=macOS,arch=arm64,variant=Designed for iPad' \
   -only-testing:MobiCureVNTests/LatencyBenchmarkTests
 ```
 
 ### Comparing models
 
 ```bash
-TEST_RUNNER_TEST_RUNNER_MOBICURE_BENCH_MODEL="mlx-community/Qwen2.5-3B-Instruct-4bit" ...
+TEST_RUNNER_MOBICURE_BENCH_MODEL="mlx-community/Qwen2.5-3B-Instruct-4bit" ...
 ```
 
 Defaults to `ModelCatalog.default` (Qwen 3.5 4B) — benchmark the model you actually ship.
@@ -111,8 +115,8 @@ Known levers, cheapest first — all are already identified in the codebase:
 - **Gate the second LLM pass.** The orchestrator makes auxiliary LLM calls (fact
   extraction, profile-update extraction) per turn. Gating them behind a cheap
   precondition removes a full decode from the critical path.
-- **Cut `GenerationOptions.answer.maxTokens`.** The budget is 1024; patient-facing
-  answers rarely need it, and decode time is linear in tokens emitted.
+- **Cut `InferenceTuning.generation.maxTokens`.** `GenerationOptions.answer` reads it; decode time
+  is linear in tokens emitted. Check truncated answers per language when lowering it.
 - **Ship a smaller model.** `gemma3_1B` / `qwen2_5_3B` are already in `ModelCatalog`.
   Benchmark them with `MOBICURE_BENCH_MODEL` before deciding — this is exactly the
   accuracy-vs-latency trade-off the report should discuss.
