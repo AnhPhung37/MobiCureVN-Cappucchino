@@ -391,6 +391,28 @@ without re-chunking: `./run_pipeline.sh --force --stages split enrich index`, th
 
 ---
 
+### 3.9 `final/latency-tuning`
+
+> **What:** Caps `maxTokens=120` and `contextTokenBudget=1500` in `InferenceTuning.json` + Swift defaults to bound decode and prefill time. **Goal:** Reduce end-to-end response time on iPad M5 from ~20s to ~7-9s without regressing answer quality; merge conflict with 3.1 (context-budget-fix) resolves to 1500.
+
+**Benchmark (2026-09-14, Mac 128 GB, Qwen2.5-7B-4bit, 1270-token prompt):**
+TTFT 1.36 s · decode 98.9 tok/s · total 3.25 s (188 tokens).
+iPad M5 estimate (~3× slower): TTFT ~4 s · total ~7-8 s at 120 tokens.
+
+**Expected merge conflict.** This branch changes `contextTokenBudget` from 600 (main) to 1500. Branch 3.1 changes it from 600 to 3000. When merging after 3.1, resolve to **1500** (latency-tuning wins). `maxTokens` has no conflict: main=1024 here, 512 in the integration tree after 3.6; resolve to **120**.
+
+| Check | Pass criterion | Expected | Actual |
+|---|---|---|---|
+| `InferenceTuningResolutionTests` (G2) | JSON and Swift defaults match | both show maxTokens=120, contextBudget=1500 | — |
+| G3 Python | no regressions | 74/74 | — |
+| Latency on device (G5 / latency harness) | time-to-final ≤ 8 s on iPad M5 | ~7-8 s | ⏭ SKIPPED (needs device) |
+| Answer quality | grounded ≥ 3.5 (allows slight drop vs 3.7 due to shorter answers) | acceptable brevity | ⏭ SKIPPED (needs raters) |
+| Truncation check | answers complete (no mid-sentence cuts) | `completingTruncatedAnswer` fires when truncated | ⏭ needs device |
+
+**Drop if.** InferenceTuningResolutionTests fails (Swift/JSON drift). Never revert if quality regresses only in subjective brevity — that is a tradeoff, not a defect. If answers are frequently truncated mid-sentence, raise `maxTokens` to 180 and re-test.
+
+---
+
 ## 4. Phase 3 — documentation and investigation
 
 ### 4.1 `final/frontend-perf-notes`
@@ -503,14 +525,16 @@ number on a slide must trace to a file in `Docs/test-runs/`.**
 | `final/mlx-runtime-knobs` | main | latency / truncation | 3.6 |
 | `final/prefix-kv-cache` | mlx-runtime-knobs | groundwork | 3.7 |
 | `final/chunk-splitting` | eval-integrity | corpus | 3.8 |
+| `final/latency-tuning` | main | latency (conflict 3.1) | 3.9 |
 | `final/docs-fe-perf` | main | docs | 4.1 |
 | `final/multilang-embedder-and-test-protocol` | eval-integrity | investigation + this doc | 4.2 |
 
-Merging all fifteen in this order was dry-run on 2026-09-13 after the fixes: every merge is clean
-except 3.4, which resolves exactly as described there. The merged tree passes G3 (74 Python tests),
-G4 (audit exit 0, 16/16), has `App/Resources/vectorstore.db` at 1876 chunks / 39 documents, and ships
-`maxTokens 512`, `prefillStepSize null`, `retrievalTopK 10`, `contextTokenBudget 3000`,
-`historyTokenBudget 350`, `wordsToTokensRatio null`. G1, G2 and G5 need Xcode and a device.
+Merging all sixteen in this order: every merge is clean except 3.4 (resolves as described) and 3.9
+(resolves `contextTokenBudget` to 1500 and `maxTokens` to 120 — see §3.9). The merged tree passes
+G3 (74 Python tests), G4 (audit exit 0, 16/16), has `App/Resources/vectorstore.db` at 1876 chunks /
+39 documents, and ships `maxTokens 120`, `prefillStepSize null`, `retrievalTopK 10`,
+`contextTokenBudget 1500`, `historyTokenBudget 350`, `wordsToTokensRatio null`. G1, G2 and G5 need
+Xcode and a device. Dry-run of branches 1–15 done 2026-09-13; branch 3.9 added 2026-09-14.
 
 ---
 
