@@ -8,8 +8,9 @@ This script mirrors both packing policies in Python so the effect can be measure
 golden set without a device:
 
   old  -- `break` on the first chunk that does not fit (the shipped bug)
-  new  -- `continue` past it, then spend the remainder on the head of the next chunk,
-          guarded by a minimum useful size (final/context-budget-fix)
+  new  -- pack every chunk that fits whole, then spend the remainder on the head of the
+          highest-ranked chunk that did not fit, guarded by a minimum useful size
+          (final/context-budget-fix)
 
 It reports, per configuration: chunks actually sent, estimated context tokens, the share of
 queries that reach the model with ZERO context, and doc-hit@k over what the model actually
@@ -21,10 +22,13 @@ RUN ON THE MAC STUDIO, NOT A LAPTOP. It embeds all 209 golden queries per top-k 
     python -m tools.simulate_context_packing --policy new --top-k 10 --budget 3000
     python -m tools.simulate_context_packing --out ../Docs/test-runs/packing.json
 
-Reference numbers (1238-chunk index, CPU, 2026-09-12):
-    old, k=5,  budget 600,  ratio 1.4 -> 1.52 sent, 22.5% zero-context, doc-hit seen 0.4450
-    new, k=5,  budget 2000, ratio 1.6 -> 3.96 sent,  0.0% zero-context, doc-hit seen 0.6890
-    new, k=10, budget 3000, ratio 1.6 -> 6.40 sent,  0.0% zero-context, doc-hit seen 0.7512
+Reference numbers (1238-chunk index, hybrid retriever, CPU, 2026-09-13):
+    old, k=5,  budget 600,  ratio 1.4  -> 1.52 sent, 22.5% zero-context, doc-hit seen 0.4450
+    new, k=5,  budget 2000, ratio 1.75 -> 4.51 sent,  0.0% zero-context, doc-hit seen 0.7416
+    new, k=10, budget 2000, ratio 1.75 -> 6.20 sent,  0.0% zero-context, doc-hit seen 0.7512
+    new, k=10, budget 3000, ratio 1.75 -> 7.50 sent,  0.0% zero-context, doc-hit seen 0.8134
+
+1.75 is Qwen 3.5's measured ratio (ModelCatalog.wordsToTokensRatio); pass each model's own.
 """
 
 from __future__ import annotations
@@ -69,31 +73,45 @@ def pack_old(
     return out, used
 
 
+def _tokens_for_words(words: int, ratio: float) -> int:
+    """Mirrors MedicalChatOrchestrator.tokens(forWords:ratio:)."""
+    return math.ceil(words * ratio)
+
+
+def _head_words(body: str, remaining: int, ratio: float) -> int | None:
+    """Mirrors MedicalChatOrchestrator.head(of:fittingTokens:ratio:): the most words of `body`
+    that, plus the one-word truncation marker, cost at most `remaining`."""
+    allowed = int(remaining / ratio) - 1
+    while allowed >= 1 and _tokens_for_words(allowed + 1, ratio) > remaining:
+        allowed -= 1
+    if allowed < 1 or len(body.split()) <= allowed:
+        return None
+    return allowed
+
+
 def pack_new(
     chunks: list[str], text: dict[str, str], budget: int, ratio: float
 ) -> tuple[list[str], int]:
-    """Mirrors the Swift applyContextBudget on final/context-budget-fix."""
+    """Mirrors the Swift applyContextBudget on final/context-budget-fix: every chunk that fits
+    whole, in rank order; then the remainder spent on the head of the highest-ranked chunk that
+    did not fit, kept at its rank."""
     if budget <= 0:
         return [], 0
-    used, out = 0, []
+    used, fits, first_skipped = 0, set(), None
     for cid in chunks:
-        body = text.get(cid, "")
-        cost = estimate_tokens(body, ratio)
+        cost = estimate_tokens(text.get(cid, ""), ratio)
         if used + cost <= budget:
             used += cost
-            out.append(cid)
-            continue
-        remaining = budget - used
-        if remaining < MIN_USEFUL_CHUNK_TOKENS:
-            continue
-        allowed_words = int(remaining / ratio)
-        words = body.split()
-        if allowed_words <= 0 or len(words) <= allowed_words:
-            continue
-        used += estimate_tokens(" ".join(words[:allowed_words]), ratio)
-        out.append(cid)
-        break
-    return out, used
+            fits.add(cid)
+        elif first_skipped is None:
+            first_skipped = cid
+    remaining = budget - used
+    if first_skipped is not None and remaining >= MIN_USEFUL_CHUNK_TOKENS:
+        allowed = _head_words(text.get(first_skipped, ""), remaining, ratio)
+        if allowed is not None:
+            used += _tokens_for_words(allowed + 1, ratio)
+            fits.add(first_skipped)
+    return [cid for cid in chunks if cid in fits], used
 
 
 def main() -> None:
@@ -178,7 +196,7 @@ def main() -> None:
                     }
                     rows.append(row)
                     print(
-                        f"{policy:<7}{k:>4}{budget:>8}{ratio:>7.1f}{row['chunks_sent']:>7.2f}"
+                        f"{policy:<7}{k:>4}{budget:>8}{ratio:>7.2f}{row['chunks_sent']:>7.2f}"
                         f"{row['context_tokens']:>9.0f}{row['zero_context_rate']:>9.1%}{row['doc_hit_seen']:>14.4f}"
                     )
 
