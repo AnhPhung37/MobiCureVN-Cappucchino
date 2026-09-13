@@ -117,9 +117,18 @@ final class MedicalChatOrchestrator {
                     profileTerms: confirmedProfile.map(Self.retrievalTerms) ?? []
                 )
                 stageMark = Self.logStage("2 · RAG retrieval", since: stageMark)
-                // Surface retrieved sources so the UI can show citations without a
-                // second, redundant retrieval pass.
-                onSourcesRetrieved?(retrievedContext.sources)
+                // Narrow retrieval to what the context budget lets the model read BEFORE anything
+                // describes it. The prompt's Sources list, the citation cards and the output
+                // guardrail all receive this packed context, so none of them can name a document
+                // whose passage was packed out — a citation the answer cannot be based on.
+                let packedContext = Self.packed(
+                    retrievedContext,
+                    budget: Self.contextTokenBudget,
+                    ratio: Self.wordsToTokensRatio
+                )
+                // Surface the sources so the UI can show citations without a second,
+                // redundant retrieval pass.
+                onSourcesRetrieved?(packedContext.sources)
 
                 // Step 3: Build enriched prompt with retrieved context, plus any facts the
                 // user has stated earlier this session. Injecting the facts here (rather than
@@ -128,7 +137,7 @@ final class MedicalChatOrchestrator {
                 let rememberedFacts = await factStore.promptBlock(for: conversationId)
                 let enrichedPrompt = buildEnrichedPrompt(
                     userQuery: sanitizedQuery,
-                    context: retrievedContext,
+                    context: packedContext,
                     history: conversationHistory,
                     rememberedFacts: rememberedFacts,
                     confirmedProfile: confirmedProfile,
@@ -173,7 +182,7 @@ final class MedicalChatOrchestrator {
                 // Step 5: Final Output GuardRail Check
                 let outputResult = outputGuardRail.validate(
                     response: accumulatedResponse,
-                    retrievedContext: retrievedContext,
+                    retrievedContext: packedContext,
                     responseLanguage: responseLanguage
                 )
                 stageMark = Self.logStage("5 · OutputGuardRail", since: stageMark)
@@ -350,9 +359,13 @@ final class MedicalChatOrchestrator {
     /// a relaunch, not a rebuild. See `Docs/BE/inferenceTuning.md`.
     private static var tuning: InferenceTuning.Prompt { InferenceTuning.current.prompt }
 
-    // Token budget for RAG context injected into the system prompt.
-    // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
-    private static let contextTokenBudget = 600
+    // Token budget for RAG context injected into the system prompt, bounding prefill time.
+    //
+    // Read from `InferenceTuning` like every other prompt budget. It used to be a hardcoded
+    // 600 here while `InferenceTuning.Prompt.contextTokenBudget` existed and was parsed from
+    // the JSON — so editing the JSON silently did nothing, and the value was never actually
+    // tunable. See Docs/BE/Context-Budget-Finding.md.
+    private static var contextTokenBudget: Int { tuning.contextTokenBudget }
     // Token budget for the persisted patient profile block. Smaller than the RAG budget —
     // these are compact structured facts, not prose.
     private static let profileTokenBudget = 200
@@ -401,8 +414,12 @@ final class MedicalChatOrchestrator {
           after it once.
         """ : ""
 
-        // Apply token budget to RAG chunks so the system prompt stays compact.
-        let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+        // Apply token budget to RAG chunks so the system prompt stays compact. processQuery has
+        // already packed the context (see `packed`); packing is idempotent, so doing it again
+        // here only matters for a caller that passes an unpacked context.
+        let budgetedChunks = Self.applyContextBudget(
+            context.chunks, budget: Self.contextTokenBudget, ratio: Self.wordsToTokensRatio
+        )
 
         // The confirmed, cross-conversation profile — durable baseline, persists across chats.
         // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install), so a
@@ -609,18 +626,122 @@ final class MedicalChatOrchestrator {
         return parts.prefix(words).joined(separator: " ") + " […]"
     }
 
-    private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
-        var usedTokens = 0
-        var selected: [ContextChunk] = []
+    /// Packs relevance-ranked chunks into `budget` estimated tokens, in two passes:
+    ///
+    ///   1. every chunk that fits whole, in rank order — a chunk that does not fit is skipped,
+    ///      so it costs only itself;
+    ///   2. whatever budget is left goes to the head of the highest-ranked chunk that was
+    ///      skipped, kept at its own rank and marked as cut.
+    ///
+    /// This used to `break` on the first chunk that did not fit, which discarded every chunk
+    /// behind it however small. Because the corpus contains chunks far larger than any sane
+    /// budget (18% exceed 512 tokens; the largest is ~13.6k), a single oversized chunk landing
+    /// at rank 1 emptied the whole context — and the model answered a medical question from
+    /// parametric memory with no sources at all. Measured over the 209-query golden set, that
+    /// happened on **22.5% of queries**, and only 1.52 of 5 retrieved chunks reached the model.
+    /// The first fix spent the remainder on that oversized chunk *before* looking further, so a
+    /// huge chunk at rank 1 still evicted every small chunk behind it; the partial fill now
+    /// comes last.
+    ///
+    /// The result never exceeds `budget` under `estimateTokens(_:ratio:)`, which also makes
+    /// packing idempotent. `static` and internal rather than private: it depends on no instance
+    /// state, and a unit test can exercise it directly instead of standing up an orchestrator.
+    static func applyContextBudget(_ chunks: [ContextChunk], budget: Int, ratio: Double) -> [ContextChunk] {
+        guard budget > 0 else { return [] }
 
-        for chunk in chunks {
-            let estimate = Self.estimateTokens(chunk.content)
-            if usedTokens + estimate > budget { break }
-            usedTokens += estimate
-            selected.append(chunk)
+        var usedTokens = 0
+        var fitsWhole = [Bool](repeating: false, count: chunks.count)
+        var firstSkipped: Int?
+        for (index, chunk) in chunks.enumerated() {
+            let estimate = estimateTokens(chunk.content, ratio: ratio)
+            if usedTokens + estimate <= budget {
+                usedTokens += estimate
+                fitsWhole[index] = true
+            } else if firstSkipped == nil {
+                firstSkipped = index
+            }
         }
 
-        return selected
+        // A chunk skipped in pass 1 still does not fit whole: the budget only filled up since.
+        var partial: (index: Int, chunk: ContextChunk)?
+        let remaining = budget - usedTokens
+        if let index = firstSkipped,
+           remaining >= minimumUsefulChunkTokens,
+           let head = head(of: chunks[index].content, fittingTokens: remaining, ratio: ratio) {
+            let chunk = chunks[index]
+            partial = (
+                index,
+                ContextChunk(
+                    id: chunk.id,
+                    content: head,
+                    section: chunk.section,
+                    sourceID: chunk.sourceID,
+                    relevanceScore: chunk.relevanceScore
+                )
+            )
+        }
+
+        return chunks.indices.compactMap { index in
+            if fitsWhole[index] { return chunks[index] }
+            if let partial, partial.index == index { return partial.chunk }
+            return nil
+        }
+    }
+
+    /// The retrieved context narrowed to what fits `budget`, with `sources` narrowed to the
+    /// documents the surviving chunks came from (retrieval order preserved).
+    static func packed(_ context: RetrievedContext, budget: Int, ratio: Double) -> RetrievedContext {
+        let chunks = applyContextBudget(context.chunks, budget: budget, ratio: ratio)
+        let documentsSeen = Set(chunks.map(\.sourceID))
+        return RetrievedContext(
+            chunks: chunks,
+            confidenceScore: context.confidenceScore,
+            sources: context.sources.filter { documentsSeen.contains($0.id) }
+        )
+    }
+
+    /// Below this, a partial passage is more likely to mislead than to ground: a sentence or
+    /// two torn out of a clinical document reads as authoritative while carrying no usable
+    /// fact. Better to leave the budget unspent.
+    private static let minimumUsefulChunkTokens = 80
+
+    /// Appended to a cut passage so the model does not treat the end of the text as the end of
+    /// the guidance. It is one whitespace word, and `head` pays for it.
+    private static let truncationMarker = " […]"
+
+    /// The longest head of `text` that, with the truncation marker, costs at most `tokens` under
+    /// `estimateTokens` — or `nil` when not even one word fits.
+    ///
+    /// Words are counted exactly as `estimateTokens` counts them (any whitespace, same rounding),
+    /// and the cut is made in the original string, so line breaks and list structure inside the
+    /// head survive. An earlier version split on " " only: a passage with line breaks then held
+    /// fewer "words" than the estimate saw, and the whole chunk could come back uncut and over
+    /// budget.
+    private static func head(of text: String, fittingTokens budget: Int, ratio: Double) -> String? {
+        var allowedWords = Int(Double(budget) / ratio) - 1
+        // Guard against floating-point rounding in the division: the bound is checked with the
+        // exact arithmetic `estimateTokens` uses, counting the marker as one word.
+        while allowedWords >= 1 && tokens(forWords: allowedWords + 1, ratio: ratio) > budget {
+            allowedWords -= 1
+        }
+        guard allowedWords >= 1 else { return nil }
+
+        var wordsSeen = 0
+        var inWord = false
+        for index in text.indices {
+            if text[index].isWhitespace {
+                if inWord && wordsSeen == allowedWords {
+                    return String(text[..<index]) + truncationMarker
+                }
+                inWord = false
+            } else if !inWord {
+                inWord = true
+                wordsSeen += 1
+            }
+        }
+        // The text has no more than `allowedWords` words, so it was never over budget; the
+        // packer only asks for heads of chunks that did not fit, and does not use this.
+        return nil
     }
 
     /// Selects as many of the most recent messages as fit within `budget`, condensing assistant
@@ -636,7 +757,7 @@ final class MedicalChatOrchestrator {
 
         for message in history.reversed() {
             let replayable = Self.condenseForReplay(message)
-            let estimate = Self.estimateTokens(replayable.content)
+            let estimate = Self.estimateTokens(replayable.content, ratio: Self.wordsToTokensRatio)
             if usedTokens + estimate > budget { break }
             usedTokens += estimate
             selected.append(replayable)
@@ -697,22 +818,29 @@ final class MedicalChatOrchestrator {
 
     /// Words-to-tokens ratio used to convert a cheap word count into a token estimate.
     ///
-    /// English medical prose runs roughly 1.3–1.5 subword tokens per whitespace word on a
-    /// Qwen-class tokenizer (clinical vocabulary and numbers split more than everyday text),
-    /// and Vietnamese runs higher still. 1.4 is the middle of that range.
-    private static var wordsToTokensRatio: Double { tuning.wordsToTokensRatio }
+    /// Tokens per whitespace word for the model that is answering: its measured value
+    /// (`ModelCatalog.wordsToTokensRatio`, produced by `Pipeline/tools/measure_token_ratio.py`)
+    /// unless `InferenceTuning` pins one for a sweep. Tokenizers differ enough (Llama 3.2 1.61
+    /// vs Phi-3.5 2.04 tokens/word on this corpus) that one global value would overshoot the
+    /// budget on one model and starve the context on another.
+    private static var wordsToTokensRatio: Double {
+        tuning.wordsToTokensRatio ?? AppConfig.selectedModel.wordsToTokensRatio
+    }
 
-    /// Rough token estimate. Deliberately not the real tokenizer — this runs on every turn for
-    /// budgeting only, where being cheap matters more than being exact.
+    /// Rough token estimate: whitespace words × `ratio`, rounded up. Deliberately not the real
+    /// tokenizer — this runs on every turn for budgeting only, where being cheap matters more
+    /// than being exact; the measured `ratio` is what makes the budgets mean tokens.
     ///
     /// It used to return the raw word count, which meant the "600-token" context budget was
-    /// really letting through ~840 tokens and the "500-token" history budget ~700. The budgets
-    /// now mean what they say, which does trim what reaches the model — that is the intended
-    /// prefill saving, and it is the number to re-tune (not the estimator) if retrieval quality
-    /// drops. See Docs/BE/optimizationChecklist.md B2.6.
-    private static func estimateTokens(_ text: String) -> Int {
-        let words = text.split { $0.isWhitespace }.count
-        return Int((Double(words) * wordsToTokensRatio).rounded(.up))
+    /// really letting through ~840 tokens and the "500-token" history budget ~700.
+    static func estimateTokens(_ text: String, ratio: Double) -> Int {
+        tokens(forWords: text.split { $0.isWhitespace }.count, ratio: ratio)
+    }
+
+    /// The one place the words → tokens arithmetic lives, so the packer's cut and the estimate
+    /// can never round differently.
+    private static func tokens(forWords words: Int, ratio: Double) -> Int {
+        Int((Double(words) * ratio).rounded(.up))
     }
 
 

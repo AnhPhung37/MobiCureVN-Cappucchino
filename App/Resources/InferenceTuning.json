@@ -12,10 +12,10 @@
     "prefillStepSize": null
   },
   "prompt": {
-    "contextTokenBudget": 600,
+    "contextTokenBudget": 2000,
     "historyTokenBudget": 500,
     "assistantReplayWordCap": 60,
-    "wordsToTokensRatio": 1.4
+    "wordsToTokensRatio": null
   },
   "vision": {
     "inputSide": 512,
