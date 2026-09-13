@@ -1,7 +1,7 @@
 {
-  "profileName": "bundled-default",
+  "profileName": "latency-optimized",
   "generation": {
-    "maxTokens": 1024,
+    "maxTokens": 120,
     "temperature": 0.3,
     "topP": 0.85,
     "auxiliaryMaxTokens": 64,
@@ -12,7 +12,7 @@
     "prefillStepSize": null
   },
   "prompt": {
-    "contextTokenBudget": 600,
+    "contextTokenBudget": 1500,
     "historyTokenBudget": 500,
     "assistantReplayWordCap": 60,
     "wordsToTokensRatio": 1.4
