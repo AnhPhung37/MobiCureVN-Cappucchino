@@ -2,18 +2,29 @@
 .DS_Store
 *.swp
 
-# Xcode
-*.xcodeproj
+# Xcode — per-user state is ignored; the project file and the package lockfile are tracked.
+# (A bare `*.xcodeproj` rule ignored the lockfile inside the project too, so it could never be
+# committed whatever the note below said.) Order matters: each negation re-includes one level.
 *.xcworkspace
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/project.xcworkspace/
+*.xcodeproj/project.xcworkspace/*
+!*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+!*.xcodeproj/project.xcworkspace/xcshareddata/
+*.xcodeproj/project.xcworkspace/xcshareddata/*
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 xcuserdata/
 DerivedData/
 
 # Swift Package Manager
 .build/
 .swiftpm/
-# Package.resolved is intentionally NOT ignored: the MLX packages are pinned only to a major
-# version (upToNextMajorVersion), so without the lockfile two machines can resolve different
-# minor versions — which makes on-device performance numbers non-reproducible across the team.
+# Package.resolved is intentionally NOT ignored: the MLX packages are pinned to a minor version
+# (upToNextMinorVersion), so without the lockfile two machines can still resolve different patch
+# versions — which makes on-device performance numbers non-reproducible across the team.
 # Commit the file Xcode generates at
 # MobiCureVN.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 

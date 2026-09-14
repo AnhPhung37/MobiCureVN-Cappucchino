@@ -5,6 +5,7 @@
 #   parse   raw_pdfs/         → parsed_markdowns/
 #   clean   parsed_markdowns/ → cleaned_markdowns/
 #   chunk   cleaned_markdowns/ → neural_chunks/ and/or semantic_chunks/
+#   split   {chunker}_chunks/ in place: pieces over the embedder window are split
 #   enrich  {chunker}_chunks/ → enriched_chunks/
 #   index   enriched_chunks/  → vectorstore.db
 #
@@ -21,7 +22,7 @@ cd "$(dirname "$0")"
 
 FORCE=""
 CHUNKER="neural"
-ALL_STAGES=(parse clean chunk enrich index)
+ALL_STAGES=(parse clean chunk split enrich index)
 STAGES=("${ALL_STAGES[@]}")
 
 usage() {
@@ -61,6 +62,13 @@ for stage in "${STAGES[@]}"; do
         chunk)
             echo -e "\n=== Stage 3: Chunk ==="
             python ingestion/chunk.py --chunker "$CHUNKER" $FORCE
+            ;;
+        split)
+            # Always after chunk: re-chunking restores oversized chunks, and an index built
+            # from them embeds only each chunk's first 512 tokens.
+            SPLIT_FROM=$([[ "$CHUNKER" == "semantic" ]] && echo "semantic" || echo "neural")
+            echo -e "\n=== Stage 3b: Split oversized chunks (data/${SPLIT_FROM}_chunks/) ==="
+            python ingestion/split_oversized.py --dir "data/${SPLIT_FROM}_chunks"
             ;;
         enrich)
             # When --chunker both, enrich from neural (the primary pipeline)

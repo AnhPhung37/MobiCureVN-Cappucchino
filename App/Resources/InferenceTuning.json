@@ -1,7 +1,7 @@
 {
   "profileName": "bundled-default",
   "generation": {
-    "maxTokens": 1024,
+    "maxTokens": 512,
     "temperature": 0.3,
     "topP": 0.85,
     "auxiliaryMaxTokens": 64,
@@ -12,10 +12,11 @@
     "prefillStepSize": null
   },
   "prompt": {
-    "contextTokenBudget": 600,
-    "historyTokenBudget": 500,
+    "retrievalTopK": 10,
+    "contextTokenBudget": 3000,
+    "historyTokenBudget": 350,
     "assistantReplayWordCap": 60,
-    "wordsToTokensRatio": 1.4
+    "wordsToTokensRatio": null
   },
   "vision": {
     "inputSide": 512,

@@ -63,35 +63,63 @@ nonisolated struct SessionFactExtractor {
 
     // MARK: - Gate
 
-    /// Cues that a turn may state something durable about the patient, in Vietnamese and
-    /// English. Matched case-insensitively as substrings, deliberately over-inclusively: a
-    /// false positive costs one generation that returns `[]` (exactly today's behaviour), while
-    /// a false negative silently forgets a fact — so this list errs toward running.
+    /// Whether `text` may state something durable about the patient — the deterministic gate in
+    /// front of both post-answer LLM passes (this extractor and `ProfileUpdateExtractor`).
     ///
-    /// `MedicalChatOrchestrator` calls this with the translated ENGLISH text, so the English
-    /// cues carry the weight in practice. The Vietnamese cues (with and without diacritics,
-    /// since patients type both) are here because nothing in the type's signature enforces
-    /// that language, and a caller passing original-language text must not silently lose facts.
-    private static let disclosureCues: [String] = [
-        // Vietnamese — self-reference and possession
-        "tôi", "toi ", "tui", "mình", "minh ", "em ", "cháu", "chau ", "con ",
-        "của tôi", "cua toi", "nhà tôi", "tên", "ten toi", "tuổi", "tuoi",
-        // Vietnamese — clinical self-report
-        "bị", "bi ", "dị ứng", "di ung", "đang dùng", "dang dung", "đang uống", "dang uong",
-        "vừa mổ", "vua mo", "phẫu thuật", "phau thuat", "mổ", "hậu môn nhân tạo",
-        // English — self-reference
-        "i'm", "i am", "im ", "my ", "me ", "i've", "i have", "i had", "i was",
-        // English — clinical self-report
-        "allerg", "diagnos", "surgery", "operation", "stoma", "taking ", "prescribed",
-        "years old", "year-old",
-    ]
-
-    /// Whether `text` looks like it could state a durable fact about the patient. Purely
-    /// deterministic — no model call — so a turn that is plainly a question ("what should I
-    /// eat?" still matches on "i " forms; "khi nào nên tái khám?" does not) skips the pass.
+    /// Matched on whole WORDS and word sequences, not substrings. The first version matched
+    /// substrings, so "my " fired inside "urostomy ", "me " inside "syndrome " and "time ", and
+    /// topic words ("stoma", "surgery", "hậu môn nhân tạo") fired on every question that merely
+    /// named the topic: on the golden set it ran both passes for 78 of 209 plain questions, which
+    /// is barely a gate. Cues are now self-reference and self-report only, so a question that
+    /// names a topic without saying anything about the asker skips.
+    ///
+    /// Still deliberately over-inclusive — a false positive costs one generation that returns
+    /// `[]`, a false negative silently forgets a fact — which is why Vietnamese self-report verbs
+    /// that usually drop their subject ("bị đau bụng", "mới mổ tuần trước") count on their own.
+    ///
+    /// `MedicalChatOrchestrator` calls this with the translated ENGLISH text, so the English cues
+    /// carry the weight in practice. The Vietnamese cues (with and without diacritics, since
+    /// patients type both) are here because nothing in the signature enforces that language.
+    /// `Pipeline/tools/measure_aux_gate.py` parses this list and reports the fire rate.
     static func statesDurableFact(_ text: String) -> Bool {
-        let haystack = text.lowercased()
-        return disclosureCues.contains { haystack.contains($0) }
+        let words = gateWords(in: text)
+        guard !words.isEmpty else { return false }
+        return disclosureCues.contains { cue in
+            guard cue.count <= words.count else { return false }
+            return (0...(words.count - cue.count)).contains { start in
+                cue.indices.allSatisfy { words[start + $0] == cue[$0] }
+            }
+        }
+    }
+
+    /// Each cue is one word, or a sequence of adjacent words.
+    private static let disclosureCues: [[String]] = [
+        // Vietnamese — self-reference (with and without diacritics)
+        "tôi", "toi", "tui", "mình", "minh", "em", "cháu", "chau", "tên tôi", "ten toi",
+        "tuổi", "tuoi",
+        // Vietnamese — self-report, usually with the subject dropped
+        "bị", "bi", "dị ứng", "di ung", "đang dùng", "dang dung", "đang uống", "dang uong",
+        "đang điều trị", "dang dieu tri", "được chẩn đoán", "duoc chan doan",
+        "đã mổ", "da mo", "mới mổ", "moi mo", "vừa mổ", "vua mo",
+        "đã phẫu thuật", "da phau thuat", "mới phẫu thuật", "moi phau thuat",
+        "vừa phẫu thuật", "vua phau thuat",
+        // English — self-reference
+        "i'm", "im", "i am", "my", "i've", "i have", "i had", "i was", "i got", "i take", "i use",
+        // English — self-report with the subject dropped
+        "allergic to", "diagnosed with", "was prescribed", "been prescribed", "taking",
+        "years old", "year old",
+    ].map { $0.split(separator: " ").map(String.init) }
+
+    /// Lowercased words of `text` — letters, digits and in-word apostrophes — in NFC, so a
+    /// decomposed "ô" from some keyboards matches the precomposed cue, and "year-old" reads as
+    /// "year old".
+    private static func gateWords(in text: String) -> [String] {
+        text.precomposedStringWithCanonicalMapping
+            .lowercased()
+            .replacingOccurrences(of: "\u{2019}", with: "'")
+            .split { !($0.isLetter || $0.isNumber || $0 == "'") }
+            .map { $0.trimmingCharacters(in: CharacterSet(charactersIn: "'")) }
+            .filter { !$0.isEmpty }
     }
 
     // MARK: - Private

@@ -117,9 +117,18 @@ final class MedicalChatOrchestrator {
                     profileTerms: confirmedProfile.map(Self.retrievalTerms) ?? []
                 )
                 stageMark = Self.logStage("2 · RAG retrieval", since: stageMark)
-                // Surface retrieved sources so the UI can show citations without a
-                // second, redundant retrieval pass.
-                onSourcesRetrieved?(retrievedContext.sources)
+                // Narrow retrieval to what the context budget lets the model read BEFORE anything
+                // describes it. The prompt's Sources list, the citation cards and the output
+                // guardrail all receive this packed context, so none of them can name a document
+                // whose passage was packed out — a citation the answer cannot be based on.
+                let packedContext = Self.packed(
+                    retrievedContext,
+                    budget: Self.contextTokenBudget,
+                    ratio: Self.wordsToTokensRatio
+                )
+                // Surface the sources so the UI can show citations without a second,
+                // redundant retrieval pass.
+                onSourcesRetrieved?(packedContext.sources)
 
                 // Step 3: Build enriched prompt with retrieved context, plus any facts the
                 // user has stated earlier this session. Injecting the facts here (rather than
@@ -128,7 +137,7 @@ final class MedicalChatOrchestrator {
                 let rememberedFacts = await factStore.promptBlock(for: conversationId)
                 let enrichedPrompt = buildEnrichedPrompt(
                     userQuery: sanitizedQuery,
-                    context: retrievedContext,
+                    context: packedContext,
                     history: conversationHistory,
                     rememberedFacts: rememberedFacts,
                     confirmedProfile: confirmedProfile,
@@ -150,8 +159,8 @@ final class MedicalChatOrchestrator {
                 // model drifted — a deterministic check, not another LLM call.
                 // Use the budget-trimmed history from EnrichedPrompt, not the raw conversationHistory,
                 // so the total prompt length stays within the model's sweet spot.
-                let (accumulatedResponse, generationStats) = await Self.accumulate(
-                    stream: llmService.stream(request: LLMRequest(
+                let (generatedResponse, completion, generationStats) = await Self.accumulate(
+                    events: llmService.streamEvents(request: LLMRequest(
                         systemPrompt: enrichedPrompt.systemPrompt,
                         userMessage: enrichedPrompt.userMessage,
                         conversationHistory: enrichedPrompt.history,
@@ -159,8 +168,15 @@ final class MedicalChatOrchestrator {
                     )),
                     previewingTo: continuation
                 )
+                // An answer cut off at maxTokens has lost its ending, which is where the model puts
+                // the consult-your-provider disclaimer. Say it was cut and restore the disclaimer
+                // before the guardrail — or the patient — sees it.
+                let accumulatedResponse = Self.completingTruncatedAnswer(
+                    generatedResponse, completion: completion, language: responseLanguage
+                )
                 stageMark = Self.logStage(
-                    "4 · LLM generation", since: stageMark, detail: generationStats.summary
+                    "4 · LLM generation", since: stageMark,
+                    detail: generationStats.summary + (completion == .truncated ? ", truncated at maxTokens" : "")
                 )
 
                 // The complete answer is patient-facing medical text derived from the user's own
@@ -173,7 +189,7 @@ final class MedicalChatOrchestrator {
                 // Step 5: Final Output GuardRail Check
                 let outputResult = outputGuardRail.validate(
                     response: accumulatedResponse,
-                    retrievedContext: retrievedContext,
+                    retrievedContext: packedContext,
                     responseLanguage: responseLanguage
                 )
                 stageMark = Self.logStage("5 · OutputGuardRail", since: stageMark)
@@ -190,14 +206,26 @@ final class MedicalChatOrchestrator {
                     continuation.yield(.final(accumulatedResponse))
                 }
 
+                // Steps 6 and 7 share one deterministic gate: a turn that says nothing about the
+                // patient costs no generation in either pass, so the next message does not queue
+                // behind two generations that could only return nothing. Evaluated once here so
+                // the stage log reports what actually ran; both extractors also gate internally
+                // for any other caller.
+                let turnMayStateFact = SessionFactExtractor.statesDurableFact(sanitizedQuery)
+
                 // Step 6: Extract durable facts the user stated this turn and merge them into
                 // the session store, so they're available to inject on later turns. Runs after
                 // the response is delivered so it never delays the answer the user is waiting
                 // on; a failed extraction just yields no new facts (fail-closed).
-                if !Task.isCancelled {
+                if !Task.isCancelled, turnMayStateFact {
                     let newFacts = await factExtractor.extract(from: sanitizedQuery, using: llmService)
                     await factStore.merge(newFacts, into: conversationId)
                     stageMark = Self.logStage("6 · Fact extraction (LLM)", since: stageMark)
+                } else if !Task.isCancelled {
+                    stageMark = Self.logStage(
+                        "6 · Fact extraction", since: stageMark,
+                        detail: "skipped — turn states no durable fact"
+                    )
                 }
 
                 // Step 7: propose durable, cross-conversation profile updates from this turn,
@@ -205,7 +233,7 @@ final class MedicalChatOrchestrator {
                 // writes the profile directly — proposals are staged for explicit patient
                 // confirmation (see ProfileUpdateRepository). Runs after the answer is
                 // delivered, same rationale as Step 6.
-                if !Task.isCancelled, let currentProfile = confirmedProfile {
+                if !Task.isCancelled, turnMayStateFact, let currentProfile = confirmedProfile {
                     let proposals = await profileUpdateExtractor.extract(
                         from: sanitizedQuery, currentProfile: currentProfile, using: llmService
                     )
@@ -234,7 +262,9 @@ final class MedicalChatOrchestrator {
                 } else if !Task.isCancelled {
                     _ = Self.logStage(
                         "7 · Profile update proposals", since: stageMark,
-                        detail: "skipped — profile fetch failed"
+                        detail: turnMayStateFact
+                            ? "skipped — profile fetch failed"
+                            : "skipped — turn states no durable fact"
                     )
                 }
 
@@ -282,15 +312,20 @@ final class MedicalChatOrchestrator {
     /// The previews are the raw decoder output — no guardrail has run yet. They are display
     /// only; the caller replaces them with a `.final` once Step 5 has validated the whole thing.
     private static func accumulate(
-        stream: AsyncStream<String>,
+        events: AsyncStream<LLMStreamEvent>,
         previewingTo continuation: AsyncStream<ChatStreamEvent>.Continuation
-    ) async -> (text: String, stats: GenerationStats) {
+    ) async -> (text: String, completion: LLMCompletion, stats: GenerationStats) {
         let start = DispatchTime.now()
         var firstTokenAt: DispatchTime?
         var lastPreviewAt = start
         var result = ""
         var chunkCount = 0
-        for await token in stream {
+        var completion = LLMCompletion.unknown
+        for await event in events {
+            guard case let .text(token) = event else {
+                if case let .completed(reason) = event { completion = reason }
+                continue
+            }
             if firstTokenAt == nil { firstTokenAt = DispatchTime.now() }
             result += token
             chunkCount += 1
@@ -308,7 +343,24 @@ final class MedicalChatOrchestrator {
             total: seconds(from: start, to: end),
             chunkCount: chunkCount
         )
-        return (result, stats)
+        return (result, completion, stats)
+    }
+
+    /// `text` with a notice appended when generation stopped at the token ceiling.
+    ///
+    /// The model ends an answer with the consult-your-provider disclaimer, so a cut answer is
+    /// exactly the one missing it: the notice says the answer is incomplete and restores the
+    /// disclaimer in the reply language. Anything but `.truncated` is returned unchanged.
+    static func completingTruncatedAnswer(
+        _ text: String,
+        completion: LLMCompletion,
+        language: DetectedLanguage
+    ) -> String {
+        guard completion == .truncated else { return text }
+        let notice = language.requiresTranslation
+            ? "…\n\n_(Câu trả lời đã bị cắt vì đạt giới hạn độ dài — bạn có thể hỏi tiếp để xem phần còn lại. Hãy hỏi lại nhân viên y tế về những điều quan trọng với sức khỏe của bạn.)_"
+            : "…\n\n_(This answer was cut off at the length limit — ask me to continue for the rest. Please check anything important for your health with your healthcare provider.)_"
+        return text + notice
     }
 
     // MARK: - Stage Timing
@@ -338,8 +390,27 @@ final class MedicalChatOrchestrator {
         Double(end.uptimeNanoseconds &- start.uptimeNanoseconds) / 1_000_000_000
     }
 
-    private struct EnrichedPrompt {
-        let systemPrompt: String
+    struct EnrichedPrompt {
+        /// The part of the system prompt that does not change from turn to turn: the language
+        /// directive, the fixed persona and constraints, the confirmed profile, and the
+        /// context-language note. It varies only when the patient switches language or edits
+        /// their profile.
+        ///
+        /// Kept separate from `volatileSuffix` so prefix stability is a property the tests can
+        /// assert rather than a claim in a comment — a prefix KV cache can only reuse a prefix
+        /// that is byte-identical between turns, and one stray interpolation silently defeats it.
+        let stablePrefix: String
+
+        /// Everything that changes every turn: retrieved chunks, their sources and confidence,
+        /// session facts, and the no-context instruction.
+        let volatileSuffix: String
+
+        /// What the model actually receives: the two halves concatenated with nothing between
+        /// them, which is byte-for-byte the prompt the single interpolated string produced before
+        /// the split (a separator here would change every prompt the model sees). Order is part of
+        /// the contract: the stable half must come first or there is no reusable prefix.
+        var systemPrompt: String { stablePrefix + volatileSuffix }
+
         let userMessage: String
         /// History trimmed to `historyTokenBudget`, with assistant turns condensed.
         let history: [ChatMessage]
@@ -350,9 +421,13 @@ final class MedicalChatOrchestrator {
     /// a relaunch, not a rebuild. See `Docs/BE/inferenceTuning.md`.
     private static var tuning: InferenceTuning.Prompt { InferenceTuning.current.prompt }
 
-    // Token budget for RAG context injected into the system prompt.
-    // Keeps the total prompt size reasonable for a 3B model, bounding prefill time.
-    private static let contextTokenBudget = 600
+    // Token budget for RAG context injected into the system prompt, bounding prefill time.
+    //
+    // Read from `InferenceTuning` like every other prompt budget. It used to be a hardcoded
+    // 600 here while `InferenceTuning.Prompt.contextTokenBudget` existed and was parsed from
+    // the JSON — so editing the JSON silently did nothing, and the value was never actually
+    // tunable. See Docs/BE/Context-Budget-Finding.md.
+    private static var contextTokenBudget: Int { tuning.contextTokenBudget }
     // Token budget for the persisted patient profile block. Smaller than the RAG budget —
     // these are compact structured facts, not prose.
     private static let profileTokenBudget = 200
@@ -375,7 +450,9 @@ final class MedicalChatOrchestrator {
     // lists, and disclaimers that make up most of a long answer's length.
     private static var assistantReplayWordCap: Int { tuning.assistantReplayWordCap }
 
-    private func buildEnrichedPrompt(
+    /// Internal, not private, so PrefixStabilityTests can assert that the stable half really
+    /// is stable across turns. Nothing else calls it from outside.
+    func buildEnrichedPrompt(
         userQuery: String,
         context: RetrievedContext,
         history: [ChatMessage],
@@ -401,8 +478,12 @@ final class MedicalChatOrchestrator {
           after it once.
         """ : ""
 
-        // Apply token budget to RAG chunks so the system prompt stays compact.
-        let budgetedChunks = applyContextBudget(context.chunks, budget: Self.contextTokenBudget)
+        // Apply token budget to RAG chunks so the system prompt stays compact. processQuery has
+        // already packed the context (see `packed`); packing is idempotent, so doing it again
+        // here only matters for a caller that passes an unpacked context.
+        let budgetedChunks = Self.applyContextBudget(
+            context.chunks, budget: Self.contextTokenBudget, ratio: Self.wordsToTokensRatio
+        )
 
         // The confirmed, cross-conversation profile — durable baseline, persists across chats.
         // Omitted entirely when nothing has been confirmed yet (e.g. a brand-new install), so a
@@ -455,10 +536,22 @@ final class MedicalChatOrchestrator {
         //   1. languageDirective — changes only when the user switches language
         //   2. Self.invariantSystemPrompt — never changes at runtime
         //   3. everything below — changes every single turn (context, facts, confidence)
-        let systemPrompt = """
+        // The prompt is built as two explicitly separate pieces rather than one interpolation,
+        // because a prefix KV cache can only reuse a prefix that is BYTE-identical between
+        // turns — and "the top of the prompt is stable" was an unverified claim in a comment.
+        // Splitting it makes the claim testable (see PrefixStabilityTests) and gives a future
+        // cache something concrete to key on.
+        //
+        // Stable: varies only when the patient switches language or edits their profile.
+        let stablePrefix = """
         LANGUAGE: \(languageInstruction)
 
-        \(Self.invariantSystemPrompt)\(profileSection)\(contextLanguageNote)\(noContextInstruction)\(memorySection)\(conflictInstruction)
+        \(Self.invariantSystemPrompt)\(profileSection)\(contextLanguageNote)
+        """
+
+        // Volatile: changes every turn — retrieved chunks, session facts, confidence.
+        let volatileSuffix = """
+        \(noContextInstruction)\(memorySection)\(conflictInstruction)
 
         Retrieved Medical Context:
         \(formatContextChunks(budgetedChunks))
@@ -476,53 +569,65 @@ final class MedicalChatOrchestrator {
         // significantly increases prefill time.
         let budgetedHistory = applyHistoryBudget(history, budget: Self.historyTokenBudget)
 
-        return EnrichedPrompt(systemPrompt: systemPrompt, userMessage: userQuery, history: budgetedHistory)
+        return EnrichedPrompt(
+            stablePrefix: stablePrefix,
+            volatileSuffix: volatileSuffix,
+            userMessage: userQuery,
+            history: budgetedHistory
+        )
     }
 
-    /// Segment 2 of the system prompt: persona and constraints that never vary at runtime.
+    /// Segment 2 of the system prompt: the fixed persona and safety constraints, which never vary
+    /// at runtime.
+    ///
+    /// Re-read by the model on every turn, so its length is a per-turn prefill tax. Slimmed from
+    /// 473 to about 315 whitespace words — roughly 270 fewer tokens per turn at Qwen 3.5's
+    /// measured 1.72 tokens per word — by removing restatement, not requirements. The one rule
+    /// deleted outright (answer common health questions from general knowledge when nothing was
+    /// retrieved) is carried by `noContextInstruction`, which is injected precisely when it applies.
     ///
     /// The language directive deliberately does NOT appear here. It used to be stated three
     /// times (opening line, a constraint bullet, and the closing reminder); the middle copy was
     /// dropped because the opening and the reminder are the two positions a small model
-    /// actually attends to, and the third repetition was paying tokens on every turn for the
-    /// same instruction. `LanguageDriftTests` / `OutputGuardRailVietnameseTests` are the
+    /// actually attends to. `LanguageDriftTests` / `OutputGuardRailVietnameseTests` are the
     /// regression check if this turns out to have been load-bearing.
-    private static let invariantSystemPrompt = """
-        You are a warm, supportive medical informational assistant for colorectal cancer patients
-        and their families — many of them elderly or recovering from surgery. Speak naturally and
-        kindly, the way a caring nurse would. Your role is to provide educational health information.
+    ///
+    /// SAFETY-CRITICAL. Any edit changes model behaviour and must be re-validated against
+    /// Docs/BE/Adversarial-Chat-Test-Script.md before shipping — a shorter prompt that drops a
+    /// constraint is not an optimisation. Internal, not private, so SystemPromptConstraintTests
+    /// can assert every safety rule is still present after any future slimming.
+    static let invariantSystemPrompt = """
+        You are a warm, supportive medical information assistant for colorectal cancer patients
+        and their families, many of them elderly or recovering from surgery. Speak kindly and
+        naturally, as a caring nurse would. You provide educational health information.
 
-        CONVERSATIONAL BEHAVIOR:
-        - Patients talk to you like a person, not a search box. Respond naturally to greetings,
-          thank-yous, and small talk ("hello", "thanks, that helps", "how are you").
-        - When a user shares personal details ("I'm John", "I'm 26", "my surgery was last week"),
-          acknowledge them warmly and remember them for the rest of the conversation. Never reject
-          or ignore a message just because it isn't a clinical question.
-        - Treat vague follow-ups ("is that normal?", "what about after a week?", "should I worry?")
-          as continuations of the current health topic.
+        CONVERSATION:
+        - Respond naturally to greetings, thanks and small talk. Patients talk to you like a
+          person, not a search box.
+        - When someone shares a personal detail ("I'm John", "my surgery was last week"),
+          acknowledge it warmly and remember it for the rest of the conversation. Never reject a
+          message for not being a clinical question.
+        - Treat vague follow-ups ("is that normal?", "should I worry?") as continuing the current
+          health topic.
 
-        IMPORTANT CONSTRAINTS:
-        - You are NOT a licensed physician and cannot provide medical diagnosis or treatment plans.
-        - Prefer the Retrieved Medical Context below when it is available — cite it and use it as the primary source.
-        - The Retrieved Medical Context describes colorectal care in general; it is NOT this patient's
-          record. Never state or imply that they have had a particular procedure, have a stoma, or are on
-          a particular treatment unless they said so in this conversation or it is listed under known facts.
-        - When the context is specific to a procedure or device the patient has not mentioned, keep that
-          guidance conditional ("if you have had bowel surgery…", "if you have a stoma…") instead of
-          asserting it as their situation. This applies to warning signs too — a red flag that only matters
-          for one procedure must be framed for that procedure, not issued as a general alarm.
-        - If the answer would differ materially depending on which procedure the patient had, ask one short
-          clarifying question rather than guessing.
-        - If the Retrieved Medical Context shows '[No relevant medical context found]', you may still answer common health and lifestyle questions (nutrition, diet, hydration, rest, activity) from your general medical knowledge, but clearly label the answer as general guidance and advise the user to confirm with their healthcare provider.
-        - If — and only if — a question is genuinely unrelated to health, medicine, or the patient's care
-          (e.g. coding help, math homework, general trivia), don't refuse coldly. Gently steer back:
-          briefly note that you're here to support their health and recovery, then invite a health
-          question — e.g. "I'm here to help with your health and recovery. Is there anything about your
-          symptoms, treatment, or care I can help with?"
-        - ALWAYS cite your sources when providing medical information.
+        CONSTRAINTS:
+        - You are NOT a licensed physician: no diagnosis, no treatment plans.
+        - Prefer the Retrieved Medical Context below and cite it as your primary source.
+        - That context describes colorectal care in general; it is NOT this patient's record.
+          Never state or imply they have had a procedure, have a stoma, or are on a treatment
+          unless they said so or it appears under known facts.
+        - Keep guidance about anything they have not mentioned conditional ("if you have a
+          stoma…"), warning signs included — a red flag specific to one procedure must be framed
+          for that procedure, not issued as a general alarm.
+        - If the answer would differ materially by procedure, ask one short clarifying question
+          rather than guessing.
+        - If a question is genuinely unrelated to health or care (coding, maths, trivia), do not
+          refuse coldly: note briefly that you are here to support their health and recovery, then
+          invite a health question.
+        - ALWAYS cite your sources for medical information.
         - Never recommend specific dosages confidently.
-        - If the user describes emergency symptoms, immediately recommend calling emergency services.
-        - For medical advice, include a disclaimer that they should consult with a healthcare provider.
+        - If the user describes emergency symptoms, immediately tell them to call emergency services.
+        - When giving medical information, add a short disclaimer to consult their healthcare provider (not needed for greetings or small talk).
         """
 
     /// Formats the confirmed profile as compact bullet lines, prioritized identity → clinical
@@ -609,18 +714,122 @@ final class MedicalChatOrchestrator {
         return parts.prefix(words).joined(separator: " ") + " […]"
     }
 
-    private func applyContextBudget(_ chunks: [ContextChunk], budget: Int) -> [ContextChunk] {
-        var usedTokens = 0
-        var selected: [ContextChunk] = []
+    /// Packs relevance-ranked chunks into `budget` estimated tokens, in two passes:
+    ///
+    ///   1. every chunk that fits whole, in rank order — a chunk that does not fit is skipped,
+    ///      so it costs only itself;
+    ///   2. whatever budget is left goes to the head of the highest-ranked chunk that was
+    ///      skipped, kept at its own rank and marked as cut.
+    ///
+    /// This used to `break` on the first chunk that did not fit, which discarded every chunk
+    /// behind it however small. Because the corpus contains chunks far larger than any sane
+    /// budget (18% exceed 512 tokens; the largest is ~13.6k), a single oversized chunk landing
+    /// at rank 1 emptied the whole context — and the model answered a medical question from
+    /// parametric memory with no sources at all. Measured over the 209-query golden set, that
+    /// happened on **22.5% of queries**, and only 1.52 of 5 retrieved chunks reached the model.
+    /// The first fix spent the remainder on that oversized chunk *before* looking further, so a
+    /// huge chunk at rank 1 still evicted every small chunk behind it; the partial fill now
+    /// comes last.
+    ///
+    /// The result never exceeds `budget` under `estimateTokens(_:ratio:)`, which also makes
+    /// packing idempotent. `static` and internal rather than private: it depends on no instance
+    /// state, and a unit test can exercise it directly instead of standing up an orchestrator.
+    static func applyContextBudget(_ chunks: [ContextChunk], budget: Int, ratio: Double) -> [ContextChunk] {
+        guard budget > 0 else { return [] }
 
-        for chunk in chunks {
-            let estimate = Self.estimateTokens(chunk.content)
-            if usedTokens + estimate > budget { break }
-            usedTokens += estimate
-            selected.append(chunk)
+        var usedTokens = 0
+        var fitsWhole = [Bool](repeating: false, count: chunks.count)
+        var firstSkipped: Int?
+        for (index, chunk) in chunks.enumerated() {
+            let estimate = estimateTokens(chunk.content, ratio: ratio)
+            if usedTokens + estimate <= budget {
+                usedTokens += estimate
+                fitsWhole[index] = true
+            } else if firstSkipped == nil {
+                firstSkipped = index
+            }
         }
 
-        return selected
+        // A chunk skipped in pass 1 still does not fit whole: the budget only filled up since.
+        var partial: (index: Int, chunk: ContextChunk)?
+        let remaining = budget - usedTokens
+        if let index = firstSkipped,
+           remaining >= minimumUsefulChunkTokens,
+           let head = head(of: chunks[index].content, fittingTokens: remaining, ratio: ratio) {
+            let chunk = chunks[index]
+            partial = (
+                index,
+                ContextChunk(
+                    id: chunk.id,
+                    content: head,
+                    section: chunk.section,
+                    sourceID: chunk.sourceID,
+                    relevanceScore: chunk.relevanceScore
+                )
+            )
+        }
+
+        return chunks.indices.compactMap { index in
+            if fitsWhole[index] { return chunks[index] }
+            if let partial, partial.index == index { return partial.chunk }
+            return nil
+        }
+    }
+
+    /// The retrieved context narrowed to what fits `budget`, with `sources` narrowed to the
+    /// documents the surviving chunks came from (retrieval order preserved).
+    static func packed(_ context: RetrievedContext, budget: Int, ratio: Double) -> RetrievedContext {
+        let chunks = applyContextBudget(context.chunks, budget: budget, ratio: ratio)
+        let documentsSeen = Set(chunks.map(\.sourceID))
+        return RetrievedContext(
+            chunks: chunks,
+            confidenceScore: context.confidenceScore,
+            sources: context.sources.filter { documentsSeen.contains($0.id) }
+        )
+    }
+
+    /// Below this, a partial passage is more likely to mislead than to ground: a sentence or
+    /// two torn out of a clinical document reads as authoritative while carrying no usable
+    /// fact. Better to leave the budget unspent.
+    private static let minimumUsefulChunkTokens = 80
+
+    /// Appended to a cut passage so the model does not treat the end of the text as the end of
+    /// the guidance. It is one whitespace word, and `head` pays for it.
+    private static let truncationMarker = " […]"
+
+    /// The longest head of `text` that, with the truncation marker, costs at most `tokens` under
+    /// `estimateTokens` — or `nil` when not even one word fits.
+    ///
+    /// Words are counted exactly as `estimateTokens` counts them (any whitespace, same rounding),
+    /// and the cut is made in the original string, so line breaks and list structure inside the
+    /// head survive. An earlier version split on " " only: a passage with line breaks then held
+    /// fewer "words" than the estimate saw, and the whole chunk could come back uncut and over
+    /// budget.
+    private static func head(of text: String, fittingTokens budget: Int, ratio: Double) -> String? {
+        var allowedWords = Int(Double(budget) / ratio) - 1
+        // Guard against floating-point rounding in the division: the bound is checked with the
+        // exact arithmetic `estimateTokens` uses, counting the marker as one word.
+        while allowedWords >= 1 && tokens(forWords: allowedWords + 1, ratio: ratio) > budget {
+            allowedWords -= 1
+        }
+        guard allowedWords >= 1 else { return nil }
+
+        var wordsSeen = 0
+        var inWord = false
+        for index in text.indices {
+            if text[index].isWhitespace {
+                if inWord && wordsSeen == allowedWords {
+                    return String(text[..<index]) + truncationMarker
+                }
+                inWord = false
+            } else if !inWord {
+                inWord = true
+                wordsSeen += 1
+            }
+        }
+        // The text has no more than `allowedWords` words, so it was never over budget; the
+        // packer only asks for heads of chunks that did not fit, and does not use this.
+        return nil
     }
 
     /// Selects as many of the most recent messages as fit within `budget`, condensing assistant
@@ -636,7 +845,7 @@ final class MedicalChatOrchestrator {
 
         for message in history.reversed() {
             let replayable = Self.condenseForReplay(message)
-            let estimate = Self.estimateTokens(replayable.content)
+            let estimate = Self.estimateTokens(replayable.content, ratio: Self.wordsToTokensRatio)
             if usedTokens + estimate > budget { break }
             usedTokens += estimate
             selected.append(replayable)
@@ -697,22 +906,29 @@ final class MedicalChatOrchestrator {
 
     /// Words-to-tokens ratio used to convert a cheap word count into a token estimate.
     ///
-    /// English medical prose runs roughly 1.3–1.5 subword tokens per whitespace word on a
-    /// Qwen-class tokenizer (clinical vocabulary and numbers split more than everyday text),
-    /// and Vietnamese runs higher still. 1.4 is the middle of that range.
-    private static var wordsToTokensRatio: Double { tuning.wordsToTokensRatio }
+    /// Tokens per whitespace word for the model that is answering: its measured value
+    /// (`ModelCatalog.wordsToTokensRatio`, produced by `Pipeline/tools/measure_token_ratio.py`)
+    /// unless `InferenceTuning` pins one for a sweep. Tokenizers differ enough (Llama 3.2 1.61
+    /// vs Phi-3.5 2.04 tokens/word on this corpus) that one global value would overshoot the
+    /// budget on one model and starve the context on another.
+    private static var wordsToTokensRatio: Double {
+        tuning.wordsToTokensRatio ?? AppConfig.selectedModel.wordsToTokensRatio
+    }
 
-    /// Rough token estimate. Deliberately not the real tokenizer — this runs on every turn for
-    /// budgeting only, where being cheap matters more than being exact.
+    /// Rough token estimate: whitespace words × `ratio`, rounded up. Deliberately not the real
+    /// tokenizer — this runs on every turn for budgeting only, where being cheap matters more
+    /// than being exact; the measured `ratio` is what makes the budgets mean tokens.
     ///
     /// It used to return the raw word count, which meant the "600-token" context budget was
-    /// really letting through ~840 tokens and the "500-token" history budget ~700. The budgets
-    /// now mean what they say, which does trim what reaches the model — that is the intended
-    /// prefill saving, and it is the number to re-tune (not the estimator) if retrieval quality
-    /// drops. See Docs/BE/optimizationChecklist.md B2.6.
-    private static func estimateTokens(_ text: String) -> Int {
-        let words = text.split { $0.isWhitespace }.count
-        return Int((Double(words) * wordsToTokensRatio).rounded(.up))
+    /// really letting through ~840 tokens and the "500-token" history budget ~700.
+    static func estimateTokens(_ text: String, ratio: Double) -> Int {
+        tokens(forWords: text.split { $0.isWhitespace }.count, ratio: ratio)
+    }
+
+    /// The one place the words → tokens arithmetic lives, so the packer's cut and the estimate
+    /// can never round differently.
+    private static func tokens(forWords words: Int, ratio: Double) -> Int {
+        Int((Double(words) * ratio).rounded(.up))
     }
 
 

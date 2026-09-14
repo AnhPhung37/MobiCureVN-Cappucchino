@@ -3,10 +3,11 @@ import Foundation
 import Speech
 
 /// Wraps `SFSpeechRecognizer` + `AVAudioEngine` to turn the microphone into live text for the
-/// chat composer. Prefers on-device recognition when the locale supports it, consistent with the
-/// rest of the app's offline-first design — but unlike the RAG/LLM stack this isn't a hard
-/// guarantee: `SFSpeechRecognizer` silently falls back to the server path when on-device isn't
-/// available for a given language/device.
+/// chat composer. Recognition is on-device ONLY, like the rest of the app's pipeline: a request
+/// that does not require on-device recognition is silently sent to Apple's servers whenever the
+/// locale has no on-device model, which would be patient voice leaving the device (success
+/// criterion #1). Where on-device dictation is unavailable for the language, voice input reports
+/// itself unavailable rather than going remote. `Tools/privacy_audit.sh` §7 checks this.
 @MainActor
 final class SpeechRecognitionService: SpeechRecognitionServiceProtocol {
 
@@ -42,14 +43,16 @@ final class SpeechRecognitionService: SpeechRecognitionServiceProtocol {
 
     func startTranscribing(locale: Locale) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
-            guard let recognizer = SFSpeechRecognizer(locale: locale), recognizer.isAvailable else {
+            guard let recognizer = SFSpeechRecognizer(locale: locale),
+                  recognizer.isAvailable,
+                  recognizer.supportsOnDeviceRecognition else {
                 continuation.finish(throwing: TranscriptionError.recognizerUnavailable)
                 return
             }
 
             let request = SFSpeechAudioBufferRecognitionRequest()
             request.shouldReportPartialResults = true
-            request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition
+            request.requiresOnDeviceRecognition = true
 
             let audioSession = AVAudioSession.sharedInstance()
             do {

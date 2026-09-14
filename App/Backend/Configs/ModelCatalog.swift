@@ -19,6 +19,26 @@ nonisolated enum ModelCatalog: String, CaseIterable {
 
     var repoID: String { rawValue }
 
+    /// Measured tokens per whitespace word for this model's tokenizer — the multiplier the
+    /// prompt budgets use (`MedicalChatOrchestrator.estimateTokens`) unless
+    /// `InferenceTuning.prompt.wordsToTokensRatio` pins one.
+    ///
+    /// Per model: the aggregate over the 1238-chunk corpus as formatted into the prompt, or the
+    /// Vietnamese figure where that is higher, rounded up to 0.05 — so a budget is a ceiling on
+    /// that model in either language the history carries. Reproduce with
+    /// `Pipeline/tools/measure_token_ratio.py`; a new case needs its own measurement.
+    var wordsToTokensRatio: Double {
+        switch self {
+        case .qwen3_5_4B:    return 1.75
+        case .qwen2_5_3B:    return 1.70
+        case .llama3_2_3B:   return 1.65
+        case .phi3_5Mini:    return 2.85
+        case .gemma3_1B:     return 1.70
+        case .qwen2_5_VL_3B: return 1.70
+        case .qwen2_5_VL_7B: return 1.70
+        }
+    }
+
     /// Vision-language models accept images attached to chat messages; text-only
     /// models silently drop them. Loading goes through VLMModelFactory for these.
     var supportsVision: Bool {
