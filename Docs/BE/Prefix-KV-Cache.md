@@ -1,102 +1,98 @@
-# Prefix KV cache — what is done, and what is deliberately not
+# Prefix KV cache
+
+Branch `final0.1-prefix-kv-cache-runtime`, built on all fifteen `final/*` branches merged
+(`Docs/Test-Protocol.md` Appendix order). `final/prefix-kv-cache` made the prompt prefix stable
+and testable; this branch reuses its KV cache at runtime.
 
 ## The opportunity
 
-The system prompt is re-prefilled from the first token on **every turn**. After
-`final/prompt-slimming` the fixed persona and constraints are 317 words — about 545 tokens on
-Qwen 3.5 at its measured 1.72 tokens per word — and a confirmed patient profile adds up to 200
-more. That is roughly 550–750 tokens of identical work per turn, for the entire conversation.
+Every turn re-prefills the system prompt from token zero. The persona and constraints are ~545
+tokens on Qwen 3.5, a confirmed profile adds up to ~200. From turn 2 on that work is identical.
 
-Reusing the KV cache for that prefix is the largest remaining time-to-first-token win in the
-app — larger than anything left in retrieval or prompt assembly, because it removes work
-rather than shrinking it.
+## How it works
 
-## What this branch does
+| Piece | File | Role |
+|---|---|---|
+| Planner | `App/Backend/Services/LLMService/PrefixCachePlanner.swift` | Pure rules: eligibility and cold / build / reuse, on token ids |
+| Resume | `App/Backend/Services/LLMService/PrefixResume.swift` | Seeds a cache with the prefix; `PrefixResumingModel` continues from it |
+| Wiring | `LLMService.startGeneration` | Cold requests keep `container.generate`; others run inside `container.perform` |
+| Knob | `InferenceTuning.generation.prefixCache` | Ships `false` |
 
-It makes the prefix **a real thing that can be cached, and proves it is stable.**
+Per eligible chat request:
 
-`MedicalChatOrchestrator.EnrichedPrompt` now carries two explicit halves instead of one
-interpolated string:
+1. Tokenize the full templated prompt (as before). Never tokenize the prefix alone — BPE merges
+   across the prefix/suffix boundary, so a separately tokenized prefix gives ids the model never sees.
+2. **Reuse** when the kept prefix is exactly the start of this prompt and ≥1 token remains: copy the
+   kept cache, prefill only the suffix.
+3. Otherwise **build** when this prompt and the previous one share ≥128 tokens: prefill the shared
+   part into a fresh cache, keep a copy, continue with the suffix. Same compute as cold.
+4. Otherwise **cold**.
 
-- `stablePrefix` — language directive, invariant persona and constraints, confirmed profile,
-  context-language note. Changes only when the patient switches language or edits their profile.
-- `volatileSuffix` — retrieved chunks, sources, confidence, session facts, no-context note.
-  Changes every turn.
+Turn 1 is cold, turn 2 builds, turn 3+ reuses. A language switch or profile edit changes the prefix,
+so the next turn rebuilds.
 
-`systemPrompt` is `stablePrefix + volatileSuffix` — nothing in between — so it is byte-for-byte the
-prompt the single interpolated string produced, and nothing downstream changed. (The first version
-joined the halves with an extra newline, which changed every prompt the model read;
-`testSplittingThePromptDidNotChangeWhatTheModelReads` pins the join.)
+### Eligibility (`PrefixCachePlanner.isEligible`)
 
-`MobiCureVNTests/PrefixStabilityTests.swift` then asserts the property the whole optimisation
-depends on: the prefix is byte-identical across different questions, different retrieved
-context, accumulating session facts, growing history, the empty-context branch, and repeated
-identical calls — and that it *does* change with language and with the profile, because a
-cache keyed on it must miss in exactly those cases.
+- Knob on.
+- Request has a system prompt. The auxiliary passes (classification, rewrite, extraction) have none,
+  so they never use or evict the chat prefix — the eviction problem the groundwork doc flagged.
+- No image or video in the prompt, and the previous generation on this model had none (below).
+- No `maxKVSize` (rotating caches cannot be snapshotted faithfully once they wrap).
+- `model_type` in `resumableModelTypes`: `qwen2`, `llama`, `phi3`, `gemma3_text`, `qwen3_5`.
+  `qwen2_5_vl` and anything else stay cold until checked the same way.
 
-**Why this is the valuable half.** "The top of the prompt is stable" was previously a claim in
-a comment. One stray interpolation — a timestamp, a turn counter, a `Set` iterated in
-non-deterministic order — silently defeats a prefix cache while everything still looks correct,
-and the symptom is "the optimisation did nothing", which is very hard to debug. These tests
-turn that from a hope into a contract, and they cost no MLX runtime to run.
+### Two findings from the mlx-swift-lm 3.31.3 source
 
-## What this branch does NOT do
+1. **The cache is never trimmed.** Qwen 3.5's linear-attention layers use `MambaCache`, a recurrent
+   state with `isTrimmable == false`. Longest-common-prefix reuse by trimming would corrupt it. The
+   snapshot therefore holds exactly the prefix and is only ever extended.
+2. **Qwen 3.5's `prepare` is wrong on a seeded cache.** For text-only input it calls
+   `resetPositionState()` and numbers positions from 0, ignoring `cache.offset`, so the suffix would
+   be embedded at the wrong positions — fluent, wrong output. `TokenIterator` always calls `prepare`,
+   so resumption wraps the model in `PrefixResumingModel`, whose `prepare` prefills the suffix
+   through `callAsFunction`. That path numbers positions `cache.offset + i + ropeDeltas`, and
+   `ropeDeltas` is zero after any text-only generation — hence the rule that a turn right after an
+   image turn is cold. The text LLMs take positions from `cache.offset` (`applyRotaryPosition`) either
+   way. Building the snapshot still goes through the model's own `prepare` on an empty cache, the
+   path every cold request takes.
 
-**It does not reuse the KV cache at runtime.** That was a deliberate decision, not an oversight.
+### Invalidation
 
-`LLMService` uses only the high-level `container.generate(input:parameters:)`, which builds a
-fresh cache per call. True prefix reuse means dropping to `ModelContainer.perform { context in … }`
-and driving a `TokenIterator` with a pre-seeded `KVCache` — an API surface that could not be
-verified in the environment this change was written in (no Xcode, no resolved packages; see
-`Docs/BE/mlxApiVerification.md`).
+- Model change: a new `LLMService`, new state.
+- Memory warning and every `unload()`: snapshot, previous prompt and media flag cleared.
+- Prefix change: the planner rebuilds.
+- App background: not cleared. The snapshot is small (for Qwen 3.5 only its full-attention layers
+  grow with tokens), and `unload()` on memory pressure already covers the real risk.
 
-That matters more here than elsewhere because of the failure mode. A mis-seeded KV cache does
-not crash and does not throw: it produces **fluent, plausible, wrong tokens**. In a medical
-assistant, a silent correctness failure written blind and shipped a week before a presentation
-is the wrong trade. A compile error would have been fine; this would not fail loudly.
+## Turning it on
 
-## How to finish it
+1. On the target device and model:
+   ```bash
+   TEST_RUNNER_MOBICURE_BENCH=1 xcodebuild test -scheme MobiCureVN \
+     -destination 'platform=iOS,name=<iPad>' \
+     -only-testing:MobiCureVNTests/PrefixCacheCorrectnessTests
+   ```
+   It runs three turns cold, then three with the cache, at temperature 0, and requires the same
+   opening 12 words per turn plus stats `cold 1 / built 1 / reused 1`. Different prefill chunking can
+   flip a near-tie many tokens in; a mis-seeded cache diverges at once. **If it fails, leave the
+   knob off.**
+2. Set `"prefixCache": true` in `Documents/InferenceTuning.json` (no rebuild) or in the bundle.
+3. Measure with `LatencyBenchmarkTests`, turn 1 (cold) against turns 2–10. The log line
+   `prefix cache reuse: N of M prompt tokens` shows what was skipped.
 
-Prerequisite: `final/mlx-runtime-knobs` merged and `Package.resolved` committed, so the API is
-pinned and readable.
+Expected: roughly the prefix's share of prefill cut from turn 2 on — ~15–25% of prefill with the
+3000-token context budget. Under ~10% measured, do not ship it.
 
-1. **Read the real API.** ⌘-click `ModelContainer`, `TokenIterator` and `KVCache` in the
-   resolved `mlx-swift-lm`. Confirm how a cache is constructed, seeded with a token prefix, and
-   handed to the iterator.
-2. **Add a `PrefixCache` to `LLMService`**, holding:
-   - the **token ids** of the chat-templated prompt it was built from, and the model identity;
-   - the seeded `KVCache` itself.
+## Tests
 
-   Key it on token ids, not on the `stablePrefix` string. A byte-identical prefix is necessary but
-   not sufficient: the prompt is tokenized as a whole, and a BPE tokenizer can merge characters
-   across the boundary — the suffix here always begins with newlines, and Qwen has single tokens
-   for runs of newlines, so the last prefix token can differ between turns. Tokenize the full
-   templated prompt each turn, find the longest common token prefix with the cached ids, and
-   reuse the cache up to that length. Never tokenize the prefix on its own and splice: that
-   produces token ids the model would not otherwise see.
-3. **Thread the split through only if it helps.** With longest-common-prefix matching the cache
-   does not need to know where `stablePrefix` ends; the split's job is to keep that common prefix
-   long, which these tests already guarantee. Keep `systemPrompt` as the single thing sent.
-4. **Keep auxiliary passes from evicting it.** Language classification and the two post-answer
-   extraction passes run through the same `ModelContainer` between chat turns with entirely
-   different prompts. A single-slot cache holding "the last prompt" is overwritten by them on every
-   turn and never hits. Either keep one slot per prompt family (chat vs auxiliary), or move the
-   auxiliary passes off the MLX container (the Foundation Models route in `final0.1-fm-aux-routing`).
-5. **Invalidate on:** model change, language change, profile edit, memory-pressure warning
-   (`AppConfig.observeMemoryWarnings` already exists — a cache that survives a memory warning is
-   a leak with extra steps), and app background.
-6. **Verify correctness before latency.** Same question, cold cache vs warm cache, must produce
-   the same answer at temperature 0. If it does not, the cache is mis-seeded — stop.
-7. **Then measure.** `MOBICURE_BENCH=1` with the latency harness, comparing turn 1 (cold) against
-   turns 2-10 (warm). The expected shape is: turn 1 unchanged, later turns drop by roughly the
-   prefix's share of prefill.
+- `MobiCureVNTests/PrefixCachePlannerTests.swift` — every planner rule, no model.
+- `MobiCureVNTests/PrefixCacheCorrectnessTests.swift` — device check above, skipped without
+  `MOBICURE_BENCH=1`.
+- `MobiCureVNTests/PrefixStabilityTests.swift` (from `final/prefix-kv-cache`) — the prefix really is
+  byte-stable, which is what keeps the shared token prefix long.
 
-## Expected gain
+## Not verified
 
-A prefix of ~550–750 tokens against a context budget of 2000–3000 estimated tokens plus history
-(after `final/context-budget-fix` and `final/retrieval-topk`). If prefill dominates TTFT, that is
-roughly a **15–25% cut in prefill from the second turn onward** — smaller than it sounds when
-retrieval context is large, which is exactly why it should be measured rather than assumed.
-
-If the measured gain is under ~10%, do not ship it: a correctness-sensitive cache is not worth
-carrying for a marginal win.
+No Swift was compiled for this branch (Linux, no Xcode). The MLX calls were written against the
+3.31.3 sources (`ModelContainer.perform(nonSendable:)`, `TokenIterator`, `generateTask`,
+`KVCache.copy()`, `LanguageModel.prepare`), not a compiler. Build first; then the device check.

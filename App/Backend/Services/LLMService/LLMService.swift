@@ -62,11 +62,29 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     /// generation knows whether attaching images is meaningful.
     let isVisionModel: Bool
 
-    init(modelPath: String = "qwen-2.5-7b-instruct", useMock: Bool = false) {
+    /// `config.json`'s `model_type`, lowercased. Prefix-cache resumption is verified per
+    /// architecture (`PrefixCachePlanner.resumableModelTypes`).
+    let modelType: String?
+
+    /// `nil` follows `InferenceTuning.generation.prefixCache`; the device check pins it per instance.
+    private let prefixCacheOverride: Bool?
+
+    // Prefix KV cache state, guarded by `stateLock`. See Docs/BE/Prefix-KV-Cache.md.
+#if canImport(MLXLLM)
+    private var prefixSnapshot: PrefixSnapshot?
+#endif
+    private var previousPromptTokens: [Int]?
+    private var lastGenerationHadMedia = false
+    private var prefixStats = PrefixCacheStats()
+
+    init(modelPath: String = "qwen-2.5-7b-instruct", useMock: Bool = false, prefixCache: Bool? = nil) {
         self.modelPath = modelPath
         self.useMock = useMock
         self.isModelAvailable = FileManager.default.fileExists(atPath: modelPath)
-        self.isVisionModel = Self.detectVisionModel(at: modelPath)
+        let modelType = Self.readModelType(at: modelPath)
+        self.modelType = modelType
+        self.isVisionModel = modelType.map { Self.visionModelTypes.contains($0) } ?? false
+        self.prefixCacheOverride = prefixCache
     }
 
     /// model_type values registered by MLXVLM's VLMModelFactory (mlx-swift-lm 3.31.3,
@@ -78,14 +96,14 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
         "qwen3_5", "qwen3_5_moe", "smolvlm"
     ]
 
-    private static func detectVisionModel(at path: String) -> Bool {
+    private static func readModelType(at path: String) -> String? {
         let configURL = URL(fileURLWithPath: path, isDirectory: true).appendingPathComponent("config.json")
         guard let data = try? Data(contentsOf: configURL),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let modelType = json["model_type"] as? String else {
-            return false
+            return nil
         }
-        return visionModelTypes.contains(modelType.lowercased())
+        return modelType.lowercased()
     }
 
     func initializeModel() async -> Bool {
@@ -189,6 +207,11 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
         stateLock.withLock {
             modelContainer = nil
             mlxInitialized = false
+            // A kept prefix belongs to the unloaded weights, and memory pressure is exactly when
+            // it must not outlive them.
+            prefixSnapshot = nil
+            previousPromptTokens = nil
+            lastGenerationHadMedia = false
         }
         MLX.Memory.clearCache()
 #endif
@@ -317,7 +340,13 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
                         if let maxKVSize = generation.maxKVSize {
                             params.maxKVSize = maxKVSize
                         }
-                        let stream = try await container.generate(input: lmInput, parameters: params)
+                        let stream = try await self.startGeneration(
+                            container: container,
+                            input: lmInput,
+                            parameters: params,
+                            hasSystemPrompt: !request.systemPrompt
+                                .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        )
                         var completion = LLMCompletion.unknown
                         for await event in stream {
                             if Task.isCancelled { break }
@@ -383,6 +412,121 @@ nonisolated final class LLMService: @unchecked Sendable, LLMServiceProtocol {
     }
 
 #if canImport(MLXLLM)
+    // MARK: - Prefix cache
+
+    /// What the prefix cache has done since this model was loaded.
+    var prefixCacheStats: PrefixCacheStats {
+        stateLock.withLock { prefixStats }
+    }
+
+    private var prefixCacheEnabled: Bool {
+        prefixCacheOverride ?? Self.tuning.generation.prefixCache
+    }
+
+    /// Starts one generation, resuming from the kept prompt prefix when that is known to be safe.
+    ///
+    /// A cold request takes exactly the path every request took before (`container.generate`).
+    /// Resumption needs every condition in `PrefixCachePlanner.isEligible`, and the planner decides
+    /// on token ids. The prefix is prefilled, and resumed, inside `container.perform`, which holds the
+    /// container for the prefill as `container.generate` does.
+    private func startGeneration(
+        container: ModelContainer,
+        input: sending LMInput,
+        parameters: GenerateParameters,
+        hasSystemPrompt: Bool
+    ) async throws -> AsyncStream<Generation> {
+        let hasMedia = input.image != nil || input.video != nil
+        let shapeEligible = PrefixCachePlanner.isEligible(
+            enabled: prefixCacheEnabled,
+            modelType: modelType,
+            hasSystemPrompt: hasSystemPrompt,
+            hasMedia: hasMedia,
+            followsMedia: false,
+            hasBoundedCache: parameters.maxKVSize != nil
+        )
+        // Reading ids copies the prompt to the host; skip it when the answer cannot change.
+        let promptIDs = shapeEligible ? PrefixKV.tokenIDs(input.text.tokens) : []
+
+        let (decision, snapshot): (PrefixCachePlanner.Decision, PrefixSnapshot?) = stateLock.withLock {
+            let followsMedia = lastGenerationHadMedia
+            lastGenerationHadMedia = hasMedia
+            guard shapeEligible else { return (.cold, nil) }
+
+            let previous = previousPromptTokens
+            previousPromptTokens = promptIDs
+            let choice: PrefixCachePlanner.Decision = followsMedia
+                ? .cold
+                : PrefixCachePlanner.decide(
+                    prompt: promptIDs,
+                    cachedPrefix: prefixSnapshot?.tokens,
+                    previousPrompt: previous
+                )
+            switch choice {
+            case .cold:
+                prefixStats.cold += 1
+            case .build:
+                prefixStats.built += 1
+            case .reuse(let length):
+                prefixStats.reused += 1
+                prefixStats.reusedTokens += length
+            }
+            return (choice, prefixSnapshot)
+        }
+
+        let prefixLength: Int
+        let label: String
+        switch decision {
+        case .cold:
+            return try await container.generate(input: input, parameters: parameters)
+        case .build(let length):
+            prefixLength = length
+            label = "build"
+        case .reuse(let length):
+            prefixLength = length
+            label = "reuse"
+        }
+        Self.log.info("prefix cache \(label, privacy: .public): \(prefixLength) of \(promptIDs.count) prompt tokens")
+
+        return try await container.perform(nonSendable: (input, snapshot)) { [self] context, values in
+            let (input, snapshot) = values
+            let cache: [KVCache]
+            if case .reuse = decision, let snapshot {
+                cache = snapshot.cache.map { $0.copy() }
+            } else {
+                let seeded = try PrefixKV.seed(
+                    model: context.model,
+                    prefix: PrefixKV.slice(input.text, from: 0, to: prefixLength),
+                    parameters: parameters
+                )
+                let kept = seeded.map { $0.copy() }
+                eval(kept)
+                self.storePrefixSnapshot(
+                    PrefixSnapshot(tokens: Array(promptIDs.prefix(prefixLength)), cache: kept)
+                )
+                cache = seeded
+            }
+
+            let suffix = LMInput(text: PrefixKV.slice(input.text, from: prefixLength, to: nil))
+            let iterator = try TokenIterator(
+                input: suffix,
+                model: PrefixResumingModel(context.model),
+                cache: cache,
+                parameters: parameters
+            )
+            let (stream, _) = generateTask(
+                promptTokenCount: promptIDs.count - prefixLength,
+                modelConfiguration: context.configuration,
+                tokenizer: context.tokenizer,
+                iterator: iterator
+            )
+            return stream
+        }
+    }
+
+    private func storePrefixSnapshot(_ snapshot: PrefixSnapshot) {
+        stateLock.withLock { prefixSnapshot = snapshot }
+    }
+
     // MARK: - Chat Builder
 
     /// Assemble structured chat messages for MLX. `container.prepare` runs these through the

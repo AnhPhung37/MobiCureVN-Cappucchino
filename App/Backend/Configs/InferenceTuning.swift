@@ -69,6 +69,14 @@ nonisolated struct InferenceTuning: Sendable {
         let quantizedKVStart: Int?
         let maxKVSize: Int?
         let prefillStepSize: Int?
+
+        /// Reuse the KV cache of the prompt prefix shared by consecutive chat turns, so turn 2
+        /// onward does not prefill the persona and profile again (Docs/BE/Prefix-KV-Cache.md).
+        ///
+        /// Ships `false`: a mis-seeded cache produces fluent wrong text rather than an error, and
+        /// this has not yet been run on a device. Turn it on in the Documents tuning file once
+        /// `PrefixCacheCorrectnessTests` passes on that device and model.
+        let prefixCache: Bool
     }
 
     /// Prompt assembly budgets. All token figures are *estimated* tokens — see
@@ -152,7 +160,8 @@ nonisolated struct InferenceTuning: Sendable {
             kvGroupSize: nil,
             quantizedKVStart: nil,
             maxKVSize: nil,
-            prefillStepSize: nil
+            prefillStepSize: nil,
+            prefixCache: false
         ),
         prompt: Prompt(
             retrievalTopK: 10,
@@ -310,6 +319,7 @@ nonisolated struct InferenceTuning: Sendable {
             vision(side: \(vision.inputSide), historyImageTurns: \(vision.historyImageTurnCap)) \
             memory(cacheFraction: \(memory.metalCacheFraction), streamBuffer: \(memory.tokenStreamBufferLimit))
             """)
+        Self.log.info("prefixCache: \(generation.prefixCache)")
     }
 }
 
@@ -341,6 +351,7 @@ extension InferenceTuning {
             var quantizedKVStart: Int?
             var maxKVSize: Int?
             var prefillStepSize: Int?
+            var prefixCache: Bool?
         }
 
         struct PromptFields: Codable, Sendable {
@@ -397,7 +408,8 @@ extension InferenceTuning {
                 kvGroupSize: self.generation?.kvGroupSize ?? d.generation.kvGroupSize,
                 quantizedKVStart: self.generation?.quantizedKVStart ?? d.generation.quantizedKVStart,
                 maxKVSize: self.generation?.maxKVSize ?? d.generation.maxKVSize,
-                prefillStepSize: self.generation?.prefillStepSize ?? d.generation.prefillStepSize
+                prefillStepSize: self.generation?.prefillStepSize ?? d.generation.prefillStepSize,
+                prefixCache: self.generation?.prefixCache ?? d.generation.prefixCache
             )
 
             let prompt = InferenceTuning.Prompt(
@@ -452,7 +464,8 @@ extension InferenceTuning {
                 kvGroupSize: generation.kvGroupSize,
                 quantizedKVStart: generation.quantizedKVStart,
                 maxKVSize: generation.maxKVSize,
-                prefillStepSize: generation.prefillStepSize
+                prefillStepSize: generation.prefillStepSize,
+                prefixCache: generation.prefixCache
             ),
             prompt: .init(
                 retrievalTopK: prompt.retrievalTopK,

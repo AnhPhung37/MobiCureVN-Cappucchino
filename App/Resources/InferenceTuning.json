@@ -9,7 +9,8 @@
     "kvGroupSize": null,
     "quantizedKVStart": null,
     "maxKVSize": null,
-    "prefillStepSize": null
+    "prefillStepSize": null,
+    "prefixCache": false
   },
   "prompt": {
     "retrievalTopK": 10,
