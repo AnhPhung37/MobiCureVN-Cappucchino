@@ -1,0 +1,25 @@
+# mlx_lm.lora settings for distilling a teacher into the on-device chat model.
+# distill/run_distill.py passes --model, --data and --adapter-path on the command line, which
+# take precedence over the values here.
+train: true
+fine_tune_type: lora
+# Train on the assistant turn only: the system prompt and retrieved passages are inputs, and
+# learning to reproduce them would spend the adapter on text the app supplies anyway.
+mask_prompt: true
+num_layers: 16
+batch_size: 1
+grad_accumulation_steps: 8
+iters: 1000
+learning_rate: 1.0e-5
+# System prompt + 3000 tokens of context + a 512-token answer; mlx-lm's 2048 default truncates.
+max_seq_length: 4096
+grad_checkpoint: true
+steps_per_report: 10
+steps_per_eval: 100
+val_batches: -1
+save_every: 100
+seed: 0
+lora_parameters:
+  rank: 16
+  scale: 20.0
+  dropout: 0.05
