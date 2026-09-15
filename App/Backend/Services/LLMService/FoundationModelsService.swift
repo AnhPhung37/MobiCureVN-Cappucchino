@@ -19,6 +19,10 @@ import FoundationModels
 ///
 /// Text-only: `LLMRequest.images` are ignored. Image-bearing requests belong on the MLX VLM
 /// path (`WoundAnalysisService`).
+///
+/// `request.options` (maxTokens, temperature) is translated to `FoundationModels.GenerationOptions`
+/// — greedy sampling for the auxiliary presets that ask for temperature 0, a token ceiling
+/// otherwise inherited from the OS. `topP` has no equivalent in this framework and is dropped.
 @available(iOS 26.0, *)
 nonisolated final class FoundationModelsService: @unchecked Sendable, LLMServiceProtocol {
 
@@ -66,11 +70,13 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
                     user: request.userMessage
                 )
 
+                let genOptions = Self.generationOptions(for: request.options)
+
                 do {
                     // Snapshots are cumulative — the protocol's consumers concatenate what they
                     // receive, so only the newly appended text is yielded.
                     var emitted = ""
-                    for try await partial in session.streamResponse(to: prompt) {
+                    for try await partial in session.streamResponse(to: prompt, options: genOptions) {
                         if Task.isCancelled { break }
                         let snapshot = partial.content
                         let delta = Self.delta(previous: emitted, snapshot: snapshot)
@@ -93,6 +99,25 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
     }
 
     // MARK: - Private
+
+    /// Translates the app's own `GenerationOptions` (Domain/Models — shares its exact name with
+    /// FoundationModels' type, hence the qualification below) into the framework's, so a caller
+    /// asking for the deterministic auxiliary presets (`.classification`, `.extraction`) gets
+    /// deterministic decoding here too, not the framework's own sampling default.
+    ///
+    /// `temperature <= 0` is how those presets ask for greedy decoding; the framework expresses
+    /// that as a sampling MODE, not a temperature value, so it is translated rather than passed
+    /// through as `temperature: 0` (which would still sample, just with reduced randomness).
+    /// `topP` has no equivalent in this framework — no nucleus-sampling parameter is exposed —
+    /// so it is silently dropped, same as any other unsupported knob a text-only preset carries.
+    /// Exposed for `FoundationModelsGenerationOptionsTests`; everything else here needs a device.
+    static func generationOptions(for options: GenerationOptions) -> FoundationModels.GenerationOptions {
+        FoundationModels.GenerationOptions(
+            samplingMode: options.temperature <= 0 ? .greedy : nil,
+            temperature: options.temperature > 0 ? Double(options.temperature) : nil,
+            maximumResponseTokens: options.maxTokens
+        )
+    }
 
     /// Flatten prior turns into the prompt. `LanguageModelSession` normally keeps history in its
     /// own transcript, but `LLMRequest` is the source of truth here (callers trim and enrich the
