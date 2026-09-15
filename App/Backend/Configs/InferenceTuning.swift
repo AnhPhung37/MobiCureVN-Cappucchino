@@ -144,7 +144,7 @@ nonisolated struct InferenceTuning: Sendable {
     static let defaults = InferenceTuning(
         profileName: "built-in-defaults",
         generation: Generation(
-            maxTokens: 512,
+            maxTokens: 120,
             temperature: 0.3,
             topP: 0.85,
             auxiliaryMaxTokens: 64,
@@ -156,8 +156,8 @@ nonisolated struct InferenceTuning: Sendable {
         ),
         prompt: Prompt(
             retrievalTopK: 10,
-            contextTokenBudget: 3000,
-            historyTokenBudget: 350,
+            contextTokenBudget: 1500,
+            historyTokenBudget: 500,
             assistantReplayWordCap: 60,
             wordsToTokensRatio: nil,
             rerankCandidates: 0
