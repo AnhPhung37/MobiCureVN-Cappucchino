@@ -26,12 +26,12 @@
     },
     "experiments": [
         {
-            "name": "neural",
+            "name": "neural_no_header",
             "enabled": true,
             "source_chunks_dir": "../data/neural_chunks",
             "enriched_output_dir": "./outputs/enriched_neural",
             "index_db_path": "./outputs/vectorstore_neural.db",
-            "represents_app": true
+            "note": "Baseline without the contextual header, kept for comparison. Superseded as the app's own retriever by neural_contextual."
         },
         {
             "name": "neural_fts_only",
@@ -42,7 +42,19 @@
             },
             "source_chunks_dir": "../data/neural_chunks",
             "enriched_output_dir": "./outputs/enriched_neural",
-            "index_db_path": "./outputs/vectorstore_neural.db"
+            "index_db_path": "./outputs/vectorstore_neural_contextual.db"
+        },
+        {
+            "name": "neural_contextual",
+            "enabled": true,
+            "embed": {
+                "contextual_header": true
+            },
+            "source_chunks_dir": "../data/neural_chunks",
+            "enriched_output_dir": "./outputs/enriched_neural",
+            "index_db_path": "./outputs/vectorstore_neural_contextual.db",
+            "represents_app": true,
+            "note": "What the app ships (App/Resources/vectorstore.db is built with --contextual-header). Measured +2.4pt doc-hit@5 / +0.5pt recall@5 over neural_no_header on the split index; see Docs/BE/Contextual-Header.md."
         },
         {
             "name": "semantic",

@@ -78,7 +78,10 @@ for stage in "${STAGES[@]}"; do
             ;;
         index)
             echo -e "\n=== Stage 5: Build Vector Index ==="
-            python ingestion/build_index.py $FORCE
+            # Embeds "<title> › <section>" above each chunk's text (Docs/BE/Contextual-Header.md);
+            # stored/FTS text and queries are unaffected. Measured +2.4pt doc-hit@5 at zero
+            # runtime cost, so it is the shipped default here.
+            python ingestion/build_index.py $FORCE --contextual-header
             ;;
         *)
             echo "Unknown stage: $stage"

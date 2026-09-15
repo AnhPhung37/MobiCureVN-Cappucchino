@@ -52,9 +52,15 @@ import numpy as np
 import sqlite_vec
 from sentence_transformers import SentenceTransformer
 
+try:  # `python -m ingestion.build_index` or an import from eval/
+    from ingestion.contextual_header import embedding_text, load_titles
+except ImportError:  # `python ingestion/build_index.py`, as run_pipeline.sh runs it
+    from contextual_header import embedding_text, load_titles
+
 _ROOT = Path(__file__).parent.parent
 ENRICHED_DIR = _ROOT / "data" / "enriched_chunks"
 DB_PATH = _ROOT / "data" / "vectorstore.db"
+REGISTRY_PATH = _ROOT / "data" / "registry.csv"
 
 EMBED_MODEL = "BAAI/bge-small-en-v1.5"
 EMBED_DIM = 384
@@ -72,8 +78,12 @@ def build_index(
     embed_model: str,
     embed_dim: int,
     batch_size: int,
+    titles: dict[str, str] | None = None,
 ) -> int:
-    """Embed all chunks in enriched_dir and write them to db_path. Returns chunk count."""
+    """Embed all chunks in enriched_dir and write them to db_path. Returns chunk count.
+
+    `titles` (doc_id -> title) turns on the contextual header; see ingestion/contextual_header.py.
+    """
     files = sorted(enriched_dir.glob("*.json"))
     if not files:
         raise ValueError(f"No enriched chunks found in {enriched_dir}/")
@@ -118,7 +128,7 @@ def build_index(
 
     print(f"Embedding with '{embed_model}'...")
     model = SentenceTransformer(embed_model)
-    texts = [c["text"] for c in all_chunks]
+    texts = [embedding_text(c, titles) for c in all_chunks]
     embeddings: np.ndarray = model.encode(
         texts, batch_size=batch_size, show_progress_bar=True, normalize_embeddings=True
     )
@@ -154,17 +164,23 @@ def build_index(
     return len(all_chunks)
 
 
-def main(force: bool) -> None:
+def main(force: bool, contextual_header: bool) -> None:
     if DB_PATH.exists() and not force:
         print(f"[SKIP] {DB_PATH.name} already exists (use --force to rebuild)")
         return
     if not ENRICHED_DIR.exists() or not any(ENRICHED_DIR.glob("*.json")):
         raise SystemExit(f"[ERROR] Run enrich_chunks.py first — {ENRICHED_DIR}/ is empty or missing.")
-    build_index(ENRICHED_DIR, DB_PATH, EMBED_MODEL, EMBED_DIM, BATCH_SIZE)
+    titles = load_titles(REGISTRY_PATH) if contextual_header else None
+    build_index(ENRICHED_DIR, DB_PATH, EMBED_MODEL, EMBED_DIM, BATCH_SIZE, titles=titles)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Stage 5: Embed chunks and build vectorstore.db.")
     parser.add_argument("--force", action="store_true", help="Rebuild even if vectorstore.db exists")
+    parser.add_argument(
+        "--contextual-header",
+        action="store_true",
+        help="embed '<title> › <section>' above each chunk (stored text unchanged); see contextual_header.py",
+    )
     args = parser.parse_args()
-    main(args.force)
+    main(args.force, args.contextual_header)
