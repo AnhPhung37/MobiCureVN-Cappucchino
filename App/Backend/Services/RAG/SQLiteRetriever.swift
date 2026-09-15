@@ -18,6 +18,7 @@ final class SQLiteRetriever {
     private var hasVecIndex: Bool = false
     private var hasPageStartColumn: Bool = false
     private var queryEmbedder: QueryEmbedder?
+    private var reranker: CrossEncoderReranker?
 
     init() {
         guard let url = Bundle.main.url(forResource: "vectorstore", withExtension: "db") else {
@@ -42,6 +43,14 @@ final class SQLiteRetriever {
             // cannot pass for the hybrid retriever the evaluation measures.
             print("SQLiteRetriever: query_embedder / vocab.txt not in bundle — vector search disabled, FTS-only")
         }
+        // Loaded only when reranking is on, so a configuration that turns it off does not keep a
+        // second CoreML model in memory.
+        if InferenceTuning.current.prompt.rerankCandidates > 0 {
+            reranker = CrossEncoderReranker()
+            if reranker == nil {
+                print("SQLiteRetriever: reranker.mlpackage / vocab.txt not in bundle — keeping fused order")
+            }
+        }
         if !hasFTSIndex {
             print("SQLiteRetriever: chunks_fts not found, using chunks fallback search")
         }
@@ -53,12 +62,17 @@ final class SQLiteRetriever {
 
     // MARK: - Public
 
-    func retrieve(query: String, enrichedTerms: [String] = [], topK: Int = 5) -> RetrievedContext {
+    /// - Parameter rerankCandidates: when > 0 and the reranker is bundled, fused retrieval returns
+    ///   `max(topK, rerankCandidates)` rows and the cross-encoder keeps the best `topK` of them.
+    ///   Mirrors `Pipeline/eval/reranker.py::RerankingRetriever`.
+    func retrieve(query: String, enrichedTerms: [String] = [], topK: Int = 5, rerankCandidates: Int = 0) -> RetrievedContext {
         guard db != nil else {
             return RetrievedContext(chunks: [], confidenceScore: 0, sources: [])
         }
 
-        let candidateLimit = max(topK * 3, topK)
+        let reranking = rerankCandidates > 0 && reranker != nil
+        let poolSize = reranking ? max(topK, rerankCandidates) : topK
+        let candidateLimit = max(poolSize * 3, poolSize)
         let rows = runFTS(baseQuery: query, enrichedTerms: enrichedTerms, limit: candidateLimit)
         // Always run the vector pass and RRF-fuse it. Natural-language questions produce a
         // broad OR-of-terms FTS query that saturates the candidate budget on virtually every
@@ -68,7 +82,8 @@ final class SQLiteRetriever {
         let vectorRows = runVectorSearch(query: query, limit: candidateLimit)
         let mergedRows = mergeRows(ftsRows: rows, vectorRows: vectorRows)
         let dedupedRows = dedupeRowsByContent(mergedRows)
-        let finalRows = Array(dedupedRows.prefix(topK))
+        let pool = Array(dedupedRows.prefix(poolSize))
+        let finalRows = reranking ? rerank(pool, query: query, topK: topK) : pool
 
         guard !finalRows.isEmpty else {
             return RetrievedContext(chunks: [], confidenceScore: 0, sources: [])
@@ -87,6 +102,22 @@ final class SQLiteRetriever {
         let sources = dedupedSources(from: finalRows)
 
         return RetrievedContext(chunks: chunks, confidenceScore: confidence, sources: sources)
+    }
+
+    // MARK: - Rerank
+
+    /// Orders `rows` by cross-encoder relevance and keeps `topK`. A failed scoring keeps the fused
+    /// order, so a reranker error costs ranking quality, never the retrieval. Rows keep their RRF
+    /// `relevanceScore`: the confidence estimate stays on the scale it was calibrated for.
+    private func rerank(_ rows: [ScoredRow], query: String, topK: Int) -> [ScoredRow] {
+        guard
+            let reranker,
+            rows.count > 1,
+            let order = reranker.rankedIndices(query: query, passages: rows.map { $0.info.text })
+        else {
+            return Array(rows.prefix(topK))
+        }
+        return order.prefix(topK).map { rows[$0] }
     }
 
     // MARK: - FTS Query Builder
