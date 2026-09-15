@@ -142,6 +142,9 @@ def main() -> None:
         index["path"] = repo_relative(db_path, repo_dir)
         corpus = corpus_fingerprint(source_dir)
         corpus["path"] = repo_relative(source_dir, repo_dir)
+        # Per-experiment embedding switches (build_indexes honours embed.contextual_header), so a
+        # result says which document embeddings it scored.
+        result["embed_overrides"] = exp.get("embed", {})
         result["provenance"] = {
             "index": index,
             "corpus": corpus,

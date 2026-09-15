@@ -9,6 +9,8 @@ import numpy as np
 import sqlite_vec
 from sentence_transformers import SentenceTransformer
 
+from ingestion.contextual_header import embedding_text
+
 
 def _to_bytes(vec: np.ndarray) -> bytes:
     arr = vec.astype(np.float32)
@@ -29,7 +31,9 @@ def build_index(
     embed_model: str,
     embed_dim: int,
     batch_size: int,
+    titles: dict[str, str] | None = None,
 ) -> int:
+    """`titles` (doc_id -> title) turns on the contextual header; see ingestion/contextual_header.py."""
     if db_path.exists():
         db_path.unlink()
         print(f"Removed existing {db_path}")
@@ -39,7 +43,7 @@ def build_index(
         raise ValueError(f"No chunks found in {enriched_dir}")
 
     model = SentenceTransformer(embed_model)
-    texts = [c["text"] for c in chunks]
+    texts = [embedding_text(c, titles) for c in chunks]
 
     embeddings: np.ndarray = model.encode(
         texts,

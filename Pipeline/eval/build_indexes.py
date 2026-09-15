@@ -4,6 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
+from ingestion.contextual_header import load_titles
+
 from .chunk_prep import enrich_chunks
 from .index_builder import build_index
 from .provenance import index_fingerprint
@@ -59,13 +61,21 @@ def main() -> None:
         print(f"\n[Prep] {exp['name']} -> {enriched_dir}")
         enrich_chunks(source_dir, registry_path, enriched_dir)
 
-        print(f"[Index] {exp['name']} -> {index_db}")
+        # An experiment may switch on the contextual header for its own index. Nothing else in
+        # `embed` may differ per experiment: run_eval embeds every query with the shared model.
+        overrides = exp.get("embed", {})
+        if set(overrides) - {"contextual_header"}:
+            raise SystemExit(f"{exp['name']}: only embed.contextual_header may be set per experiment")
+        titles = load_titles(registry_path) if overrides.get("contextual_header") else None
+
+        print(f"[Index] {exp['name']} -> {index_db}" + (" (contextual header)" if titles else ""))
         count = build_index(
             enriched_dir,
             index_db,
             embed_cfg["model_name"],
             embed_cfg["embed_dim"],
             embed_cfg["batch_size"],
+            titles=titles,
         )
         fp = index_fingerprint(index_db)
         print(
