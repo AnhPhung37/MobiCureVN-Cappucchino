@@ -10,6 +10,8 @@ nonisolated enum ModelCatalog: String, CaseIterable {
     case gemma3_1B     = "mlx-community/gemma-3-1b-it-4bit"
     case qwen2_5_VL_3B = "mlx-community/Qwen2.5-VL-3B-Instruct-4bit"
     case qwen2_5_VL_7B = "mlx-community/Qwen2.5-VL-7B-Instruct-4bit"
+    case medgemma1_5_4B = "mlx-community/medgemma-1.5-4b-it-4bit"
+    case gemma4_E2B    = "mlx-community/gemma-4-e2b-it-4bit"
 
     /// Qwen 3.5 4B: accuracy-first default — strongest Vietnamese fluency/reasoning in the
     /// catalog, natively multimodal (wound photos), 262K context that comfortably holds RAG
@@ -27,6 +29,8 @@ nonisolated enum ModelCatalog: String, CaseIterable {
     /// Vietnamese figure where that is higher, rounded up to 0.05 — so a budget is a ceiling on
     /// that model in either language the history carries. Reproduce with
     /// `Pipeline/tools/measure_token_ratio.py`; a new case needs its own measurement.
+    /// MedGemma 1.5 and Gemma 4 E2B were measured on the 1876-chunk split corpus (EN formatted
+    /// 1.693, VI 1.204 for both — the Gemma vocabulary); see Docs/BE/Model-Catalog-Candidates.md.
     var wordsToTokensRatio: Double {
         switch self {
         case .qwen3_5_4B:    return 1.75
@@ -36,6 +40,8 @@ nonisolated enum ModelCatalog: String, CaseIterable {
         case .gemma3_1B:     return 1.70
         case .qwen2_5_VL_3B: return 1.70
         case .qwen2_5_VL_7B: return 1.70
+        case .medgemma1_5_4B: return 1.70
+        case .gemma4_E2B:    return 1.70
         }
     }
 
@@ -43,7 +49,9 @@ nonisolated enum ModelCatalog: String, CaseIterable {
     /// models silently drop them. Loading goes through VLMModelFactory for these.
     var supportsVision: Bool {
         switch self {
-        case .qwen3_5_4B, .qwen2_5_VL_3B, .qwen2_5_VL_7B: return true
+        // MedGemma 1.5 exports as `gemma3` and Gemma 4 E2B as `gemma4`: both carry the vision
+        // tower and load through VLMModelFactory (LLMService.visionModelTypes).
+        case .qwen3_5_4B, .qwen2_5_VL_3B, .qwen2_5_VL_7B, .medgemma1_5_4B, .gemma4_E2B: return true
         default: return false
         }
     }
@@ -59,6 +67,10 @@ nonisolated enum ModelCatalog: String, CaseIterable {
         case .gemma3_1B:     return "~0.8 GB"
         case .qwen2_5_VL_3B: return "~2.2 GB"
         case .qwen2_5_VL_7B: return "~4.5 GB"
+        case .medgemma1_5_4B: return "~3.4 GB"
+        // E2B's per-layer embeddings keep the 4-bit download near a 4B model despite ~2B
+        // effective parameters.
+        case .gemma4_E2B:    return "~3.6 GB"
         }
     }
 
@@ -73,6 +85,8 @@ nonisolated enum ModelCatalog: String, CaseIterable {
         case .gemma3_1B:     return "Gemma 3 1B"
         case .qwen2_5_VL_3B: return "Qwen 2.5 VL 3B"
         case .qwen2_5_VL_7B: return "Qwen 2.5 VL 7B"
+        case .medgemma1_5_4B: return "MedGemma 1.5 4B"
+        case .gemma4_E2B:    return "Gemma 4 E2B"
         }
     }
 
@@ -85,6 +99,8 @@ nonisolated enum ModelCatalog: String, CaseIterable {
         case .gemma3_1B:     return "Gemma 3 1B (4-bit)"
         case .qwen2_5_VL_3B: return "Qwen 2.5 VL 3B (4-bit, vision)"
         case .qwen2_5_VL_7B: return "Qwen 2.5 VL 7B (4-bit, vision)"
+        case .medgemma1_5_4B: return "MedGemma 1.5 4B (4-bit, vision)"
+        case .gemma4_E2B:    return "Gemma 4 E2B (4-bit, vision)"
         }
     }
 }

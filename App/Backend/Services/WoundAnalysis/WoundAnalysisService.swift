@@ -13,7 +13,12 @@ import Foundation
 @MainActor
 final class WoundAnalysisService {
 
-    private static let woundVLM: ModelCatalog = .qwen2_5_VL_3B
+    /// MedGemma 1.5 4B: Gemma 3 with a vision encoder pre-trained on medical images (dermatology
+    /// among them), where Qwen 2.5 VL 3B is a general-purpose photo model. It is ~1.2 GB larger,
+    /// which the one-resident-model rule below already accommodates on a 16 GB iPad Air. Roll back
+    /// to `.qwen2_5_VL_3B` if the findings format degrades — Docs/BE/Model-Catalog-Candidates.md
+    /// lists the device check.
+    private static let woundVLM: ModelCatalog = .medgemma1_5_4B
 
     /// The VLM is asked to emit exactly these keys, one `KEY: value` line each, so
     /// `WoundFindingsParser` can map the output to `WoundLogEntry` fields deterministically.
