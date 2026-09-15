@@ -46,6 +46,14 @@ MODEL_PREFIXES: dict[str, tuple[str, str]] = {
     "intfloat/multilingual-e5-large": ("query: ", "passage: "),
     "BAAI/bge-m3": ("", ""),
     "BAAI/bge-small-en-v1.5": ("", ""),
+    # Candidates from Docs/BE/Embedder-Candidates.md. Both ship their prompts in
+    # config_sentence_transformers.json; they are spelled out here so a run records exactly
+    # what was prepended, as for e5 above.
+    "Qwen/Qwen3-Embedding-0.6B": (
+        "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery:",
+        "",
+    ),
+    "google/embeddinggemma-300m": ("task: search result | query: ", "title: none | text: "),
 }
 
 # The instruction bge-v1.5 documents for retrieval. NOT currently used by the shipped
@@ -58,6 +66,14 @@ DEFAULT_MODELS = [
     "BAAI/bge-small-en-v1.5",
     "intfloat/multilingual-e5-small",
     "BAAI/bge-m3",
+]
+
+# `--candidates`: the shipped embedder against the two newer small multilingual models.
+# google/embeddinggemma-300m is gated: accept its licence on Hugging Face and log in first.
+CANDIDATE_MODELS = [
+    "BAAI/bge-small-en-v1.5",
+    "Qwen/Qwen3-Embedding-0.6B",
+    "google/embeddinggemma-300m",
 ]
 
 
@@ -172,7 +188,12 @@ def evaluate(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
+    parser.add_argument("--models", nargs="+", default=None)
+    parser.add_argument(
+        "--candidates",
+        action="store_true",
+        help="compare the shipped embedder with Qwen3-Embedding-0.6B and EmbeddingGemma-300m",
+    )
     parser.add_argument(
         "--device",
         default="cpu",
@@ -190,6 +211,9 @@ def main() -> None:
     )
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
+    if args.models and args.candidates:
+        parser.error("--models and --candidates are exclusive")
+    args.models = args.models or (CANDIDATE_MODELS if args.candidates else DEFAULT_MODELS)
 
     if not args.enriched.exists():
         raise SystemExit(

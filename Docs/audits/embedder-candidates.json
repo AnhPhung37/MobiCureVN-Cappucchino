@@ -1,0 +1,64 @@
+{
+  "results": [
+    {
+      "model": "BAAI/bge-small-en-v1.5",
+      "device": "cpu",
+      "dim": 384,
+      "query_prefix": "",
+      "passage_prefix": "",
+      "load_seconds": 0.1,
+      "embed_seconds": 73.0,
+      "chunks": 1876,
+      "english": {
+        "5": {
+          "recall": 0.2631578947368421,
+          "doc_hit": 0.7942583732057417,
+          "mrr": 0.17559808612440192,
+          "ndcg": 0.1970480267128928
+        },
+        "10": {
+          "recall": 0.3157894736842105,
+          "doc_hit": 0.8708133971291866,
+          "mrr": 0.18238778765094554,
+          "ndcg": 0.21383336177021
+        }
+      },
+      "cross_lingual": {
+        "chunk_overlap_at_5": 0.0,
+        "same_document_at_5": 0.5833333333333334,
+        "cosine_vi_en_query": 0.4031684696674347,
+        "queries": 12
+      }
+    },
+    {
+      "model": "Qwen/Qwen3-Embedding-0.6B",
+      "device": "cpu",
+      "dim": 1024,
+      "query_prefix": "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery:",
+      "passage_prefix": "",
+      "load_seconds": 1.7,
+      "embed_seconds": 681.4,
+      "chunks": 1876,
+      "english": {
+        "5": {
+          "recall": 0.22966507177033493,
+          "doc_hit": 0.7990430622009569,
+          "mrr": 0.16945773524720892,
+          "ndcg": 0.1842673312527351
+        },
+        "10": {
+          "recall": 0.32057416267942584,
+          "doc_hit": 0.861244019138756,
+          "mrr": 0.18135110503531557,
+          "ndcg": 0.21342461228608128
+        }
+      },
+      "cross_lingual": {
+        "chunk_overlap_at_5": 0.45,
+        "same_document_at_5": 0.9166666666666666,
+        "cosine_vi_en_query": 0.6941649317741394,
+        "queries": 12
+      }
+    }
+  ]
+}
