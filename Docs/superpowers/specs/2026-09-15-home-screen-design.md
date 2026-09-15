@@ -24,9 +24,8 @@ content. The screen must show real data or an honest empty state.
 
 ## Scope
 
-Chat stays the app's main screen. Home becomes a real destination reached from the chat
-header, replacing the unreachable mockup. Home surfaces five fields, all backed by data that
-already exists on device:
+Home becomes the app's root screen. Chat becomes a destination reached from it. Home
+surfaces five fields, all backed by data that already exists on device:
 
 | Field | Backing data | Already exists at |
 |---|---|---|
@@ -66,40 +65,33 @@ room than a Profile section gives it.
 
 ## Navigation
 
-Chat is the main screen. A patient opening this app is usually here to ask something, not
-to read a dashboard, so Home is a place they visit and return from rather than a gate they
-pass through.
-
 ```
 AppRootView
-└── AppShellView                    keeps .translationTask setup (global TranslationService)
-    └── ChatWorkspaceView           the main screen
-        ├── header ▸ house.fill  → HomeDashboardView (sheet)
-        │   └── NavigationStack
-        │       ├── toolbar ▸ xmark            → dismiss, back to the conversation
-        │       ├── toolbar ▸ person.crop.circle → ProfileView (sheet)
-        │       ├── greetingCard    profile.name
-        │       ├── careNotesCard      top 3 → ProfileView §careNotes
-        │       ├── warningSignsCard   top 3 → ProfileView §warningSigns
-        │       ├── rememberedCard     top 3 → RememberedFactsView
-        │       ├── woundPhotosCard    latest 4 → WoundGalleryView
-        │       └── dataSourceCard  sourceName, lastUpdated, on-device notice
-        └── header ▸ avatar      → ProfileView (sheet, unchanged)
+└── HomeView                        keeps .translationTask setup (global TranslationService)
+    └── NavigationStack
+        └── HomeDashboardView       new
+            ├── toolbar ▸ person.crop.circle → ProfileView (sheet)
+            ├── greetingCard        profile.name, recoveryStage, [Trò chuyện] → push chat
+            ├── careNotesCard       top 3 → ProfileView §careNotes
+            ├── warningSignsCard    top 3 → ProfileView §warningSigns
+            ├── rememberedCard      top 3 → ProfileView §remembered
+            ├── woundPhotosCard     latest 4 → WoundGalleryView
+            └── dataSourceCard      sourceName, lastUpdated, on-device notice
 ```
 
-`AppShellView` (new, `App/Frontend/App/`) owns the two `.translationTask` modifiers and the
-`checkLanguageAvailability()` task, which configure the process-wide
-`AppConfig.translationService` and need a stable host that does not come and go.
+`HomeView` keeps its two `.translationTask` modifiers and the
+`checkLanguageAvailability()` task. These configure the process-wide
+`AppConfig.translationService` and must remain above chat in the hierarchy.
 
-Home is a **sheet**, matching how chat already presents `ProfileView`: the patient checks
-something and returns to the conversation exactly where they left it. `ChatWorkspaceView`
-therefore keeps its full-bleed layout and custom sidebar untouched — no `NavigationStack`
-wrapping, no system back button above its own hamburger.
+`ChatWorkspaceView` has no `NavigationStack` of its own — its body is a `GeometryReader`
+wrapping a `ZStack` with a custom sidebar — so it can be pushed. It will gain a system
+back button above its own hamburger control. If that reads badly at compact width during
+implementation, the fallback is a `fullScreenCover` with an explicit "Trang chủ" control
+added to the chat sidebar. The decision is made by looking at the built screen at iPhone
+width, not in advance.
 
-Home's greeting card carries no "go to chat" button: chat is what the patient came from, and
-closing the sheet is the way back.
-
-`ProfileView` keeps both entry points — the chat header avatar, and Home's toolbar.
+`ProfileView` continues to be presented as a sheet, as it is today from the chat sidebar.
+Both entry points remain.
 
 ## New files
 
@@ -326,88 +318,6 @@ xcodebuild -project MobiCureVN.xcodeproj -scheme MobiCureVN \
 
 Both must pass, and the built screen is looked at in the simulator in Vietnamese and
 English, light and dark, at standard and extraLarge text size.
-
-## Implementation notes
-
-Four things changed from the design during implementation, each recorded here because the
-spec was wrong rather than because the plan was refined:
-
-1. **`ProfileView.Section.remembered` was dropped, and the memory card got its own screen.**
-   The design routed Home's "Xem tất cả" for remembered facts into `ProfileView`'s memory
-   card — but that card shows *conversation* facts from `SessionFactStore`, not the durable
-   accepted proposals Home shows. The link would have opened a different list under the same
-   heading. Home's card now pushes `RememberedFactsView` (new, `VVM/Home/`), which owns the
-   full durable list. `ProfileView.Section` keeps only `top`, `careNotes` and `warningSigns`.
-
-2. **`ProfileView`'s memory card was retitled.** It used the key
-   "Trợ lý ghi nhớ về bạn" — verbatim the title planned for Home's durable card. Two
-   different lists under one heading is the confusion the design named as a risk, so
-   Profile's card is now "Ghi nhớ trong cuộc trò chuyện này" / "Remembered in this
-   conversation" and Home keeps the general title.
-
-3. **`AddMedicationView.swift` was missing from the deletions table** and is now listed.
-
-4. **The medication feature was not fake data.** `MedicationStore` persists to
-   `UserDefaults`, schedules local notification reminders and tracks adherence events. It was
-   deleted anyway, as a deliberate scope call rather than because it was a mockup.
-
-### Changes to existing screens
-
-Three fixes outside the new files, each found while verifying this work rather than sought out:
-
-1. **`ChatWorkspaceView` no longer opens with its sidebar covering the conversation.**
-   `isSidebarVisible` defaulted to `true`; that flag only drives the compact (phone) overlay,
-   where the conversation list sits over the whole screen behind a dimming scrim. A patient
-   opening the app on a phone saw a menu, not the assistant, and every header control — model
-   picker, language toggle, appearance, Home, Profile — was untappable until they dismissed
-   it. Now `false`. Wide layouts are unaffected: they render the sidebar inline regardless.
-
-2. **Two accessibility labels in `ChatWorkspaceView` never localized.**
-   `.accessibilityLabel("Trang chủ")` and `.accessibilityLabel("Hồ sơ")` bound to the
-   `StringProtocol` overload rather than `LocalizedStringKey`, so VoiceOver read Vietnamese
-   labels to a patient using the app in English. Both now resolve through
-   `.localized(for: appLanguage)`, matching how the rest of that file handles strings outside
-   SwiftUI `Text`. Worth checking whether the same pattern appears elsewhere — this was found
-   by accident, not by an audit.
-
-3. **`ContextBudgetTests` was unblocked.** A concurrent edit narrowed `ModelCatalog` to
-   `qwen3_5_4B`, leaving `ContextBudgetTests.swift:217` asserting the ratio of a
-   now-commented-out `phi3_5Mini` — which broke the whole test target's compile, so nothing
-   could be run. That one stale spot check was removed; the `allCases` loop above it still
-   covers every shipped model.
-
-### Risks retired by verification
-
-- **The chat-push risk is moot.** Chat stayed the root and Home became a sheet, so
-  `ChatWorkspaceView` was never wrapped in a `NavigationStack` at all — its layout and sidebar
-  are untouched. Opening and closing Home is covered by `testHomeOpensFromTheChatHeader` and
-  `testClosingHomeReturnsToChat`.
-- **`MobiCureVNTests` is itself a `PBXFileSystemSynchronizedRootGroup`**
-  (`project.pbxproj:54`), so adding `HomeViewModelTests.swift` and removing
-  `MedicationStoreTests.swift` needed no project-file edit after all.
-
-### Pre-existing test failures (not caused by this work)
-
-A baseline captured before any edit, and re-confirmed by stashing the whole change and
-re-running on a clean tree:
-
-- `InputGuardRailTests.testBlocksNonMedicalQuery_Entertainment`
-- `InputGuardRailTests.testBlocksNonMedicalQuery_Tech`
-- `InputGuardRailTests.testBlocksVeryShortQuery`
-- `OutputGuardRailTests.testBlocksLowConfidenceMedicalAdvice`
-
-These four remain red and are untouched by this change. They are guardrail tests and should
-be fixed on their own ticket rather than folded into a UI change.
-
-`AppNavigationUITests` had six failures at baseline, all asserting a three-tab tab bar the app
-has never had; it launches into onboarding and then a single root screen. Since they are
-navigation tests and #54 changes how the patient moves between chat, Home and Profile, they
-were rewritten against the real structure and all seven now pass. Onboarding is skipped with
-`-hasCompletedOnboarding YES` as a launch argument — `UserDefaults` consults `NSArgumentDomain`
-first — so no test-only branch was added to shipping code.
-
-Final state of the suite: **388 passing, 4 failing**, the four being the pre-existing guardrail
-tests listed above.
 
 ## Risks
 

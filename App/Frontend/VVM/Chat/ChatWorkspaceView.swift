@@ -9,11 +9,7 @@ struct ChatWorkspaceView: View {
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.light.rawValue
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     @AppStorage(AppConfig.selectedModelStorageKey) private var selectedModelRaw = ModelCatalog.default.rawValue
-    /// Closed at launch. This flag only drives the compact (phone) overlay — a wide layout
-    /// always shows the sidebar inline — and on a phone the overlay covers the whole
-    /// conversation behind a scrim. Opening the app into the conversation list meant the first
-    /// thing a patient saw was a menu, not the assistant they came to ask.
-    @State private var isSidebarVisible = false
+    @State private var isSidebarVisible = true
     @State private var isShowingAttachmentSheet = false
     @State private var isShowingCameraPicker = false
     @State private var isShowingPhotoPicker = false
@@ -24,7 +20,6 @@ struct ChatWorkspaceView: View {
     @State private var searchText: String = ""
     @State private var downloadedModels: Set<ModelCatalog> = []
     @State private var isShowingProfile = false
-    @State private var isShowingHome = false
     /// Conversation awaiting a destructive/rename confirmation. Non-nil while its alert is up.
     @State private var conversationPendingDeletion: ChatConversationSummary?
     @State private var conversationPendingRename: ChatConversationSummary?
@@ -134,9 +129,6 @@ struct ChatWorkspaceView: View {
                 Button("Huỷ", role: .cancel) {}
             } message: { _ in
                 Text("Để trống để dùng lại tên tự động theo tin nhắn đầu tiên.")
-            }
-            .sheet(isPresented: $isShowingHome) {
-                HomeDashboardView()
             }
             .sheet(isPresented: $isShowingProfile) {
                 // Pass the active conversation so Profile shows the facts remembered for THIS
@@ -561,26 +553,9 @@ struct ChatWorkspaceView: View {
                 }
                 .accessibilityLabel("Toggle appearance")
 
-                homeButton
                 profileButton
             }
         }
-    }
-
-    /// Entry point to Home — the patient's care notes, warning signs, what the assistant
-    /// remembers, wound photos and data source. A sheet rather than a push, matching
-    /// `profileButton`, so opening it never costs the conversation its place.
-    private var homeButton: some View {
-        Button {
-            isShowingHome = true
-        } label: {
-            Image(systemName: "house.fill")
-                .appFont(size: 14, weight: .semibold)
-                .foregroundColor(Color(.secondaryLabel))
-                .frame(width: 34, height: 34)
-                .background(Circle().fill(Color(.tertiarySystemBackground)))
-        }
-        .accessibilityLabel("Trang chủ".localized(for: appLanguage))
     }
 
     /// Avatar entry point to the patient's Profile — medical record, uploaded wound photos, and
@@ -596,7 +571,7 @@ struct ChatWorkspaceView: View {
                 .frame(width: 34, height: 34)
                 .background(Circle().fill(Color.blue.opacity(0.12)))
         }
-        .accessibilityLabel("Hồ sơ".localized(for: appLanguage))
+        .accessibilityLabel("Hồ sơ")
     }
 
     private func cycleAppearanceMode() {

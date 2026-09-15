@@ -23,29 +23,12 @@ struct ProfileView: View {
     /// matching the rest of the app's `Localizable.xcstrings` convention.
     private func t(_ key: String) -> String { key.localized(for: appLanguage) }
 
-    /// A section Home can ask Profile to open at. Home only ever summarises a field, so its
-    /// "Xem tất cả" has to land on the matching section rather than at the top of a long
-    /// screen. `.top` is the plain "just open Profile" request.
-    enum Section: String, Identifiable, Hashable {
-        case top, careNotes, warningSigns
-        var id: String { rawValue }
-    }
-
-    /// Defaults to `nil`, which preserves the original top-of-screen behaviour for the chat
-    /// sidebar's entry point.
-    private let scrollTarget: Section?
-
-    init(
-        viewModel: ProfileViewModel = ProfileViewModel(repository: MockProfileRepository()),
-        scrollTo scrollTarget: Section? = nil
-    ) {
+    init(viewModel: ProfileViewModel = ProfileViewModel(repository: MockProfileRepository())) {
         _viewModel = State(initialValue: viewModel)
-        self.scrollTarget = scrollTarget
     }
 
     var body: some View {
         NavigationStack {
-            ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 16) {
                     if viewModel.isLoading {
@@ -57,9 +40,7 @@ struct ProfileView: View {
                         textSizeCard
                         profileDetails(profile)
                         notesCard(title: "Care notes", items: profile.careNotes, icon: "checkmark.circle.fill")
-                            .id(ProfileView.Section.careNotes)
                         notesCard(title: "Warning signs", items: profile.warningSigns, icon: "exclamationmark.triangle.fill")
-                            .id(ProfileView.Section.warningSigns)
                         rememberedFactsCard
                         highStakesHistoryCard
                         woundPhotosCard
@@ -100,7 +81,6 @@ struct ProfileView: View {
             }
             .task {
                 await viewModel.load()
-                scrollToRequestedSection(using: proxy)
             }
             .sheet(isPresented: $isEditingProfile) {
                 if let profile = viewModel.profile {
@@ -109,18 +89,10 @@ struct ProfileView: View {
                     }
                 }
             }
-            }
         }
         // Also propagate the chosen language to any SwiftUI Text/LocalizedStringKey inside
         // (e.g. notesCard titles) so they resolve consistently with the explicit t(...) calls.
         .environment(\.locale, appLanguage.locale)
-    }
-
-    /// Scrolls to the section Home asked for, after `load()` has populated the cards — a
-    /// `scrollTo` issued before the target exists in the hierarchy does nothing.
-    private func scrollToRequestedSection(using proxy: ScrollViewProxy) {
-        guard let scrollTarget, scrollTarget != .top else { return }
-        withAnimation { proxy.scrollTo(scrollTarget, anchor: .top) }
     }
 
     private func headerCard(_ profile: PatientProfile) -> some View {
@@ -294,10 +266,7 @@ struct ProfileView: View {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles")
                     .foregroundColor(.cyan)
-                // Says "in this conversation" because Home carries a near-identical card for
-                // the facts that persist between sessions; without the distinction the two
-                // read as the same list disagreeing with itself.
-                Text(t("Ghi nhớ trong cuộc trò chuyện này"))
+                Text(t("Trợ lý ghi nhớ về bạn"))
                     .font(.headline)
                 Spacer()
             }

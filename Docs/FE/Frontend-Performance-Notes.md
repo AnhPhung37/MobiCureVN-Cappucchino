@@ -92,6 +92,8 @@ runtime.
 
 Same pattern, lower traffic (not in the streaming path, fix when convenient):
 
+- `HomeContentView.swift:14` — `DateFormatter()` in `monthYearString(for:)`
+- `AddMedicationView.swift:44`
 - `ProfileView.swift:522`
 
 ---

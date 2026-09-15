@@ -213,9 +213,8 @@ final class ContextBudgetTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(model.wordsToTokensRatio, 1.0, "\(model) has no measured ratio")
         }
         // Pipeline/tools/measure_token_ratio.py — see Docs/BE/Context-Budget-Finding.md.
-        // The Phi-3.5 Mini spot check (2.85) went with the model when the catalog was
-        // narrowed to Qwen 3.5 4B; the loop above still covers every case that ships.
         XCTAssertEqual(ModelCatalog.qwen3_5_4B.wordsToTokensRatio, 1.75)
+        XCTAssertEqual(ModelCatalog.phi3_5Mini.wordsToTokensRatio, 2.85)
     }
 }
 
