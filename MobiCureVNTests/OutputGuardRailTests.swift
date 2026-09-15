@@ -130,10 +130,11 @@ final class OutputGuardRailTests: XCTestCase {
     // MARK: - Guard Rail: Confidence Threshold (Check 3)
 
     func testBlocksLowConfidenceMedicalAdvice() {
-        // Source present (passes citation), but confidence below threshold
+        // Source present (passes citation), but confidence below threshold.
+        // Response must match a medicalAdvicePhrases pattern so isMedicalAdvice fires.
         let context = makeContext(confidence: 0.3, sourceCount: 1)
         let result = sut.validate(
-            response: "You should apply ice to reduce swelling.",
+            response: "You should take this medication twice a day to reduce swelling.",
             retrievedContext: context
         )
         XCTAssertBlocked(result)
@@ -142,7 +143,7 @@ final class OutputGuardRailTests: XCTestCase {
     func testLowConfidenceFilteredResponseContainsLimitationWarning() {
         let context = makeContext(confidence: 0.3, sourceCount: 1)
         let result = sut.validate(
-            response: "You should apply ice to reduce swelling.",
+            response: "You should take this medication twice a day to reduce swelling.",
             retrievedContext: context
         )
         if case .blocked = result.status {

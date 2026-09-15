@@ -113,7 +113,7 @@ nonisolated final class FoundationModelsService: @unchecked Sendable, LLMService
     /// Exposed for `FoundationModelsGenerationOptionsTests`; everything else here needs a device.
     static func generationOptions(for options: GenerationOptions) -> FoundationModels.GenerationOptions {
         FoundationModels.GenerationOptions(
-            samplingMode: options.temperature <= 0 ? .greedy : nil,
+            sampling: options.temperature <= 0 ? .greedy : nil,
             temperature: options.temperature > 0 ? Double(options.temperature) : nil,
             maximumResponseTokens: options.maxTokens
         )

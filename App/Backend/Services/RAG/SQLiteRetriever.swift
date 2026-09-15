@@ -339,7 +339,8 @@ final class SQLiteRetriever {
 
         var stmt: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else {
-            print("SQLiteRetriever: vector prepare failed — \(errorMessage)")
+            print("SQLiteRetriever: vector prepare failed — \(errorMessage) — disabling vector search for this session")
+            hasVecIndex = false
             return []
         }
         defer { sqlite3_finalize(stmt) }

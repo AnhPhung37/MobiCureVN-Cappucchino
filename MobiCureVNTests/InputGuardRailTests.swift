@@ -22,7 +22,10 @@ final class InputGuardRailTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - Rule Group 1: Medical Relevance
+    // MARK: - Rule Group 1: Domain pass-through (topic filter removed by design)
+    // Non-medical and short queries now pass through to the LLM, which redirects
+    // them conversationally instead of showing a hard-block error. This lets
+    // session-memory fact extraction see benign turns like self-introductions.
 
     func testAllowsMedicalQueryEnglish() {
         let result = sut.validate(query: "I have pain and infection around my surgical wound")
@@ -44,19 +47,21 @@ final class InputGuardRailTests: XCTestCase {
         XCTAssertAllowed(result)
     }
 
-    func testBlocksNonMedicalQuery_Tech() {
+    func testAllowsNonMedicalQuery_Tech() {
+        // Off-topic queries pass through — the LLM redirects them, not the guardrail.
         let result = sut.validate(query: "What is the stock market doing today?")
-        XCTAssertBlocked(result)
+        XCTAssertAllowed(result)
     }
 
-    func testBlocksNonMedicalQuery_Entertainment() {
+    func testAllowsNonMedicalQuery_Entertainment() {
         let result = sut.validate(query: "Who won the football match last night?")
-        XCTAssertBlocked(result)
+        XCTAssertAllowed(result)
     }
 
-    func testBlocksVeryShortQuery() {
+    func testAllowsVeryShortQuery() {
+        // "hi" and other short greetings are benign conversational turns.
         let result = sut.validate(query: "hi")
-        XCTAssertBlocked(result)
+        XCTAssertAllowed(result)
     }
 
     // MARK: - Rule Group 2: Dangerous Requests (highest priority)
