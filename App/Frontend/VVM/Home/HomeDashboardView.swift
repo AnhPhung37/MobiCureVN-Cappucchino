@@ -222,7 +222,7 @@ struct HomeDashboardView: View {
             onSeeAll: viewModel.allWoundEntries.isEmpty ? nil : { isShowingGallery = true }
         ) {
             if viewModel.recentWoundEntries.isEmpty {
-                HomeEmptyState(message: "Chưa có ảnh nào. Đính kèm ảnh trong màn hình trò chuyện để trợ lý ghi lại.")
+                HomeEmptyState(message: "Chưa có ảnh nào. Dùng nút “Phân tích vết thương” trong màn hình trò chuyện để thêm.")
             } else {
                 HStack(spacing: 10) {
                     ForEach(viewModel.recentWoundEntries) { entry in

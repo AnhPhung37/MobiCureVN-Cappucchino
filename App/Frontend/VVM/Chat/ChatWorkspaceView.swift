@@ -910,6 +910,7 @@ struct ChatWorkspaceView: View {
         VStack(spacing: 10) {
             if !attachedImages.isEmpty {
                 attachedImagesPreview(images: attachedImages)
+                woundAnalysisButton
             }
 
             HStack(alignment: .center, spacing: 12) {
@@ -1015,6 +1016,49 @@ struct ChatWorkspaceView: View {
         photoPickerItems = []
         isShowingPhotoPicker = false
         isShowingCameraPicker = false
+    }
+
+    /// Dedicated wound-analysis entry point, shown only while photos are attached.
+    ///
+    /// Deliberately separate from the send button, as `ChatViewModel.analyzeWoundPhotos`
+    /// documents: an ordinary chat photo (a medication label, a discharge letter) should not
+    /// pay for the VLM hop and model swap, and should not be filed as a wound observation.
+    ///
+    /// This existed only in `ChatView`, which is unreferenced outside its own `#Preview`. The
+    /// result was that nothing in the running app could write a `WoundLogEntry`: attaching a
+    /// photo and sending it reached the multimodal model but never `WoundAnalysisService`, so
+    /// the wound log stayed permanently empty and both Home's and Profile's photo cards could
+    /// never fill.
+    private var woundAnalysisButton: some View {
+        Button {
+            submitWoundAnalysis()
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "bandage.fill")
+                Text("Phân tích vết thương")
+            }
+            .appFont(size: 14, weight: .semibold)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 44)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.accentColor)
+            )
+        }
+        .disabled(viewModel.isLoading)
+        .opacity(viewModel.isLoading ? 0.5 : 1)
+    }
+
+    /// Routes the attached photos through the findings-first pipeline, which persists a
+    /// `WoundLogEntry` as a side effect. The placeholder draft text is stripped so an
+    /// untouched composer does not become a bogus "patient note".
+    private func submitWoundAnalysis() {
+        guard !attachedImages.isEmpty, !viewModel.isLoading else { return }
+        let note = viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        viewModel.analyzeWoundPhotos(attachedImages, userNote: note)
+        clearDraftAttachments()
+        viewModel.inputText = ""
     }
 
     private func submitCurrentMessage() {

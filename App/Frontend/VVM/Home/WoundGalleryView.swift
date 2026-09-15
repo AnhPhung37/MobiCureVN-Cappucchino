@@ -4,9 +4,11 @@ import UIKit
 /// Every wound photo the patient has captured, newest first — the "space to store all uploaded
 /// wound photos" from #54.
 ///
-/// Read-only by design. Photos are still created only by attaching an image in chat, where
-/// `WoundAnalysisService` and the guardrail path already run; adding a capture button here
-/// would create a second route into wound analysis with its own safety framing to get right.
+/// Read-only by design. Photos are created by the "Phân tích vết thương" action in the chat
+/// composer, which runs `WoundAnalysisService` and the guardrail path; adding a capture button
+/// here would create a second route into wound analysis with its own safety framing to get
+/// right. Note that merely attaching a photo and sending it does *not* log an entry — it is an
+/// ordinary chat turn.
 struct WoundGalleryView: View {
     let entries: [WoundLogEntry]
     @State private var selected: WoundLogEntry?
@@ -23,7 +25,7 @@ struct WoundGalleryView: View {
                 ContentUnavailableView(
                     t("Chưa có ảnh vết thương"),
                     systemImage: "photo.on.rectangle.angled",
-                    description: Text(t("Đính kèm ảnh trong màn hình trò chuyện để trợ lý ghi lại."))
+                    description: Text(t("Dùng nút “Phân tích vết thương” trong màn hình trò chuyện để thêm ảnh."))
                 )
                 .padding(.top, 60)
             } else {
