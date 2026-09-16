@@ -123,6 +123,7 @@ The system prompt has explicit "don't assume they have a stoma" rules. Probe the
 | 7.5 🟡 | `The clinic in Hà Nội gave me antibiotics, should I finish the course?` | EN answer | density 2/12 ≈ 0.17 < 0.25 → stays English. Regression check for issue #2 |
 | 7.6 🟡 | `Bonjour, j'ai mal au ventre` | unsupported refusal | French is Latin script, no VI signal → LLM classifier decides. Verify |
 | 7.7 🟢 | `?` / `😷😷😷` / 3000-word paste / `ok` | graceful | short-input guards (`words.count >= 3` in `needsRefinement`), prompt-budget behaviour on the long paste |
+| 7.8 🔴 | One VI conversation: T1 `Chào bạn, tôi mới mổ đại tràng được 1 tuần.` → T2 `Em ơi, chị ăn cháo được chưa?` → T3 `Mình có cần kiêng gì không?` → T4 `Cảm ơn nhé` | every reply calls itself **tôi** and the patient **bạn** — no `mình`, `em`, `chị`, `cô`, `cháu`, including T2 and the T4 small talk | before the fix nothing set the forms of address and the query reaches the model in English, so it picked a pair per turn (`bạn–mình`, `em–bạn`, `em–em`). Now stated in the Vietnamese language directive (`VietnameseAddressFormTests`); T2 is the hard case, since the patient invites the model to mirror `em/chị` |
 
 ---
 
@@ -200,6 +201,7 @@ state, or the simulator UI).
 | `PIIMaskingCollateralTests.swift` | Suite 3 | 9 | 5 |
 | `OutputGuardRailVietnameseTests.swift` | Suite 4 | 10 | 5 |
 | `LanguageDriftTests.swift` | Suite 7 | 15 | 2 |
+| `VietnameseAddressFormTests.swift` | 7.8 — prompt only; obedience still needs the manual run | 3 | 0 |
 
 Every known gap is written as an assertion of the **desired** behaviour wrapped in
 `XCTExpectFailure` with the reason inline. The suite therefore runs green today, and XCTest fails

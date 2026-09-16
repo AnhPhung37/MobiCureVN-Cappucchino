@@ -461,8 +461,13 @@ final class MedicalChatOrchestrator {
         responseLanguage: DetectedLanguage = .english
     ) -> EnrichedPrompt {
         let answersInVietnamese = responseLanguage.requiresTranslation
+        // Vietnamese has no neutral "I"/"you", so the forms of address are part of the language
+        // instruction, stated at both ends of the prompt like the language itself. Unset, the
+        // model picked a pair per turn ("bạn–mình", "em–bạn", "em–em"): the patient's message
+        // reaches it in English, leaving no register to mirror, and the "caring nurse" persona
+        // pulls toward a nurse's kinship pronouns. The full rule is in `contextLanguageNote`.
         let languageInstruction = answersInVietnamese
-            ? "Respond ONLY in Vietnamese (tiếng Việt). Do NOT use English, Chinese, or any other language under any circumstances."
+            ? "Respond ONLY in Vietnamese (tiếng Việt), always calling yourself \"tôi\" and the person you are talking to \"bạn\". Do NOT use English, Chinese, or any other language under any circumstances."
             : "Respond ONLY in English. Do NOT use Chinese, Vietnamese, or any other language under any circumstances."
 
         // The RAG corpus is English, so the retrieved context below stays English even when the
@@ -476,6 +481,11 @@ final class MedicalChatOrchestrator {
         - Use plain Vietnamese a patient would use, not clinical loan-words, and keep medical
           terms accurate. Where a Vietnamese term is uncommon, put the English term in brackets
           after it once.
+        - Forms of address: refer to yourself only as "tôi" and to the person you are talking to
+          only as "bạn", in every sentence of every reply. Never use "mình", "em", "anh", "chị",
+          "cô", "chú", "bác", "cháu" or "con" as a pronoun for either of you, even if the patient
+          writes that way or an earlier reply in this conversation did. Ordinary words such as
+          "bác sĩ" and "chú ý" are not pronouns and are fine.
         """ : ""
 
         // Apply token budget to RAG chunks so the system prompt stays compact. processQuery has

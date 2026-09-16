@@ -2169,7 +2169,7 @@
         }
       }
     },
-    "Mình có nên nhớ điều này không?" : {
+    "Tôi có nên ghi nhớ điều này không?" : {
       "extractionState" : "stale",
       "localizations" : {
         "en" : {
@@ -2181,7 +2181,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mình có nên nhớ điều này không?"
+            "value" : "Tôi có nên ghi nhớ điều này không?"
           }
         }
       }
