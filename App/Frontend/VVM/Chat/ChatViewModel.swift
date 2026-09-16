@@ -300,8 +300,11 @@ final class ChatViewModel: ObservableObject {
             date: Date(),
             imageData: imageData
         )
-        Task { try? await historyRepository.append(userItem) }
-        Task { await refreshConversationHistory() }
+        // Sequenced so the refresh sees the new message (two independent tasks could race).
+        Task {
+            try? await historyRepository.append(userItem)
+            await refreshConversationHistory()
+        }
     }
 
     private func appendAssistantPlaceholder() -> Int {
