@@ -20,6 +20,9 @@ struct MessageBubble: View {
     /// True while this specific message is being read aloud — at most one bubble at a time.
     var isSpeaking: Bool = false
     var onToggleSpeech: () -> Void = {}
+    /// Whether a citation's source PDF is bundled, and what to do when its card is tapped.
+    var hasSourceDocument: (MedicalSource) -> Bool = { _ in false }
+    var onOpenSourceDocument: (MedicalSource) -> Void = { _ in }
 
     private var isUser: Bool { message.role.lowercased() == "user" }
 
@@ -74,7 +77,11 @@ struct MessageBubble: View {
                 }
 
                 if !isUser && !message.sources.isEmpty {
-                    CitationsView(sources: message.sources)
+                    CitationsView(
+                        sources: message.sources,
+                        hasDocument: hasSourceDocument,
+                        onOpenDocument: onOpenSourceDocument
+                    )
                 }
             }
 

@@ -32,6 +32,8 @@ final class ChatViewModel: ObservableObject {
     @Published var inputText: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    /// The citation whose source PDF is open in the preview sheet.
+    @Published var presentedSourceDocument: PresentedSourceDocument? = nil
     @Published var backendStatus: LLMBackendStatus = .mock
     @Published var downloadProgress: Double = 0
     /// Per-model background-download progress (0...1), keyed by model. Non-empty while one or
@@ -64,6 +66,7 @@ final class ChatViewModel: ObservableObject {
     private let historyRepository: ChatHistoryRepository
     private let speechService: SpeechRecognitionServiceProtocol
     private let speechSynthesisService: TextToSpeechServiceProtocol
+    private let sourceDocumentProvider: SourceDocumentProvider
     @Published private(set) var currentConversationId: UUID = UUID()
 
     private var streamingTask: Task<Void, Never>?
@@ -87,7 +90,8 @@ final class ChatViewModel: ObservableObject {
         llmService: LLMServiceProtocol? = nil,
         historyRepository: ChatHistoryRepository? = nil,
         speechService: SpeechRecognitionServiceProtocol? = nil,
-        speechSynthesisService: TextToSpeechServiceProtocol? = nil
+        speechSynthesisService: TextToSpeechServiceProtocol? = nil,
+        sourceDocumentProvider: SourceDocumentProvider? = nil
     ) {
         let orchestrator = MedicalChatOrchestrator(llmService: llmService ?? AppConfig.llmService)
         self.chatService = ChatService(
@@ -97,6 +101,7 @@ final class ChatViewModel: ObservableObject {
         self.historyRepository = historyRepository ?? AppConfig.chatHistoryRepository
         self.speechService = speechService ?? SpeechRecognitionService()
         self.speechSynthesisService = speechSynthesisService ?? TextToSpeechService()
+        self.sourceDocumentProvider = sourceDocumentProvider ?? AppConfig.sourceDocumentProvider
 
         backendStatus = AppConfig.llmStatus
         downloadProgress = AppConfig.llmDownloadProgress
@@ -541,6 +546,24 @@ final class ChatViewModel: ObservableObject {
     }
 
     // MARK: - Voice Output (read aloud)
+
+    // MARK: - Source Documents
+
+    /// The bundled PDF a citation card opens, or nil when that document isn't shipped.
+    func sourceDocumentURL(for source: MedicalSource) -> URL? {
+        sourceDocumentProvider.documentURL(for: source)
+    }
+
+    func openSourceDocument(_ source: MedicalSource) {
+        guard let url = sourceDocumentURL(for: source) else { return }
+        presentedSourceDocument = PresentedSourceDocument(source: source, url: url)
+    }
+
+    /// Where the cited passage is in its source document, so the preview opens there — and
+    /// highlights it — rather than at page 1.
+    func sourceLocation(for source: MedicalSource) async -> SourceLocation? {
+        await sourceDocumentProvider.locate(source)
+    }
 
     /// Toggles read-aloud for one message: tapping the currently-speaking message stops it;
     /// tapping any other message stops whatever was playing and starts this one — only one

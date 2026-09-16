@@ -13,7 +13,7 @@ import Foundation
 @MainActor
 final class WoundAnalysisService {
 
-    private static let woundVLM: ModelCatalog = .qwen2_5_VL_3B
+    private static let woundVLM: ModelCatalog = .qwen3_5_4B
 
     /// The VLM is asked to emit exactly these keys, one `KEY: value` line each, so
     /// `WoundFindingsParser` can map the output to `WoundLogEntry` fields deterministically.

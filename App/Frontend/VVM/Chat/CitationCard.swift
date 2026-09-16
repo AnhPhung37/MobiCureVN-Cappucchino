@@ -10,69 +10,69 @@ import SwiftUI
 struct CitationCard: View {
 
     let source: MedicalSource
-    @State private var isExpanded = false
+    /// Opens the source PDF; nil when the document isn't bundled, in which case the card
+    /// is a static excerpt preview with no tap action.
+    var onOpenDocument: (() -> Void)? = nil
 
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
 
     var body: some View {
-        Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                isExpanded.toggle()
+        if let onOpenDocument {
+            Button(action: onOpenDocument) {
+                cardContent
             }
-        } label: {
-            VStack(alignment: .leading, spacing: 6) {
-                // Header row
-                HStack(spacing: 8) {
-                    Image(systemName: "doc.text.fill")
-                        .appFont(size: 12)
-                        .foregroundColor(.accentColor)
-
-                    Text(source.title)
-                        .appFont(size: 13, weight: .semibold)
-                        .foregroundColor(Color(.label))
-                        .lineLimit(isExpanded ? nil : 1)
-
-                    Spacer()
-
-                    Text(String(format: "Tr. %lld".localized(for: appLanguage), source.page))
-                        .appFont(size: 11, weight: .medium)
-                        .foregroundColor(.accentColor)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            Capsule().fill(Color.accentColor.opacity(0.12))
-                        )
-
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .appFont(size: 11, weight: .semibold)
-                        .foregroundColor(Color(.secondaryLabel))
-                }
-
-                // Excerpt (expanded only)
-                if isExpanded {
-                    Text(source.excerpt)
-                        .appFont(size: 13)
-                        .foregroundColor(Color(.secondaryLabel))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-
-                    Text(source.documentName)
-                        .appFont(size: 11, weight: .medium)
-                        .foregroundColor(Color(.tertiaryLabel))
-                }
-            }
-            .padding(12)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(Color.accentColor.opacity(0.2), lineWidth: 1)
-                    )
-            )
+            .buttonStyle(.plain)
+            .accessibilityHint("Mở tài liệu gốc".localized(for: appLanguage))
+        } else {
+            cardContent
         }
-        .buttonStyle(.plain)
+    }
+
+    private var cardContent: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            // Header row
+            HStack(spacing: 8) {
+                Image(systemName: onOpenDocument == nil ? "doc.text.fill" : "doc.richtext.fill")
+                    .appFont(size: 12)
+                    .foregroundColor(.accentColor)
+
+                Text(source.title)
+                    .appFont(size: 13, weight: .semibold)
+                    .foregroundColor(Color(.label))
+                    .lineLimit(1)
+
+                Spacer()
+
+                Text(String(format: "Tr. %lld".localized(for: appLanguage), source.page))
+                    .appFont(size: 11, weight: .medium)
+                    .foregroundColor(.accentColor)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        Capsule().fill(Color.accentColor.opacity(0.12))
+                    )
+            }
+
+            Text(source.excerpt)
+                .appFont(size: 13)
+                .foregroundColor(Color(.secondaryLabel))
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(source.documentName)
+                .appFont(size: 11, weight: .medium)
+                .foregroundColor(Color(.tertiaryLabel))
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(Color.accentColor.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
@@ -80,6 +80,9 @@ struct CitationCard: View {
 
 struct CitationsView: View {
     let sources: [MedicalSource]
+    /// Whether a source's PDF is bundled — decides if its card opens a document preview.
+    var hasDocument: (MedicalSource) -> Bool = { _ in false }
+    var onOpenDocument: (MedicalSource) -> Void = { _ in }
 
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
@@ -94,7 +97,10 @@ struct CitationsView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(sources) { source in
-                        CitationCard(source: source)
+                        CitationCard(
+                            source: source,
+                            onOpenDocument: hasDocument(source) ? { onOpenDocument(source) } : nil
+                        )
                             .frame(width: 280)
                     }
                 }

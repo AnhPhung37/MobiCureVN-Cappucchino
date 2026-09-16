@@ -9,7 +9,7 @@ struct AppRootView: View {
     var body: some View {
         Group {
             if hasCompletedOnboarding {
-                HomeView()
+                AppShellView()
             } else {
                 OnboardingView()
             }
