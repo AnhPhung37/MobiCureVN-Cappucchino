@@ -5,6 +5,6 @@ import Foundation
 protocol SourceDocumentProvider {
     /// Local file URL of the source PDF, or nil when that document isn't bundled.
     func documentURL(for source: MedicalSource) -> URL?
-    /// Zero-based index of the PDF page the cited passage is on, or nil when it can't be located.
-    func pageIndex(for source: MedicalSource) async -> Int?
+    /// Locates the cited passage in the document, or nil when it can't be located.
+    func locate(_ source: MedicalSource) async -> SourceLocation?
 }

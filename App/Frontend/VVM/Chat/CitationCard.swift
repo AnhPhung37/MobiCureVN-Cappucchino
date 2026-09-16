@@ -10,50 +10,22 @@ import SwiftUI
 struct CitationCard: View {
 
     let source: MedicalSource
-    /// Opens the source PDF; nil when the document isn't bundled, in which case tapping the
-    /// card expands the excerpt instead.
+    /// Opens the source PDF; nil when the document isn't bundled, in which case the card
+    /// is a static excerpt preview with no tap action.
     var onOpenDocument: (() -> Void)? = nil
-    @State private var isExpanded = false
 
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
 
-    private let chevronSize: CGFloat = 24
-
     var body: some View {
-        // The expand chevron is its own button laid over the card rather than nested inside
-        // the card's button, so the two taps stay independent (and separately reachable by
-        // VoiceOver).
-        ZStack(alignment: .topTrailing) {
-            Button {
-                if let onOpenDocument {
-                    onOpenDocument()
-                } else {
-                    toggleExpanded()
-                }
-            } label: {
+        if let onOpenDocument {
+            Button(action: onOpenDocument) {
                 cardContent
             }
             .buttonStyle(.plain)
-            .accessibilityHint(onOpenDocument == nil ? "" : "Mở tài liệu gốc".localized(for: appLanguage))
-
-            Button(action: toggleExpanded) {
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .appFont(size: 11, weight: .semibold)
-                    .foregroundColor(Color(.secondaryLabel))
-                    .frame(width: chevronSize, height: chevronSize)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .padding(.top, 8)
-            .padding(.trailing, 8)
-            .accessibilityLabel((isExpanded ? "Ẩn đoạn trích" : "Xem đoạn trích").localized(for: appLanguage))
-        }
-    }
-
-    private func toggleExpanded() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            isExpanded.toggle()
+            .accessibilityHint("Mở tài liệu gốc".localized(for: appLanguage))
+        } else {
+            cardContent
         }
     }
 
@@ -68,7 +40,7 @@ struct CitationCard: View {
                 Text(source.title)
                     .appFont(size: 13, weight: .semibold)
                     .foregroundColor(Color(.label))
-                    .lineLimit(isExpanded ? nil : 1)
+                    .lineLimit(1)
 
                 Spacer()
 
@@ -80,24 +52,16 @@ struct CitationCard: View {
                     .background(
                         Capsule().fill(Color.accentColor.opacity(0.12))
                     )
-
-                // Reserves the space the overlaid chevron button occupies.
-                Color.clear
-                    .frame(width: chevronSize - 4, height: 1)
             }
 
-            // Excerpt (expanded only)
-            if isExpanded {
-                Text(source.excerpt)
-                    .appFont(size: 13)
-                    .foregroundColor(Color(.secondaryLabel))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+            Text(source.excerpt)
+                .appFont(size: 13)
+                .foregroundColor(Color(.secondaryLabel))
+                .fixedSize(horizontal: false, vertical: true)
 
-                Text(source.documentName)
-                    .appFont(size: 11, weight: .medium)
-                    .foregroundColor(Color(.tertiaryLabel))
-            }
+            Text(source.documentName)
+                .appFont(size: 11, weight: .medium)
+                .foregroundColor(Color(.tertiaryLabel))
         }
         .padding(12)
         .background(

@@ -17,11 +17,11 @@ struct PresentedSourceDocument: Identifiable {
 struct SourceDocumentView: View {
 
     let document: PresentedSourceDocument
-    /// Finds the zero-based page of the cited passage; nil when it can't be located.
-    let locatePage: (MedicalSource) async -> Int?
+    /// Locates the cited passage; nil when it can't be found.
+    let locate: (MedicalSource) async -> SourceLocation?
 
     @Environment(\.dismiss) private var dismiss
-    @State private var pageIndex: Int?
+    @State private var location: SourceLocation?
     @State private var isLocating = true
 
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
@@ -30,7 +30,12 @@ struct SourceDocumentView: View {
 
     var body: some View {
         NavigationStack {
-            PDFKitView(url: document.url, pageIndex: pageIndex)
+            PDFKitView(
+                url: document.url,
+                pageIndex: location?.pageIndex,
+                matchedText: location?.matchedText,
+                excerpt: document.source.excerpt
+            )
                 .ignoresSafeArea(edges: .bottom)
                 .safeAreaInset(edge: .bottom) { excerptPanel }
                 .navigationTitle(document.source.documentName)
@@ -48,7 +53,7 @@ struct SourceDocumentView: View {
                     }
                 }
                 .task {
-                    pageIndex = await locatePage(document.source)
+                    location = await locate(document.source)
                     isLocating = false
                 }
         }
@@ -69,8 +74,8 @@ struct SourceDocumentView: View {
                     ProgressView()
                         .controlSize(.small)
                         .accessibilityLabel(t("Đang tìm đoạn trích…"))
-                } else if let pageIndex {
-                    Text(String(format: t("Tr. %lld"), pageIndex + 1))
+                } else if let location {
+                    Text(String(format: t("Tr. %lld"), location.pageIndex + 1))
                         .appFont(size: 11, weight: .medium)
                         .foregroundColor(.accentColor)
                         .padding(.horizontal, 6)
@@ -85,7 +90,7 @@ struct SourceDocumentView: View {
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if !isLocating && pageIndex == nil {
+            if !isLocating && location == nil {
                 Text(t("Không tìm thấy vị trí chính xác của đoạn này trong tài liệu."))
                     .appFont(size: 11)
                     .foregroundColor(Color(.secondaryLabel))
@@ -108,6 +113,12 @@ struct SourceDocumentView: View {
 private struct PDFKitView: UIViewRepresentable {
     let url: URL
     let pageIndex: Int?
+    /// The phrase that located this page, when found by search rather than a known
+    /// `source.page` — the starting anchor the highlight is grown outward from.
+    let matchedText: String?
+    /// The full cited passage, so the highlight can be extended to cover all of it rather
+    /// than just the anchor phrase.
+    let excerpt: String
 
     func makeUIView(context: Context) -> PDFView {
         let view = PDFView()
@@ -123,7 +134,43 @@ private struct PDFKitView: UIViewRepresentable {
               pageIndex != context.coordinator.shownPageIndex,
               let page = view.document?.page(at: pageIndex) else { return }
         context.coordinator.shownPageIndex = pageIndex
-        view.go(to: page)
+
+        if let matchedText, let selection = Self.selection(forExcerpt: excerpt, anchor: matchedText, on: page) {
+            selection.color = .systemYellow
+            view.highlightedSelections = [selection]
+            view.go(to: selection)
+        } else {
+            view.go(to: page)
+        }
+    }
+
+    /// Builds one selection spanning the whole cited passage: re-finds the anchor phrase that
+    /// located this page (the search that found it ran off the main thread against a separate
+    /// `PDFDocument` instance of the same file, whose `PDFSelection` results aren't valid
+    /// against this one — but both instances parse identical page text, so it reliably
+    /// re-matches here), then walks forward through the excerpt's later word-windows to find how
+    /// far the passage extends and grows the highlight to cover that whole span.
+    private static func selection(forExcerpt excerpt: String, anchor: String, on page: PDFPage) -> PDFSelection? {
+        guard let pageText = page.string as NSString? else { return nil }
+        let anchorRange = pageText.range(of: anchor, options: [.caseInsensitive, .diacriticInsensitive])
+        guard anchorRange.location != NSNotFound else { return nil }
+
+        var end = anchorRange
+        let tailStart = anchorRange.location + anchorRange.length
+        if tailStart < pageText.length {
+            let tail = NSRange(location: tailStart, length: pageText.length - tailStart)
+            let laterWindows = BundleSourceDocumentProvider.searchWindows(from: excerpt, limit: 200)
+            for window in laterWindows.reversed() {
+                let found = pageText.range(of: window, options: [.caseInsensitive, .diacriticInsensitive], range: tail)
+                if found.location != NSNotFound {
+                    end = found
+                    break
+                }
+            }
+        }
+
+        let combined = NSRange(location: anchorRange.location, length: (end.location + end.length) - anchorRange.location)
+        return page.selection(for: combined)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }

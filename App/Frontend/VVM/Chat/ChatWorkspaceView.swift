@@ -137,7 +137,7 @@ struct ChatWorkspaceView: View {
             }
             .sheet(item: $viewModel.presentedSourceDocument) { document in
                 SourceDocumentView(document: document) { source in
-                    await viewModel.sourcePageIndex(for: source)
+                    await viewModel.sourceLocation(for: source)
                 }
             }
             .sheet(isPresented: $isShowingHome) {

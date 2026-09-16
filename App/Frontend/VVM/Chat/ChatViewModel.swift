@@ -559,9 +559,10 @@ final class ChatViewModel: ObservableObject {
         presentedSourceDocument = PresentedSourceDocument(source: source, url: url)
     }
 
-    /// Zero-based page the cited passage is on, so the preview opens there rather than at page 1.
-    func sourcePageIndex(for source: MedicalSource) async -> Int? {
-        await sourceDocumentProvider.pageIndex(for: source)
+    /// Where the cited passage is in its source document, so the preview opens there — and
+    /// highlights it — rather than at page 1.
+    func sourceLocation(for source: MedicalSource) async -> SourceLocation? {
+        await sourceDocumentProvider.locate(source)
     }
 
     /// Toggles read-aloud for one message: tapping the currently-speaking message stops it;
