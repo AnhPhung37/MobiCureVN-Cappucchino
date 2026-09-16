@@ -27,9 +27,14 @@ final class PrefixSnapshot: @unchecked Sendable {
 /// `cache.offset` for every architecture in `PrefixCachePlanner.resumableModelTypes`. Everything
 /// else forwards to the wrapped model.
 final class PrefixResumingModel: Module, LanguageModel {
-    private let base: any LanguageModel
+    private nonisolated(unsafe) let base: any LanguageModel
 
-    init(_ base: any LanguageModel) {
+    @available(*, unavailable, message: "PrefixResumingModel requires a base language model")
+    nonisolated override init() {
+        fatalError("PrefixResumingModel requires a base language model")
+    }
+
+    nonisolated init(_ base: any LanguageModel) {
         self.base = base
         super.init()
     }
