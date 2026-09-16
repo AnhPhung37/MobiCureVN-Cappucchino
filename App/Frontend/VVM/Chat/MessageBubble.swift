@@ -15,7 +15,7 @@ struct MessageBubble: View {
     var onDismissProfileUpdate: (ProposedProfileUpdate) -> Void = { _ in }
     /// True while this bubble is showing draft text the model is still writing. The text is raw
     /// decoder output that no guardrail has validated yet and will be replaced wholesale by the
-    /// final answer, so it is marked with a caret rather than presented as a finished reply.
+    /// final answer, so it is marked as in progress rather than presented as a finished reply.
     var isStreaming: Bool = false
     /// True while this specific message is being read aloud — at most one bubble at a time.
     var isSpeaking: Bool = false
@@ -27,112 +27,47 @@ struct MessageBubble: View {
     private var isUser: Bool { message.role.lowercased() == "user" }
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
-            if isUser { Spacer(minLength: 48) }
-
-            VStack(alignment: isUser ? .trailing : .leading, spacing: 6) {
-                // Bubble — until the first draft tokens arrive there is nothing to show, so an
-                // empty assistant reply gets the typing indicator. That gap covers the language
-                // and retrieval stages, which run before the model writes anything.
-                Group {
-                    if isUser {
-                        VStack(alignment: .leading, spacing: 10) {
-                            attachedImagesView
-
-                            if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                markdownText(message.content)
-                                    .appFont(size: 16, weight: .regular, design: .rounded)
-                                    .foregroundColor(.white)
-                                    .textSelection(.enabled)
-                            }
-                        }
-                    } else if message.content.isEmpty {
-                        TypingIndicator()
-                    } else {
-                        // Proposals live INSIDE the bubble, under the reply text, so an offer to
-                        // remember something reads as part of what the assistant just said
-                        // rather than as a separate widget parked underneath it.
-                        VStack(alignment: .leading, spacing: 0) {
-                            markdownText(message.content, showsCaret: isStreaming)
-                                .appFont(size: 16, weight: .regular, design: .rounded)
-                                .foregroundColor(Color(.label))
-                                .textSelection(.enabled)
-
-                            if !message.profileUpdateProposals.isEmpty {
-                                ProfileUpdateConfirmationCard(
-                                    updates: message.profileUpdateProposals,
-                                    onAccept: onAcceptProfileUpdate,
-                                    onDismiss: onDismissProfileUpdate
-                                )
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(bubbleBackground)
-
-                if !isUser && !message.content.isEmpty && !isStreaming {
-                    speechButton
-                }
-
-                if !isUser && !message.sources.isEmpty {
-                    CitationsView(
-                        sources: message.sources,
-                        hasDocument: hasSourceDocument,
-                        onOpenDocument: onOpenSourceDocument
-                    )
-                }
-            }
-
-            if !isUser { Spacer(minLength: 48) }
-        }
-        .padding(.horizontal, 16)
-    }
-
-    // MARK: - Voice Output
-
-    /// Lets a patient who'd rather listen than read have the reply spoken aloud. A filled
-    /// capsule rather than plain text — a bare secondary-label link under the bubble read as
-    /// inert metadata (patients weren't noticing it), so this borrows the same "obviously
-    /// tappable chip" language as the Save/Ignore buttons on a profile-update proposal.
-    private var speechButton: some View {
-        Button(action: onToggleSpeech) {
-            HStack(spacing: 6) {
-                Image(systemName: isSpeaking ? "speaker.wave.2.fill" : "speaker.wave.2.fill")
-                    .symbolEffect(.variableColor.iterative, isActive: isSpeaking)
-                Text(isSpeaking ? "Đang đọc..." : "Nghe")
-            }
-            .appFont(size: 13, weight: .semibold)
-            .foregroundColor(isSpeaking ? .white : .accentColor)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            .background(
-                Capsule().fill(isSpeaking ? Color.accentColor : Color.accentColor.opacity(0.14))
+        if isUser {
+            userBubble
+        } else {
+            AssistantReplyCard(
+                message: message,
+                isStreaming: isStreaming,
+                isSpeaking: isSpeaking,
+                onToggleSpeech: onToggleSpeech,
+                hasSourceDocument: hasSourceDocument,
+                onOpenSourceDocument: onOpenSourceDocument,
+                onAcceptProfileUpdate: onAcceptProfileUpdate,
+                onDismissProfileUpdate: onDismissProfileUpdate
             )
         }
-        .buttonStyle(.plain)
-        .padding(.top, 4)
     }
 
-    // MARK: - Sub-views
+    /// The patient's own message, right-aligned. A neutral fill rather than the accent: the reply
+    /// card carries the colour, and 18pt dark-on-light text reads more easily than white on a
+    /// saturated blue.
+    private var userBubble: some View {
+        HStack {
+            Spacer(minLength: 40)
 
-    /// Renders `content` as inline markdown. Draft text arrives mid-sentence, so its markdown is
-    /// routinely unbalanced (`**bold` with no closing pair) — `AttributedString` renders those
-    /// markers literally instead of failing, and the final answer re-renders cleanly once it
-    /// replaces the draft.
-    ///
-    /// Returns `Text` rather than `some View` so the caret can be concatenated inline: it has to
-    /// sit at the end of the last line and flow with it, which an adjacent view cannot do.
-    private func markdownText(_ content: String, showsCaret: Bool = false) -> Text {
-        let rendered: Text
-        if let attributed = try? AttributedString(markdown: content, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
-            rendered = Text(attributed)
-        } else {
-            rendered = Text(content)
+            VStack(alignment: .leading, spacing: 10) {
+                attachedImagesView
+
+                if !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(inlineMarkdown: message.content)
+                        .appFont(size: 18, design: .rounded)
+                        .foregroundColor(Color(.label))
+                        .lineSpacing(5)
+                        .textSelection(.enabled)
+                }
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            )
         }
-        guard showsCaret else { return rendered }
-        return rendered + Text(" ▌").foregroundStyle(Color(.tertiaryLabel))
     }
 
     @ViewBuilder
@@ -164,49 +99,31 @@ struct MessageBubble: View {
             }
         }
     }
-
-    @ViewBuilder
-    private var bubbleBackground: some View {
-        if isUser {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.accentColor)
-        } else {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        }
-    }
 }
 
-// MARK: - Typing Indicator
-
-/// Three pulsing dots shown inside an assistant bubble before the model has written anything —
-/// the language, guardrail and retrieval stages that run ahead of generation. Once draft tokens
-/// start arriving the text itself takes over as the progress cue.
-private struct TypingIndicator: View {
-    @State private var phase = 0
-
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(0..<3, id: \.self) { index in
-                Circle()
-                    .frame(width: 6, height: 6)
-                    .foregroundColor(Color(.secondaryLabel))
-                    .opacity(phase == index ? 1.0 : 0.3)
-            }
+extension Text {
+    /// `content` rendered as inline Markdown, optionally followed by a caret marking text the
+    /// model is still writing.
+    ///
+    /// Draft text arrives mid-sentence, so its Markdown is routinely unbalanced (`**bold` with no
+    /// closing pair) — `AttributedString` renders those markers literally instead of failing, and
+    /// the final answer re-renders cleanly once it replaces the draft.
+    ///
+    /// A `Text` rather than `some View` so the caret can be concatenated inline: it has to sit at
+    /// the end of the last line and flow with it, which an adjacent view cannot do.
+    init(inlineMarkdown content: String, showsCaret: Bool = false) {
+        let rendered: Text
+        if let attributed = try? AttributedString(markdown: content, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
+            rendered = Text(attributed)
+        } else {
+            rendered = Text(verbatim: content)
         }
-        .task {
-            while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 350_000_000)
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    phase = (phase + 1) % 3
-                }
-            }
-        }
+        self = showsCaret ? rendered + Text(verbatim: " ▌").foregroundStyle(Color(.tertiaryLabel)) : rendered
     }
 }
 
 #Preview {
-    VStack(spacing: 12) {
+    VStack(spacing: 24) {
         MessageBubble(message: ChatMessage(
             role: "user",
             content: "Vết mổ của tôi có bị nhiễm trùng không?"
@@ -220,5 +137,5 @@ private struct TypingIndicator: View {
             isStreaming: true
         )
     }
-    .padding(.vertical)
+    .padding(16)
 }

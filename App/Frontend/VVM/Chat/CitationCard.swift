@@ -7,11 +7,13 @@
 
 import SwiftUI
 
+/// One source behind an assistant reply: its title, document and page, and — when the PDF is
+/// bundled — a tap target that opens it.
 struct CitationCard: View {
 
     let source: MedicalSource
-    /// Opens the source PDF; nil when the document isn't bundled, in which case the card
-    /// is a static excerpt preview with no tap action.
+    /// Opens the source PDF; nil when the document isn't bundled, in which case the row is
+    /// static with no tap action.
     var onOpenDocument: (() -> Void)? = nil
 
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
@@ -20,59 +22,47 @@ struct CitationCard: View {
     var body: some View {
         if let onOpenDocument {
             Button(action: onOpenDocument) {
-                cardContent
+                row
             }
             .buttonStyle(.plain)
             .accessibilityHint("Mở tài liệu gốc".localized(for: appLanguage))
         } else {
-            cardContent
+            row
         }
     }
 
-    private var cardContent: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // Header row
-            HStack(spacing: 8) {
-                Image(systemName: onOpenDocument == nil ? "doc.text.fill" : "doc.richtext.fill")
-                    .appFont(size: 12)
-                    .foregroundColor(.accentColor)
+    /// A full-width row rather than a fixed 280pt card in a sideways scroller, which left every
+    /// source after the first behind a swipe with nothing on screen to suggest it.
+    private var row: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: "book.closed.fill")
+                .appFont(size: 15)
+                .foregroundColor(ChatPalette.accentText)
+                .accessibilityHidden(true)
 
+            VStack(alignment: .leading, spacing: 2) {
                 Text(source.title)
-                    .appFont(size: 13, weight: .semibold)
+                    .appFont(size: 16, weight: .semibold, design: .rounded)
                     .foregroundColor(Color(.label))
-                    .lineLimit(1)
 
-                Spacer()
-
-                Text(String(format: "Tr. %lld".localized(for: appLanguage), source.page))
-                    .appFont(size: 11, weight: .medium)
-                    .foregroundColor(.accentColor)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(
-                        Capsule().fill(Color.accentColor.opacity(0.12))
-                    )
+                Text(verbatim: "\(source.documentName) · \(String(format: "Tr. %lld".localized(for: appLanguage), source.page))")
+                    .appFont(size: 14, design: .rounded)
+                    .foregroundColor(ChatPalette.secondaryText)
             }
 
-            Text(source.excerpt)
-                .appFont(size: 13)
-                .foregroundColor(Color(.secondaryLabel))
-                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 8)
 
-            Text(source.documentName)
-                .appFont(size: 11, weight: .medium)
-                .foregroundColor(Color(.tertiaryLabel))
+            if onOpenDocument != nil {
+                Image(systemName: "chevron.right")
+                    .appFont(size: 14, weight: .semibold)
+                    .foregroundColor(Color(.tertiaryLabel))
+                    .accessibilityHidden(true)
+            }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .strokeBorder(Color.accentColor.opacity(0.2), lineWidth: 1)
-                )
-        )
-        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(.vertical, 8)
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -80,31 +70,22 @@ struct CitationCard: View {
 
 struct CitationsView: View {
     let sources: [MedicalSource]
-    /// Whether a source's PDF is bundled — decides if its card opens a document preview.
+    /// Whether a source's PDF is bundled — decides if its row opens a document preview.
     var hasDocument: (MedicalSource) -> Bool = { _ in false }
     var onOpenDocument: (MedicalSource) -> Void = { _ in }
 
-    @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
-    private var appLanguage: AppLanguage { AppLanguage(rawValue: appLanguageRaw) ?? .vietnamese }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label("Nguồn tài liệu".localized(for: appLanguage), systemImage: "books.vertical.fill")
-                .appFont(size: 12, weight: .semibold)
-                .foregroundColor(Color(.secondaryLabel))
-                .padding(.horizontal, 16)
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Nguồn tài liệu")
+                .appFont(size: 14, weight: .semibold, design: .rounded)
+                .foregroundColor(ChatPalette.secondaryText)
+                .accessibilityAddTraits(.isHeader)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(sources) { source in
-                        CitationCard(
-                            source: source,
-                            onOpenDocument: hasDocument(source) ? { onOpenDocument(source) } : nil
-                        )
-                            .frame(width: 280)
-                    }
-                }
-                .padding(.horizontal, 16)
+            ForEach(sources) { source in
+                CitationCard(
+                    source: source,
+                    onOpenDocument: hasDocument(source) ? { onOpenDocument(source) } : nil
+                )
             }
         }
     }
@@ -126,6 +107,6 @@ struct CitationsView: View {
             page: 8,
             documentName: "Pain Management Guidelines"
         )
-    ])
-    .padding(.vertical)
+    ], hasDocument: { $0.id == "1" })
+    .padding()
 }

@@ -5,7 +5,10 @@ import UIKit
 struct ChatWorkspaceView: View {
     @StateObject private var viewModel: ChatViewModel
 
-    @FocusState private var inputFocused: Bool
+    /// Widest the conversation and composer grow on iPad. Past this, 18pt lines run long enough
+    /// that the eye loses its place moving back to the start of the next one.
+    private static let readableWidth: CGFloat = 820
+
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.light.rawValue
     @AppStorage(AppLanguage.storageKey) private var appLanguageRaw = AppLanguage.vietnamese.rawValue
     @AppStorage(AppConfig.selectedModelStorageKey) private var selectedModelRaw = ModelCatalog.default.rawValue
@@ -218,7 +221,7 @@ struct ChatWorkspaceView: View {
         HStack(alignment: .center, spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.blue)
+                    .fill(ChatPalette.accent)
                     .frame(width: 46, height: 46)
                 Image(systemName: "waveform.path.ecg")
                     .appFont(size: 20, weight: .semibold)
@@ -273,7 +276,7 @@ struct ChatWorkspaceView: View {
             .padding(.vertical, 14)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.blue)
+                    .fill(ChatPalette.accent)
             )
         }
     }
@@ -353,8 +356,8 @@ struct ChatWorkspaceView: View {
                                 .appFont(size: 10, weight: .semibold)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Capsule().fill(Color.blue.opacity(0.12)))
-                                .foregroundColor(.blue)
+                                .background(Capsule().fill(ChatPalette.accentSoft))
+                                .foregroundColor(ChatPalette.accentText)
                         }
                     }
                     // Reserves room for the overlaid menu button so the date and the "open"
@@ -364,10 +367,10 @@ struct ChatWorkspaceView: View {
                 .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(isActive ? Color.blue.opacity(0.10) : Color(.systemBackground))
+                        .fill(isActive ? ChatPalette.accentSoft.opacity(0.6) : Color(.systemBackground))
                         .overlay(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .strokeBorder(isActive ? Color.blue.opacity(0.22) : Color(.separator).opacity(0.5), lineWidth: 1)
+                                .strokeBorder(isActive ? ChatPalette.accentText.opacity(0.35) : Color(.separator).opacity(0.5), lineWidth: 1)
                         )
                 )
             }
@@ -516,7 +519,7 @@ struct ChatWorkspaceView: View {
 
             ScrollViewReader { proxy in
                 ScrollView {
-                    VStack(spacing: 18) {
+                    VStack(spacing: 24) {
                         workspaceHeader
 
                         if viewModel.backendStatus == .loading && viewModel.isFirstTimeModelSetup {
@@ -537,9 +540,11 @@ struct ChatWorkspaceView: View {
 
                         Color.clear.frame(height: 1).id("bottom")
                     }
-                    .padding(.horizontal, isCompact ? 12 : 20)
+                    .frame(maxWidth: Self.readableWidth)
+                    .padding(.horizontal, isCompact ? 16 : 24)
                     .padding(.top, 18)
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 24)
+                    .frame(maxWidth: .infinity)
                 }
                 .scrollBounceBehavior(.always)
                 .scrollDismissesKeyboard(.interactively)
@@ -554,10 +559,13 @@ struct ChatWorkspaceView: View {
                 }
             }
 
-            composerBar
-                .padding(.horizontal, isCompact ? 10 : 16)
-                .padding(.top, 10)
-                .padding(.bottom, 12)
+            Divider().opacity(0.6)
+
+            composerBar(horizontalPadding: isCompact ? 16 : 24)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+                .frame(maxWidth: Self.readableWidth + 2 * (isCompact ? 16 : 24))
+                .frame(maxWidth: .infinity)
                 .background(Color(.systemBackground))
         }
         .background(workspaceBackground)
@@ -627,9 +635,9 @@ struct ChatWorkspaceView: View {
         } label: {
             Image(systemName: "person.crop.circle.fill")
                 .appFont(size: 20, weight: .semibold)
-                .foregroundColor(.blue)
+                .foregroundColor(ChatPalette.accentText)
                 .frame(width: 34, height: 34)
-                .background(Circle().fill(Color.blue.opacity(0.12)))
+                .background(Circle().fill(ChatPalette.accentSoft))
         }
         .accessibilityLabel("Hồ sơ".localized(for: appLanguage))
     }
@@ -739,7 +747,7 @@ struct ChatWorkspaceView: View {
                 .foregroundColor(isSelected ? .white : Color(.secondaryLabel))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(isSelected ? Capsule().fill(Color.blue) : nil)
+                .background(isSelected ? Capsule().fill(ChatPalette.accent) : nil)
         }
     }
 
@@ -806,7 +814,7 @@ struct ChatWorkspaceView: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "info.circle")
                 .appFont(size: 14, weight: .semibold)
-                .foregroundColor(.accentColor)
+                .foregroundColor(ChatPalette.accentText)
             Text(LocalizedStringKey("Lần đầu tải model có thể mất vài phút, tuỳ theo tốc độ mạng và thiết bị. Các lần sau sẽ nhanh hơn nhiều."))
                 .appFont(size: 12)
                 .foregroundColor(Color(.secondaryLabel))
@@ -814,7 +822,7 @@ struct ChatWorkspaceView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(
-            RoundedRectangle(cornerRadius: 12).fill(Color.accentColor.opacity(0.08))
+            RoundedRectangle(cornerRadius: 12).fill(ChatPalette.accentSoft.opacity(0.6))
         )
         .transition(.opacity)
     }
@@ -877,11 +885,11 @@ struct ChatWorkspaceView: View {
             HStack {
                 ZStack {
                     Circle()
-                        .fill(Color.blue.opacity(0.12))
+                        .fill(ChatPalette.accentSoft)
                         .frame(width: 38, height: 38)
                     Image(systemName: question.icon)
                         .appFont(size: 16, weight: .semibold)
-                        .foregroundColor(.blue)
+                        .foregroundColor(ChatPalette.accentText)
                 }
                 Spacer()
             }
@@ -905,13 +913,13 @@ struct ChatWorkspaceView: View {
     }
 
     private var messageThread: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 24) {
             ForEach(viewModel.sections) { section in
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 24) {
                     Text(LocalizedStringKey(section.title))
                         .textCase(.uppercase)
-                        .appFont(size: 12, weight: .bold)
-                        .foregroundColor(Color(.secondaryLabel))
+                        .appFont(size: 13, weight: .bold)
+                        .foregroundColor(ChatPalette.secondaryText)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 8)
                     ForEach(section.items) { item in
@@ -943,89 +951,94 @@ struct ChatWorkspaceView: View {
         }
     }
 
-    private var composerBar: some View {
-        VStack(spacing: 10) {
-            if !attachedImages.isEmpty {
-                attachedImagesPreview(images: attachedImages)
-                woundAnalysisButton
+    /// Follow-up chips, any attached photos, the composer and the disclaimer. The chip row runs
+    /// edge to edge — its content margin, not the bar's padding, keeps the first chip aligned —
+    /// so chips scrolled sideways aren't cut off at an invisible inset.
+    private func composerBar(horizontalPadding: CGFloat) -> some View {
+        VStack(spacing: 12) {
+            if showsFollowUps {
+                FollowUpChips(
+                    suggestions: followUpSuggestions,
+                    isAnswering: viewModel.isLoading,
+                    onSelect: selectFollowUp
+                )
+                .contentMargins(.horizontal, horizontalPadding, for: .scrollContent)
             }
 
-            HStack(alignment: .center, spacing: 12) {
-                Button {
-                    if attachedImages.count >= maxAttachedImages {
-                        isShowingImageLimitAlert = true
-                    } else {
-                        isShowingAttachmentSheet = true
+            VStack(spacing: 10) {
+                if !attachedImages.isEmpty {
+                    attachedImagesPreview(images: attachedImages)
+                    woundAnalysisButton
+                }
+
+                ChatComposer(
+                    text: $viewModel.inputText,
+                    isListening: viewModel.isListening,
+                    isAnswering: viewModel.isLoading,
+                    canSend: canSubmitDraft,
+                    canAttach: attachedImages.count < maxAttachedImages,
+                    onAttach: requestAttachment,
+                    onToggleVoice: { viewModel.toggleVoiceInput() },
+                    onSend: {
+                        if viewModel.isLoading {
+                            viewModel.cancelStreaming()
+                        } else {
+                            submitCurrentMessage()
+                        }
                     }
-                } label: {
-                    Image(systemName: "photo.on.rectangle.angled")
-                        .appFont(size: 16, weight: .semibold)
-                        .foregroundColor(attachedImages.count >= maxAttachedImages ? Color(.tertiaryLabel) : Color(.secondaryLabel))
-                        .frame(width: 38, height: 38)
-                        .background(Circle().fill(Color(.secondarySystemBackground)))
-                }
-                .accessibilityLabel("Attach image")
+                )
 
-                Button {
-                    viewModel.toggleVoiceInput()
-                } label: {
-                    Image(systemName: viewModel.isListening ? "waveform" : "mic.fill")
-                        .appFont(size: 16, weight: .semibold)
-                        .foregroundColor(viewModel.isListening ? .white : Color(.secondaryLabel))
-                        .frame(width: 38, height: 38)
-                        .background(Circle().fill(viewModel.isListening ? Color.red : Color(.secondarySystemBackground)))
-                        .symbolEffect(.variableColor.iterative, isActive: viewModel.isListening)
-                }
-                // Recording while the model is mid-answer would fight the same audio session
-                // for no benefit, so the mic is only available when the composer is otherwise
-                // usable.
-                .disabled(viewModel.isLoading)
-                .accessibilityLabel(viewModel.isListening ? "Dừng nhập giọng nói" : "Nhập bằng giọng nói")
-
-                TextField(viewModel.isListening ? "Đang nghe..." : "Mô tả triệu chứng hoặc đặt câu hỏi...", text: $viewModel.inputText, axis: .vertical)
-                    .appFont(size: 16)
-                    .lineLimit(1...5)
-                    .focused($inputFocused)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .onSubmit { submitCurrentMessage() }
-
-                Button {
-                    if viewModel.isLoading {
-                        viewModel.cancelStreaming()
-                    } else {
-                        submitCurrentMessage()
-                    }
-                } label: {
-                    Image(systemName: viewModel.isLoading ? "stop.fill" : "paperplane.fill")
-                        .appFont(size: 16, weight: .semibold)
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(Circle().fill(viewModel.isLoading || canSubmitDraft ? Color.blue : Color(.tertiaryLabel)))
-                }
-                .disabled(!canSubmitDraft)
-            }
-
-            HStack {
                 Text("MobiCure AI cung cấp hỗ trợ lâm sàng, không thay thế tư vấn y tế chuyên nghiệp.")
-                    .appFont(size: 12)
-                    .foregroundColor(Color(.secondaryLabel))
-                Spacer()
-                Image(systemName: "questionmark.circle.fill")
-                    .foregroundColor(Color(.secondaryLabel))
+                    .appFont(size: 13, design: .rounded)
+                    .foregroundColor(ChatPalette.secondaryText)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 6)
+            .padding(.horizontal, horizontalPadding)
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.10), radius: 16, x: 0, y: 6)
-        )
+    }
+
+    /// Chips only once a conversation is under way — before that, the quick-question cards do
+    /// this job — and not while photos are attached, when the next step is sending them.
+    private var showsFollowUps: Bool {
+        !viewModel.messages.isEmpty && attachedImages.isEmpty
+    }
+
+    private var followUpSuggestions: [FollowUpSuggestion] {
+        [
+            .init(title: "Chụp ảnh vết thương", systemImage: "camera.fill", action: .takePhoto),
+            .init(title: "Đau tăng lên", action: .ask(prompt: "Tôi thấy đau tăng lên sau mổ. Tôi nên làm gì?")),
+            .init(title: "Dịch tiết lạ", action: .ask(prompt: "Vết mổ của tôi có dịch tiết lạ. Tôi có nên lo không?")),
+            // Asked about stomas in general, not "my stoma": the chip is shown to every patient
+            // and the prompt must not tell the model — or session memory — that they have one.
+            .init(title: "Chăm sóc hậu môn nhân tạo", action: .ask(prompt: "Nên chăm sóc hậu môn nhân tạo như thế nào?")),
+        ]
+    }
+
+    private func selectFollowUp(_ suggestion: FollowUpSuggestion) {
+        switch suggestion.action {
+        case .takePhoto:
+            if attachedImages.count >= maxAttachedImages {
+                isShowingImageLimitAlert = true
+            } else {
+                isShowingCameraPicker = true
+            }
+        case .ask(let prompt):
+            guard !viewModel.isLoading else { return }
+            // `sendMessage` empties the composer; put back anything the patient had already
+            // started typing so a chip tap never costs them their draft.
+            let draft = viewModel.inputText
+            viewModel.sendMessage(prompt: prompt.localized(for: appLanguage))
+            viewModel.inputText = draft
+        }
+    }
+
+    private func requestAttachment() {
+        if attachedImages.count >= maxAttachedImages {
+            isShowingImageLimitAlert = true
+        } else {
+            isShowingAttachmentSheet = true
+        }
     }
 
     // MARK: - Attachment Helpers
@@ -1070,17 +1083,17 @@ struct ChatWorkspaceView: View {
         Button {
             submitWoundAnalysis()
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 Image(systemName: "bandage.fill")
                 Text("Phân tích vết thương")
             }
-            .appFont(size: 14, weight: .semibold)
+            .appFont(size: 17, weight: .semibold, design: .rounded)
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 44)
+            .frame(minHeight: 52)
             .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.accentColor)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(ChatPalette.accent)
             )
         }
         .disabled(viewModel.isLoading)
