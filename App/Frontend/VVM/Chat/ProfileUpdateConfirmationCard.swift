@@ -224,7 +224,7 @@ struct ProfileUpdateConfirmationCard: View {
                     HStack(spacing: 6) {
                         Image(systemName: "wand.and.stars")
                             .font(.system(size: 11))
-                        Text(t("Mình có nên nhớ điều này không?"))
+                        Text(t("Tôi có nên ghi nhớ điều này không?"))
                             .font(.system(size: 12, weight: .semibold))
                     }
                     .foregroundColor(Color(.secondaryLabel))
