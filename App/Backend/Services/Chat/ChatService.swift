@@ -58,19 +58,22 @@ final class ChatService: ObservableObject {
     private let translationService: TranslationService
     private let emergencyDetector: EmergencyDetector
     private let nameGuard: NameGuard
+    private let medicalGlossary: MedicalGlossary
 
     init(
         orchestrator: MedicalChatOrchestrator,
         languageValidator: LanguageValidationService = LanguageValidationService(),
         translationService: TranslationService,
         emergencyDetector: EmergencyDetector = EmergencyDetector(),
-        nameGuard: NameGuard = NameGuard()
+        nameGuard: NameGuard = NameGuard(),
+        medicalGlossary: MedicalGlossary = MedicalGlossary()
     ) {
         self.orchestrator = orchestrator
         self.languageValidator = languageValidator
         self.translationService = translationService
         self.emergencyDetector = emergencyDetector
         self.nameGuard = nameGuard
+        self.medicalGlossary = medicalGlossary
     }
 
     // Called when AppConfig swaps the underlying LLM service.
@@ -337,7 +340,12 @@ final class ChatService: ObservableObject {
         let englishQuery: String
         if detectedLanguage.requiresTranslation {
             processingState = .translatingInput
-            let protectedInput = nameGuard.protect(refinedText, name: pinnedName)
+            // Name is protected first so the glossary can never rewrite part of it.
+            let nameProtected = nameGuard.protect(refinedText, name: pinnedName)
+            let protectedInput = medicalGlossary.apply(nameProtected)
+            if protectedInput != nameProtected.precomposedStringWithCanonicalMapping {
+                flow.stage("glossary", nameGuard.restore(protectedInput, name: pinnedName), tag: "vi")
+            }
             let translatedIn = try await translationService.translateToEnglish(protectedInput)
             englishQuery = nameGuard.restore(translatedIn, name: pinnedName)
             stageMark = Self.logStage("B · translate→en (Apple)", since: stageMark)
