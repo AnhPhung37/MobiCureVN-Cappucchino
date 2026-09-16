@@ -33,7 +33,13 @@ final class SQLiteRetriever {
         }
 
         hasFTSIndex = tableExists("chunks_fts")
-        hasVecIndex = tableExists("vec_chunks")
+        // sqlite_master lists vec_chunks whether or not vec0 is registered; only a registered
+        // module makes it queryable.
+        if let db, let error = SQLiteVec.register(on: db) {
+            print("SQLiteRetriever: sqlite-vec registration failed — \(error); vector search disabled, FTS-only")
+        } else {
+            hasVecIndex = tableExists("vec_chunks")
+        }
         hasPageStartColumn = columnExists(tableName: "chunks", columnName: "page_start")
         queryEmbedder = QueryEmbedder()
         if queryEmbedder == nil {
@@ -137,7 +143,7 @@ final class SQLiteRetriever {
     }
 
     // MARK: - FTS5 Search
-    private struct RowInfo {
+    struct RowInfo {
         let chunkID: String
         let docID: String
         let text: String
@@ -148,7 +154,7 @@ final class SQLiteRetriever {
         let pageStart: Int
     }
 
-    private struct ScoredRow {
+    struct ScoredRow {
         let info: RowInfo
         let relevanceScore: Double
     }
@@ -283,10 +289,15 @@ final class SQLiteRetriever {
         )
     }
 
-    private func runVectorSearch(query: String, limit: Int) -> [ScoredRow] {
+    func runVectorSearch(query: String, limit: Int) -> [ScoredRow] {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return [] }
         guard hasVecIndex, let embedder = queryEmbedder else { return [] }
         guard let embedding = embedder.embed(query) else { return [] }
+        return runVectorSearch(embedding: embedding, limit: limit)
+    }
+
+    func runVectorSearch(embedding: [Float], limit: Int) -> [ScoredRow] {
+        guard hasVecIndex else { return [] }
 
         let sql = """
             SELECT
