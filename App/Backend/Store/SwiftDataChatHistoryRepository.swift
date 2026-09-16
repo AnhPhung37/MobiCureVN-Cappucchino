@@ -1,10 +1,13 @@
 import Foundation
 import SwiftData
+import os
 
 @MainActor
 final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
 
     private static let legacyConversationId = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+
+    private static let log = Logger(subsystem: "MobiCureVN", category: "ChatHistory")
 
     private let container: ModelContainer
 
@@ -17,6 +20,28 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
             // producing `no such table` I/O errors. Prefer AppConfig.modelContainer at call sites.
             self.container = try ModelContainer(for: ChatRecord.self, ChatConversationRecord.self, WoundLogRecord.self)
         }
+        migrateLegacyImages()
+    }
+
+    /// One-time move of images from the legacy inline JSON column into the external-storage
+    /// `images` attribute. Idempotent: migrated rows have `imageData == nil`, so later launches
+    /// fetch nothing. If it fails, `loadHistory` still reads the legacy column, so no photo is lost.
+    private func migrateLegacyImages() {
+        do {
+            let descriptor = FetchDescriptor<ChatRecord>(predicate: #Predicate { $0.imageData != nil })
+            let legacy = try container.mainContext.fetch(descriptor)
+            guard !legacy.isEmpty else { return }
+            for record in legacy {
+                let decoded = Self.decodeLegacyImages(record.imageData)
+                if record.images == nil, !decoded.isEmpty {
+                    record.images = Self.encodeImages(decoded)
+                }
+                record.imageData = nil
+            }
+            try container.mainContext.save()
+        } catch {
+            Self.log.error("Legacy chat image migration failed: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     private static func decodeSources(_ data: Data?) -> [MedicalSource] {
@@ -24,13 +49,29 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
         return (try? JSONDecoder().decode([MedicalSource].self, from: data)) ?? []
     }
 
+    /// Binary plist stores each `Data` as raw bytes; JSON would base64 them (~33% larger).
+    private static func encodeImages(_ images: [Data]) -> Data? {
+        guard !images.isEmpty else { return nil }
+        let encoder = PropertyListEncoder()
+        encoder.outputFormat = .binary
+        return try? encoder.encode(images)
+    }
+
     private static func decodeImages(_ data: Data?) -> [Data] {
+        guard let data else { return [] }
+        return (try? PropertyListDecoder().decode([Data].self, from: data)) ?? []
+    }
+
+    private static func decodeLegacyImages(_ data: Data?) -> [Data] {
         guard let data else { return [] }
         return (try? JSONDecoder().decode([Data].self, from: data)) ?? []
     }
 
     func loadConversations() async throws -> [ChatConversationSummary] {
-        let descriptor = FetchDescriptor<ChatRecord>(sortBy: [SortDescriptor(\.date, order: .forward)])
+        // Summaries only need these columns. Limiting the fetch keeps image and citation blobs
+        // unloaded — this runs on every turn to refresh the conversation list.
+        var descriptor = FetchDescriptor<ChatRecord>(sortBy: [SortDescriptor(\.date, order: .forward)])
+        descriptor.propertiesToFetch = [\.conversationId, \.role, \.content, \.date]
         let records = try container.mainContext.fetch(descriptor)
         let grouped = Dictionary(grouping: records) { record -> UUID in
             record.conversationId ?? Self.legacyConversationId
@@ -75,14 +116,15 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
                 content: record.content,
                 date: record.date,
                 sources: Self.decodeSources(record.sourcesData),
-                imageData: Self.decodeImages(record.imageData)
+                imageData: record.images != nil
+                    ? Self.decodeImages(record.images)
+                    : Self.decodeLegacyImages(record.imageData)
             )
         }
     }
 
     func append(_ item: ChatItem) async throws {
         let sourcesData = item.sources.isEmpty ? nil : try? JSONEncoder().encode(item.sources)
-        let imageData = item.imageData.isEmpty ? nil : try? JSONEncoder().encode(item.imageData)
         let record = ChatRecord(
             id: item.id,
             conversationId: item.conversationId,
@@ -90,7 +132,7 @@ final class SwiftDataChatHistoryRepository: ChatHistoryRepository {
             content: item.content,
             date: item.date,
             sourcesData: sourcesData,
-            imageData: imageData
+            images: Self.encodeImages(item.imageData)
         )
         container.mainContext.insert(record)
         try container.mainContext.save()
