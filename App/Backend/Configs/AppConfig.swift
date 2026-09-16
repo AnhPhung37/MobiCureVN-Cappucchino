@@ -143,6 +143,9 @@ struct AppConfig {
     /// across the RAGService (inside MedicalChatOrchestrator) and ChatViewModel citation lookup.
     static let retriever = SQLiteRetriever()
 
+    /// Original PDFs behind citation cards, bundled so opening one never touches the network.
+    static let sourceDocumentProvider: SourceDocumentProvider = BundleSourceDocumentProvider()
+
     /// Shared session-fact store. A `MedicalChatOrchestrator` is recreated on every model swap
     /// (see `ChatViewModel.bindLLMStatusUpdates`); if each carried its own fact store, remembered
     /// facts would be lost on a mid-conversation model switch. Sharing one instance keeps a

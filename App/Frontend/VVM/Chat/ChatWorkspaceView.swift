@@ -135,6 +135,11 @@ struct ChatWorkspaceView: View {
             } message: { _ in
                 Text("Để trống để dùng lại tên tự động theo tin nhắn đầu tiên.")
             }
+            .sheet(item: $viewModel.presentedSourceDocument) { document in
+                SourceDocumentView(document: document) { source in
+                    await viewModel.sourcePageIndex(for: source)
+                }
+            }
             .sheet(isPresented: $isShowingHome) {
                 HomeDashboardView()
             }
@@ -898,7 +903,9 @@ struct ChatWorkspaceView: View {
                             isSpeaking: item.id == viewModel.speakingMessageID,
                             onToggleSpeech: {
                                 viewModel.toggleSpeech(for: item.id, text: item.content)
-                            }
+                            },
+                            hasSourceDocument: { viewModel.sourceDocumentURL(for: $0) != nil },
+                            onOpenSourceDocument: { viewModel.openSourceDocument($0) }
                         )
                     }
                 }
