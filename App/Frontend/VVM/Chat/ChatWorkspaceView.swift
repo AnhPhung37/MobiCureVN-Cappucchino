@@ -30,6 +30,10 @@ struct ChatWorkspaceView: View {
     @State private var conversationPendingRename: ChatConversationSummary?
     @State private var renameDraft: String = ""
     @State private var isConfirmingDeleteAll = false
+    /// Raised when the device cannot place calls (iPad, Simulator) so the user is told to
+    /// use a phone instead of getting silence.
+    @State private var isShowingCallUnavailableAlert = false
+    private static let emergencyNumber = "115"
 
     init(llmService: LLMServiceProtocol? = nil) {
         _viewModel = StateObject(wrappedValue: ChatViewModel(llmService: llmService))
@@ -86,6 +90,11 @@ struct ChatWorkspaceView: View {
                 Button("Đã hiểu".localized(for: appLanguage), role: .cancel) {}
             } message: {
                 Text(String(format: "Bạn chỉ có thể đính kèm tối đa %lld ảnh cho mỗi tin nhắn.".localized(for: appLanguage), maxAttachedImages))
+            }
+            .alert("Không thể gọi điện".localized(for: appLanguage), isPresented: $isShowingCallUnavailableAlert) {
+                Button("Đã hiểu".localized(for: appLanguage), role: .cancel) {}
+            } message: {
+                Text(String(format: "Thiết bị này không hỗ trợ gọi điện. Vui lòng dùng điện thoại khác để gọi %@.".localized(for: appLanguage), Self.emergencyNumber))
             }
             .fullScreenCover(isPresented: $isShowingCameraPicker) {
                 CameraImagePicker(image: cameraCaptureBinding)
@@ -453,24 +462,44 @@ struct ChatWorkspaceView: View {
     }
 
     private var emergencyFooter: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "phone.fill")
-                .foregroundColor(.red)
-            Text("Khẩn cấp: gọi 115 hoặc liên hệ bác sĩ.")
-                .appFont(size: 12, weight: .semibold)
-                .foregroundColor(.red)
-            Spacer(minLength: 0)
+        Button(action: callEmergencyNumber) {
+            HStack(spacing: 8) {
+                Image(systemName: "phone.fill")
+                    .foregroundColor(.red)
+                Text("Khẩn cấp: gọi 115 hoặc liên hệ bác sĩ.")
+                    .appFont(size: 12, weight: .semibold)
+                    .foregroundColor(.red)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Color.red.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(Color.red.opacity(0.4), lineWidth: 1.5)
+                    )
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color.red.opacity(0.08))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(Color.red.opacity(0.4), lineWidth: 1.5)
-                )
-        )
+        .buttonStyle(.plain)
+        .accessibilityLabel("Gọi 115".localized(for: appLanguage))
+    }
+
+    /// iPhone hands `tel:` to the OS, which shows its own "Call 115 / Cancel" sheet before
+    /// dialling. iPad has no phone: it *accepts* the URL (in case it can relay through a
+    /// paired iPhone) but then silently does nothing, so it gets the "use a phone" alert
+    /// straight away instead of a dead tap. The Simulator refuses the scheme outright.
+    private func callEmergencyNumber() {
+        guard let url = URL(string: "tel:\(Self.emergencyNumber)") else { return }
+        guard UIDevice.current.userInterfaceIdiom != .pad, UIApplication.shared.canOpenURL(url) else {
+            isShowingCallUnavailableAlert = true
+            return
+        }
+        UIApplication.shared.open(url) { accepted in
+            if !accepted { isShowingCallUnavailableAlert = true }
+        }
     }
 
     // MARK: - Main Panel
@@ -548,6 +577,7 @@ struct ChatWorkspaceView: View {
                         .frame(width: 36, height: 36)
                         .background(Circle().fill(Color(.secondarySystemBackground)))
                 }
+                .accessibilityLabel("Lịch sử trò chuyện".localized(for: appLanguage))
             }
 
             Spacer()
