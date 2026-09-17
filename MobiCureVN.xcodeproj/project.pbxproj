@@ -549,6 +549,7 @@
 					"SQLITE_CORE=1",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "MobiCureVN 2.0";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow camera access to capture medical images for chat.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to transcribe your voice into chat messages.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow photo library access to upload medical images for chat.";
@@ -564,7 +565,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccino.anhphung1;
+				PRODUCT_BUNDLE_IDENTIFIER = "MobiCureVN.Cappuccino.anhphung1.v2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -594,6 +595,7 @@
 					"SQLITE_CORE=1",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "MobiCureVN 2.0";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow camera access to capture medical images for chat.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to transcribe your voice into chat messages.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow photo library access to upload medical images for chat.";
@@ -609,7 +611,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = MobiCureVN.Cappuccino.anhphung1;
+				PRODUCT_BUNDLE_IDENTIFIER = "MobiCureVN.Cappuccino.anhphung1.v2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
